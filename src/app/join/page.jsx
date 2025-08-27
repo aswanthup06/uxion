@@ -1,6 +1,9 @@
-import Link from "next/link";
+"use client";
+import { useRouter } from "next/navigation";
 
 export default function SharePage() {
+const router = useRouter();
+
   const groups = [
     {
       name: "Kerala Group",
@@ -46,12 +49,17 @@ export default function SharePage() {
 
         {/* Back Button */}
         <div className="mt-6">
-          <Link
-            href="/"
-            className="px-4 py-2  text-sm font-light text-blue-600 rounded-sm  hover:bg-gray-100"
-          >
-            Back to Jobs
-          </Link>
+         
+
+ 
+    <button
+      onClick={() => router.back()}
+      className="px-4 py-2 text-sm font-light text-blue-600 rounded-sm hover:bg-gray-100"
+    >
+      Back to Job
+    </button>
+
+
         </div>
       </div>
     </div>

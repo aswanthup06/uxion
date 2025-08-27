@@ -8,6 +8,7 @@ import {
   SalaryIcon,
   CalendarIcon,
 } from "./components/Icons";
+import { MonitorUp } from "lucide-react";
 
 export default function Home() {
   const [visibleCount, setVisibleCount] = useState(9);
@@ -18,7 +19,12 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="h-[100dvh] overflow-hidden bg-gray-50 py-8 relative">
+   
+   <button className="bg-[#1E293B] flex items-center gap-3 text-white font-light text-sm rounded-full px-6 py-3 absolute right-2 bottom-2 md:right-10 md:bottom-10"><MonitorUp size={15}/><h1>Post a job</h1></button>
+     
+<div className="h-full overflow-auto">
+
       <div className="container mx-auto px-4">
         <div className="flex justify-between mb-6">
           <div>
@@ -75,7 +81,7 @@ export default function Home() {
 
         {/* Load More Button */}
         {visibleCount < jobs.length && (
-          <div className="mt-8 text-center">
+          <div className="mt-4 text-center mb-6">
             <button
               onClick={loadMore}
               className="px-6 py-3 text-sm font-light bg-white border border-gray-300 text-gray-700 rounded-sm hover:bg-gray-100 transition-colors"
@@ -85,6 +91,10 @@ export default function Home() {
           </div>
         )}
       </div>
+
+</div>
+
+
     </div>
   );
 }
