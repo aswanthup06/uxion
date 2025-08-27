@@ -7,7 +7,8 @@ import {
   SalaryIcon,
   CalendarIcon,
 } from "../../components/Icons";
-import { Share2 } from "lucide-react";
+import { ArrowLeft, Share2 } from "lucide-react";
+import { IoLogoWhatsapp } from "react-icons/io";
 
 export default function JobDetails({ params }) {
   const job = jobs.find((j) => j.id.toString() === params.id);
@@ -21,24 +22,50 @@ export default function JobDetails({ params }) {
   }
 
   // Share function
-  const handleShare = () => {
-    const shareData = {
-      title: job.title,
-      text: `Check out this job: ${job.title} at ${job.company}`,
-      url: typeof window !== "undefined" ? window.location.href : "",
-    };
+ // Share function
+const handleShare = () => {
+  const shareData = {
+    title: job.title,
+    text: `Check out this job:
+${job.title} at ${job.company}
 
-    if (navigator.share) {
-      navigator.share(shareData).catch((err) => console.log("Share error:", err));
-    } else {
-      navigator.clipboard.writeText(shareData.url);
-      alert("Link copied to clipboard!");
-    }
+📍 Location: ${job.location}
+💼 Experience: ${job.experience}
+💰 Salary: ${job.salary}
+📅 Posted on: ${job.postedDate}`,
+    url: typeof window !== "undefined" ? window.location.href : "",
   };
 
+  if (navigator.share) {
+    navigator
+      .share(shareData)
+      .catch((err) => console.log("Share error:", err));
+  } else {
+    navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
+    alert("Job details copied to clipboard!");
+  }
+};
+
+
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-3xl mx-auto p-8">
+        <div className="flex justify-between mb-6">
+          <Link
+            href="/"
+            className="border h-8 w-8 border-gray-200 rounded-sm flex items-center justify-center gap-2 hover:bg-gray-100"
+          ><ArrowLeft size={12}/>
+              
+          </Link>
+
+          <button
+            onClick={handleShare}
+            className="border h-8 px-2 border-gray-200 rounded-sm flex items-center justify-between gap-2 hover:bg-gray-100"
+          >
+            <Share2 size={12} /> <h1 className="text-xs">Share</h1>
+          </button>
+        </div>
+
         {/* Job Title & Company */}
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -47,12 +74,6 @@ export default function JobDetails({ params }) {
           </div>
 
           {/* Share button */}
-          <button
-            onClick={handleShare}
-            className="border h-8 px-2 border-gray-200 rounded-sm flex items-center justify-between gap-2 hover:bg-gray-100"
-          >
-            <Share2 size={12} /> <h1 className="text-xs">Share</h1>
-          </button>
         </div>
 
         {/* Info Section */}
@@ -89,16 +110,19 @@ export default function JobDetails({ params }) {
         </div>
 
         {/* Apply Button + Back */}
-        <div className="flex flex-col gap-4">
-          <button className="px-6 py-2 bg-blue-600 text-white rounded-sm hover:bg-blue-700">
+        <div className="flex flex-col gap-3">
+          <button className="px-6 py-3 bg-blue-600 text-white rounded-sm hover:bg-blue-700 text-sm font-light">
             Apply Now
           </button>
-          <Link
-            href="/"
-            className="px-6 py-2 border rounded-sm text-gray-700 hover:bg-gray-50 flex justify-center"
-          >
-            ← Back to Jobs
-          </Link>
+
+        <Link href="/join">
+      <button
+        className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium flex items-center justify-center gap-2 transition w-full"
+      >
+        <IoLogoWhatsapp size={18} />
+        <span>Join for more</span>
+      </button>
+    </Link>
         </div>
       </div>
     </div>

@@ -36,7 +36,7 @@ export default function Home() {
                     <h2 className="text-base md:text-xl font-semibold text-gray-800">
                       {job.title}
                     </h2>
-                    <h3 className="text-sm md:text-lg text-blue-600 font-medium">
+                    <h3 className="text-sm font-light md:text-lg text-blue-600">
                       {job.company}
                     </h3>
                   </div>
@@ -67,7 +67,7 @@ export default function Home() {
           <div className="mt-8 text-center">
             <button
               onClick={loadMore}
-              className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-full hover:bg-gray-100 transition-colors"
+              className="px-6 py-3 text-sm font-light bg-white border border-gray-300 text-gray-700 rounded-sm hover:bg-gray-100 transition-colors"
             >
               Load More Jobs
             </button>
