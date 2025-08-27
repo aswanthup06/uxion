@@ -26,7 +26,7 @@ export default function JobDetails({ params }) {
 const handleShare = () => {
   const shareData = {
     title: job.title,
-    text: `Check out this job:
+    text: `
 ${job.title} at ${job.company}
 
 📍 Location: ${job.location}
@@ -69,8 +69,8 @@ ${job.title} at ${job.company}
         {/* Job Title & Company */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-xl font-bold text-gray-800">{job.title}</h1>
-            <h2 className="text-sm font-light text-blue-600">{job.company}</h2>
+            <h1 className="text-xl font-bold text-[#1E293B]">{job.title}</h1>
+            <h2 className="text-sm font-light text-[#F97316]">{job.company}</h2>
           </div>
 
           {/* Share button */}
@@ -111,13 +111,13 @@ ${job.title} at ${job.company}
 
         {/* Apply Button + Back */}
         <div className="flex flex-col gap-3">
-          <button className="px-6 py-3 bg-blue-600 text-white rounded-sm hover:bg-blue-700 text-sm font-light">
+          <button className="px-6 py-3 bg-[#1E293B] text-white rounded-sm hover:bg-[#1E293B]/90 cursor-pointer text-sm font-light">
             Apply Now
           </button>
 
         <Link href="/join">
       <button
-        className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium flex items-center justify-center gap-2 transition w-full"
+        className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 cursor-pointer text-sm font-medium flex items-center justify-center gap-2 transition w-full"
       >
         <IoLogoWhatsapp size={18} />
         <span>Join for more</span>

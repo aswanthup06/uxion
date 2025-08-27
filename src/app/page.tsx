@@ -1,29 +1,40 @@
 "use client";
 import { useState } from "react";
-import { jobs as jobData } from "./data/jobs"; 
+import { jobs as jobData } from "./data/jobs";
 import Link from "next/link";
-import { LocationIcon, ExperienceIcon, SalaryIcon, CalendarIcon } from "./components/Icons";
+import {
+  LocationIcon,
+  ExperienceIcon,
+  SalaryIcon,
+  CalendarIcon,
+} from "./components/Icons";
 
 export default function Home() {
-  const [visibleCount, setVisibleCount] = useState(9); 
+  const [visibleCount, setVisibleCount] = useState(9);
   const [jobs] = useState(jobData);
 
   const loadMore = () => {
-    setVisibleCount((prev) => prev + 10); 
+    setVisibleCount((prev) => prev + 10);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
+        <div className="flex justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-[#1E293B]">UX<span className="text-[#F97316]">CURVE</span> </h1>
+            <h1 className="text-[#1E293B] text-sm font-semibold">Your Gateway to UX Careers</h1>
+          </div>
+        </div>
         {/* Header */}
-        <header className="mb-8 text-center">
+        {/* <header className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
             Job Opportunities
           </h1>
           <p className="text-gray-600">
             Find your next career move from our curated listings
           </p>
-        </header>
+        </header> */}
 
         {/* Job Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
@@ -33,10 +44,10 @@ export default function Home() {
                 <div className="p-6">
                   {/* Job Title & Company */}
                   <div className="mb-4">
-                    <h2 className="text-base md:text-xl font-semibold text-gray-800">
+                    <h2 className="text-base md:text-xl font-semibold text-[#1E293B]">
                       {job.title}
                     </h2>
-                    <h3 className="text-sm font-light md:text-lg text-blue-600">
+                    <h3 className="text-sm font-light text-[#F97316] md:text-base ">
                       {job.company}
                     </h3>
                   </div>
