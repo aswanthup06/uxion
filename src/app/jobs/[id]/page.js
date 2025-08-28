@@ -79,7 +79,9 @@ ${job.title} at ${job.company}
 📍 Location: ${job.location}
 💼 Experience: ${job.experience}
 💰 Salary: ${job.salary}
-📅 Posted on: ${job.postedDate}`,
+📅 Posted on: ${job.postedDate}
+
+`,
       url: typeof window !== "undefined" ? window.location.href : "",
     };
 

@@ -37,7 +37,7 @@ export default function PostJobPage() {
       });
 
       if (res.ok) {
-        setMessage("Job submitted successfully — check your email.");
+        setMessage("Job submitted successfully — We will reach you for more details");
         form.reset();
       } else {
         const data = await res.json();
@@ -52,7 +52,7 @@ export default function PostJobPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-8">
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl mt-8">
       <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center">Post a Job</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
