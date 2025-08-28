@@ -1,4 +1,28 @@
 export const jobs = [
+   {
+    id: "JOB1004",
+    title: "UI/UX Designer",
+    company: "Yellowchalk",
+    location: "Bangalore",
+    experience: "1-2 Years",
+    postedDate: "28/8/2024",
+
+    salary: "Not Disclosed",
+
+    mail: "",
+    companyLink: "https://yellowchalk.com/",
+    apply: "https://docs.google.com/forms/d/e/1FAIpQLSdm-qUeAIu9kNpMPnmsrsshYIlNJNN7-5JiiGJYTzSVh76xHg/viewform",
+
+    description: `Yellowchalk is hiring:
+ 
+- UI Designers (1–2 yrs): Craft intuitive, pixel-perfect interfaces that delight users
+- Webflow Developers (1+ yrs): Bring designs to life with responsive layouts and smooth interactions
+
+What we offer:
+• A collaborative studio culture that celebrates every milestone
+• Hands-on work with diverse clients on cutting-edge products
+• Clear growth paths and ongoing learning opportunities`,
+  },
     {
     id: "JOB1003",
     title: "UI/UX Designer",
