@@ -1,7 +1,31 @@
 export const jobs = [
+    {
+    id: "JOB1003",
+    title: "UI/UX Designer",
+    company: "Pocketful",
+    location: "Okhla, New Delhi",
+    experience: "1 Year",
+    postedDate: "28/8/2024",
+
+    salary: "Not Disclosed",
+
+    mail: "Gauravjoshi@pacefin.in",
+    companyLink: "https://www.pocketful.in/",
+    apply: "",
+
+    description: `We’re Hiring! Join Our Exciting Fintech Journey! 
+We are on the lookout for talented candidates to join our team. 
+👉 Growth Associate (ex- 1 year)
+👉 UI/UX Designer (ex- 1 year)
+👉Social Media/ Content Creator Intern
+👉Tele sales
+We'd love to hear from you if you’re passionate about Creativity, innovation, problem-solving, and creating impactful products
+.
+Ready to take the next step in your career?`,
+  },
   {
     id: "JOB1002",
-    title: " Web Designer",
+    title: "Web Designer",
     company: "Blurbpoint Media",
     location: "Ahmedabad",
     experience: "Freshers",
