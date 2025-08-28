@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://uxcurve.in"), 
   title: "UXCurve - UX Job Portal",
   description:
     "UXCurve is a dedicated job portal for UX and UI professionals. Discover UX design jobs, connect with top companies, and design your career path with ease.",
@@ -24,14 +25,14 @@ export const metadata: Metadata = {
     "UX hiring platform",
     "UX job portal",
     "UI/UX opportunities",
-    "User Experience careers"
+    "User Experience careers",
   ],
   authors: [{ name: "UXCurve" }],
   openGraph: {
     title: "UXCurve - Your Gateway to UX Careers",
     description:
       "Find UX and UI jobs, connect with employers, and design your career path with UXCurve.",
-    url: "https://uxcurve.in", 
+    url: "https://uxcurve.in",
     siteName: "UXCurve",
     images: [
       {
@@ -45,6 +46,7 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
+
 
 
 export default function RootLayout({
