@@ -1,5 +1,24 @@
 export const jobs = [
- {
+  {
+    id: "JOB1002",
+    title: " Web Designer",
+    company: "Blurbpoint Media",
+    location: "Ahmedabad",
+    experience: "Freshers",
+    postedDate: "28/8/2024",
+
+    salary: "Not Disclosed",
+
+    mail: "prachi@blurbpoint.net",
+    companyLink: "https://www.blurbpoint.com",
+    apply: "",
+
+    description: `Looking to start your career in Web Design? 🚀
+
+We’re open to freshers skilled in HTML, CSS, JavaScript, Bootstrap, PSD to HTML, and Responsive Design.`,
+  },
+
+  {
     id: "JOB1001",
     title: "UI/UX Designer",
     company: "OFB Tech",
@@ -41,9 +60,8 @@ What we are offering.
 
 🤝 Collaborative Culture: Work alongside passionate teams that value your creativity, feedback, and growth.
 
-If you're passionate about designing systems that are not only beautiful but also powerful and practical—we want to meet you. Apply now and help shape the future of fintech with us.`},
-
-
+If you're passionate about designing systems that are not only beautiful but also powerful and practical—we want to meet you. Apply now and help shape the future of fintech with us.`,
+  },
 
   {
     id: "JOB1000",
