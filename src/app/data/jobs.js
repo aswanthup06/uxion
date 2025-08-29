@@ -1,5 +1,59 @@
 export const jobs = [
-   {
+  {
+    id: "JOB1005",
+    title: "UI/Frontend Intern",
+    company: "Zecurix",
+    location: "Remote",
+    experience: "Internship",
+    postedDate: "29/8/2024",
+
+    salary: "₹3,000 – ₹7,000/M",
+
+    mail: "mayur.mahajan@zecurix.com",
+    companyLink: "https://zecurix.com/",
+    apply: "",
+
+    description: `Internship Opportunity – UI/Frontend Intern (Remote)
+
+We are hiring UI/Frontend Interns who are passionate about building clean and responsive designs. If you know Bootstrap, CSS, and have a good eye for UI/UX, this is a great chance to boost your skills and gain real-world experience.
+
+Internship Details:
+
+Stipend: ₹3,000 – ₹7,000 /month
+
+Duration: 2–3 Months
+
+Location: Remote
+
+Responsibilities:
+
+Build and style responsive web pages
+
+Improve UI/UX of ongoing projects
+
+Collaborate with the team on real product designs
+
+Skills Required:
+
+Bootstrap, CSS, HTML (basic JS is a plus)
+
+UI/UX understanding
+
+Eagerness to learn and adapt
+
+Perks:
+
+Internship Certificate
+
+Real-world startup experience
+
+Opportunity to work on live projects
+
+Subject line “UI Intern Application”
+`,
+  },
+
+  {
     id: "JOB1004",
     title: "UI/UX Designer",
     company: "Yellowchalk",
@@ -11,7 +65,8 @@ export const jobs = [
 
     mail: "",
     companyLink: "https://yellowchalk.com/",
-    apply: "https://docs.google.com/forms/d/e/1FAIpQLSdm-qUeAIu9kNpMPnmsrsshYIlNJNN7-5JiiGJYTzSVh76xHg/viewform",
+    apply:
+      "https://docs.google.com/forms/d/e/1FAIpQLSdm-qUeAIu9kNpMPnmsrsshYIlNJNN7-5JiiGJYTzSVh76xHg/viewform",
 
     description: `Yellowchalk is hiring:
  
@@ -23,7 +78,7 @@ What we offer:
 • Hands-on work with diverse clients on cutting-edge products
 • Clear growth paths and ongoing learning opportunities`,
   },
-    {
+  {
     id: "JOB1003",
     title: "UI/UX Designer",
     company: "Pocketful",
