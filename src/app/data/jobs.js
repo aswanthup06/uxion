@@ -1,4 +1,35 @@
 export const jobs = [
+
+  {
+    id: "JOB1007",
+    title: "UI/UX Designer",
+    company: "Tridizi",
+    location: "Remote",
+    experience: "1+ Yrs",
+    postedDate: "29/8/2024",
+
+    salary: "Up to ₹25k/month",
+
+    mail: "hr@tridizi.com",
+    companyLink: "https://tridizi.com/",
+    apply: "",
+
+    description: `🚨 We're Hiring: UI/UX Designer (Remote)
+👉🏻 Salary: Up to ₹25,000/month (based on interview performance)
+Time: 10 AM – 7 PM 
+Experience: Minimum 1 year (Mandatory)
+
+Looking for a creative and detail-oriented UI/UX Designer to join our team!
+✅ Design user-friendly web & mobile interfaces
+✅ Create wireframes, prototypes, and mockups
+✅ Collaborate with developers & product team
+✅ Conduct user research & usability testing
+✅ Improve overall user experience and engagement
+✅ Stay updated with latest design trends
+`,
+  },
+
+
   {
     id: "JOB1006",
     title: "UI/UX & Graphic Designer",
