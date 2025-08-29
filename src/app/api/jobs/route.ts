@@ -1,5 +1,20 @@
 import { google } from "googleapis";
 
+// Define a Job type
+type Job = {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  experience: string;
+  postedDate: string;
+  salary: string;
+  mail: string;
+  companyLink: string;
+  apply: string;
+  description: string;
+};
+
 export async function GET() {
   try {
     const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") || "";
@@ -25,9 +40,10 @@ export async function GET() {
       range: "Sheet1!A2:L",
     });
 
-    const rows = response.data.values || [];
+    // Type rows as string[][] (array of arrays of strings)
+    const rows: string[][] = response.data.values || [];
 
-    const jobs = rows.map((row, i) => ({
+    const jobs: Job[] = rows.map((row, i) => ({
       id: row[0] || `JOB${1000 + i}`,
       title: row[1] || "",
       company: row[2] || "",
@@ -44,8 +60,10 @@ export async function GET() {
     return new Response(JSON.stringify(jobs), {
       headers: { "Content-Type": "application/json" },
     });
-  } catch (error: any) {
-    console.error("Error fetching Google Sheets data:", error);
-    return new Response(`Server error: ${error.message}`, { status: 500 });
+  } catch (error) {
+    // Narrow error type safely
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Error fetching Google Sheets data:", message);
+    return new Response(`Server error: ${message}`, { status: 500 });
   }
 }
