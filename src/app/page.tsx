@@ -8,6 +8,21 @@ import {
   CalendarIcon,
 } from "./components/Icons";
 
+// Define Job type
+type Job = {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  experience: string;
+  postedDate: string;
+  salary: string;
+  mail: string;
+  companyLink: string;
+  apply: string;
+  description: string;
+};
+
 // Skeleton Loading Component
 const JobCardSkeleton = () => (
   <div className="bg-white rounded-md overflow-hidden border border-gray-200">
@@ -30,7 +45,7 @@ const JobCardSkeleton = () => (
 
 export default function Home() {
   const [visibleCount, setVisibleCount] = useState(9);
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -38,8 +53,14 @@ export default function Home() {
       try {
         setIsLoading(true);
         const res = await fetch("/api/jobs");
-        const data = await res.json();
-        setJobs(data);
+        const data: unknown = await res.json();
+
+        // Type check
+        if (Array.isArray(data)) {
+          setJobs(data as Job[]);
+        } else {
+          console.error("Invalid data format from API");
+        }
       } catch (err) {
         console.error("Error fetching jobs:", err);
       } finally {
@@ -50,9 +71,7 @@ export default function Home() {
     fetchJobs();
   }, []);
 
-  const loadMore = () => {
-    setVisibleCount((prev) => prev + 10);
-  };
+  const loadMore = () => setVisibleCount((prev) => prev + 10);
 
   return (
     <div className="min-h-[100dvh] overflow-hidden bg-gray-50 py-8 relative">
@@ -72,12 +91,8 @@ export default function Home() {
           {/* Job Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
             {isLoading
-              ? // Show skeleton loaders while loading
-                [...Array(6)].map((_, index) => (
-                  <JobCardSkeleton key={index} />
-                ))
-              : // Show actual job cards when data is loaded
-                jobs.slice(0, visibleCount).map((job) => (
+              ? [...Array(6)].map((_, index) => <JobCardSkeleton key={index} />)
+              : jobs.slice(0, visibleCount).map((job) => (
                   <Link href={`/jobs/${job.id}`} key={job.id}>
                     <div className="bg-white rounded-md overflow-hidden border border-gray-200 transition-all hover:shadow-lg">
                       <div className="p-6">
