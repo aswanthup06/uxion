@@ -13,10 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://uxcurve.in"), 
+  metadataBase: new URL("https://uxcurve.in"),
   title: "UXCurve - UX Job Portal",
   description:
     "UXCurve is a dedicated job portal for UX and UI professionals. Discover UX design jobs, connect with top companies, and design your career path with ease.",
+  icons: {
+    icon: "/favicon.png", 
+  },
   keywords: [
     "UX jobs",
     "UI jobs",
@@ -47,34 +50,12 @@ export const metadata: Metadata = {
   },
 };
 
-
-
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-
-       <head>
-        {/* Google Analytics */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-P051RF09TL"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-P051RF09TL');
-            `,
-          }}
-        />
-      </head>
-      
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
