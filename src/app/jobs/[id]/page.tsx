@@ -27,13 +27,21 @@ async function getJobs(): Promise<Job[]> {
   return Array.isArray(data) ? (data as Job[]) : [];
 }
 
-// ✅ Use async destructuring
 export default async function JobDetailsPage({ params }: { params: { id: string } }) {
-  const { id } = await params; // Next.js requires await here
-  const jobs = await getJobs();
-  const job = jobs.find((j) => j.id === id);
+  // ✅ await params is required in Next.js App Router
+  const { id } = await params;
 
-  if (!job) notFound();
+  const jobs = await getJobs();
+
+  // ✅ Debug: log all job IDs to ensure your job exists
+  console.log("Available Job IDs:", jobs.map(j => j.id));
+
+  const job = jobs.find(j => j.id === id);
+
+  if (!job) {
+    console.log("Job not found:", id);
+    notFound();
+  }
 
   return <JobDetailsClient job={job} />;
 }
