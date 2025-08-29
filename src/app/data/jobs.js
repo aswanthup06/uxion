@@ -6,7 +6,7 @@ export const jobs = [
     company: "Tridizi",
     location: "Remote",
     experience: "1+ Yrs",
-    postedDate: "29/8/2024",
+    postedDate: "29/8/2025",
 
     salary: "Up to ₹25k/month",
 
@@ -36,7 +36,7 @@ Looking for a creative and detail-oriented UI/UX Designer to join our team!
     company: "Hyeon Infotech",
     location: "Surat",
     experience: "1.5 – 2 Yrs",
-    postedDate: "29/8/2024",
+    postedDate: "29/8/2025",
 
     salary: "Not Disclosed",
 
@@ -71,7 +71,7 @@ Growth-driven mindset 🌱
     company: "Zecurix",
     location: "Remote",
     experience: "Internship",
-    postedDate: "29/8/2024",
+    postedDate: "29/8/2025",
 
     salary: "₹3k – ₹7k/M",
 
@@ -125,7 +125,7 @@ Subject line “UI Intern Application
     company: "Yellowchalk",
     location: "Bangalore",
     experience: "1-2 Years",
-    postedDate: "28/8/2024",
+    postedDate: "28/8/2025",
 
     salary: "Not Disclosed",
 
@@ -150,7 +150,7 @@ What we offer:
     company: "Pocketful",
     location: "Okhla, New Delhi",
     experience: "1 Year",
-    postedDate: "28/8/2024",
+    postedDate: "28/8/2025",
 
     salary: "Not Disclosed",
 
@@ -174,7 +174,7 @@ Ready to take the next step in your career?`,
     company: "Blurbpoint Media",
     location: "Ahmedabad",
     experience: "Freshers",
-    postedDate: "28/8/2024",
+    postedDate: "28/8/2025",
 
     salary: "Not Disclosed",
 
@@ -193,7 +193,7 @@ We’re open to freshers skilled in HTML, CSS, JavaScript, Bootstrap, PSD to HTM
     company: "OFB Tech",
     location: "Gurugram",
     experience: "3-5 Yrs",
-    postedDate: "28/8/2024",
+    postedDate: "28/8/2025",
 
     salary: "Not Disclosed",
 
@@ -238,7 +238,7 @@ If you're passionate about designing systems that are not only beautiful but als
     company: "SWEET DESIGN HUB",
     location: "Remote",
     experience: "Fresher",
-    postedDate: "28/8/2024",
+    postedDate: "28/8/2025",
 
     salary: "Not Disclosed",
 
