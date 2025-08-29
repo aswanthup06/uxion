@@ -1,5 +1,40 @@
 export const jobs = [
   {
+    id: "JOB1006",
+    title: "UI/UX & Graphic Designer",
+    company: "Hyeon Infotech",
+    location: "Surat",
+    experience: "1.5 – 2 Yrs",
+    postedDate: "29/8/2024",
+
+    salary: "Not Disclosed",
+
+    mail: "hr.hyeoninfotech@gmail.com",
+    companyLink: "https://www.linkedin.com/company/hyeoninfotech/",
+    apply: "",
+
+    description: ` 🚀 Hyeon Infotech is Growing – Join Our Team! 🚀
+
+📍 Workplace: Surat (On-site | Local talent only)
+
+👩‍💻 We’re looking for passionate minds in tech & design!
+
+🔑 Open Positions:
+
+✨ Android Developer (Kotlin – Product Based) | 1.5 – 3 Yrs
+✨ iOS Developer (Product Based) | 1 – 4.5 Yrs
+✨ ASO Executive | 1 – 2 Yrs
+✨ UI/UX & Graphic Designer | 1.5 – 2 Yrs
+✨ QA Tester | 1.5 – 2 Yrs
+
+💼 Why Hyeon Infotech?
+
+Creative & collaborative culture 🤝
+Growth-driven mindset 🌱
+`,
+  },
+
+  {
     id: "JOB1005",
     title: "UI/Frontend Intern",
     company: "Zecurix",
@@ -7,7 +42,7 @@ export const jobs = [
     experience: "Internship",
     postedDate: "29/8/2024",
 
-    salary: "₹3,000 – ₹7,000/M",
+    salary: "₹3k – ₹7k/M",
 
     mail: "mayur.mahajan@zecurix.com",
     companyLink: "https://zecurix.com/",
@@ -49,7 +84,7 @@ Real-world startup experience
 
 Opportunity to work on live projects
 
-Subject line “UI Intern Application”
+Subject line “UI Intern Application
 `,
   },
 
