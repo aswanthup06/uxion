@@ -3,24 +3,34 @@ import { notFound } from "next/navigation";
 import JobDetailsClient from "./JobDetailsClient";
 import type { Job } from "./JobDetailsClient";
 
+// Helper function to get the base URL
+function getBaseUrl() {
+  // In production, use the actual domain
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.NEXT_PUBLIC_API_URL || 'https://www.uxcurve.in';
+  }
+  // In development, use localhost
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+}
+
 async function getJobs(): Promise<Job[]> {
   try {
-    // Use Vercel URL if available, otherwise localhost
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 
-                    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+    const baseUrl = getBaseUrl();
+    const apiUrl = `${baseUrl}/api/jobs`;
+    
+    console.log('Fetching from:', apiUrl);
 
-    // REMOVED cache: "no-store" to fix the conflict
-    const res = await fetch(`${baseUrl}/api/jobs`, {
+    const res = await fetch(apiUrl, {
       next: { revalidate: 300 },
     });
 
     if (!res.ok) {
-      console.error("Failed to fetch jobs:", res.statusText);
+      console.error("Failed to fetch jobs:", res.status, res.statusText);
       return [];
     }
 
-    const data: unknown = await res.json();
-    return Array.isArray(data) ? (data as Job[]) : [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Error fetching jobs:", error);
     return [];
@@ -32,18 +42,17 @@ interface JobDetailsPageProps {
 }
 
 export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
-  // AWAIT the params first - this is the key fix
   const { id } = await params;
+  console.log('Received ID from URL:', id);
 
   const jobs = await getJobs();
+  console.log('Available job IDs:', jobs.map(j => j.id));
 
-  console.log("Available Job IDs:", jobs.map(j => j.id));
-
-  // Case-insensitive matching for better reliability
+  // Case-insensitive exact match
   const job = jobs.find(j => j.id.toUpperCase() === id.toUpperCase());
 
   if (!job) {
-    console.log("Job not found:", id);
+    console.log('Job not found. Available IDs:', jobs.map(j => j.id));
     notFound();
   }
 
