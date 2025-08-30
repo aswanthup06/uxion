@@ -1,6 +1,6 @@
+// src/app/api/jobs/route.ts
 import { google } from "googleapis";
 
-// Define a Job type
 type Job = {
   id: string;
   title: string;
@@ -23,7 +23,6 @@ export async function GET() {
       throw new Error("Google Sheets credentials are missing");
     }
 
-    // Create service account credentials
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -34,13 +33,11 @@ export async function GET() {
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    // Fetch rows from Sheet1
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
       range: "Sheet1!A2:L",
     });
 
-    // Type rows as string[][] (array of arrays of strings)
     const rows: string[][] = response.data.values || [];
 
     const jobs: Job[] = rows.map((row, i) => ({
@@ -61,7 +58,6 @@ export async function GET() {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    // Narrow error type safely
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Error fetching Google Sheets data:", message);
     return new Response(`Server error: ${message}`, { status: 500 });
