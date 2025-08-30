@@ -3,23 +3,11 @@ import { notFound } from "next/navigation";
 import JobDetailsClient from "./JobDetailsClient";
 import type { Job } from "./JobDetailsClient";
 
-// Helper function to get the base URL
-function getBaseUrl() {
-  // In production, use the actual domain
-  if (process.env.NODE_ENV === 'production') {
-    return process.env.NEXT_PUBLIC_API_URL || 'https://www.uxcurve.in';
-  }
-  // In development, use localhost
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-}
-
 async function getJobs(): Promise<Job[]> {
   try {
-    const baseUrl = getBaseUrl();
-    const apiUrl = `${baseUrl}/api/jobs`;
+    // Use your live site URL since the API is working there
+    const apiUrl = 'https://www.uxcurve.in/api/jobs';
     
-    console.log('Fetching from:', apiUrl);
-
     const res = await fetch(apiUrl, {
       next: { revalidate: 300 },
     });
@@ -43,13 +31,13 @@ interface JobDetailsPageProps {
 
 export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
   const { id } = await params;
-  console.log('Received ID from URL:', id);
+  console.log('Looking for job ID:', id);
 
   const jobs = await getJobs();
-  console.log('Available job IDs:', jobs.map(j => j.id));
+  console.log('Total jobs found:', jobs.length);
 
-  // Case-insensitive exact match
-  const job = jobs.find(j => j.id.toUpperCase() === id.toUpperCase());
+  // Find the job with matching ID
+  const job = jobs.find(j => j.id === id);
 
   if (!job) {
     console.log('Job not found. Available IDs:', jobs.map(j => j.id));
