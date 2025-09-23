@@ -1,4 +1,3 @@
-// src/app/admin/layout.tsx
 import type { Metadata } from "next";
 import "../globals.css";
 import AdminWrapper from "./AdminWrapper";
@@ -8,7 +7,11 @@ export const metadata: Metadata = {
   description: "Manage jobs on UXCurve",
 };
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ 
+  children 
+}: { 
+  children: React.ReactNode 
+}) {
   return (
     <html lang="en">
       <body className="antialiased">
