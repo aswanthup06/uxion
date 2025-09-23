@@ -1,4 +1,4 @@
-export const LocationIcon = ({ className = "w-4 h-4 text-gray-500" }) => (
+export const LocationIcon = ({ className = "w-4 h-4 text-[#E1FF00]" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     className={className}
@@ -21,7 +21,7 @@ export const LocationIcon = ({ className = "w-4 h-4 text-gray-500" }) => (
   </svg>
 );
 
-export const ExperienceIcon = ({ className = "w-4 h-4 text-gray-500" }) => (
+export const ExperienceIcon = ({ className = "w-4 h-4 text-[#E1FF00]" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     className={className}
@@ -38,7 +38,7 @@ export const ExperienceIcon = ({ className = "w-4 h-4 text-gray-500" }) => (
   </svg>
 );
 
-export const SalaryIcon = ({ className = "w-4 h-4 text-gray-500" }) => (
+export const SalaryIcon = ({ className = "w-4 h-4 text-[#E1FF00]" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     className={className}
@@ -55,7 +55,7 @@ export const SalaryIcon = ({ className = "w-4 h-4 text-gray-500" }) => (
   </svg>
 );
 
-export const CalendarIcon = ({ className = "w-4 h-4 text-gray-500" }) => (
+export const CalendarIcon = ({ className = "w-4 h-4 text-[#E1FF00]" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     className={className}

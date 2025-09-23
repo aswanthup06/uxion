@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/jobs/[id]/JobDetailsClient.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/home/jobs/[id]/JobDetailsClient.tsx", "src/app/testSheets.js", "src/app/list/page.jsx"],
   "exclude": ["node_modules"]
 }

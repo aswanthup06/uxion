@@ -1,7 +1,8 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Footer from "./components/Footer";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,10 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://uxcurve.in"),
   title: "UXCurve - UX Job Portal",
-  description:
-    "UXCurve is a dedicated job portal for UX and UI professionals. Discover UX design jobs, connect with top companies, and design your career path with ease.",
+  description: "UXCurve is a dedicated job portal for UX and UI professionals. Discover UX design jobs, connect with top companies, and design your career path with ease.",
   icons: {
-    icon: "/favicon.png", 
+    icon: "/favicon.png",
   },
   keywords: [
     "UX jobs",
@@ -34,8 +34,7 @@ export const metadata: Metadata = {
   authors: [{ name: "UXCurve" }],
   openGraph: {
     title: "UXCurve - Your Gateway to UX Careers",
-    description:
-      "Find UX and UI jobs, connect with employers, and design your career path with UXCurve.",
+    description: "Find UX and UI jobs, connect with employers, and design your career path with UXCurve.",
     url: "https://uxcurve.in",
     siteName: "UXCurve",
     images: [
@@ -58,7 +57,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
-        <Footer />
+        <Toaster position="top-right" reverseOrder={false} />
       </body>
     </html>
   );
