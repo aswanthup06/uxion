@@ -1,20 +1,60 @@
-import { google } from "googleapis";
+import { google, sheets_v4 } from "googleapis";
+import { NextRequest } from "next/server";
 
-type Job = {
+interface Job {
   id: string;
   title: string;
   company: string;
   location: string;
   experience: string;
-  postedDate: string; // ISO string now
+  postedDate: string;
   salary: string;
   mail: string;
   companyLink: string;
   apply: string;
   description: string;
-};
+}
 
-async function getSheetsClient(readonly = true) {
+interface SheetsValueRange {
+  values?: string[][];
+}
+
+interface SheetsAppendParams {
+  spreadsheetId: string;
+  range: string;
+  valueInputOption: string;
+  requestBody: SheetsValueRange;
+}
+
+interface SheetsGetParams {
+  spreadsheetId: string;
+  range: string;
+}
+
+interface SheetsUpdateParams {
+  spreadsheetId: string;
+  range: string;
+  valueInputOption: string;
+  requestBody: SheetsValueRange;
+}
+
+interface SheetsClearParams {
+  spreadsheetId: string;
+  range: string;
+}
+
+interface SheetsClient {
+  spreadsheets: {
+    values: {
+      get: (params: SheetsGetParams) => Promise<{ data: sheets_v4.Schema$ValueRange }>;
+      append: (params: SheetsAppendParams) => Promise<{ data: sheets_v4.Schema$AppendValuesResponse }>;
+      update: (params: SheetsUpdateParams) => Promise<{ data: sheets_v4.Schema$UpdateValuesResponse }>;
+      clear: (params: SheetsClearParams) => Promise<{ data: sheets_v4.Schema$ClearValuesResponse }>;
+    };
+  };
+}
+
+async function getSheetsClient(readonly = true): Promise<SheetsClient> {
   const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") || "";
 
   if (!process.env.GOOGLE_CLIENT_EMAIL || !privateKey || !process.env.GOOGLE_SHEET_ID) {
@@ -33,11 +73,11 @@ async function getSheetsClient(readonly = true) {
     ],
   });
 
-  return google.sheets({ version: "v4", auth });
+  return google.sheets({ version: "v4", auth }) as SheetsClient;
 }
 
 // 🔹 Generate incremental ID like JOB1000, JOB1001...
-async function generateNumericId(sheets: any): Promise<string> {
+async function generateNumericId(sheets: SheetsClient): Promise<string> {
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.GOOGLE_SHEET_ID!,
     range: "Sheet1!A:A", // Only ID column
@@ -85,7 +125,9 @@ export async function GET() {
 
     jobs.sort((a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime());
 
-    return new Response(JSON.stringify(jobs), { headers: { "Content-Type": "application/json" } });
+    return new Response(JSON.stringify(jobs), { 
+      headers: { "Content-Type": "application/json" } 
+    });
   } catch (error) {
     console.error("Error fetching Google Sheets data:", error);
     return new Response("Server error", { status: 500 });
@@ -93,7 +135,7 @@ export async function GET() {
 }
 
 // ✅ POST → Add new job (auto incremental ID + timestamp)
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const sheets = await getSheetsClient(false);
     const body: Job = await req.json();
@@ -130,7 +172,7 @@ export async function POST(req: Request) {
 }
 
 // ✅ PUT → Update existing job
-export async function PUT(req: Request) {
+export async function PUT(req: NextRequest) {
   try {
     const sheets = await getSheetsClient(false);
     const body: Job = await req.json();
@@ -184,10 +226,8 @@ export async function PUT(req: Request) {
   }
 }
 
-
-
-// ✅ DELETE → Remove a job (Complete row removal without sheet ID)
-export async function DELETE(req: Request) {
+// ✅ DELETE → Remove a job
+export async function DELETE(req: NextRequest) {
   try {
     const sheets = await getSheetsClient(false);
     const { id } = await req.json();
@@ -226,8 +266,7 @@ export async function DELETE(req: Request) {
 
     console.log(`Deleting row ${rowIndex + 1} with ID: ${id}`);
 
-    // Use a different approach to delete the row
-    // Method 1: Copy all rows except the one to delete, then overwrite the entire sheet
+    // Copy all rows except the one to delete, then overwrite the entire sheet
     const allDataResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID!,
       range: "A:K",

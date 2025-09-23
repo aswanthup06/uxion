@@ -3,13 +3,27 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+interface JobForm {
+  title: string;
+  company: string;
+  location: string;
+  experienceMin: string;
+  experienceMax: string;
+  postedDate: string;
+  salary: string;
+  mail: string;
+  companyLink: string;
+  apply: string;
+  description: string;
+}
+
 export default function AddJobPage() {
   const router = useRouter();
 
   // ✅ Default today's date in YYYY-MM-DD format
   const today = new Date().toISOString().split("T")[0];
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<JobForm>({
     title: "",
     company: "",
     location: "",
@@ -124,7 +138,7 @@ export default function AddJobPage() {
                 <input
                   type="date"
                   name={key}
-                  value={(form as any)[key]}
+                  value={form[key as keyof JobForm]}
                   onChange={handleChange}
                   placeholder={fieldPlaceholders[key]}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -134,7 +148,7 @@ export default function AddJobPage() {
                 <input
                   type={key === "mail" ? "email" : "text"}
                   name={key}
-                  value={(form as any)[key]}
+                  value={form[key as keyof JobForm]}
                   onChange={handleChange}
                   placeholder={fieldPlaceholders[key]}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"

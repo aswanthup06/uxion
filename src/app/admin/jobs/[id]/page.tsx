@@ -4,12 +4,42 @@ import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
+interface JobForm {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  experienceMin: string;
+  experienceMax: string;
+  postedDate: string;
+  salary: string;
+  mail: string;
+  companyLink: string;
+  apply: string;
+  description: string;
+  experience?: string;
+}
+
+interface JobFromAPI {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  experience: string;
+  postedDate: string;
+  salary: string;
+  mail: string;
+  companyLink: string;
+  apply: string;
+  description: string;
+}
+
 export default function EditJobPage() {
   const router = useRouter();
   const params = useParams();
   const jobId = params.id as string;
 
-  const [form, setForm] = useState<any>(null);
+  const [form, setForm] = useState<JobForm | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // ✅ Format ISO date string -> YYYY-MM-DD
@@ -30,8 +60,8 @@ export default function EditJobPage() {
   useEffect(() => {
     fetch("/api/jobs")
       .then((res) => res.json())
-      .then((jobs) => {
-        const job = jobs.find((j: any) => j.id === jobId);
+      .then((jobs: JobFromAPI[]) => {
+        const job = jobs.find((j) => j.id === jobId);
         if (job) {
           // ✅ Parse experience string into min/max
           let experienceMin = "";
@@ -62,11 +92,15 @@ export default function EditJobPage() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    if (form) {
+      setForm({ ...form, [e.target.name]: e.target.value });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form) return;
+    
     setIsSubmitting(true);
 
     try {
@@ -151,7 +185,7 @@ export default function EditJobPage() {
                 <input
                   type="date"
                   name={key}
-                  value={(form as any)[key] || ""}
+                  value={form[key as keyof JobForm] || ""}
                   onChange={handleChange}
                   placeholder={fieldPlaceholders[key]}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -161,7 +195,7 @@ export default function EditJobPage() {
                 <input
                   type={key === "mail" ? "email" : key === "apply" ? "url" : "text"}
                   name={key}
-                  value={(form as any)[key] || ""}
+                  value={form[key as keyof JobForm] || ""}
                   onChange={handleChange}
                   placeholder={fieldPlaceholders[key]}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors"

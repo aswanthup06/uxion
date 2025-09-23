@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import LatestJobs from "../components/LatestJobs";
-import { ArrowRight, ArrowUpRight, Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -55,7 +55,9 @@ export default function Home() {
 
             <div>
               <div className="relative h-36 w-36">
-                <img
+                <Image
+                  width={600}
+                  height={400}
                   className="h-36 w-36 object-cover object-top"
                   src="/home.jpg"
                   alt=""

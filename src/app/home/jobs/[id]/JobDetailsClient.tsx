@@ -3,12 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  LocationIcon,
-  ExperienceIcon,
-  SalaryIcon,
-  CalendarIcon,
-} from "../../../components/Icons";
-import {
   ArrowLeft,
   BanknoteArrowUp,
   BriefcaseBusiness,

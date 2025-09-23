@@ -8,7 +8,8 @@ async function getJobs(): Promise<Job[]> {
     // Use your live site URL since the API is working there
     // const apiUrl = 'https://www.uxcurve.in/api/jobs';
 
-    const apiUrl = 'http://localhost:3000//api/jobs';
+    // const apiUrl = 'http://localhost:3000//api/jobs';
+    const apiUrl = 'http://uxion.vercel.app//api/jobs';
     
     const res = await fetch(apiUrl, {
       next: { revalidate: 300 },

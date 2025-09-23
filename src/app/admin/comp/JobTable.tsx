@@ -1,4 +1,3 @@
-import JobList from "../comp/JobList";
 import { Job } from "../../types/job";
 import JobRow from "../comp/JobRow"; 
 import JobEmptyState from "../comp/JobEmptyState";
