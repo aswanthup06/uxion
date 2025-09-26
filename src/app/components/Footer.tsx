@@ -7,7 +7,7 @@ export default function Footer() {
         {/* Left Section */}
         <div>
           <h2 className="text-lg font-semibold text-gray-100">
-            UX<span className="text-[#F97316]">Curve</span>
+            zeno<span className="text-[#F97316]">way</span>
           </h2>
           <p className="text-gray-200/60 mt-2 font-extralight">
             Your curve to a better design career. We connect UI/UX designers
