@@ -11,8 +11,10 @@ export default function Home() {
         <div className="container mx-auto px-4">
           {/* Header */}
 
-          <div className="flex justify-between mb-6">
+          <div className="flex  items-center justify-between mb-6">
+
             <div className="flex items-center gap-3">
+
               <Link href="/home" className="">
                 <div className="h-10 w-10 rounded-lg bgco flex items-center justify-center">
                   <img src="favicon.png" alt=" " className="h-4" />
@@ -20,19 +22,25 @@ export default function Home() {
               </Link>
 
               <div>
-                <h1 className="text-lg font-bold text-[#8491a5]">
+                <h1 className="text-lg font-bold text-[#8491a5] leading-0">
                   zeno<span className="text-[#F97316]">way</span>
                 </h1>
-                <h1 className="text-[#7691bd] text-xs font-light">
+                <h1 className="text-[#7691bd] text-xs font-light mt-5 leading-0">
                   Job Portal
                 </h1>
               </div>
+
+
             </div>
+
+
             <Link href="/home/jobs" className="">
               <div className="h-10 w-10 rounded-full flex justify-center items-center border border-white/10">
                 <Search className="text-white" size={16} strokeWidth={1.5} />
               </div>
             </Link>
+
+
           </div>
 
           {/* post card */}
