@@ -21,7 +21,7 @@ export default function Home() {
 
               <div>
                 <h1 className="text-lg font-bold text-[#8491a5]">
-                  UX<span className="text-[#F97316]"> Curve</span>
+                  zeno<span className="text-[#F97316]">way</span>
                 </h1>
                 <h1 className="text-[#7691bd] text-xs font-light">
                   Job Portal
