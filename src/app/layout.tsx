@@ -33,10 +33,10 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "zenoway" }],
   openGraph: {
-    title: "UXCurve - Your Gateway to UX Careers",
-    description: "Find UX and UI jobs, connect with employers, and design your career path with UXCurve.",
+    title: "zenoway",
+    description: "Find jobs, connect with employers, and design your career path with zenoway.",
     url: "https://zenoway.com",
-    siteName: "UXCurve",
+    siteName: "zenoway",
     images: [
       {
         url: "/og-image.png",

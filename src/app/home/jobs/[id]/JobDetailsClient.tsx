@@ -102,7 +102,6 @@ ${job.title} at ${job.company}
 📍 Location: ${job.location}
 💼 Experience: ${job.experience}
 💰 Salary: ${job.salary}
-📅 Posted on: ${job.postedDate}
 
 ${actualDescription.substring(0, 100)}...
 `,
