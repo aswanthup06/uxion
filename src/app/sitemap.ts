@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { jobs } from "./data/jobs"; // adjust path if needed
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://www.uxcurve.in";
+  const baseUrl = "https://www.zenoway.in";
 
   // Static pages
   const staticRoutes = ["", "/post-job","/join"];
