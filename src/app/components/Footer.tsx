@@ -6,10 +6,10 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 py-8 grid md:grid-cols-2 gap-6">
         {/* Left Section */}
         <div>
-          <h2 className="text-lg font-semibold text-gray-100">
-            zeno<span className="text-[#F97316]">way</span>
-          </h2>
-          <p className="text-gray-200/60 mt-2 font-extralight">
+        <h1 className="text-sm font-bold text-white leading-0">
+                  ZE<span className="text-[#F97316]">NO</span>WAY
+                </h1>
+          <p className="text-gray-200/60 mt-6 font-extralight">
             Your curve to a better design career. We connect UI/UX designers
             with hiring teams worldwide.
           </p>

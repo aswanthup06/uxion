@@ -16,14 +16,14 @@ export default function Home() {
             <div className="flex items-center gap-3">
 
               <Link href="/home" className="">
-                <div className="h-10 w-10 rounded-lg bgco flex items-center justify-center">
-                  <img src="favicon.png" alt=" " className="h-4" />
+                <div className="h-10 w-10 overflow-hidden bgco border border-white/20 rounded-full flex items-center justify-center">
+                  <img src="favicon.png" alt=" " className="h-full" />
                 </div>
               </Link>
 
               <div>
-                <h1 className="text-lg font-bold text-[#8491a5] leading-0">
-                  zeno<span className="text-[#F97316]">way</span>
+                <h1 className="text-sm font-bold text-white leading-0">
+                  ZE<span className="text-[#F97316]">NO</span>WAY
                 </h1>
                 <h1 className="text-[#7691bd] text-xs font-light mt-5 leading-0">
                   Job Portal
