@@ -58,7 +58,7 @@ export default function Footer() {
 
       {/* Bottom Copyright */}
       <div className="py-4 text-center text-xs font-extralight text-gray-300/30">
-        © {new Date().getFullYear()} UXCurve. All rights reserved.
+        © {new Date().getFullYear()} zenoway. All rights reserved.
       </div>
     </footer>
   );
