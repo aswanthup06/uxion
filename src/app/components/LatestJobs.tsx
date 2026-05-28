@@ -46,16 +46,16 @@ export default function LatestJobs() {
     <section className="container mx-auto mb-6">
       {/* Section Header */}
       <div className="flex justify-between items-center mb-6 mt-6">
-        <h2 className="text-md font-normal text-white flex items-center gap-2">
+        <h2 className="text-md font-normal  flex items-center gap-2">
           <BellPlus size={16} strokeWidth={1.6} />
           Latest <span className="text-[#F97316]">Jobs</span>
         </h2>
         <Link
           href="/home/jobs"
-          className="text-xs h-8 rounded-sm flex items-center justify-center gap-2 text-white transition"
+          className="text-xs h-8 rounded-sm flex items-center justify-center gap-2  transition"
         >
           All jobs{" "}
-          <ArrowUpRight size={16} strokeWidth={1.5} className="text-white" />
+          <ArrowUpRight size={16} strokeWidth={1.5} className="" />
         </Link>
       </div>
 

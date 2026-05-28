@@ -1,13 +1,17 @@
-// src/app/(non-admin)/layout.tsx
-import Footer from "../components/Footer";
+"use client";
+
+import Sidebar from "../components/Sidebar";
 
 export default function NonAdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <>
-      {children}
-      <Footer />
-    </>
+    <div className="flex max-h-dvh min-h-dvh">
+      <Sidebar />
+
+      <div className="bg-gray-100 flex-1 md:rounded-l-4xl">
+        {children}
+      </div>
+    </div>
   );
 }
