@@ -12,11 +12,11 @@ export default function EmailGuidePage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
             How to Send a Professional Job Application Email
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            A well-written email helps recruiters quickly understand who you are
-            and why you're a good fit for the role. Follow these simple steps to
-            improve your chances of getting noticed.
-          </p>
+         <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+  A well-written email helps recruiters quickly understand who you are
+  and why you&apos;re a good fit for the role. Follow these simple steps to
+  improve your chances of getting noticed.
+</p>
         </div>
 
         {/* Steps with icons */}
@@ -66,10 +66,10 @@ export default function EmailGuidePage() {
                   Introduce Yourself Briefly
                 </h2>
                 <p className="text-gray-600 leading-relaxed">
-                  Keep your introduction short and professional. Mention the role
-                  you're applying for and highlight your relevant skills or
-                  experience in 2-3 sentences maximum.
-                </p>
+  Keep your introduction short and professional. Mention the role
+  you&apos;re applying for and highlight your relevant skills or
+  experience in 2-3 sentences maximum.
+</p>
                 <div className="mt-3 text-sm text-blue-600 bg-blue-50 rounded-lg p-3">
                   💡 Pro tip: Focus on what you can bring to the company, not just what you want from them
                 </div>
@@ -157,12 +157,12 @@ export default function EmailGuidePage() {
               <div className="space-y-4 text-gray-700">
                 <p>Dear Hiring Team,</p>
                 <p>I hope you are doing well.</p>
-                <p>
-                  I am writing to apply for the UI/UX Designer position at your
-                  company. With 3+ years of experience creating user-centered interfaces
-                  and designing responsive web and mobile applications, I'm confident
-                  I can contribute effectively to your team.
-                </p>
+               <p>
+  I am writing to apply for the UI/UX Designer position at your
+  company. With 3+ years of experience creating user-centered interfaces
+  and designing responsive web and mobile applications, I&apos;m confident
+  I can contribute effectively to your team.
+</p>
                 <p>
                   Please find my resume attached for your review. I have also
                   included my portfolio link below.
