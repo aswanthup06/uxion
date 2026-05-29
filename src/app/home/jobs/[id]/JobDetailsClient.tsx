@@ -224,58 +224,72 @@ ${actualDescription.substring(0, 100)}...
 
         {/* Apply Button + Mail */}
       </div>
-      <div className="flex flex-col gap-3  bg-white p-6 h-fit">
-        {job.mail && (
-          <div className="">
-            <h1 className="text-lg font-semibold">
-              You can apply directly to the hiring team
-            </h1>
-            <p className="">
-              Please remember to attach your portfolio and updated resume
-            </p>
-            <p className="py-3 text-blue-400">{job.mail}</p>
+      <div className="flex flex-col gap-3 bg-white p-6 h-fit">
+  {job.mail && (
+    <div>
+      <h1 className="text-lg font-semibold">
+        Apply Directly to the Hiring Team
+      </h1>
 
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={copyMail}
-                className={`py-3 rounded-xs text-sm cursor-pointer transition-colors ${
-                  copied
-                    ? "border border-green-700 text-green-700"
-                    : "border border-gray-300"
-                }`}
-              >
-                {copied ? "Copied!" : "Copy Mail"}
-              </button>
-              <button
-                onClick={openMail}
-                className="bg-amber-600 py-3 rounded-xs text-sm cursor-pointer text-white font-light"
-              >
-                Send Mail
-              </button>
-            </div>
-          </div>
-        )}
+      <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+        Send your updated resume and portfolio to the email below. A clear and
+        professional email can improve your chances of getting noticed.
+      </p>
 
-        {job.apply && (
-          <a
-            href={job.apply}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="py-2 text-blue-600 flex items-center gap-2 w-full"
-          >
-            <button className="px-6 w-full py-3 bg-[#1E293B] text-white rounded-sm hover:bg-[#1E293B]/90 cursor-pointer text-sm font-light">
-              Apply Now
-            </button>
-          </a>
-        )}
+      <p className="py-4 text-blue-500 text-sm break-all font-medium">
+        {job.mail}
+      </p>
 
-        <Link href="/join">
-          <button className="px-6 py-3 border border-gray-300 text-gray-600 rounded-xs hover:bg-gray-100 cursor-pointer text-sm font-medium flex items-center justify-center gap-2 transition w-full">
-            <IoLogoWhatsapp size={18} />
-            <span>Join for more</span>
-          </button>
-        </Link>
+      
+
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          onClick={copyMail}
+          className={`py-3 rounded-sm text-sm cursor-pointer transition-colors hover:bg-gray-100 ${
+            copied
+              ? "border border-green-700 text-green-700"
+              : "border border-gray-300 text-gray-700"
+          }`}
+        >
+          {copied ? "Copied!" : "Copy Email"}
+        </button>
+
+        <button
+          onClick={openMail}
+          className="bg-amber-600 py-3 rounded-sm text-sm cursor-pointer text-white hover:bg-amber-700 transition"
+        >
+          Send Email
+        </button>
       </div>
+       <Link
+        href="/home/email"
+        className="mt-3 flex items-center justify-center w-full py-3 border border-gray-300 rounded-sm text-sm text-gray-700 hover:bg-gray-100  transition"
+      >
+        Learn How to Write a Professional Email
+      </Link>
+    </div>
+  )}
+
+  {job.apply && (
+    <a
+      href={job.apply}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="w-full"
+    >
+      <button className="px-6 w-full py-3 bg-black text-white rounded-sm hover:bg-gray-800 cursor-pointer text-sm">
+        Apply Now
+      </button>
+    </a>
+  )}
+
+  <Link href="/join">
+    <button className="px-6 py-3 border border-gray-300 text-gray-600 rounded-sm hover:bg-gray-100 cursor-pointer text-sm font-medium flex items-center justify-center gap-2 transition w-full">
+      <IoLogoWhatsapp size={18} />
+      <span>Join Community</span>
+    </button>
+  </Link>
+</div>
     </div></div>
   );
 }
