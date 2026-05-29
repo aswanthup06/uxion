@@ -194,29 +194,33 @@ ${actualDescription.substring(0, 100)}...
           </div>
         </div>
 
-        {actualDescription && (
-          <div className="p-6">
-            <h3 className="text-lg font-semibold  mb-3">Job Description</h3>
-            <p className=" text-sm font-light whitespace-pre-line leading-loose text-gray-600">
-              {actualDescription}{" "}
-              {isActualLink && (
-                <a
-                  href={
-                    job.companyLink.startsWith("http")
-                      ? job.companyLink
-                      : `https://${job.companyLink}`
-                  }
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="py-3 text-gray-600 text-xs rounded-xs mt-6 flex items-center gap-2 w-full border border-gray-300 justify-center"
-                >
-                  <h1>Learn about company</h1>
-                  <MdArrowOutward />
-                </a>
-              )}
-            </p>
-          </div>
-        )}
+    {actualDescription && (
+  <div className="p-6">
+    <h3 className="text-lg font-semibold mb-3">
+      Job Description
+    </h3>
+
+    <div className="text-sm font-light whitespace-pre-line leading-loose text-gray-600">
+      {actualDescription}
+
+      {isActualLink && (
+        <a
+          href={
+            job.companyLink.startsWith("http")
+              ? job.companyLink
+              : `https://${job.companyLink}`
+          }
+          target="_blank"
+          rel="noopener noreferrer"
+          className="py-3 text-gray-600 text-xs rounded-xs mt-6 flex items-center gap-2 w-full border border-gray-300 justify-center"
+        >
+          <span>Learn about company</span>
+          <MdArrowOutward />
+        </a>
+      )}
+    </div>
+  </div>
+)}
 
         {/* Apply Button + Mail */}
       </div>
