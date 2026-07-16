@@ -24,19 +24,19 @@ export default function NotFound() {
             Page not found
           </h2>
           <p className="text-sm text-gray-500">
-            This listing isn't available anymore — it may have been moved or
-            never existed.
+            This listing isn&apos;t available anymore — it may have been moved or
+never existed.
           </p>
         </div>
 
         {/* Copy */}
         <div className="text-left">
           <h1 className="mb-3 text-2xl font-semibold text-gray-900 sm:text-3xl">
-            Let's get you back to job hunting
+            Let&apos;s get you back to job hunting
           </h1>
           <p className="mb-8 text-sm leading-relaxed text-gray-500 sm:text-base">
-            The page you were looking for has moved or doesn't exist. Head
-            back and pick up where you left off.
+            The page you were looking for has moved or doesn&apos;t exist. Head
+back and pick up where you left off.
           </p>
 
           <Link
