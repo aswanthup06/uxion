@@ -54,7 +54,7 @@ export default function SharePage() {
   ];
 
   return (
-    <div className="min-h-full px-6 py-12 md:py-16">
+    <div className="h-full px-6 py-12 md:py-16 overflow-auto">
       <div className="max-w-5xl mx-auto">
         {/* Heading */}
         <div className="mb-10 max-w-2xl">
