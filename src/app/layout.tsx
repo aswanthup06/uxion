@@ -1,63 +1,95 @@
-// src/app/layout.tsx
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { Questrial } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "react-hot-toast";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import "./globals.css";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const questrial = Questrial({
   subsets: ["latin"],
+  weight: "400",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://zenoway.com"),
-  title: "zenoway",
-  description: "UXCurve is a dedicated job portal for UX and UI professionals. Discover UX design jobs, connect with top companies, and design your career path with ease.",
+  title: "Zenoway",
+  description:
+    "Zenoway is a dedicated job portal for UI/UX designers, UI developers, frontend developers, and creative professionals. Discover jobs from startups and top companies across India.",
+
+  keywords: [
+    "UI jobs",
+    "UX jobs",
+    "UI Developer",
+    "Frontend Developer",
+    "React Jobs",
+    "Next.js Jobs",
+    "Tailwind CSS Jobs",
+    "UX Designer",
+    "Product Designer",
+    "Remote Jobs",
+    "Startup Jobs",
+    "Zenoway",
+  ],
+
+  authors: [
+    {
+      name: "Zenoway",
+    },
+  ],
+
   icons: {
     icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
   },
-  keywords: [
-    "UX jobs",
-    "UI jobs",
-    "UX design careers",
-    "UXCurve",
-    "UX hiring platform",
-    "UX job portal",
-    "UI/UX opportunities",
-    "User Experience careers",
-  ],
-  authors: [{ name: "zenoway" }],
+
   openGraph: {
-    title: "zenoway",
-    description: "Find jobs, connect with employers, and design your career path with zenoway.",
+    title: "Zenoway",
+    description:
+      "Find UI/UX and Frontend jobs across India. Connect with employers and grow your design & development career.",
     url: "https://zenoway.com",
-    siteName: "zenoway",
+    siteName: "Zenoway",
+    locale: "en_IN",
+    type: "website",
+
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "zenoway Job Portal",
+        alt: "Zenoway Job Portal",
       },
     ],
-    locale: "en_IN",
-    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Zenoway",
+    description:
+      "Find UI/UX and Frontend jobs across India.",
+    images: ["/og-image.png"],
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${questrial.className} antialiased`}>
         {children}
-        <Toaster position="top-right" reverseOrder={false} />
+
+        <Toaster
+          position="top-right"
+          reverseOrder={false}
+        />
+
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

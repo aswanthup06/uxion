@@ -1,19 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 body {
-  color: black;
-  font-family: "Questrial", sans-serif;
+  color: #000;
+  background: #fff;
 }
 
 ::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+  display: none;
 }
 
 * {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
