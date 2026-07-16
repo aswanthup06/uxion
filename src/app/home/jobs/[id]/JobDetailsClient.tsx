@@ -117,8 +117,61 @@ ${actualDescription.substring(0, 100)}...
     }
   };
 
+  // --- GOOGLE JOBS SCHEMA GENERATION ---
+  // Create the schema JSON-LD object dynamically based on the current job prop
+  const getJobPostingSchema = () => {
+    // Generate valid ISO date string (YYYY-MM-DD)
+    let datePostedISO = new Date().toISOString().split("T")[0];
+    try {
+      if (job.postedDate) {
+        datePostedISO = new Date(job.postedDate).toISOString().split("T")[0];
+      }
+    } catch (e) {
+      console.error("Invalid date format", e);
+    }
+
+    // Attempt to break down location into Locality (city) and Region (state)
+    const locationParts = job.location ? job.location.split(",") : ["Kerala"];
+    const locality = locationParts[0]?.trim() || "Kochi";
+    const region = locationParts[1]?.trim() || "Kerala";
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "JobPosting",
+      "title": job.title,
+      "description": actualDescription, // HTML format or clean string is required by Google
+      "datePosted": datePostedISO,
+      "employmentType": "FULL_TIME",
+      "hiringOrganization": {
+        "@type": "Organization",
+        "name": job.company,
+        "sameAs": isActualLink ? (job.companyLink.startsWith("http") ? job.companyLink : `https://${job.companyLink}`) : "https://www.zenoway.com",
+      },
+      "jobLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": locality,
+          "addressRegion": region,
+          "addressCountry": "IN",
+        },
+      },
+      "directApply": true,
+    };
+  };
+
+  const schemaJson = getJobPostingSchema();
+
   return (
     <div className="h-fit md:h-full flex flex-col  gap-2 pb-20 md:pb-0 p-2 ">
+      {/* 🚀 Dynamic Google Jobs Rich Schema Insertion */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(schemaJson).replace(/</g, "\\u003c"), // Escape < to prevent potential XSS injection
+        }}
+      />
+
       <div className="flex justify-between h-fit">
         <Link
           href="/"
