@@ -35,11 +35,15 @@ export async function POST(request: Request) {
       message: "Google Jobs notified successfully!", 
       data: response.data 
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Google Indexing API Error:", error);
+    
+    // Safely extract the error message without using 'any'
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+
     return NextResponse.json({ 
       success: false, 
-      error: error.message 
+      error: errorMessage 
     }, { status: 500 });
   }
 }
