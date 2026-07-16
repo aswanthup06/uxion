@@ -24,8 +24,12 @@ export default function JobsPage() {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   // ✅ separate temp vs confirmed
-  const [experienceRange, setExperienceRange] = useState<[number, number]>([0, 10]); // confirmed (for filter)
-  const [tempExperienceRange, setTempExperienceRange] = useState<[number, number]>([0, 10]); // dialog temp
+  const [experienceRange, setExperienceRange] = useState<[number, number]>([
+    0, 10,
+  ]); // confirmed (for filter)
+  const [tempExperienceRange, setTempExperienceRange] = useState<
+    [number, number]
+  >([0, 10]); // dialog temp
 
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(8);
@@ -42,13 +46,15 @@ export default function JobsPage() {
 
         const sortedData = [...data].sort(
           (a, b) =>
-            new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime()
+            new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime(),
         );
 
         setJobs(sortedData);
         setFilteredJobs(sortedData);
 
-        setLocations([...new Set(sortedData.map((job) => job.location))].sort());
+        setLocations(
+          [...new Set(sortedData.map((job) => job.location))].sort(),
+        );
         setTitles([...new Set(sortedData.map((job) => job.title))].sort());
       } catch (error) {
         console.error("Error fetching jobs:", error);
@@ -65,14 +71,14 @@ export default function JobsPage() {
     // 🔍 filter by title
     if (search) {
       result = result.filter((job) =>
-        job.title.toLowerCase().includes(search.toLowerCase())
+        job.title.toLowerCase().includes(search.toLowerCase()),
       );
     }
 
     // 📍 filter by location
     if (locationQuery) {
       result = result.filter((job) =>
-        job.location.toLowerCase().includes(locationQuery.toLowerCase())
+        job.location.toLowerCase().includes(locationQuery.toLowerCase()),
       );
     }
 
@@ -100,7 +106,7 @@ export default function JobsPage() {
 
     result = [...result].sort(
       (a, b) =>
-        new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime()
+        new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime(),
     );
 
     setFilteredJobs(result);
@@ -142,7 +148,7 @@ export default function JobsPage() {
               <ul className="absolute top-full mt-2 w-full rounded-md border border-gray-200 bg-white shadow-lg max-h-48 overflow-auto z-20">
                 {titles
                   .filter((title) =>
-                    title.toLowerCase().includes(search.toLowerCase())
+                    title.toLowerCase().includes(search.toLowerCase()),
                   )
                   .map((title, i) => (
                     <li
@@ -177,7 +183,7 @@ export default function JobsPage() {
               <ul className="absolute top-full mt-2 w-full bg-white rounded-md border border-gray-200  shadow-lg max-h-48 overflow-auto z-20">
                 {locations
                   .filter((loc) =>
-                    loc.toLowerCase().includes(locationQuery.toLowerCase())
+                    loc.toLowerCase().includes(locationQuery.toLowerCase()),
                   )
                   .map((loc, i) => (
                     <li
@@ -195,115 +201,108 @@ export default function JobsPage() {
             )}
           </div>
 
-        {/* 🎚 Experience (opens modal) */}
-<Dialog
-  onOpenChange={(open) => {
-    if (open) {
-      setTempExperienceRange(experienceRange);
-    }
-  }}
->
-  <DialogTrigger asChild>
-    <div className="relative w-full md:w-64">
-      <button
-        className="
+          {/* 🎚 Experience (opens modal) */}
+          <Dialog
+            onOpenChange={(open) => {
+              if (open) {
+                setTempExperienceRange(experienceRange);
+              }
+            }}
+          >
+            <DialogTrigger asChild>
+              <div className="relative w-full md:w-64">
+                <button
+                  className="
           w-full px-4 py-3 bg-white border border-gray-200
           rounded-md text-sm text-left
           flex items-center justify-between
           hover:border-gray-300 transition-all duration-200
         "
-      >
-        <span className="text-gray-700">
-          {experienceRange[0] === 0 && experienceRange[1] === 0
-            ? "Fresher"
-            : `${experienceRange[0]} - ${experienceRange[1]} years`}
-        </span>
+                >
+                  <span className="text-gray-700">
+                    {experienceRange[0] === 0 && experienceRange[1] === 0
+                      ? "Fresher"
+                      : `${experienceRange[0]} - ${experienceRange[1]} years`}
+                  </span>
 
-        <span className="text-gray-400 text-xs">
-          Experience
-        </span>
-      </button>
-    </div>
-  </DialogTrigger>
+                  <span className="text-gray-400 text-xs">Experience</span>
+                </button>
+              </div>
+            </DialogTrigger>
 
-  <DialogContent className="bg-white border border-gray-100 rounded-2xl shadow-2xl p-6">
-    
-    <DialogHeader className="mb-4">
-      <DialogTitle className="text-lg font-semibold text-gray-900">
-        Experience Level
-      </DialogTitle>
+            <DialogContent className="bg-white border border-gray-100 rounded-2xl shadow-2xl p-6">
+              <DialogHeader className="mb-4">
+                <DialogTitle className="text-lg font-semibold text-gray-900">
+                  Experience Level
+                </DialogTitle>
 
-      <p className="text-sm text-gray-500 mt-1">
-        Select your preferred experience range
-      </p>
-    </DialogHeader>
+                <p className="text-sm text-gray-500 mt-1">
+                  Select your preferred experience range
+                </p>
+              </DialogHeader>
 
-    <div className="flex flex-col gap-6">
-      
-      {/* Selected Value */}
-      <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-center">
-        <span className="text-2xl font-semibold text-gray-900">
-          {tempExperienceRange[0] === 0 &&
-          tempExperienceRange[1] === 0
-            ? "Fresher"
-            : `${tempExperienceRange[0]} - ${tempExperienceRange[1]} yrs`}
-        </span>
-      </div>
+              <div className="flex flex-col gap-6">
+                {/* Selected Value */}
+                <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-center">
+                  <span className="text-2xl font-semibold text-gray-900">
+                    {tempExperienceRange[0] === 0 &&
+                    tempExperienceRange[1] === 0
+                      ? "Fresher"
+                      : `${tempExperienceRange[0]} - ${tempExperienceRange[1]} yrs`}
+                  </span>
+                </div>
 
-      {/* Slider */}
-      <div className="px-1">
-       <Slider
-  min={0}
-  max={15}
-  step={1}
-  value={tempExperienceRange}
-  onValueChange={(val: [number, number]) =>
-    setTempExperienceRange(val)
-  }
-  className="
+                {/* Slider */}
+                <div className="px-1">
+                  <Slider
+                    min={0}
+                    max={15}
+                    step={1}
+                    value={tempExperienceRange}
+                    onValueChange={(val: [number, number]) =>
+                      setTempExperienceRange(val)
+                    }
+                    className="
     [&_[role=slider]]:bg-[#F97316]
     [&_[role=slider]]:border-0
     [&_[data-orientation=horizontal]]:h-2
     [&_[data-slot=slider-track]]:bg-gray-200
     [&_[data-slot=slider-range]]:bg-[#F97316]
   "
-/>
-      </div>
-    </div>
+                  />
+                </div>
+              </div>
 
-    {/* Footer */}
-    <div className="flex justify-end gap-3 mt-8">
-      
-      <DialogTrigger asChild>
-        <button
-          className="
+              {/* Footer */}
+              <div className="flex justify-end gap-3 mt-8">
+                <DialogTrigger asChild>
+                  <button
+                    className="
             px-5 py-2.5 rounded-xl text-sm
             border border-gray-200
             hover:bg-gray-50 transition
           "
-        >
-          Cancel
-        </button>
-      </DialogTrigger>
+                  >
+                    Cancel
+                  </button>
+                </DialogTrigger>
 
-      <DialogTrigger asChild>
-        <button
-          className="
+                <DialogTrigger asChild>
+                  <button
+                    className="
             px-5 py-2.5 rounded-xl text-sm font-medium
             bg-[#F97316] text-white
             hover:bg-[#ea580c]
             transition
           "
-          onClick={() =>
-            setExperienceRange(tempExperienceRange)
-          }
-        >
-          Apply
-        </button>
-      </DialogTrigger>
-    </div>
-  </DialogContent>
-</Dialog>
+                    onClick={() => setExperienceRange(tempExperienceRange)}
+                  >
+                    Apply
+                  </button>
+                </DialogTrigger>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
