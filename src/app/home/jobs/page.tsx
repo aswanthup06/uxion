@@ -304,7 +304,10 @@ export default function JobsPage() {
             </DialogContent>
           </Dialog>
         </div>
+        
       </div>
+
+      
 
       {/* Jobs Grid */}
       {loading ? (
@@ -324,7 +327,7 @@ export default function JobsPage() {
             <div className="flex justify-center mt-6">
               <button
                 onClick={() => setVisibleCount((prev) => prev + 8)}
-                className="px-6 py-3 rounded-full border border-gray-300 w-full text-gray-600 text-sm font-medium hover:bg-gray-200 cursor-pointer duration-500"
+                className="px-6 py-3 rounded-md border border-gray-300 w-full text-gray-600 text-sm font-medium hover:bg-gray-200 cursor-pointer duration-500"
               >
                 Load more
               </button>
@@ -334,6 +337,10 @@ export default function JobsPage() {
       ) : (
         <p className="text-gray-600 text-center mt-10">No jobs found.</p>
       )}
+
+         <div className="h-15">
+
+          </div>
     </section>
   );
 }

@@ -138,25 +138,29 @@ ${actualDescription.substring(0, 100)}...
     return {
       "@context": "https://schema.org",
       "@type": "JobPosting",
-      "title": job.title,
-      "description": actualDescription, // HTML format or clean string is required by Google
-      "datePosted": datePostedISO,
-      "employmentType": "FULL_TIME",
-      "hiringOrganization": {
+      title: job.title,
+      description: actualDescription, // HTML format or clean string is required by Google
+      datePosted: datePostedISO,
+      employmentType: "FULL_TIME",
+      hiringOrganization: {
         "@type": "Organization",
-        "name": job.company,
-        "sameAs": isActualLink ? (job.companyLink.startsWith("http") ? job.companyLink : `https://${job.companyLink}`) : "https://www.zenoway.com",
+        name: job.company,
+        sameAs: isActualLink
+          ? job.companyLink.startsWith("http")
+            ? job.companyLink
+            : `https://${job.companyLink}`
+          : "https://www.zenoway.com",
       },
-      "jobLocation": {
+      jobLocation: {
         "@type": "Place",
-        "address": {
+        address: {
           "@type": "PostalAddress",
-          "addressLocality": locality,
-          "addressRegion": region,
-          "addressCountry": "IN",
+          addressLocality: locality,
+          addressRegion: region,
+          addressCountry: "IN",
         },
       },
-      "directApply": true,
+      directApply: true,
     };
   };
 
@@ -187,7 +191,6 @@ ${actualDescription.substring(0, 100)}...
           <Share2 size={12} /> <h1 className="text-xs">Share</h1>
         </button>
       </div>
-
 
       <div className="flex flex-col md:flex-row gap-2 max-h-full md:overflow-hidden justify-center w-full">
         <div className="w-full md:w-auto md:flex-1 bg-white overflow-scroll">
@@ -283,97 +286,114 @@ ${actualDescription.substring(0, 100)}...
           {/* Apply Button + Mail */}
         </div>
 
-       <div className="w-full md:w-[340px] lg:w-[340px] xl:w-[460px] md:shrink-0">
+        <div className="w-full md:w-[340px] lg:w-[340px] xl:w-[460px] md:shrink-0">
+          <div className="flex flex-col gap-3 bg-white p-6 h-fit">
+            {job.mail && (
+              <div>
+                <h1 className="text-lg font-semibold">
+                  Apply Directly to the Hiring Team
+                </h1>
 
+                <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+                  Send your updated resume and portfolio to the email below. A
+                  clear and professional email can improve your chances of
+                  getting noticed.
+                </p>
 
-        <div className="flex flex-col gap-3 bg-white p-6 h-fit">
-          {job.mail && (
-            <div>
-              <h1 className="text-lg font-semibold">
-                Apply Directly to the Hiring Team
-              </h1>
+                <p className="py-4 text-blue-500 text-sm break-all font-medium">
+                  {job.mail}
+                </p>
 
-              <p className="text-sm text-gray-500 mt-2 leading-relaxed">
-                Send your updated resume and portfolio to the email below. A
-                clear and professional email can improve your chances of getting
-                noticed.
-              </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={copyMail}
+                    className={`py-3 rounded-sm text-sm cursor-pointer transition-colors hover:bg-gray-100 ${
+                      copied
+                        ? "border border-green-700 text-green-700"
+                        : "border border-gray-300 text-gray-700"
+                    }`}
+                  >
+                    {copied ? "Copied!" : "Copy Email"}
+                  </button>
 
-              <p className="py-4 text-blue-500 text-sm break-all font-medium">
-                {job.mail}
-              </p>
-
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={copyMail}
-                  className={`py-3 rounded-sm text-sm cursor-pointer transition-colors hover:bg-gray-100 ${
-                    copied
-                      ? "border border-green-700 text-green-700"
-                      : "border border-gray-300 text-gray-700"
-                  }`}
+                  <button
+                    onClick={openMail}
+                    className="bg-amber-600 py-3 rounded-sm text-sm cursor-pointer text-white hover:bg-amber-700 transition"
+                  >
+                    Send Email
+                  </button>
+                </div>
+                <Link
+                  href="/home/email"
+                  className="mt-3 flex items-center justify-center w-full py-3 border border-gray-300 rounded-sm text-sm text-gray-700 hover:bg-gray-100  transition"
                 >
-                  {copied ? "Copied!" : "Copy Email"}
-                </button>
-
-                <button
-                  onClick={openMail}
-                  className="bg-amber-600 py-3 rounded-sm text-sm cursor-pointer text-white hover:bg-amber-700 transition"
-                >
-                  Send Email
-                </button>
+                  Learn How to Write a Professional Email
+                </Link>
               </div>
-              <Link
-                href="/home/email"
-                className="mt-3 flex items-center justify-center w-full py-3 border border-gray-300 rounded-sm text-sm text-gray-700 hover:bg-gray-100  transition"
+            )}
+
+            {job.apply && (
+              <a
+                href={job.apply}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full"
               >
-                Learn How to Write a Professional Email
-              </Link>
-            </div>
-          )}
+                <button className="px-6 w-full py-3 bg-black text-white rounded-sm hover:bg-gray-800 cursor-pointer text-sm">
+                  Apply Now
+                </button>
+              </a>
+            )}
 
-          {job.apply && (
-            <a
-              href={job.apply}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full"
-            >
-              <button className="px-6 w-full py-3 bg-black text-white rounded-sm hover:bg-gray-800 cursor-pointer text-sm">
-                Apply Now
+            <Link href="/home/join">
+              <button className="px-6 py-3 border border-gray-300 text-gray-600 rounded-sm hover:bg-gray-100 cursor-pointer text-sm font-medium flex items-center justify-center gap-2 transition w-full">
+                <IoLogoWhatsapp size={18} />
+                <span>Join Community</span>
               </button>
-            </a>
-          )}
+            </Link>
+          </div>
 
-          <Link href="/home/join">
-            <button className="px-6 py-3 border border-gray-300 text-gray-600 rounded-sm hover:bg-gray-100 cursor-pointer text-sm font-medium flex items-center justify-center gap-2 transition w-full">
-              <IoLogoWhatsapp size={18} />
-              <span>Join Community</span>
-            </button>
-          </Link>
-        </div>
+          {/* Compliance / Legal Links Footer */}
 
-        
-{/* Compliance / Legal Links Footer */}
-      <div 
-        className="
-          flex flex-wrap gap-x-3 gap-y-1.5 px-6 py-4  mt-4
-          border border-gray-200  text-[11px] font-medium text-gray-400
+          
+          <div
+            className="
+          flex flex-wrap gap-x-3 gap-y-1.5 px-6 py-4  mt-2
+          border border-gray-200  text-[11px] font-medium text-gray-400 mx-6 md:mx-0
         "
-      >
-        <Link href="/about" className="hover:text-gray-700 transition-colors">About</Link>
-        <Link href="/privacy-policy" className="hover:text-gray-700 transition-colors">Privacy</Link>
-        <Link href="/terms" className="hover:text-gray-700 transition-colors">Terms</Link>
-        <Link href="/contact" className="hover:text-gray-700 transition-colors">Contact</Link>
-        <p className="w-full text-[10px] text-gray-300 font-normal mt-1">
-          &copy; {new Date().getFullYear()} Zenoway
-        </p>
-      </div>
-      
-      </div>
+          >
+            <Link
+              href="/about"
+              className="hover:text-gray-700 transition-colors"
+            >
+              About
+            </Link>
+            <Link
+              href="/privacy-policy"
+              className="hover:text-gray-700 transition-colors"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/terms"
+              className="hover:text-gray-700 transition-colors"
+            >
+              Terms
+            </Link>
+            <Link
+              href="/contact"
+              className="hover:text-gray-700 transition-colors"
+            >
+              Contact
+            </Link>
+            <p className="w-full text-[10px] text-gray-300 font-normal mt-1">
+              &copy; {new Date().getFullYear()} Zenoway
+            </p>
+          </div>
 
 
 
-
+        </div>
       </div>
     </div>
   );

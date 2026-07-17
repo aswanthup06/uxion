@@ -176,6 +176,46 @@ export default function Home() {
             </p>
           </div>
         </section>
+          <div
+            className="
+          flex flex-wrap  gap-y-1.5 px-6 py-4  mt-4 justify-between
+          border border-gray-200  text-[11px] font-medium text-gray-400 rounded-xl
+        "
+          >
+
+            <div className="flex gap-4" >
+            <Link
+              href="/about"
+              className="hover:text-gray-700 transition-colors"
+            >
+              About
+            </Link>
+            <Link
+              href="/privacy-policy"
+              className="hover:text-gray-700 transition-colors"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/terms"
+              className="hover:text-gray-700 transition-colors"
+            >
+              Terms
+            </Link>
+            <Link
+              href="/contact"
+              className="hover:text-gray-700 transition-colors"
+            >
+              Contact
+            </Link></div>
+            <p className="text-[10px] text-gray-300 font-normal">
+              &copy; {new Date().getFullYear()} Zenoway
+            </p>
+          </div>
+
+          <div className="h-10">
+
+          </div>
       </div>
     </main>
   );
