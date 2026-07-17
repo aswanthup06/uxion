@@ -187,8 +187,10 @@ ${actualDescription.substring(0, 100)}...
           <Share2 size={12} /> <h1 className="text-xs">Share</h1>
         </button>
       </div>
+
+
       <div className="flex flex-col md:flex-row gap-2 max-h-full md:overflow-hidden justify-center w-full">
-        <div className=" bg-white  overflow-scroll">
+        <div className="w-full md:w-auto md:flex-1 bg-white overflow-scroll">
           <div className="relative">
             <img
               className="md:h-36 w-full object-cover"
@@ -280,6 +282,10 @@ ${actualDescription.substring(0, 100)}...
 
           {/* Apply Button + Mail */}
         </div>
+
+       <div className="w-full md:w-[340px] lg:w-[340px] xl:w-[460px] md:shrink-0">
+
+
         <div className="flex flex-col gap-3 bg-white p-6 h-fit">
           {job.mail && (
             <div>
@@ -345,6 +351,29 @@ ${actualDescription.substring(0, 100)}...
             </button>
           </Link>
         </div>
+
+        
+{/* Compliance / Legal Links Footer */}
+      <div 
+        className="
+          flex flex-wrap gap-x-3 gap-y-1.5 px-6 py-4  mt-4
+          border border-gray-200  text-[11px] font-medium text-gray-400
+        "
+      >
+        <Link href="/about" className="hover:text-gray-700 transition-colors">About</Link>
+        <Link href="/privacy-policy" className="hover:text-gray-700 transition-colors">Privacy</Link>
+        <Link href="/terms" className="hover:text-gray-700 transition-colors">Terms</Link>
+        <Link href="/contact" className="hover:text-gray-700 transition-colors">Contact</Link>
+        <p className="w-full text-[10px] text-gray-300 font-normal mt-1">
+          &copy; {new Date().getFullYear()} Zenoway
+        </p>
+      </div>
+      
+      </div>
+
+
+
+
       </div>
     </div>
   );
