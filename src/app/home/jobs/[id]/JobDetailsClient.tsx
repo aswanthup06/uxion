@@ -167,7 +167,7 @@ ${actualDescription.substring(0, 100)}...
   const schemaJson = getJobPostingSchema();
 
   return (
-    <div className="h-fit md:h-full flex flex-col  gap-2 pb-20 md:pb-0 p-2 ">
+    <main className="h-fit md:h-full flex flex-col  gap-2 pb-20 md:pb-0 p-2 ">
       {/* 🚀 Dynamic Google Jobs Rich Schema Insertion */}
       <script
         type="application/ld+json"
@@ -179,16 +179,18 @@ ${actualDescription.substring(0, 100)}...
       <div className="flex justify-between h-fit">
         <Link
           href="/"
-          className=" h-10 w-10 flex items-center justify-center gap-2 border border-white/20 rounded-full hover:bg-white/10"
+          aria-label="Go back to the home page"
+          className="h-10 w-10 flex items-center justify-center border border-white/20 rounded-full hover:bg-white/10"
         >
-          <ArrowLeft size={12} />
+          <ArrowLeft size={12} aria-hidden="true" />
         </Link>
 
         <button
           onClick={handleShare}
-          className=" h-10 px-4 flex items-center justify-between gap-2 border border-white/20 rounded-full hover:bg-white/10"
+          className="h-10 px-4 flex items-center gap-2 border border-white/20 rounded-full hover:bg-white/10"
         >
-          <Share2 size={12} /> <h1 className="text-xs">Share</h1>
+          <Share2 size={12} aria-hidden="true" />
+          <span className="text-xs">Share</span>
         </button>
       </div>
 
@@ -355,7 +357,6 @@ ${actualDescription.substring(0, 100)}...
 
           {/* Compliance / Legal Links Footer */}
 
-          
           <div
             className="
           flex flex-wrap gap-x-3 gap-y-1.5 px-6 py-4  mt-2
@@ -390,11 +391,8 @@ ${actualDescription.substring(0, 100)}...
               &copy; {new Date().getFullYear()} Zenoway
             </p>
           </div>
-
-
-
         </div>
       </div>
-    </div>
+    </main>
   );
 }
