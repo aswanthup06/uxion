@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { IoLogoWhatsapp } from "react-icons/io";
 import { MdArrowOutward } from "react-icons/md";
-import LatestJobs from "@/app/components/LatestJobs";
+import Image from "next/image";
 
 // Define Job type
 export type Job = {
@@ -197,11 +197,14 @@ ${actualDescription.substring(0, 100)}...
       <div className="flex flex-col md:flex-row gap-2 max-h-full md:overflow-hidden justify-center w-full">
         <div className="w-full md:w-auto md:flex-1 bg-white overflow-scroll">
           <div className="relative">
-            <img
-              className="md:h-36 w-full object-cover"
-              src="/bg3.webp"
-              alt=""
-            />
+          <Image
+  src="/bg3.webp"
+  alt=""
+  width={693}
+  height={390}
+  sizes="(max-width: 768px) 100vw, 693px"
+  className="w-full md:h-36 object-cover"
+/>
             <div className="absolute top-0 left-0  p-6 w-full h-full flex flex-col justify-between">
               {/* Job Title & Company */}
               <div className="flex justify-between mb-6 w-full">
