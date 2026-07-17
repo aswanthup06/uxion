@@ -51,6 +51,11 @@ export default function SharePage() {
       description: "Delhi, Gurgaon, Faridabad",
       link: "https://chat.whatsapp.com/K9IrBwMERm2LSnFYU7YvAT",
     },
+     {
+      name: "Other States Jobs Group",
+      description: "Delhi, Gurgaon, Faridabad",
+      link: "https://chat.whatsapp.com/CAuqFrENQ91D05Ha42m4SQ",
+    },
   ];
 
   return (
