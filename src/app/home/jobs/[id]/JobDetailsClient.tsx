@@ -300,7 +300,7 @@ ${actualDescription.substring(0, 100)}...
                   getting noticed.
                 </p>
 
-                <p className="py-4 text-blue-500 text-sm break-all font-medium">
+                <p className="py-4 text-blue-700 text-md break-all font-medium tracking-wider">
                   {job.mail}
                 </p>
 
@@ -318,7 +318,7 @@ ${actualDescription.substring(0, 100)}...
 
                   <button
                     onClick={openMail}
-                    className="bg-amber-600 py-3 rounded-sm text-sm cursor-pointer text-white hover:bg-amber-700 transition"
+                    className="bg-black py-3 rounded-sm text-sm cursor-pointer text-white hover:bg-black/90 transition"
                   >
                     Send Email
                   </button>
@@ -359,34 +359,34 @@ ${actualDescription.substring(0, 100)}...
           <div
             className="
           flex flex-wrap gap-x-3 gap-y-1.5 px-6 py-4  mt-2
-          border border-gray-200  text-[11px] font-medium text-gray-400 mx-6 md:mx-0
+          border border-gray-200  text-[11px] font-medium text-gray-700 mx-6 md:mx-0
         "
           >
             <Link
               href="/about"
-              className="hover:text-gray-700 transition-colors"
+              className="hover:text-gray-800 transition-colors"
             >
               About
             </Link>
             <Link
               href="/privacy-policy"
-              className="hover:text-gray-700 transition-colors"
+              className="hover:text-gray-800 transition-colors"
             >
               Privacy
             </Link>
             <Link
               href="/terms"
-              className="hover:text-gray-700 transition-colors"
+              className="hover:text-gray-800 transition-colors"
             >
               Terms
             </Link>
             <Link
               href="/contact"
-              className="hover:text-gray-700 transition-colors"
+              className="hover:text-gray-800 transition-colors"
             >
               Contact
             </Link>
-            <p className="w-full text-[10px] text-gray-300 font-normal mt-1">
+            <p className="w-full text-[10px] text-gray-700 font-normal mt-1">
               &copy; {new Date().getFullYear()} Zenoway
             </p>
           </div>
