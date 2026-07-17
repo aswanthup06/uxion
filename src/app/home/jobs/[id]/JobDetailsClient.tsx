@@ -199,7 +199,7 @@ ${actualDescription.substring(0, 100)}...
           <div className="relative">
             <img
               className="md:h-36 w-full object-cover"
-              src="/bg3.jpg"
+              src="/bg3.webp"
               alt=""
             />
             <div className="absolute top-0 left-0  p-6 w-full h-full flex flex-col justify-between">
