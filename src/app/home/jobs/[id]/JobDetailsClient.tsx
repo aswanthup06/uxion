@@ -117,52 +117,79 @@ ${actualDescription.substring(0, 100)}...
     }
   };
 
-  // --- GOOGLE JOBS SCHEMA GENERATION ---
-  // Create the schema JSON-LD object dynamically based on the current job prop
-  const getJobPostingSchema = () => {
-    // Generate valid ISO date string (YYYY-MM-DD)
-    let datePostedISO = new Date().toISOString().split("T")[0];
-    try {
-      if (job.postedDate) {
-        datePostedISO = new Date(job.postedDate).toISOString().split("T")[0];
-      }
-    } catch (e) {
-      console.error("Invalid date format", e);
+  // --- GOOGLE JOBS SCHEMA GENERATION (fixed) ---
+const getJobPostingSchema = () => {
+  // Generate valid ISO date string (YYYY-MM-DD)
+  let datePostedISO = new Date().toISOString().split("T")[0];
+  try {
+    if (job.postedDate) {
+      datePostedISO = new Date(job.postedDate).toISOString().split("T")[0];
     }
-
-    // Attempt to break down location into Locality (city) and Region (state)
-    const locationParts = job.location ? job.location.split(",") : ["Kerala"];
-    const locality = locationParts[0]?.trim() || "Kochi";
-    const region = locationParts[1]?.trim() || "Kerala";
-
-    return {
-      "@context": "https://schema.org",
-      "@type": "JobPosting",
-      title: job.title,
-      description: actualDescription, // HTML format or clean string is required by Google
-      datePosted: datePostedISO,
-      employmentType: "FULL_TIME",
-      hiringOrganization: {
-        "@type": "Organization",
-        name: job.company,
-        sameAs: isActualLink
-          ? job.companyLink.startsWith("http")
-            ? job.companyLink
-            : `https://${job.companyLink}`
-          : "https://www.zenoway.com",
-      },
-      jobLocation: {
-        "@type": "Place",
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: locality,
-          addressRegion: region,
-          addressCountry: "IN",
-        },
-      },
-      directApply: true,
-    };
+  } catch (e) {
+    console.error("Invalid date format", e);
+  }
+ 
+  // Recommended: expiry date so Google doesn't have to guess/expire it itself.
+  // Adjust the window (e.g. 45 days) to whatever makes sense for your listings.
+  const postedDateObj = new Date(datePostedISO);
+  const validThroughDate = new Date(postedDateObj);
+  validThroughDate.setDate(validThroughDate.getDate() + 45);
+  const validThroughISO = validThroughDate.toISOString().split("T")[0];
+ 
+  const isRemote = job.location?.trim().toLowerCase() === "remote";
+ 
+  const locationParts = job.location ? job.location.split(",") : [];
+  const locality = locationParts[0]?.trim() || "Kochi";
+  const region = locationParts[1]?.trim() || "Kerala";
+ 
+  const baseSchema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.title,
+    description: actualDescription,
+    datePosted: datePostedISO,
+    validThrough: validThroughISO,
+    employmentType: "FULL_TIME",
+    hiringOrganization: {
+      "@type": "Organization",
+      name: job.company,
+      sameAs: isActualLink
+        ? job.companyLink.startsWith("http")
+          ? job.companyLink
+          : `https://${job.companyLink}`
+        : "https://www.zenoway.com",
+    },
+    directApply: true,
   };
+ 
+  if (isRemote) {
+    // Do NOT invent a fake jobLocation for remote roles.
+    // Google requires a real place for jobLocation — "Remote" is not one.
+    return {
+      ...baseSchema,
+      jobLocationType: "TELECOMMUTE",
+      // Adjust this to wherever candidates are actually allowed to apply from.
+      applicantLocationRequirements: {
+        "@type": "Country",
+        name: "India",
+      },
+    };
+  }
+ 
+  // On-site / hybrid roles: use a real address.
+  return {
+    ...baseSchema,
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: locality,
+        addressRegion: region,
+        addressCountry: "IN",
+      },
+    },
+  };
+};
 
   const schemaJson = getJobPostingSchema();
 
