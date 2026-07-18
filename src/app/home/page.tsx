@@ -106,7 +106,7 @@ export default function Home() {
             </div>
 
             {/* Right column — layered composition with real depth */}
-            <div className="relative h-[480px] hidden lg:block">
+            <div className="relative h-[480px]">
               {/* Soft gradient backdrop — gives the composition depth without competing with content */}
               <div
                 className="absolute -top-10 -right-10 w-72 h-72 rounded-full blur-3xl opacity-25 bg-accent"
@@ -196,16 +196,7 @@ export default function Home() {
               <CursorTag {...cursorTags[1]} className="absolute bottom-9 left-30 z-30" />
             </div>
 
-            <div className="flex justify-center lg:hidden">
-              <Image
-                className="h-[380px] w-[300px] object-cover rounded-2xl"
-                src="/341.jpg"
-                alt="Professional exploring job opportunities on Zenoway"
-                width={300}
-                height={380}
-                priority
-              />
-            </div>
+         
           </div>
 
           {/* Stats */}
