@@ -10,10 +10,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // likely need the same prefix as the dynamic routes below.
   const staticRoutes = ["/home", "/home/post-job", "/home/join"];
 
-  // Dynamic job detail pages — matches the live, working URL structure
-  // (/home/jobs/[id]), not /jobs/[id]
-  const dynamicRoutes = jobs.map((job) => `/home/jobs/${job.id}`);
-
   return [
     ...staticRoutes.map((route) => ({
       url: `${baseUrl}${route}`,
@@ -21,13 +17,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly" as const,
       priority: 1.0,
     })),
-    ...jobs.map((job) => ({
-      url: `${baseUrl}/home/jobs/${job.id}`,
-      // Use each job's real posted/updated date instead of "now" for
-      // everything — this is what actually signals freshness to Google.
-      lastModified: job.postedDate ? new Date(job.postedDate) : new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.9,
-    })),
+    ...jobs.map((job) => {
+      // Validate the parsed date before using it — an unparseable
+      // postedDate produces an "Invalid Date", and calling
+      // .toISOString() on that throws RangeError during the build.
+      const parsed = job.postedDate ? new Date(job.postedDate) : null;
+      const isValid = parsed !== null && !isNaN(parsed.getTime());
+
+      return {
+        url: `${baseUrl}/home/jobs/${job.id}`,
+        lastModified: isValid ? parsed : new Date(),
+        changeFrequency: "daily" as const,
+        priority: 0.9,
+      };
+    }),
   ];
 }
