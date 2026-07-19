@@ -3,8 +3,8 @@ import "../globals.css";
 import AdminWrapper from "./AdminWrapper";
 
 export const metadata: Metadata = {
-  title: "Admin Panel - UXCurve",
-  description: "Manage jobs on UXCurve",
+  title: "Admin Panel - zenoway",
+  description: "Manage jobs on zenoway",
 };
 
 export default function AdminLayout({ 

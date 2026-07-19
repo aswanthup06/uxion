@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 
 export const metadata: Metadata = {
-  title: "Admin Login - UXCurve",
+  title: "Admin Login - zenoway",
   description: "Admin login page",
 };
 
