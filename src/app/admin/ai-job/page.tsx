@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+
+import { useState, type ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 import {
   Briefcase,
   Building2,
@@ -19,6 +21,12 @@ import {
   Save,
   Loader2,
 } from "lucide-react";
+
+type FieldProps = {
+  icon: LucideIcon;
+  label: string;
+  children: ReactNode;
+};
 
 const autoResize = (el: HTMLTextAreaElement) => {
   el.style.height = "auto";
@@ -84,7 +92,7 @@ export default function AIJobPage() {
     setLoading(false);
   };
 
-  const Field = ({ icon: Icon, label, children }: any) => (
+  const Field = ({ icon: Icon, label, children }: FieldProps) => (
     <div className="space-y-1.5">
       <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
         <Icon className="w-4 h-4 text-gray-500" />
