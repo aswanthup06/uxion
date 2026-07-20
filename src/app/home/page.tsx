@@ -26,8 +26,8 @@ const cursorTags = [
 ];
 
 const flowSteps = [
-  { step: "01", title: "Log in", copy: "Create an account in seconds — no long profile forms to fill out first." },
-  { step: "02", title: "Browse jobs", copy: "Filter by stack, location, and experience to find roles that fit." },
+  { step: "01", title: "Browse jobs", copy: "Explore live roles filtered by stack, location, and experience — no signup needed." },
+  { step: "02", title: "Open a listing", copy: "Get the full picture — role details, company, and what they're looking for." },
   { step: "03", title: "Contact them directly", copy: "Every listing gives you the HR email or career site link — reach out straight away." },
 ];
 
@@ -233,10 +233,6 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-14 flex items-center gap-2 text-xs font-mono text-muted">
-            <span className="w-1.5 h-1.5 rounded-full bg-signal" />
-            <span>{cursorTags[2].name} {cursorTags[2].action} · just now</span>
-          </div>
         </section>
 
         {/* Browse by stack — functional, mirrors real filter/search intent */}
@@ -322,10 +318,7 @@ export default function Home() {
                 A dedicated job board for UI/UX designers, frontend
                 developers, and creative technologists across India.
               </p>
-              <div className="flex items-center gap-2 text-xs font-mono text-muted">
-                <span className="w-1.5 h-1.5 rounded-full bg-signal" />
-                <span>{cursorTags[0].name} {cursorTags[0].action} · now</span>
-              </div>
+        
             </div>
 
             <div>
