@@ -5,6 +5,8 @@ import { FaWhatsapp } from "react-icons/fa";
 import { HiOutlineSpeakerphone } from "react-icons/hi";
 import { Eyebrow } from "../../components/Eyebrow";
 import { CATEGORIES } from "./job-communities";
+import { IoShareSocial } from "react-icons/io5";
+import { BiSolidCopy } from "react-icons/bi";
 
 const channel = {
   name: "Zenoway Updates Channel",
@@ -43,6 +45,44 @@ function ChannelCard() {
 }
 
 export default function SharePage() {
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const copyLink = async (link: string) => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(link);
+
+      setTimeout(() => {
+        setCopied(null);
+      }, 1800);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const shareLink = async (group: {
+    name: string;
+    description: string;
+    link: string;
+  }) => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: group.name,
+          text: group.description,
+          url: group.link,
+        });
+      } catch {}
+    } else {
+      window.open(
+        `https://wa.me/?text=${encodeURIComponent(
+          `${group.name}\n${group.link}`,
+        )}`,
+        "_blank",
+      );
+    }
+  };
+
   const [activeCategory, setActiveCategory] = useState(CATEGORIES[0].name);
 
   const active =
@@ -136,7 +176,7 @@ export default function SharePage() {
                       tabsRef.current &&
                       Math.abs(
                         tabsRef.current.scrollLeft -
-                          dragStart.current.scrollLeft
+                          dragStart.current.scrollLeft,
                       ) > 5;
 
                     if (!dragged) {
@@ -179,35 +219,68 @@ export default function SharePage() {
           </h2>
 
           <div className="h-px flex-1 bg-line" />
-
-          {activeCategory !== "UI/UX & Design" && (
-            <span className="whitespace-nowrap font-mono text-xs text-warn">
-              links not added
-            </span>
-          )}
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {active.groups.map((group) => (
+          {active.groups.map((group) => (
             <a
               key={group.name}
               href={group.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-start gap-3 rounded-2xl border border-line bg-white p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+              className=" items-start rounded-xl border border-line bg-white p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg "
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-100">
-                <FaWhatsapp className="text-lg text-green-600" />
+              <div className=" flex justify-between items-center">
+                <Eyebrow>{active.name}</Eyebrow>
+
+                <div className="mb-3 flex gap-2">
+                  <button
+                    title="Share"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      shareLink(group);
+                    }}
+                    className="group relative flex h-7 w-7 items-center justify-center rounded-full border border-line bg-gray-100 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent hover:bg-accent hover:text-white active:scale-95"
+                  >
+                    <IoShareSocial className="h-3.5 w-3.5 transition-transform group-hover:rotate-12" />
+
+                    <span className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 rounded-md bg-gray-900 px-2 py-1 text-[10px] font-medium text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                      Share
+                    </span>
+                  </button>
+                  <button
+                    title="Copy Link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      copyLink(group.link);
+                    }}
+                    className="group relative flex h-7 w-7 items-center justify-center rounded-full border border-line bg-gray-100 transition-all duration-200 hover:-translate-y-0.5 hover:border-green-600 hover:bg-green-600 hover:text-white active:scale-95"
+                  >
+                    <BiSolidCopy className="h-3.5 w-3.5" />
+
+                    <span className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 rounded-md bg-gray-900 px-2 py-1 text-[10px] font-medium text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                      {copied === group.link ? "Copied!" : "Copy"}
+                    </span>
+                  </button>
+                </div>
               </div>
 
-              <div className="min-w-0 flex-1">
-                <h3 className="font-display text-sm font-medium text-ink break-words">
-                  {group.name}
-                </h3>
+              <div className="flex  gap-3 ">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100">
+                  <FaWhatsapp className="text-lg text-gray-700" />
+                </div>
 
-                <p className="mt-1 text-xs leading-relaxed text-muted break-words">
-                  {group.description}
-                </p>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-display text-sm font-medium text-ink break-words">
+                    {group.name}
+                  </h3>
+
+                  <p className="mt-1 text-xs leading-relaxed text-muted break-words">
+                    {group.description}
+                  </p>
+                </div>
               </div>
             </a>
           ))}

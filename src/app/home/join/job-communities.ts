@@ -34,6 +34,7 @@ export const UI_UX_LINKS = [
 // Placeholders — paste your 9 real links into each array as you get them.
 // Order stays Kerala → Remote → TN → UP → Karnataka → Maharashtra →
 // Telangana → Delhi NCR → Other States.
+export const HR_LINKS = [...PLACEHOLDER];
 export const SOFTWARE_DEV_LINKS = [...PLACEHOLDER];
 export const QA_LINKS = [...PLACEHOLDER];
 export const DEVOPS_CLOUD_LINKS = [...PLACEHOLDER];
@@ -43,7 +44,7 @@ export const IT_INFRA_LINKS = [...PLACEHOLDER];
 export const PRODUCT_PM_LINKS = [...PLACEHOLDER];
 export const MARKETING_LINKS = [...PLACEHOLDER];
 export const SALES_CS_LINKS = [...PLACEHOLDER];
-export const HR_LINKS = [...PLACEHOLDER];
+
 export const BUSINESS_OPS_LINKS = [...PLACEHOLDER];
 export const CONTENT_WRITING_LINKS = [...PLACEHOLDER];
 export const EMBEDDED_HARDWARE_LINKS = [...PLACEHOLDER];
@@ -53,6 +54,11 @@ export const CATEGORIES = [
     name: "UI/UX & Design",
     subs: ["UI Designer", "UX Designer", "Product Designer", "Design System Designer", "UX Researcher", "Visual Designer"],
     links: UI_UX_LINKS,
+  },
+    {
+    name: "Human Resources (HR)",
+    subs: ["HR Executive", "Talent Acquisition", "Technical Recruiter", "HR Business Partner"],
+    links: HR_LINKS,
   },
   {
     name: "Software Development",
@@ -99,11 +105,7 @@ export const CATEGORIES = [
     subs: ["Technical Sales", "Customer Success Manager", "Customer Support", "Solutions Consultant"],
     links: SALES_CS_LINKS,
   },
-  {
-    name: "Human Resources (HR)",
-    subs: ["HR Executive", "Talent Acquisition", "Technical Recruiter", "HR Business Partner"],
-    links: HR_LINKS,
-  },
+
   {
     name: "Business & Operations",
     subs: ["Operations Executive", "Process Analyst", "Business Operations"],
