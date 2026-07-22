@@ -91,7 +91,7 @@ export default function SharePage() {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-canvas">
       <div className="mx-auto w-full max-w-5xl px-4 py-8 pb-24 sm:px-6 sm:py-10 lg:px-8 lg:py-14 lg:pb-8">
         <div className="mb-8 max-w-2xl lg:mb-10">
           <Eyebrow>Community</Eyebrow>

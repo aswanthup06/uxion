@@ -114,7 +114,7 @@ export default function JobsPage() {
   }, [search, locationQuery, experienceRange, jobs]);
 
   return (
-    <section className="container mx-auto px-4 py-6 h-full overflow-scroll">
+    <section className=" px-4 py-6 h-full overflow-scroll bg-canvas">
       {/* Header */}
       <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex gap-3 items-center">

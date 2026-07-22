@@ -93,7 +93,7 @@ export default function Sidebar() {
                 text-xs transition-all duration-200
                 w-full h-16
 
-                lg:h-12 lg:px-4 lg:rounded-full
+                lg:h-12 lg:px-4 lg:rounded-lg
                 lg:flex-row lg:justify-start lg:gap-3
 
                 ${

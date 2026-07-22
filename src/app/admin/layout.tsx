@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "../globals.css";
 import AdminWrapper from "./AdminWrapper";
 
 export const metadata: Metadata = {
@@ -12,11 +11,5 @@ export default function AdminLayout({
 }: { 
   children: React.ReactNode 
 }) {
-  return (
-    <html lang="en">
-      <body className="antialiased">
-        <AdminWrapper>{children}</AdminWrapper>
-      </body>
-    </html>
-  );
+  return <AdminWrapper>{children}</AdminWrapper>;
 }

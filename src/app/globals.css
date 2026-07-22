@@ -1,38 +1,25 @@
 @import "tailwindcss";
 
-/* ============================================================
-   LAYER 1 — PRIMITIVES
-   Raw values. Never referenced directly in components/markup —
-   only the semantic layer below is allowed to touch these.
-   ============================================================ */
 :root {
   --p-neutral-0: #ffffff;
-  --p-neutral-50: #f3f3f0;    /* canvas (light) */
+  --p-neutral-50: #f3f3f0;
   --p-neutral-100: #eeeeeb;
-  --p-neutral-300: #dcdcd6;   /* line (light) */
-  --p-neutral-500: #8a8a82;   /* muted */
-  --p-neutral-600: #4a4a52;   /* subtle */
-  --p-neutral-950: #15161c;   /* ink (light) / canvas (dark) */
+  --p-neutral-300: #dcdcd6;
+  --p-neutral-500: #8a8a82;
+  --p-neutral-600: #4a4a52;
+  --p-neutral-950: #15161c;
 
-  --p-neutral-dark-100: #202028; /* line-soft (dark) */
-  --p-neutral-dark-300: #2d2e36; /* line (dark) */
-  --p-neutral-dark-400: #8c8c87; /* muted (dark) */
-  --p-neutral-dark-600: #c8c8c3; /* subtle (dark) */
+  --p-neutral-dark-100: #202028;
+  --p-neutral-dark-300: #2d2e36;
+  --p-neutral-dark-400: #8c8c87;
+  --p-neutral-dark-600: #c8c8c3;
 
-  --p-indigo-500: #5b57f2;    /* accent (light) */
-  --p-indigo-400: #827eff;    /* accent (dark) — lifted for contrast */
-  --p-lime-400: #b6ff3c;      /* signal — same both themes, stays punchy */
-  --p-coral-500: #ff6b57;     /* warn (light) */
-  --p-coral-400: #ff8270;     /* warn (dark) */
+  --p-indigo-500: #5b57f2;
+  --p-indigo-400: #827eff;
+  --p-lime-400: #b6ff3c;
+  --p-coral-500: #ff6b57;
+  --p-coral-400: #ff8270;
 }
-
-/* ============================================================
-   LAYER 2 — SEMANTIC TOKENS
-   What components actually use. Named by role, not appearance:
-   "accent" not "indigo" — so the palette can change without
-   ever touching a component file. This @theme block is also
-   what generates the Tailwind utilities (bg-canvas, text-ink…).
-   ============================================================ */
 @theme {
   --color-canvas: var(--p-neutral-50);
   --color-ink: var(--p-neutral-950);
@@ -43,41 +30,13 @@
   --color-accent: var(--p-indigo-500);
   --color-signal: var(--p-lime-400);
   --color-warn: var(--p-coral-500);
-
-  /* These reference the CSS variables next/font generates (see fonts.ts) —
-     keeps font loading self-hosted and optimized while tokens stay here.
-     Fallback stacks apply if fonts.ts isn't wired up yet. */
-  --font-display: var(--font-space-grotesk), sans-serif;
-  --font-body: var(--font-inter), sans-serif;
-  --font-mono: var(--font-plex-mono), monospace;
-
+  --font-display: var(--font-questrial), sans-serif;
+  --font-body: var(--font-questrial), sans-serif;
+  --font-mono: var(--font-questrial), sans-serif;
   --radius-card: 0.75rem;
   --radius-pill: 9999px;
 }
 
-/* ============================================================
-   LAYER 3 — DARK OVERRIDES
-   Same semantic names, different primitives. No component or
-   utility class changes — only these mappings do.
-   ============================================================ */
-@custom-variant dark (&:where(.dark, .dark *));
-
-.dark {
-  --color-canvas: var(--p-neutral-950);
-  --color-ink: var(--p-neutral-50);
-  --color-subtle: var(--p-neutral-dark-600);
-  --color-muted: var(--p-neutral-dark-400);
-  --color-line: var(--p-neutral-dark-300);
-  --color-line-soft: var(--p-neutral-dark-100);
-  --color-accent: var(--p-indigo-400);
-  --color-warn: var(--p-coral-400);
-  /* --color-signal intentionally omitted — stays the same in both themes */
-}
-
-/* ============================================================
-   Custom utility — v4's @utility replaces the old plugin API
-   for one-off utilities like the dot-grid background.
-   ============================================================ */
 @utility bg-dot-grid {
   background-image: radial-gradient(currentColor 1px, transparent 1px);
   background-size: 24px 24px;

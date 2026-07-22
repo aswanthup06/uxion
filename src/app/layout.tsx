@@ -1,29 +1,17 @@
 import type { Metadata } from "next";
-import { Questrial } from "next/font/google";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "react-hot-toast";
 
-import { Space_Grotesk, Inter, IBM_Plex_Mono } from "next/font/google";
-
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-display" });
-const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
-const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
-
+import { questrial } from "./fonts";
 import "./globals.css";
-
-const questrial = Questrial({
-  subsets: ["latin"],
-  weight: "400",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://zenoway.com"),
   title: "Zenoway",
   description:
     "Zenoway is a dedicated job portal for UI/UX designers, UI developers, frontend developers, and creative professionals. Discover jobs from startups and top companies across India.",
-
   keywords: [
     "UI jobs",
     "UX jobs",
@@ -38,19 +26,12 @@ export const metadata: Metadata = {
     "Startup Jobs",
     "Zenoway",
   ],
-
-  authors: [
-    {
-      name: "Zenoway",
-    },
-  ],
-
+  authors: [{ name: "Zenoway" }],
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",
     apple: "/favicon.png",
   },
-
   openGraph: {
     title: "Zenoway",
     description:
@@ -59,7 +40,6 @@ export const metadata: Metadata = {
     siteName: "Zenoway",
     locale: "en_IN",
     type: "website",
-
     images: [
       {
         url: "/og-image.png",
@@ -69,12 +49,10 @@ export const metadata: Metadata = {
       },
     ],
   },
-
   twitter: {
     card: "summary_large_image",
     title: "Zenoway",
-    description:
-      "Find UI/UX and Frontend jobs across India.",
+    description: "Find UI/UX and Frontend jobs across India.",
     images: ["/og-image.png"],
   },
 };
@@ -85,14 +63,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${questrial.className} antialiased`}>
+    <html lang="en" className={questrial.variable}>
+      <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-TKZQD3T9PD"
+          strategy="afterInteractive"
+        />
+
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-TKZQD3T9PD');
+          `}
+        </Script>
+      </head>
+
+      <body className="antialiased font-body">
         {children}
 
-        <Toaster
-          position="top-right"
-          reverseOrder={false}
-        />
+        <Toaster position="top-right" reverseOrder={false} />
 
         <Analytics />
         <SpeedInsights />
