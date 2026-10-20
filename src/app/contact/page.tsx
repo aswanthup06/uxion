@@ -46,7 +46,7 @@ export default function ContactPage() {
       {/* Contact cards */}
       <div className="grid sm:grid-cols-2 gap-4 mb-10">
         <a
-          href="mailto:support@zenoway.com"
+          href="mailto:support@zenoway.online"
           className="group flex items-start gap-4 p-5 border border-gray-200 rounded-sm hover:border-amber-600 transition-colors"
         >
           <div className="p-2.5 bg-amber-50 rounded-sm text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors">
@@ -55,13 +55,13 @@ export default function ContactPage() {
           <div>
             <h2 className="text-sm font-semibold text-gray-900 mb-1">Email</h2>
             <p className="text-sm text-gray-500 break-all">
-              support@zenoway.com
+              support@zenoway.online
             </p>
           </div>
         </a>
 
         <a
-          href="https://zenoway.com"
+          href="https://zenoway.online"
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-start gap-4 p-5 border border-gray-200 rounded-sm hover:border-amber-600 transition-colors"
@@ -71,7 +71,7 @@ export default function ContactPage() {
           </div>
           <div>
             <h2 className="text-sm font-semibold text-gray-900 mb-1">Website</h2>
-            <p className="text-sm text-gray-500">www.zenoway.com</p>
+            <p className="text-sm text-gray-500">www.zenoway.online</p>
           </div>
         </a>
       </div>

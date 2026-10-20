@@ -43,8 +43,8 @@ const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Zenoway",
-  url: "https://www.zenoway.com",
-  logo: "https://zenoway.com/og-image.png",
+  url: "https://www.zenoway.online",
+  logo: "https://zenoway.online/og-image.png",
   description:
     "Zenoway is a dedicated job portal for UI/UX designers, UI developers, frontend developers, and creative professionals.",
   sameAs: [],
@@ -130,7 +130,7 @@ export default function Home() {
                   <span className="w-2 h-2 rounded-full bg-line" />
                   <span className="w-2 h-2 rounded-full bg-line" />
                   <span className="w-2 h-2 rounded-full bg-signal" />
-                  <span className="ml-2 text-[10px] font-mono text-muted">zenoway.com/home/jobs</span>
+                  <span className="ml-2 text-[10px] font-mono text-muted">zenoway.online/home/jobs</span>
                 </div>
 
                 <div className="p-5">

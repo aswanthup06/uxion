@@ -6,7 +6,7 @@ import type { Job } from "./JobDetailsClient";
 async function getJobs(): Promise<Job[]> {
   try {
     // Use your live site URL since the API is working there
-    const apiUrl = 'https://www.zenoway.com/api/jobs';
+    const apiUrl = 'https://www.zenoway.online/api/jobs';
 
     // const apiUrl = 'http://localhost:3000//api/jobs';
     // const apiUrl = 'http://uxion.vercel.app//api/jobs';

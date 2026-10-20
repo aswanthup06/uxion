@@ -42,7 +42,7 @@ async function getJobs(): Promise<Job[]> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://www.zenoway.com";
+  const baseUrl = "https://www.zenoway.online";
 
   // Static pages — confirmed live under /home based on testing in this
   // conversation (e.g. /home/jobs/JOB1040).

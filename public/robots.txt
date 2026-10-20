@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.zenoway.com/sitemap.xml
+Sitemap: https://www.zenoway.online/sitemap.xml

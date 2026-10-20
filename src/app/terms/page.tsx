@@ -94,10 +94,10 @@ export default function TermsPage() {
             Questions about these Terms?
           </h2>
           <a
-            href="mailto:support@zenoway.com"
+            href="mailto:support@zenoway.online"
             className="text-sm text-amber-600 hover:text-amber-700 transition-colors"
           >
-            support@zenoway.com
+            support@zenoway.online
           </a>
         </div>
       </div>

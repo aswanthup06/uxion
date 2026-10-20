@@ -8,7 +8,7 @@ import { satoshi } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://zenoway.com"),
+  metadataBase: new URL("https://zenoway.online"),
   title: "Zenoway",
   description:
     "Zenoway is a dedicated job portal for UI/UX designers, UI developers, frontend developers, and creative professionals. Discover jobs from startups and top companies across India.",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     title: "Zenoway",
     description:
       "Find UI/UX and Frontend jobs across India. Connect with employers and grow your design & development career.",
-    url: "https://zenoway.com",
+    url: "https://zenoway.online",
     siteName: "Zenoway",
     locale: "en_IN",
     type: "website",

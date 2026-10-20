@@ -149,7 +149,7 @@ ${actualDescription.substring(0, 100)}...
           ? job.companyLink.startsWith("http")
             ? job.companyLink
             : `https://${job.companyLink}`
-          : "https://www.zenoway.com",
+          : "https://www.zenoway.online",
       },
       directApply: true,
     };
