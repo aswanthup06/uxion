@@ -40,10 +40,10 @@ export default function Sidebar() {
     <nav
       className="
         fixed bottom-0 left-0 z-50
-        w-full h-16 bg-white border-t border-gray-200
+        w-full h-16 border-r border-gray-200
         flex items-center justify-around
-
-        lg:static lg:h-screen lg:w-64 lg:shrink-0 lg:border-0
+bg-white
+        lg:static lg:h-screen lg:w-64 lg:shrink-0 
         lg:flex lg:flex-col lg:items-stretch lg:justify-start lg:py-2 lg:pl-2
         transition-all duration-300
       "
@@ -93,12 +93,12 @@ export default function Sidebar() {
                 text-xs transition-all duration-200
                 w-full h-16
 
-                lg:h-12 lg:px-4 lg:rounded-lg
+                lg:h-12 lg:px-4 
                 lg:flex-row lg:justify-start lg:gap-3
 
                 ${
                   isActive
-                    ? "text-black lg:bg-black lg:text-white"
+                    ? "text-black bg-gray-100"
                     : "text-gray-500 hover:text-black"
                 }
               `}

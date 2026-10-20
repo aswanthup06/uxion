@@ -46,35 +46,39 @@ export default function JobCard({ job }: JobCardProps) {
   return (
     <Link
       href={`/home/jobs/${job.id}`}
-      className="relative overflow-hidden border border-gray-100 bg-white p-4 h-36 flex flex-col justify-between rounded-md"
+      className="relative overflow-hidden border border-gray-200 hover:border-gray-300 hover:shadow-md duration-700 transition-all bg-white  flex flex-col justify-between"
     >
-      <div className="flex justify-between">
-        <div className="mb-4">
-          <h2 className="text-base font-semibold">
-            {job.title}
-          </h2>
+      <div className="flex justify-between pt-4 px-4">
+        <div className="">
+          <h2 className="text-base font-semibold">{job.title}</h2>
 
-          <h3 className="text-xs font-light text-gray-600 md:text-sm">
+          <h3 className="text-xs font-medium text-green-700 md:text-sm">
             {job.company}
           </h3>
         </div>
 
         <div className="flex flex-col items-end text-xs">
-          <span className="font-light">
-            {timeAgo(job.postedDate)}
-          </span>
+          <span className="font-normal">{timeAgo(job.postedDate)}</span>
         </div>
       </div>
 
-      <div className="flex gap-6 text-xs">
-        <div className="flex items-center gap-2 w-[80px]">
-          <Briefcase size={16} strokeWidth={1} />
-          {job.experience}
+      <div className="flex items-center gap-2 px-4 pb-4 pt-2 text-xs">
+        {/* <MapPin size={14} strokeWidth={1} /> */}
+        {job.location}
+      </div>
+
+      <div className="grid grid-cols-3 text-xs border-t border-gray-200">
+        <div className="flex justify-center items-center gap-2 pl-4 py-4 border-r border-gray-200 min-w-0">
+          {/* <Briefcase size={16} strokeWidth={1} className="shrink-0" /> */}
+          <span className="truncate">{job.experience}</span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <MapPin size={14} strokeWidth={1} />
-          {job.location}
+        <div className="flex justify-center items-center gap-2  py-4 min-w-0 border-r border-gray-200">
+          <span className="truncate">Full-Time</span>
+        </div>
+
+        <div className="flex justify-center items-center gap-2  py-4 min-w-0">
+          <span className="truncate">Onsite</span>
         </div>
       </div>
     </Link>

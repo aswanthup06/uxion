@@ -21,7 +21,7 @@ function ChannelCard() {
       href={channel.link}
       target="_blank"
       rel="noopener noreferrer"
-      className="mb-10 flex flex-col items-start gap-4 rounded-2xl border border-green-200 bg-green-50 p-5 transition-shadow duration-300 hover:shadow-lg sm:flex-row sm:items-center sm:p-6"
+      className="mb-10 flex flex-col items-start gap-4  border-y border-green-200 bg-green-50 p-5 transition-shadow duration-300 sm:flex-row sm:items-center sm:p-6"
     >
       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-green-600">
         <HiOutlineSpeakerphone className="text-2xl text-white" />
@@ -131,16 +131,18 @@ export default function SharePage() {
   }
 
   return (
-    <div className="w-full bg-canvas">
-      <div className="mx-auto w-full max-w-5xl px-4 py-8 pb-24 sm:px-6 sm:py-10 lg:px-8 lg:py-14 lg:pb-8">
-        <div className="mb-8 max-w-2xl lg:mb-10">
+    <div className="w-full h-[calc(100dvh-48px)] overflow-y-auto">
+      <div className="mx-auto w-full">
+        
+        
+        <div className=" p-6 ">
           <Eyebrow>Community</Eyebrow>
 
           <h1 className="mb-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
             Join Job Communities
           </h1>
 
-          <p className="text-base leading-relaxed text-subtle sm:text-lg">
+          <p className="text-md font-medium text-gray-700">
             Pick your field, then find your state. Every group is a direct
             WhatsApp link — no sign-up required.
           </p>
@@ -148,8 +150,8 @@ export default function SharePage() {
 
         <ChannelCard />
 
-        <div className="mb-6">
-          <h2 className="mb-4 font-display text-lg font-semibold text-ink">
+        <div className="">
+          <h2 className="mb-4 font-display text-lg font-semibold text-ink pl-6">
             Choose your field
           </h2>
 
@@ -161,7 +163,7 @@ export default function SharePage() {
             onMouseUp={stopDragging}
             onMouseLeave={stopDragging}
             style={{ WebkitOverflowScrolling: "touch" }}
-            className={`flex gap-2 overflow-x-auto whitespace-nowrap pb-2 scroll-smooth select-none ${
+            className={`flex gap-2 overflow-x-auto whitespace-nowrap scroll-smooth select-none px-6 ${
               isDragging ? "cursor-grabbing" : "cursor-grab"
             }`}
           >
@@ -183,7 +185,7 @@ export default function SharePage() {
                       setActiveCategory(cat.name);
                     }
                   }}
-                  className={`shrink-0 rounded-full border px-4 py-2 font-mono text-sm transition-colors ${
+                  className={`shrink-0 cursor-pointer  border px-4 py-2 font-mono text-sm transition-colors ${
                     isActive
                       ? "border-ink bg-ink text-canvas"
                       : "border-line bg-white text-subtle hover:border-accent hover:text-accent"
@@ -196,7 +198,7 @@ export default function SharePage() {
           </div>
         </div>
 
-        <div className="mb-10 rounded-2xl border border-line bg-white p-6">
+        <div className=" p-6">
           <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
             Roles in {active.name}
           </p>
@@ -205,7 +207,7 @@ export default function SharePage() {
             {active.subs.map((sub) => (
               <span
                 key={sub}
-                className="max-w-full break-words rounded-full bg-line-soft px-3 py-1.5 text-xs font-medium text-ink"
+                className="max-w-full break-words  text-xs font-medium text-ink"
               >
                 {sub}
               </span>
@@ -213,22 +215,22 @@ export default function SharePage() {
           </div>
         </div>
 
-        <div className="mb-6 flex items-center gap-3">
+        <div className="mb-6 flex items-center gap-3 px-6">
           <h2 className="font-display text-xl font-bold text-ink">
             {active.name}
           </h2>
 
-          <div className="h-px flex-1 bg-line" />
+        
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 px-6">
           {active.groups.map((group) => (
             <a
               key={group.name}
               href={group.link}
               target="_blank"
               rel="noopener noreferrer"
-              className=" items-start rounded-xl border border-line bg-white p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg "
+              className=" items-start  border border-gray-200 bg-white p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg "
             >
               <div className=" flex justify-between items-center">
                 <Eyebrow>{active.name}</Eyebrow>

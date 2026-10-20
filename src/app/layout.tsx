@@ -4,7 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "react-hot-toast";
 
-import { questrial } from "./fonts";
+import { satoshi } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -63,7 +63,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={questrial.variable}>
+    <html lang="en" className={satoshi.variable}>
       <head>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-TKZQD3T9PD"
@@ -81,7 +81,7 @@ export default function RootLayout({
         </Script>
       </head>
 
-      <body className="antialiased font-body">
+      <body className={`${satoshi.className} antialiased`}>
         {children}
 
         <Toaster position="top-right" reverseOrder={false} />

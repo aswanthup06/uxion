@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import JobCard from "@/app/components/JobCard";
 import JobCardSkeleton from "@/app/components/JobCardSkeleton";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { Job } from "../../types/job";
 import { Slider } from "@/components/ui/slider"; // ✅ shadcn slider
 import {
@@ -114,25 +112,10 @@ export default function JobsPage() {
   }, [search, locationQuery, experienceRange, jobs]);
 
   return (
-    <section className=" px-4 py-6 h-full overflow-scroll bg-canvas">
+    <section className="px-4 py-6 w-full h-[calc(100dvh-48px)] overflow-y-auto">
       {/* Header */}
       <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex gap-3 items-center">
-          <Link
-            href="/"
-            className="h-10 w-10 flex items-center justify-center gap-2 border border-white/20 rounded-full hover:bg-white/10"
-          >
-            <ArrowLeft size={12} />
-          </Link>
-          <h1 className="text-xl font-bold">
-            All <span className="">Jobs</span>
-          </h1>
-        </div>
-
-        {/* Search + Filters */}
-        <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto ">
-          {/* 🔍 Job Title */}
-          <div className="relative w-full md:w-72 bg-white rounded-md border border-gray-200">
+        <div className="relative w-full md:w-72 bg-white  border border-gray-200">
             <input
               type="text"
               placeholder="Search job title..."
@@ -142,10 +125,10 @@ export default function JobsPage() {
                 setShowTitleSuggestions(true);
               }}
               onFocus={() => setShowTitleSuggestions(true)}
-              className="px-4 py-3 rounded-md bg-white text-sm w-full focus:ring-0 focus:outline-none"
+              className="px-4 py-3  bg-white text-sm w-full focus:ring-0 focus:outline-none"
             />
             {showTitleSuggestions && search && (
-              <ul className="absolute top-full mt-2 w-full rounded-md border border-gray-200 bg-white shadow-lg max-h-48 overflow-auto z-20">
+              <ul className="absolute top-full mt-2 w-full  border border-gray-200 bg-white shadow-lg max-h-48 overflow-auto z-20">
                 {titles
                   .filter((title) =>
                     title.toLowerCase().includes(search.toLowerCase()),
@@ -166,8 +149,13 @@ export default function JobsPage() {
             )}
           </div>
 
+        {/* Search + Filters */}
+        <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto ">
+          {/* 🔍 Job Title */}
+         
+
           {/* 📍 Location */}
-          <div className="relative w-full md:w-64 bg-white rounded-md border border-gray-200">
+          <div className="relative w-full md:w-64 bg-white  border border-gray-200">
             <input
               type="text"
               placeholder="Search location..."
@@ -177,10 +165,10 @@ export default function JobsPage() {
                 setShowSuggestions(true);
               }}
               onFocus={() => setShowSuggestions(true)}
-              className="px-4 py-3   bg-white text-sm w-full focus:ring-0 focus:outline-none rounded-md"
+              className="px-4 py-3   bg-white text-sm w-full focus:ring-0 focus:outline-none "
             />
             {showSuggestions && locationQuery && (
-              <ul className="absolute top-full mt-2 w-full bg-white rounded-md border border-gray-200  shadow-lg max-h-48 overflow-auto z-20">
+              <ul className="absolute top-full mt-2 w-full bg-white  border border-gray-200  shadow-lg max-h-48 overflow-auto z-20">
                 {locations
                   .filter((loc) =>
                     loc.toLowerCase().includes(locationQuery.toLowerCase()),
@@ -214,7 +202,7 @@ export default function JobsPage() {
                 <button
                   className="
           w-full px-4 py-3 bg-white border border-gray-200
-          rounded-md text-sm text-left
+           text-sm text-left
           flex items-center justify-between
           hover:border-gray-300 transition-all duration-200
         "
@@ -311,14 +299,14 @@ export default function JobsPage() {
 
       {/* Jobs Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <JobCardSkeleton key={i} />
           ))}
         </div>
       ) : filteredJobs.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {filteredJobs.slice(0, visibleCount).map((job) => (
               <JobCard key={job.id} job={job} />
             ))}
@@ -327,7 +315,7 @@ export default function JobsPage() {
             <div className="flex justify-center mt-6">
               <button
                 onClick={() => setVisibleCount((prev) => prev + 8)}
-                className="px-6 py-3 rounded-md border border-gray-300 w-full text-gray-600 text-sm font-medium hover:bg-gray-200 cursor-pointer duration-500"
+                className="px-6 py-3  border border-gray-300 w-full text-gray-600 text-sm font-medium hover:bg-gray-200 cursor-pointer duration-500"
               >
                 Load more
               </button>

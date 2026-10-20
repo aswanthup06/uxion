@@ -2,14 +2,6 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  BanknoteArrowUp,
-  BriefcaseBusiness,
-  CalendarArrowUp,
-  MapPin,
-  Share2,
-} from "lucide-react";
 import { IoLogoWhatsapp } from "react-icons/io";
 import { MdArrowOutward } from "react-icons/md";
 import Image from "next/image";
@@ -118,83 +110,83 @@ ${actualDescription.substring(0, 100)}...
   };
 
   // --- GOOGLE JOBS SCHEMA GENERATION (fixed) ---
-const getJobPostingSchema = () => {
-  // Generate valid ISO date string (YYYY-MM-DD)
-  let datePostedISO = new Date().toISOString().split("T")[0];
-  try {
-    if (job.postedDate) {
-      datePostedISO = new Date(job.postedDate).toISOString().split("T")[0];
+  const getJobPostingSchema = () => {
+    // Generate valid ISO date string (YYYY-MM-DD)
+    let datePostedISO = new Date().toISOString().split("T")[0];
+    try {
+      if (job.postedDate) {
+        datePostedISO = new Date(job.postedDate).toISOString().split("T")[0];
+      }
+    } catch (e) {
+      console.error("Invalid date format", e);
     }
-  } catch (e) {
-    console.error("Invalid date format", e);
-  }
- 
-  // Recommended: expiry date so Google doesn't have to guess/expire it itself.
-  // Adjust the window (e.g. 45 days) to whatever makes sense for your listings.
-  const postedDateObj = new Date(datePostedISO);
-  const validThroughDate = new Date(postedDateObj);
-  validThroughDate.setDate(validThroughDate.getDate() + 45);
-  const validThroughISO = validThroughDate.toISOString().split("T")[0];
- 
-  const isRemote = job.location?.trim().toLowerCase() === "remote";
- 
-  const locationParts = job.location ? job.location.split(",") : [];
-  const locality = locationParts[0]?.trim() || "Kochi";
-  const region = locationParts[1]?.trim() || "Kerala";
- 
-  const baseSchema: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "JobPosting",
-    title: job.title,
-    description: actualDescription,
-    datePosted: datePostedISO,
-    validThrough: validThroughISO,
-    employmentType: "FULL_TIME",
-    hiringOrganization: {
-      "@type": "Organization",
-      name: job.company,
-      sameAs: isActualLink
-        ? job.companyLink.startsWith("http")
-          ? job.companyLink
-          : `https://${job.companyLink}`
-        : "https://www.zenoway.com",
-    },
-    directApply: true,
-  };
- 
-  if (isRemote) {
-    // Do NOT invent a fake jobLocation for remote roles.
-    // Google requires a real place for jobLocation — "Remote" is not one.
+
+    // Recommended: expiry date so Google doesn't have to guess/expire it itself.
+    // Adjust the window (e.g. 45 days) to whatever makes sense for your listings.
+    const postedDateObj = new Date(datePostedISO);
+    const validThroughDate = new Date(postedDateObj);
+    validThroughDate.setDate(validThroughDate.getDate() + 45);
+    const validThroughISO = validThroughDate.toISOString().split("T")[0];
+
+    const isRemote = job.location?.trim().toLowerCase() === "remote";
+
+    const locationParts = job.location ? job.location.split(",") : [];
+    const locality = locationParts[0]?.trim() || "Kochi";
+    const region = locationParts[1]?.trim() || "Kerala";
+
+    const baseSchema: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": "JobPosting",
+      title: job.title,
+      description: actualDescription,
+      datePosted: datePostedISO,
+      validThrough: validThroughISO,
+      employmentType: "FULL_TIME",
+      hiringOrganization: {
+        "@type": "Organization",
+        name: job.company,
+        sameAs: isActualLink
+          ? job.companyLink.startsWith("http")
+            ? job.companyLink
+            : `https://${job.companyLink}`
+          : "https://www.zenoway.com",
+      },
+      directApply: true,
+    };
+
+    if (isRemote) {
+      // Do NOT invent a fake jobLocation for remote roles.
+      // Google requires a real place for jobLocation — "Remote" is not one.
+      return {
+        ...baseSchema,
+        jobLocationType: "TELECOMMUTE",
+        // Adjust this to wherever candidates are actually allowed to apply from.
+        applicantLocationRequirements: {
+          "@type": "Country",
+          name: "India",
+        },
+      };
+    }
+
+    // On-site / hybrid roles: use a real address.
     return {
       ...baseSchema,
-      jobLocationType: "TELECOMMUTE",
-      // Adjust this to wherever candidates are actually allowed to apply from.
-      applicantLocationRequirements: {
-        "@type": "Country",
-        name: "India",
+      jobLocation: {
+        "@type": "Place",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: locality,
+          addressRegion: region,
+          addressCountry: "IN",
+        },
       },
     };
-  }
- 
-  // On-site / hybrid roles: use a real address.
-  return {
-    ...baseSchema,
-    jobLocation: {
-      "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: locality,
-        addressRegion: region,
-        addressCountry: "IN",
-      },
-    },
   };
-};
 
   const schemaJson = getJobPostingSchema();
 
   return (
-    <main className="h-fit md:h-full flex flex-col  gap-2 pb-20 md:pb-0 p-2 ">
+    <main className="h-[calc(100dvh-48px)] overflow-y-auto   pb-20 md:pb-0">
       {/* 🚀 Dynamic Google Jobs Rich Schema Insertion */}
       <script
         type="application/ld+json"
@@ -203,97 +195,95 @@ const getJobPostingSchema = () => {
         }}
       />
 
-      <div className="flex justify-between h-fit">
-        <Link
-          href="/"
-          aria-label="Go back to the home page"
-          className="h-10 w-10 flex items-center justify-center border border-white/20 rounded-full hover:bg-white/10"
-        >
-          <ArrowLeft size={12} aria-hidden="true" />
-        </Link>
+      <div className="relative  overflow-hidden border-b border-gray-200 flex">
+        <div className="relative p-6">
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(249,115,22,0.05) 0%, transparent 50%, rgba(24,24,27,0.03) 100%)",
+            }}
+          />
 
-        <button
-          onClick={handleShare}
-          className="h-10 px-4 flex items-center gap-2 border border-white/20 rounded-full hover:bg-white/10"
-        >
-          <Share2 size={12} aria-hidden="true" />
-          <span className="text-xs">Share</span>
-        </button>
-      </div>
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage:
+                "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
+              backgroundSize: "24px 24px",
+              maskImage:
+                "radial-gradient(ellipse at center, #000 60%, transparent 100%)",
+              WebkitMaskImage:
+                "radial-gradient(ellipse at center, #000 60%, transparent 100%)",
+            }}
+          />
+          <span className="inline-flex items-center text-sm font-medium text-orange-600">
+            {job.company} is Hiring
+          </span>
 
-      <div className="flex flex-col md:flex-row gap-2 max-h-full md:overflow-hidden justify-center w-full">
-        <div className="w-full md:w-auto md:flex-1 bg-white overflow-scroll">
-          <div className="relative">
-          <Image
-  src="/bg3.webp"
-  alt=""
-  width={693}
-  height={390}
-  sizes="(max-width: 768px) 100vw, 693px"
-  className="w-full md:h-36 object-cover"
-/>
-            <div className="absolute top-0 left-0  p-6 w-full h-full flex flex-col justify-between">
-              {/* Job Title & Company */}
-              <div className="flex justify-between mb-6 w-full">
-                <div>
-                  <h1 className="text-xl font-bold text-white ">{job.title}</h1>
-                  <h2 className="text-sm font-light text-[#F97316]">
-                    {job.company}
-                  </h2>
-                </div>
-                <div className="flex flex-col items-end">
-                  <h2 className="text-xs text-white ">JOB ID</h2>
-                  <h2 className="text-xs text-white ">{job.id}</h2>
-                </div>
-              </div>
-
-              {/* Info Section */}
-
-              <div className="flex gap-6 text-xs flex-wrap ">
-                <div className="flex items-center gap-2 text-white">
-                  <MapPin
-                    className="text-blue-400"
-                    size={14}
-                    strokeWidth={1.5}
-                  />
-                  {job.location}
-                </div>
-
-                <div className="flex items-center gap-2 text-white">
-                  <BriefcaseBusiness
-                    className="text-blue-400"
-                    size={14}
-                    strokeWidth={1.5}
-                  />
-                  {job.experience}
-                </div>
-
-                <div className="flex items-center gap-2 text-white">
-                  <BanknoteArrowUp
-                    className="text-blue-400"
-                    size={14}
-                    strokeWidth={1.5}
-                  />
-                  {job.salary}
-                </div>
-
-                <div className="flex items-center gap-2 text-white">
-                  <CalendarArrowUp
-                    className="text-blue-400 "
-                    size={14}
-                    strokeWidth={1.5}
-                  />
-                  {formatDate(job.postedDate)}
-                </div>
-              </div>
-            </div>
+          <h1 className="mt-1 text-5xl font-bold leading-tight tracking-tight text-zinc-900">
+            {job.title}
+          </h1>
+          <div className="w-3/4">
+            <p className="mt-2 text-base leading-8 text-zinc-600">
+              Are you passionate about designing intuitive and engaging digital
+              experiences? Join{" "}
+              <span className="font-semibold">{job.company}</span> and work on
+              real-world products with a collaborative team. You'll contribute
+              to user-centered solutions, build meaningful experiences, and grow
+              your skills while working on exciting projects.
+            </p>
           </div>
 
+          <div className="mt-4">
+            <h4 className="text-xs uppercase tracking-wider text-zinc-500">
+              Location: {job.location}
+            </h4>
+          </div>
+        </div>
+
+        <div className="w-[500px] grid border-l border-zinc-200">
+          <div className="border-b border-zinc-200 bg-zinc-50 px-4 py-3">
+            <p className="text-xs uppercase tracking-wider text-zinc-500">
+              Opportunity
+            </p>
+            <p className="mt-1 font-semibold text-zinc-900">
+              Full-Time Position
+            </p>
+          </div>
+
+          <div className="border-b border-zinc-200 bg-zinc-50 px-4 py-3">
+            <p className="text-xs uppercase tracking-wider text-zinc-500">
+              Experience
+            </p>
+            <p className="mt-1 font-semibold text-zinc-900">
+              {job.experience || "1–3 Years"}
+            </p>
+          </div>
+
+          <div className="border-b border-zinc-200 bg-zinc-50 px-4 py-3">
+            <p className="text-xs uppercase tracking-wider text-zinc-500">
+              Type
+            </p>
+            <p className="mt-1 font-semibold text-zinc-900">Onsite</p>
+          </div>
+
+          <div className=" bg-zinc-50 px-4 py-3">
+            <p className="text-xs uppercase tracking-wider text-zinc-500">
+              Salary Range
+            </p>
+            <p className="mt-1 font-semibold text-zinc-900">{job.salary}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col md:flex-row  justify-center w-full">
+        <div className="w-full md:w-auto md:flex-1 border-r border-gray-200">
           {actualDescription && (
             <div className="p-6">
               <h3 className="text-lg font-semibold mb-3">Job Description</h3>
 
-              <div className="text-sm font-light whitespace-pre-line leading-loose text-gray-600">
+              <div className="text-sm font-medium whitespace-pre-line leading-loose text-gray-600">
                 {actualDescription}
 
                 {isActualLink && (
@@ -390,7 +380,7 @@ const getJobPostingSchema = () => {
           <div
             className="
           flex flex-wrap gap-x-3 gap-y-1.5 px-6 py-4  mt-2
-          border border-gray-200  text-[11px] font-medium text-gray-700 mx-6 md:mx-0
+          border-y border-gray-200  text-[11px] font-medium text-gray-700 mx-6 md:mx-0
         "
           >
             <Link

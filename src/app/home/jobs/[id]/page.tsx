@@ -12,7 +12,7 @@ async function getJobs(): Promise<Job[]> {
     // const apiUrl = 'http://uxion.vercel.app//api/jobs';
     
     const res = await fetch(apiUrl, {
-      next: { revalidate: 300 },
+      next: { revalidate: 1 },
     });
 
     if (!res.ok) {

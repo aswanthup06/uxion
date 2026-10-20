@@ -52,7 +52,7 @@ const organizationJsonLd = {
 
 export default function Home() {
   return (
-    <main className="h-full overflow-scroll bg-canvas text-ink font-body">
+    <main className="h-[calc(100dvh-48px)] overflow-y-auto text-ink font-body">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

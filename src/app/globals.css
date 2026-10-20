@@ -2,7 +2,7 @@
 
 :root {
   --p-neutral-0: #ffffff;
-  --p-neutral-50: #f3f3f0;
+  --p-neutral-50: #f7f6f6;
   --p-neutral-100: #eeeeeb;
   --p-neutral-300: #dcdcd6;
   --p-neutral-500: #8a8a82;
@@ -30,9 +30,16 @@
   --color-accent: var(--p-indigo-500);
   --color-signal: var(--p-lime-400);
   --color-warn: var(--p-coral-500);
-  --font-display: var(--font-questrial), sans-serif;
+
+  /* --font-display: var(--font-questrial), sans-serif;
   --font-body: var(--font-questrial), sans-serif;
-  --font-mono: var(--font-questrial), sans-serif;
+  --font-mono: var(--font-questrial), sans-serif; */
+
+ --font-display: var(--font-satoshi), sans-serif;
+  --font-body: var(--font-satoshi), sans-serif;
+  --font-mono: var(--font-satoshi), monospace;
+
+
   --radius-card: 0.75rem;
   --radius-pill: 9999px;
 }
