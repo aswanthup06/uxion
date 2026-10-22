@@ -78,7 +78,7 @@ export default function ContactPage() {
 
       {/* Optional community link */}
       <Link
-        href="/home/join"
+        href="/join"
         className="flex items-center justify-center gap-2 w-full py-3 border border-gray-300 rounded-sm text-sm font-medium text-gray-700 hover:bg-gray-100 transition mb-10"
       >
         <MessageCircle size={16} strokeWidth={1.75} />

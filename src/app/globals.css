@@ -1,59 +1,21 @@
 @import "tailwindcss";
 
-:root {
-  --p-neutral-0: #ffffff;
-  --p-neutral-50: #f7f6f6;
-  --p-neutral-100: #eeeeeb;
-  --p-neutral-300: #dcdcd6;
-  --p-neutral-500: #8a8a82;
-  --p-neutral-600: #4a4a52;
-  --p-neutral-950: #15161c;
-
-  --p-neutral-dark-100: #202028;
-  --p-neutral-dark-300: #2d2e36;
-  --p-neutral-dark-400: #8c8c87;
-  --p-neutral-dark-600: #c8c8c3;
-
-  --p-indigo-500: #5b57f2;
-  --p-indigo-400: #827eff;
-  --p-lime-400: #b6ff3c;
-  --p-coral-500: #ff6b57;
-  --p-coral-400: #ff8270;
-}
-@theme {
-  --color-canvas: var(--p-neutral-50);
-  --color-ink: var(--p-neutral-950);
-  --color-subtle: var(--p-neutral-600);
-  --color-muted: var(--p-neutral-500);
-  --color-line: var(--p-neutral-300);
-  --color-line-soft: var(--p-neutral-100);
-  --color-accent: var(--p-indigo-500);
-  --color-signal: var(--p-lime-400);
-  --color-warn: var(--p-coral-500);
-
-  /* --font-display: var(--font-questrial), sans-serif;
-  --font-body: var(--font-questrial), sans-serif;
-  --font-mono: var(--font-questrial), sans-serif; */
-
- --font-display: var(--font-satoshi), sans-serif;
-  --font-body: var(--font-satoshi), sans-serif;
-  --font-mono: var(--font-satoshi), monospace;
-
-
-  --radius-card: 0.75rem;
-  --radius-pill: 9999px;
+@theme inline {
+  --font-sans: var(--font-manrope);
 }
 
-@utility bg-dot-grid {
-  background-image: radial-gradient(currentColor 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-::-webkit-scrollbar {
-  display: none;
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-manrope), Arial, sans-serif;
 }
 
 * {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }

@@ -11,7 +11,7 @@ type JobCardProps = {
 export function JobCard({ id, role, company, location, exp }: JobCardProps) {
   return (
     <Link
-      href={`/home/jobs/${id}`}
+      href={`/jobs/${id}`}
       className="group bg-white border border-line rounded-card p-5 flex items-center justify-between hover:border-accent transition-colors"
     >
       <div>

@@ -51,7 +51,7 @@ export default function LatestJobs() {
           Latest <span className="text-[#F97316]">Jobs</span>
         </h2>
         <Link
-          href="/home/jobs"
+          href="/jobs"
           className="text-xs h-8 rounded-sm flex items-center justify-center gap-2  transition"
         >
           All jobs{" "}

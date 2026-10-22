@@ -46,7 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Static pages — confirmed live under /home based on testing in this
   // conversation (e.g. /home/jobs/JOB1040).
-  const staticRoutes = ["/home", "/home/post-job", "/home/join"];
+  const staticRoutes = ["/home", "/post-job", "/join"];
 
   // If the API call fails, we still want the static pages in the sitemap
   // rather than failing the whole build — jobs.map() below on an empty
@@ -68,7 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const isValid = parsed !== null && !isNaN(parsed.getTime());
 
       return {
-        url: `${baseUrl}/home/jobs/${job.id}`,
+        url: `${baseUrl}/jobs/${job.id}`,
         lastModified: isValid ? parsed : new Date(),
         changeFrequency: "daily" as const,
         priority: 0.9,

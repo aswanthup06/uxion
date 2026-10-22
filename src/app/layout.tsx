@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Manrope } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "react-hot-toast";
 
-import { satoshi } from "./fonts";
+import MainLayout from "./MainLayout";
 import "./globals.css";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://zenoway.online"),
@@ -63,7 +70,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={satoshi.variable}>
+    <html lang="en" className={manrope.variable}>
       <head>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-TKZQD3T9PD"
@@ -73,19 +80,19 @@ export default function RootLayout({
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
+            function gtag() {
+              window.dataLayer.push(arguments);
+            }
             gtag('js', new Date());
-
             gtag('config', 'G-TKZQD3T9PD');
           `}
         </Script>
       </head>
 
-      <body className={`${satoshi.className} antialiased`}>
-        {children}
+      <body className={`${manrope.className} antialiased`}>
+        <MainLayout>{children}</MainLayout>
 
         <Toaster position="top-right" reverseOrder={false} />
-
         <Analytics />
         <SpeedInsights />
       </body>
