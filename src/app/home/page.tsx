@@ -1,6 +1,5 @@
 import HeroSection from "../components/home/HeroSection";
 import StatsBand, { type Stat } from "../components/home/StatsBand";
-import FeaturedJobs from "../components/home/FeaturedJobs";
 import HowItWorks from "../components/home/HowItWorks";
 import HappyWork from "../components/home/HappyWork";
 import Faq from "../components/home/Faq";
@@ -19,12 +18,6 @@ const stats: Stat[] = [
 
 
 
-// const featuredJobs: FeaturedJob[] = [
-//   { id: "JOB1023", role: "UI/UX Designer", company: "Daiviksoft Technologies", location: "Kochi", exp: "1–3 years" },
-//   { id: "JOB1021", role: "Senior UI/UX Designer", company: "Open startup role", location: "Remote", exp: "3–5 years" },
-//   { id: "JOB1042", role: "Frontend Developer", company: "Open startup role", location: "Bengaluru", exp: "2–4 years" },
-//   { id: "JOB1055", role: "Product Designer", company: "Open startup role", location: "Remote", exp: "1–3 years" },
-// ];
 
 const organizationJsonLd = {
   "@context": "https://schema.org",
@@ -51,7 +44,7 @@ export default function Home() {
       <HeroSection/>
 
       <StatsBand stats={stats} />
-      {/* <FeaturedJobs jobs={featuredJobs} /> */}
+  
       <HowItWorks />
      
       <HappyWork/>
