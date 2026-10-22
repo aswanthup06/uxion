@@ -35,9 +35,7 @@ export default function HappyWork() {
             {/* Main character / happy face */}
             <motion.div
               animate={
-                reduce
-                  ? undefined
-                  : { y: [0, -9, 0], rotate: [0, 2, 0, -2, 0] }
+                reduce ? undefined : { y: [0, -9, 0], rotate: [0, 2, 0, -2, 0] }
               }
               transition={{
                 duration: 4,
@@ -47,22 +45,15 @@ export default function HappyWork() {
               className="relative z-10 flex h-36 w-36 items-center justify-center rounded-full border border-[#D9EBDD] bg-white shadow-[0_12px_35px_rgba(8,127,80,0.09)] sm:h-44 sm:w-44"
             >
               <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-[#DDF4E5] sm:h-28 sm:w-28">
-                <Smile
-                  size={62}
-                  strokeWidth={1.5}
-                  className="text-[#087F50] sm:hidden"
-                />
-                <Smile
-                  size={76}
-                  strokeWidth={1.5}
-                  className="hidden text-[#087F50] sm:block"
+                <img
+                  src="/logo.png"
+                  alt="Zenoway logo"
+                  className="h-14 w-14 object-contain sm:h-16 sm:w-16"
                 />
               </div>
 
               <motion.div
-                animate={
-                  reduce ? undefined : { scale: [1, 1.15, 1] }
-                }
+                animate={reduce ? undefined : { scale: [1, 1.15, 1] }}
                 transition={{
                   duration: 2.2,
                   repeat: Infinity,
@@ -132,32 +123,26 @@ export default function HappyWork() {
             className="min-w-0"
           >
             <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#087F50]">
-              <Heart size={14} />
-              A little more happiness
+              <Heart size={14} />A little more happiness
             </div>
 
             <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-tight text-neutral-900 sm:text-4xl">
               Love what you do.
               <br />
-              <span className="text-[#0FA968]">
-                Live a little more.
-              </span>
+              <span className="text-[#0FA968]">Live a little more.</span>
             </h2>
 
             <p className="mt-5 max-w-md text-sm leading-7 text-neutral-600 sm:text-base">
-              The right job is about more than a title or salary.
-              It is about feeling valued, discovering what you are
-              capable of, and having the energy to enjoy life beyond
-              your working hours.
+              The right job is about more than a title or salary. It is about
+              feeling valued, discovering what you are capable of, and having
+              the energy to enjoy life beyond your working hours.
             </p>
 
             <div className="mt-7 space-y-3">
               {benefits.map((benefit, index) => (
                 <motion.div
                   key={benefit}
-                  initial={
-                    reduce ? false : { opacity: 0, x: 10 }
-                  }
+                  initial={reduce ? false : { opacity: 0, x: 10 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{
@@ -170,9 +155,7 @@ export default function HappyWork() {
                     <span className="h-1.5 w-1.5 rounded-full bg-[#0FA968]" />
                   </span>
 
-                  <span className="text-sm text-neutral-700">
-                    {benefit}
-                  </span>
+                  <span className="text-sm text-neutral-700">{benefit}</span>
                 </motion.div>
               ))}
             </div>

@@ -33,7 +33,7 @@ export default function GlobalError({
               Try Again
             </button>
             <Link
-              href="/home"
+              href="/"
               className="inline-flex items-center gap-2 border border-gray-500 hover:border-white px-6 py-3 rounded-lg transition"
             >
               Go Home

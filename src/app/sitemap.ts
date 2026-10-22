@@ -44,9 +44,8 @@ async function getJobs(): Promise<Job[]> {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://www.zenoway.online";
 
-  // Static pages — confirmed live under /home based on testing in this
-  // conversation (e.g. /home/jobs/JOB1040).
-  const staticRoutes = ["/home", "/post-job", "/join"];
+  
+  const staticRoutes = ["/", "/new", "/join"];
 
   // If the API call fails, we still want the static pages in the sitemap
   // rather than failing the whole build — jobs.map() below on an empty

@@ -194,7 +194,7 @@ export default function Navbar() {
       <div className="mx-auto flex h-[68px] items-center px-5 sm:px-8">
         {/* Logo */}
         <Link
-          href="/home"
+          href="/"
           onClick={closeMenus}
           aria-label="Zenoway home"
           className="group flex shrink-0 cursor-pointer items-center gap-2.5"
@@ -210,7 +210,7 @@ export default function Navbar() {
             }}
             className="grid h-8 w-8 place-items-center rounded-lg"
           >
-            <img src="./favicon.png" alt="" />
+            <img src="./logo.png" alt="" />
           </motion.span>
 
           <span className="text-[21px] font-bold tracking-[-1px] text-[#092C20]">
@@ -223,10 +223,10 @@ export default function Navbar() {
           {/* Home */}
           {!isAdminRoute && (
             <Link
-              href="/home"
+              href="/"
               onMouseEnter={() => setDropdown(null)}
               onClick={closeMenus}
-              className={linkClass("/home")}
+              className={linkClass("/")}
             >
               Home
             </Link>
@@ -593,7 +593,7 @@ export default function Navbar() {
               {!isAdminRoute ? (
                 <>
                   <Link
-                    href="/home"
+                    href="/"
                     onClick={closeMenus}
                     className="block cursor-pointer py-4 text-sm font-medium text-[#24352B] transition-colors hover:text-[#0A8F5A]"
                   >

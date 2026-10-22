@@ -1,12 +1,10 @@
-import HeroSection from "../components/home/HeroSection";
-import StatsBand, { type Stat } from "../components/home/StatsBand";
-import HowItWorks from "../components/home/HowItWorks";
-import HappyWork from "../components/home/HappyWork";
-import Faq from "../components/home/Faq";
+import HeroSection from "./components/home/HeroSection";
+import StatsBand, { type Stat } from "./components/home/StatsBand";
+import HowItWorks from "./components/home/HowItWorks";
+import HappyWork from "./components/home/HappyWork";
+import Faq from "./components/home/Faq";
 
-import SiteFooter from "../components/home/SiteFooter";
-
-
+import SiteFooter from "./components/home/SiteFooter";
 
 const stats: Stat[] = [
   { value: 45, suffix: "+", label: "Active jobs" },
@@ -14,10 +12,6 @@ const stats: Stat[] = [
   { value: 500, suffix: "+", label: "Job seekers" },
   { text: "Direct", label: "HR email on every listing" },
 ];
-
-
-
-
 
 const organizationJsonLd = {
   "@context": "https://schema.org",
@@ -41,15 +35,15 @@ export default function Home() {
         }}
       />
 
-      <HeroSection/>
+      <HeroSection />
 
       <StatsBand stats={stats} />
-  
+
       <HowItWorks />
-     
-      <HappyWork/>
+
+      <HappyWork />
       <Faq />
-      
+
       <SiteFooter />
     </main>
   );

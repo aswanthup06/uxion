@@ -38,7 +38,7 @@ export default function LatestJobs() {
 
   // ✅ Conditionally choose grid columns based on route
   const gridClass =
-    pathname === "/home"
+    pathname === "/"
       ? "grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-0"
       : "grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-0";
 

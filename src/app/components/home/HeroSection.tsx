@@ -71,7 +71,7 @@ export default function HeroSection({
       description:
         "Connect with designers and developers who can make a difference to your team. Share your opening and find the right fit.",
       button: "Post a job",
-      href: "/post-job",
+      href: "/new",
       secondary: "Meet your next great hire",
     },
   } as const;

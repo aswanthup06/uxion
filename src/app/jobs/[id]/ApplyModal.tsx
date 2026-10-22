@@ -254,7 +254,7 @@ export default function ApplyModal({
               </p>
 
               <Link
-                href="/home/join"
+                href="/join"
                 onClick={onClose}
                 className="mt-4 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#DDE6DE] px-4 py-2.5 text-sm font-medium text-[#19352A] transition-colors hover:bg-[#F6F9F6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#176B4D]"
               >
