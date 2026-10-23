@@ -338,7 +338,7 @@ export default function SharePage() {
               <motion.div
                 animate={reduce ? undefined : { y: [0, -5, 0] }}
                 transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-                className="relative z-10 w-[78%] max-w-[250px] border border-[#e8ece6] bg-white p-4 shadow-[0_16px_50px_-30px_rgba(25,60,35,0.2)]"
+                className="relative rounded-md z-10 w-[78%] max-w-[250px] border border-[#e8ece6] bg-white p-4 shadow-[0_16px_50px_-30px_rgba(25,60,35,0.2)]"
               >
                 <div className="flex items-center gap-3">
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-700">
