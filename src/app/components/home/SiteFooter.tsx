@@ -28,9 +28,16 @@ const COLUMNS = [
 ] as const;
 
 const SOCIALS = [
-  { label: "LinkedIn", href: "https://www.linkedin.com/", Icon: Linkedin },
-  { label: "GitHub", href: "https://github.com/", Icon: Github },
-  { label: "Instagram", href: "https://www.instagram.com/", Icon: Instagram },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/zenoway",
+    Icon: Linkedin,
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/zenoway_career",
+    Icon: Instagram,
+  },
 ];
 
 export default function SiteFooter() {
