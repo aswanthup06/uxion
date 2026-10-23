@@ -14,16 +14,18 @@ const manrope = Manrope({
   variable: "--font-manrope",
 });
 
+// Must be the host that serves the site and og-image.png directly (HTTP 200, no redirect).
+const SITE_URL = "https://www.zenoway.online";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://zenoway.online"),
+  metadataBase: new URL(SITE_URL),
 
   title: "Zenoway | Find Your Next Opportunity",
   description:
     "Find genuine job opportunities for UI/UX designers, frontend developers, and creative professionals across India.",
 
   alternates: {
-    canonical: "https://zenoway.online",
+    canonical: SITE_URL,
   },
 
   keywords: [
@@ -53,13 +55,13 @@ export const metadata: Metadata = {
     title: "Zenoway | Find Your Next Opportunity",
     description:
       "Discover genuine job opportunities and grow your career with Zenoway.",
-    url: "https://zenoway.online",
+    url: SITE_URL,
     siteName: "Zenoway",
     locale: "en_IN",
     type: "website",
     images: [
       {
-        url: "https://zenoway.online/og-image.png",
+        url: `${SITE_URL}/og-image.png`,
         width: 1200,
         height: 630,
         alt: "Zenoway — Genuine Job Opportunities",
@@ -70,12 +72,10 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Zenoway | Find Your Next Opportunity",
-    description:
-      "Discover genuine job opportunities across India.",
-    images: ["https://zenoway.online/og-image.png"],
+    description: "Discover genuine job opportunities across India.",
+    images: [`${SITE_URL}/og-image.png`],
   },
 };
-
 
 export default function RootLayout({
   children,
