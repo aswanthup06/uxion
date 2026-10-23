@@ -302,7 +302,7 @@ export default function SharePage() {
 
   return (
     <main className="min-h-full w-full overflow-y-auto bg-white pb-16 text-slate-900 selection:bg-emerald-100">
-      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 sm:py-1">
+      <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 sm:py-1">
         <header className="relative isolate bg-white px-0 py-8 text-slate-950 sm:py-12 lg:py-14">
           <span className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.22em] text-emerald-700">
             <FiUsers className="h-3.5 w-3.5" /> ZENOWAY COMMUNITY

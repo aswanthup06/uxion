@@ -1,6 +1,8 @@
+
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -58,66 +60,37 @@ const categories = [
 type DropdownName = "jobs" | "employers" | "admin" | null;
 
 const menuVariants = {
-  hidden: {
-    opacity: 0,
-    y: -8,
-    scale: 0.98,
-    filter: "blur(3px)",
-  },
+  hidden: { opacity: 0, y: -6 },
   visible: {
     opacity: 1,
     y: 0,
-    scale: 1,
-    filter: "blur(0px)",
-    transition: {
-      duration: 0.2,
-      ease: [0.22, 1, 0.36, 1] as const,
-    },
+    transition: { duration: 0.18 },
   },
   exit: {
     opacity: 0,
-    y: -5,
-    scale: 0.99,
-    filter: "blur(2px)",
-    transition: {
-      duration: 0.14,
-      ease: "easeIn" as const,
-    },
+    y: -4,
+    transition: { duration: 0.12 },
   },
 };
 
 const mobileVariants = {
-  hidden: {
-    opacity: 0,
-    height: 0,
-  },
+  hidden: { opacity: 0, height: 0 },
   visible: {
     opacity: 1,
     height: "auto",
     transition: {
-      height: {
-        duration: 0.28,
-        ease: [0.22, 1, 0.36, 1] as const,
-      },
-      opacity: {
-        duration: 0.18,
-      },
+      height: { duration: 0.24 },
+      opacity: { duration: 0.16 },
     },
   },
   exit: {
     opacity: 0,
     height: 0,
-    transition: {
-      height: {
-        duration: 0.22,
-        ease: "easeIn" as const,
-      },
-      opacity: {
-        duration: 0.12,
-      },
-    },
+    transition: { duration: 0.18 },
   },
 };
+
+const iconClass = "block shrink-0";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -134,6 +107,10 @@ export default function Navbar() {
   const closeMenus = () => {
     setDropdown(null);
     setMobileOpen(false);
+  };
+
+  const toggleDropdown = (name: Exclude<DropdownName, null>) => {
+    setDropdown((current) => (current === name ? null : name));
   };
 
   const linkClass = (href: string) =>
@@ -181,18 +158,15 @@ export default function Navbar() {
     }
   };
 
-  // Clean admin login screen: no Navbar.
-  if (isAdminLogin) {
-    return null;
-  }
+  if (isAdminLogin) return null;
 
   return (
     <header
       className="relative z-50 shrink-0 border-b border-[#E8EDE9] bg-white"
       onMouseLeave={() => setDropdown(null)}
     >
-      <div className="mx-auto flex h-[68px] items-center px-5 sm:px-8">
-        {/* Logo */}
+      <div className="mx-auto flex h-[68px] items-center px-4 sm:px-6 lg:px-8">
+        {/* Brand */}
         <Link
           href="/"
           onClick={closeMenus}
@@ -200,241 +174,217 @@ export default function Navbar() {
           className="group flex shrink-0 cursor-pointer items-center gap-2.5"
         >
           <motion.span
-            whileHover={
-              reduceMotion ? undefined : { rotate: 8, scale: 1.06 }
-            }
-            transition={{
-              type: "spring",
-              stiffness: 400,
-              damping: 18,
-            }}
-            className="grid h-8 w-8 place-items-center rounded-lg"
+            whileHover={reduceMotion ? undefined : { rotate: 5, scale: 1.04 }}
+            className="relative grid h-8 w-8 shrink-0 place-items-center"
           >
-            <img src="./logo.png" alt="" />
+            <Image
+              src="/logo.png"
+              alt=""
+              width={32}
+              height={32}
+              priority
+              sizes="32px"
+              className="block h-8 w-8 object-contain"
+            />
           </motion.span>
 
-          <span className="text-[21px] font-bold tracking-[-1px] text-[#092C20]">
+          <span className="text-[20px] font-bold tracking-[-0.8px] text-[#092C20] sm:text-[21px]">
             zenoway
           </span>
         </Link>
 
         {/* Desktop navigation */}
-        <nav className="ml-12 hidden h-full items-center gap-8 md:flex">
-          {/* Home */}
+        <nav className="ml-8 hidden h-full items-center gap-6 lg:ml-10 lg:gap-7 md:flex">
           {!isAdminRoute && (
-            <Link
-              href="/"
-              onMouseEnter={() => setDropdown(null)}
-              onClick={closeMenus}
-              className={linkClass("/")}
-            >
-              Home
-            </Link>
-          )}
-
-          {/* Community */}
-          {!isAdminRoute && (
-            <Link
-              href="/join"
-              onMouseEnter={() => setDropdown(null)}
-              onClick={closeMenus}
-              className={linkClass("/join")}
-            >
-              Community
-            </Link>
-          )}
-
-          {/* Job seekers dropdown */}
-          {!isAdminRoute && (
-            <div className="relative flex h-full items-center">
-              <button
-                type="button"
-                aria-expanded={dropdown === "jobs"}
-                aria-haspopup="true"
-                onMouseEnter={() => setDropdown("jobs")}
-                onClick={() =>
-                  setDropdown(dropdown === "jobs" ? null : "jobs")
-                }
-                className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors duration-200 ${
-                  dropdown === "jobs"
-                    ? "text-[#0A8F5A]"
-                    : "text-[#34423B] hover:text-[#0A8F5A]"
-                }`}
+            <>
+              <Link
+                href="/"
+                onMouseEnter={() => setDropdown(null)}
+                onClick={closeMenus}
+                className={linkClass("/")}
               >
-                For Job Seekers
-                <motion.span
-                  animate={{ rotate: dropdown === "jobs" ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex"
+                Home
+              </Link>
+
+              <Link
+                href="/join"
+                onMouseEnter={() => setDropdown(null)}
+                onClick={closeMenus}
+                className={linkClass("/join")}
+              >
+                Community
+              </Link>
+
+              {/* Job seekers */}
+              <div className="relative flex h-full items-center">
+                <button
+                  type="button"
+                  aria-expanded={dropdown === "jobs"}
+                  aria-haspopup="true"
+                  onMouseEnter={() => setDropdown("jobs")}
+                  onClick={() => toggleDropdown("jobs")}
+                  className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors ${
+                    dropdown === "jobs"
+                      ? "text-[#0A8F5A]"
+                      : "text-[#34423B] hover:text-[#0A8F5A]"
+                  }`}
                 >
-                  <ChevronDown size={15} />
-                </motion.span>
-              </button>
+                  For Job Seekers
+                  <ChevronDown
+                    size={15}
+                    strokeWidth={1.8}
+                    className={`${iconClass} transition-transform duration-200 ${
+                      dropdown === "jobs" ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
 
-              <AnimatePresence>
-                {dropdown === "jobs" && (
-                  <motion.div
-                    key="jobs-dropdown"
-                    {...motionProps}
-                    className="absolute left-0 top-[calc(100%-1px)] w-[290px] origin-top-left rounded-xl border border-[#E6EBE7] bg-white p-2 shadow-[0_16px_40px_rgba(9,44,32,0.12)]"
-                  >
-                    <p className="px-3 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[1.5px] text-[#849188]">
-                      Explore IT jobs
-                    </p>
+                <AnimatePresence>
+                  {dropdown === "jobs" && (
+                    <motion.div
+                      key="jobs-dropdown"
+                      {...motionProps}
+                      className="absolute left-0 top-[calc(100%-1px)] w-[290px] origin-top-left rounded-lg border border-[#E6EBE7] bg-white p-2 shadow-[0_14px_35px_rgba(9,44,32,0.12)]"
+                    >
+                      <p className="px-3 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[1.4px] text-[#849188]">
+                        Explore IT jobs
+                      </p>
 
-                    {categories.map(
-                      ({ label, href, icon: Icon }, index) => (
-                        <motion.div
+                      {categories.map(({ label, href, icon: Icon }) => (
+                        <Link
                           key={label}
-                          initial={
-                            reduceMotion ? false : { opacity: 0, x: -5 }
-                          }
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{
-                            duration: 0.16,
-                            delay: reduceMotion ? 0 : index * 0.025,
-                          }}
+                          href={href}
+                          onClick={closeMenus}
+                          className="group flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-[13px] font-medium text-[#34423B] transition-colors hover:bg-[#F3F8F4] hover:text-[#08794D]"
                         >
-                          <Link
-                            href={href}
-                            onClick={closeMenus}
-                            className="group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-[#34423B] transition-colors duration-150 hover:bg-[#F3F8F4] hover:text-[#08794D]"
-                          >
-                            <Icon
-                              size={17}
-                              strokeWidth={1.7}
-                              className="text-[#738278] transition-colors group-hover:text-[#0A8F5A]"
-                            />
-                            <span className="flex-1">{label}</span>
-                            <ArrowUpRight
-                              size={14}
-                              className="translate-x-[-3px] text-transparent transition-all duration-150 group-hover:translate-x-0 group-hover:text-[#0A8F5A]"
-                            />
-                          </Link>
-                        </motion.div>
-                      )
-                    )}
+                          <Icon
+                            size={17}
+                            strokeWidth={1.8}
+                            aria-hidden="true"
+                            className={`${iconClass} text-[#738278] group-hover:text-[#0A8F5A]`}
+                          />
+                          <span className="flex-1">{label}</span>
+                          <ArrowUpRight
+                            size={14}
+                            aria-hidden="true"
+                            className={`${iconClass} text-[#9AA79E] transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#0A8F5A]`}
+                          />
+                        </Link>
+                      ))}
 
-                    <div className="mx-2 my-2 border-t border-[#E8EDE9]" />
+                      <div className="mx-2 my-2 border-t border-[#E8EDE9]" />
 
-                    <Link
-                      href="/email"
-                      onClick={closeMenus}
-                      className="group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-[#34423B] transition-colors duration-150 hover:bg-[#F3F8F4] hover:text-[#08794D]"
-                    >
-                      <Mail
-                        size={17}
-                        strokeWidth={1.7}
-                        className="text-[#0A8F5A]"
-                      />
-                      <span className="flex-1">
-                        <span className="block">Email Guide</span>
-                        <span className="mt-0.5 block text-xs font-normal text-[#849188]">
-                          Write better professional emails
+                      <Link
+                        href="/email"
+                        onClick={closeMenus}
+                        className="group flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-[13px] text-[#34423B] transition-colors hover:bg-[#F3F8F4]"
+                      >
+                        <Mail
+                          size={17}
+                          strokeWidth={1.8}
+                          className={`${iconClass} text-[#0A8F5A]`}
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block font-medium">Email Guide</span>
+                          <span className="mt-0.5 block text-xs text-[#849188]">
+                            Write better professional emails
+                          </span>
                         </span>
-                      </span>
-                      <ArrowUpRight
-                        size={14}
-                        className="text-[#849188] transition-colors group-hover:text-[#0A8F5A]"
-                      />
-                    </Link>
+                        <ArrowUpRight
+                          size={14}
+                          className={`${iconClass} text-[#849188]`}
+                        />
+                      </Link>
 
-                    <Link
-                      href={JOBS}
-                      onClick={closeMenus}
-                      className="flex cursor-pointer items-center justify-between rounded-lg bg-[#F0F7F1] px-3 py-3 text-[13px] font-semibold text-[#08794D] transition-colors hover:bg-[#E5F2E7]"
-                    >
-                      View all IT jobs
-                      <ArrowUpRight size={16} />
-                    </Link>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
+                      <Link
+                        href={JOBS}
+                        onClick={closeMenus}
+                        className="mt-1 flex cursor-pointer items-center justify-between rounded-md bg-[#F0F7F1] px-3 py-2.5 text-[13px] font-semibold text-[#08794D] transition-colors hover:bg-[#E5F2E7]"
+                      >
+                        View all IT jobs
+                        <ArrowUpRight size={16} className={iconClass} />
+                      </Link>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
-          {/* Employers dropdown */}
-          {!isAdminRoute && (
-            <div className="relative flex h-full items-center">
-              <button
-                type="button"
-                aria-expanded={dropdown === "employers"}
-                aria-haspopup="true"
-                onMouseEnter={() => setDropdown("employers")}
-                onClick={() =>
-                  setDropdown(
-                    dropdown === "employers" ? null : "employers"
-                  )
-                }
-                className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors duration-200 ${
-                  dropdown === "employers"
-                    ? "text-[#0A8F5A]"
-                    : "text-[#34423B] hover:text-[#0A8F5A]"
-                }`}
-              >
-                For Employers
-                <motion.span
-                  animate={{
-                    rotate: dropdown === "employers" ? 180 : 0,
-                  }}
-                  transition={{ duration: 0.2 }}
-                  className="flex"
+              {/* Employers */}
+              <div className="relative flex h-full items-center">
+                <button
+                  type="button"
+                  aria-expanded={dropdown === "employers"}
+                  aria-haspopup="true"
+                  onMouseEnter={() => setDropdown("employers")}
+                  onClick={() => toggleDropdown("employers")}
+                  className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors ${
+                    dropdown === "employers"
+                      ? "text-[#0A8F5A]"
+                      : "text-[#34423B] hover:text-[#0A8F5A]"
+                  }`}
                 >
-                  <ChevronDown size={15} />
-                </motion.span>
-              </button>
+                  For Employers
+                  <ChevronDown
+                    size={15}
+                    strokeWidth={1.8}
+                    className={`${iconClass} transition-transform duration-200 ${
+                      dropdown === "employers" ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
 
-              <AnimatePresence>
-                {dropdown === "employers" && (
-                  <motion.div
-                    key="employers-dropdown"
-                    {...motionProps}
-                    className="absolute left-0 top-[calc(100%-1px)] w-[240px] origin-top-left rounded-xl border border-[#E6EBE7] bg-white p-2 shadow-[0_16px_40px_rgba(9,44,32,0.12)]"
-                  >
-                    <Link
-                      href={POST_JOB}
-                      onClick={closeMenus}
-                      className="group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-3 transition-colors hover:bg-[#F3F8F4]"
+                <AnimatePresence>
+                  {dropdown === "employers" && (
+                    <motion.div
+                      key="employers-dropdown"
+                      {...motionProps}
+                      className="absolute left-0 top-[calc(100%-1px)] w-[235px] origin-top-left rounded-lg border border-[#E6EBE7] bg-white p-2 shadow-[0_14px_35px_rgba(9,44,32,0.12)]"
                     >
-                      <BriefcaseBusiness
-                        size={18}
-                        className="text-[#0A8F5A]"
-                      />
-                      <span>
-                        <span className="block text-[13px] font-semibold text-[#24352B]">
-                          Post a job
+                      <Link
+                        href={POST_JOB}
+                        onClick={closeMenus}
+                        className="group flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 transition-colors hover:bg-[#F3F8F4]"
+                      >
+                        <BriefcaseBusiness
+                          size={18}
+                          className={`${iconClass} text-[#0A8F5A]`}
+                        />
+                        <span>
+                          <span className="block text-[13px] font-semibold text-[#24352B]">
+                            Post a job
+                          </span>
+                          <span className="mt-0.5 block text-xs text-[#849188]">
+                            Find IT talent
+                          </span>
                         </span>
-                        <span className="mt-0.5 block text-xs text-[#849188]">
-                          Find IT talent
-                        </span>
-                      </span>
-                    </Link>
+                      </Link>
 
-                    <Link
-                      href={MY_JOBS}
-                      onClick={closeMenus}
-                      className="group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-3 transition-colors hover:bg-[#F3F8F4]"
-                    >
-                      <BriefcaseBusiness
-                        size={18}
-                        className="text-[#738278] transition-colors group-hover:text-[#0A8F5A]"
-                      />
-                      <span>
-                        <span className="block text-[13px] font-semibold text-[#24352B]">
-                          My jobs
+                      <Link
+                        href={MY_JOBS}
+                        onClick={closeMenus}
+                        className="group flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 transition-colors hover:bg-[#F3F8F4]"
+                      >
+                        <BriefcaseBusiness
+                          size={18}
+                          className={`${iconClass} text-[#738278] group-hover:text-[#0A8F5A]`}
+                        />
+                        <span>
+                          <span className="block text-[13px] font-semibold text-[#24352B]">
+                            My jobs
+                          </span>
+                          <span className="mt-0.5 block text-xs text-[#849188]">
+                            Manage listings
+                          </span>
                         </span>
-                        <span className="mt-0.5 block text-xs text-[#849188]">
-                          Manage listings
-                        </span>
-                      </span>
-                    </Link>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                      </Link>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </>
           )}
 
-          {/* Admin dropdown */}
+          {/* Admin menu */}
           {isAdminRoute && (
             <div className="relative flex h-full items-center">
               <button
@@ -442,23 +392,16 @@ export default function Navbar() {
                 aria-expanded={dropdown === "admin"}
                 aria-haspopup="true"
                 onMouseEnter={() => setDropdown("admin")}
-                onClick={() =>
-                  setDropdown(dropdown === "admin" ? null : "admin")
-                }
-                className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors duration-200 ${
-                  dropdown === "admin"
-                    ? "text-[#0A8F5A]"
-                    : "text-[#34423B] hover:text-[#0A8F5A]"
-                }`}
+                onClick={() => toggleDropdown("admin")}
+                className="flex cursor-pointer items-center gap-1.5 text-sm font-medium text-[#34423B] transition-colors hover:text-[#0A8F5A]"
               >
                 Admin
-                <motion.span
-                  animate={{ rotate: dropdown === "admin" ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex"
-                >
-                  <ChevronDown size={15} />
-                </motion.span>
+                <ChevronDown
+                  size={15}
+                  className={`${iconClass} transition-transform ${
+                    dropdown === "admin" ? "rotate-180" : ""
+                  }`}
+                />
               </button>
 
               <AnimatePresence>
@@ -466,36 +409,36 @@ export default function Navbar() {
                   <motion.div
                     key="admin-dropdown"
                     {...motionProps}
-                    className="absolute left-0 top-[calc(100%-1px)] w-[235px] origin-top-left rounded-xl border border-[#E6EBE7] bg-white p-2 shadow-[0_16px_40px_rgba(9,44,32,0.12)]"
+                    className="absolute left-0 top-[calc(100%-1px)] w-[235px] rounded-lg border border-[#E6EBE7] bg-white p-2 shadow-[0_14px_35px_rgba(9,44,32,0.12)]"
                   >
-                    <p className="px-3 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[1.5px] text-[#849188]">
+                    <p className="px-3 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[1.4px] text-[#849188]">
                       Administration
                     </p>
 
                     <Link
                       href="/admin"
                       onClick={closeMenus}
-                      className="flex items-center gap-3 rounded-lg px-3 py-3 text-[13px] font-medium text-[#34423B] transition-colors hover:bg-[#F3F8F4] hover:text-[#08794D]"
+                      className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-[13px] font-medium text-[#34423B] hover:bg-[#F3F8F4]"
                     >
-                      <LayoutDashboard size={17} />
+                      <LayoutDashboard size={17} className={iconClass} />
                       Dashboard
                     </Link>
 
                     <Link
                       href="/admin/jobs"
                       onClick={closeMenus}
-                      className="flex items-center gap-3 rounded-lg px-3 py-3 text-[13px] font-medium text-[#34423B] transition-colors hover:bg-[#F3F8F4] hover:text-[#08794D]"
+                      className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-[13px] font-medium text-[#34423B] hover:bg-[#F3F8F4]"
                     >
-                      <BriefcaseBusiness size={17} />
+                      <BriefcaseBusiness size={17} className={iconClass} />
                       Manage jobs
                     </Link>
 
                     <Link
                       href="/admin/jobs/add"
                       onClick={closeMenus}
-                      className="flex items-center gap-3 rounded-lg px-3 py-3 text-[13px] font-medium text-[#34423B] transition-colors hover:bg-[#F3F8F4] hover:text-[#08794D]"
+                      className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-[13px] font-medium text-[#34423B] hover:bg-[#F3F8F4]"
                     >
-                      <Settings size={17} />
+                      <Settings size={17} className={iconClass} />
                       Add a job
                     </Link>
 
@@ -505,9 +448,9 @@ export default function Navbar() {
                       type="button"
                       disabled={loggingOut}
                       onClick={handleAdminLogout}
-                      className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-[13px] font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-left text-[13px] font-medium text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      <LogOut size={17} />
+                      <LogOut size={17} className={iconClass} />
                       {loggingOut ? "Logging out..." : "Log out"}
                     </button>
                   </motion.div>
@@ -521,60 +464,59 @@ export default function Navbar() {
 
         {/* Desktop actions */}
         {!isAdminRoute && (
-          <div className="hidden items-center gap-5 md:flex">
+          <div className="hidden shrink-0 items-center gap-3 md:flex lg:gap-3">
             <Link
               href={LOGIN}
-              className="cursor-pointer text-xs font-medium text-[#34423B] transition-colors hover:text-[#0A8F5A]"
+              className="inline-flex h-9 cursor-pointer items-center justify-center rounded-sm border border-[#DCE6DE] bg-white px-4 text-xs font-semibold text-[#254536] transition-colors duration-200 hover:border-[#0A8F5A] hover:bg-[#F4F9F5] hover:text-[#087F50] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A8F5A] focus-visible:ring-offset-2"
             >
               Log in
             </Link>
 
             <motion.div
-              whileHover={
-                reduceMotion ? undefined : { y: -1 }
-              }
-              whileTap={
-                reduceMotion ? undefined : { scale: 0.97 }
-              }
+              whileHover={reduceMotion ? undefined : { y: -1 }}
+              whileTap={reduceMotion ? undefined : { scale: 0.98 }}
             >
               <Link
                 href={POST_JOB}
-                className="inline-flex text-xs hover:bg-emerald-800 h-10 cursor-pointer items-center justify-center rounded-sm bg-emerald-700 px-4 py-3 font-semibold text-white transition-colors duration-200  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A8F5A] focus-visible:ring-offset-2"
+                className="group inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-sm bg-emerald-800 px-4 text-xs font-semibold text-white shadow-sm transition-colors duration-200 hover:border-[#066A43] hover:bg-[#066A43] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A8F5A] focus-visible:ring-offset-2"
               >
                 Post a job
-                <ArrowUpRight size={15} className="ml-2" />
+                <ArrowUpRight
+                  size={15}
+                  strokeWidth={2}
+                  className={`${iconClass} transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5`}
+                />
               </Link>
             </motion.div>
           </div>
         )}
 
-        {/* Mobile toggle */}
+        {/* Mobile menu toggle: keep icons mounted without AnimatePresence */}
         <button
           type="button"
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
           onClick={() => {
-            setMobileOpen(!mobileOpen);
+            setMobileOpen((open) => !open);
             setDropdown(null);
           }}
-          className="ml-3 grid h-10 w-10 cursor-pointer place-items-center rounded-lg text-[#092C20] transition-colors hover:bg-[#F3F6F3] active:scale-95 md:hidden"
+          className="ml-3 grid h-10 w-10 shrink-0 cursor-pointer place-items-center rounded-md border border-[#E4EAE5] bg-white text-[#173D2E] transition-colors hover:bg-[#F2F7F3] active:scale-95 md:hidden"
         >
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span
-              key={mobileOpen ? "close" : "menu"}
-              initial={
-                reduceMotion
-                  ? false
-                  : { opacity: 0, rotate: -45, scale: 0.8 }
-              }
-              animate={{ opacity: 1, rotate: 0, scale: 1 }}
-              exit={{ opacity: 0, rotate: 45, scale: 0.8 }}
-              transition={{ duration: 0.15 }}
-              className="flex"
-            >
-              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-            </motion.span>
-          </AnimatePresence>
+          {mobileOpen ? (
+            <X
+              size={22}
+              strokeWidth={2}
+              className={iconClass}
+              aria-hidden="true"
+            />
+          ) : (
+            <Menu
+              size={22}
+              strokeWidth={2}
+              className={iconClass}
+              aria-hidden="true"
+            />
+          )}
         </button>
       </div>
 
@@ -587,7 +529,7 @@ export default function Navbar() {
             animate="visible"
             exit="exit"
             variants={mobileVariants}
-            className="absolute inset-x-0 top-full overflow-hidden border-b border-black/5 bg-white shadow-lg md:hidden"
+            className="absolute inset-x-0 top-full overflow-hidden border-b border-[#E5EBE6] bg-white shadow-lg md:hidden"
           >
             <div className="max-h-[calc(100dvh-68px)] overflow-y-auto px-5 pb-6">
               {!isAdminRoute ? (
@@ -608,25 +550,21 @@ export default function Navbar() {
                     Community
                   </Link>
 
-                  {/* Mobile job seekers */}
+                  {/* Mobile job seeker accordion */}
                   <button
                     type="button"
                     aria-expanded={dropdown === "jobs"}
-                    onClick={() =>
-                      setDropdown(dropdown === "jobs" ? null : "jobs")
-                    }
-                    className="flex w-full cursor-pointer items-center justify-between py-4 text-sm font-medium text-[#24352B]"
+                    onClick={() => toggleDropdown("jobs")}
+                    className="flex w-full cursor-pointer items-center justify-between py-4 text-left text-sm font-medium text-[#24352B]"
                   >
                     For Job Seekers
-                    <motion.span
-                      animate={{
-                        rotate: dropdown === "jobs" ? 180 : 0,
-                      }}
-                      transition={{ duration: 0.2 }}
-                      className="flex"
-                    >
-                      <ChevronDown size={16} />
-                    </motion.span>
+                    <ChevronDown
+                      size={17}
+                      strokeWidth={1.8}
+                      className={`${iconClass} transition-transform duration-200 ${
+                        dropdown === "jobs" ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
 
                   <AnimatePresence initial={false}>
@@ -639,14 +577,20 @@ export default function Navbar() {
                         exit="exit"
                         className="overflow-hidden"
                       >
-                        <div className="space-y-1 py-2 pl-3">
-                          {categories.map(({ label, href }) => (
+                        <div className="space-y-1 py-2 pl-2">
+                          {categories.map(({ label, href, icon: Icon }) => (
                             <Link
                               key={label}
                               href={href}
                               onClick={closeMenus}
-                              className="block cursor-pointer rounded-md px-3 py-2.5 text-sm text-[#536158] transition-colors hover:bg-[#F3F8F4] hover:text-[#08794D]"
+                              className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-sm text-[#536158] transition-colors hover:bg-[#F3F8F4] hover:text-[#08794D]"
                             >
+                              <Icon
+                                size={17}
+                                strokeWidth={1.8}
+                                className={`${iconClass} text-[#0A8F5A]`}
+                                aria-hidden="true"
+                              />
                               {label}
                             </Link>
                           ))}
@@ -654,11 +598,11 @@ export default function Navbar() {
                           <Link
                             href="/email"
                             onClick={closeMenus}
-                            className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-sm text-[#536158] transition-colors hover:bg-[#F3F8F4] hover:text-[#08794D]"
+                            className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-sm text-[#536158] transition-colors hover:bg-[#F3F8F4]"
                           >
                             <Mail
                               size={17}
-                              className="text-[#0A8F5A]"
+                              className={`${iconClass} text-[#0A8F5A]`}
                             />
                             <span>
                               <span className="block font-medium">
@@ -673,36 +617,31 @@ export default function Navbar() {
                           <Link
                             href={JOBS}
                             onClick={closeMenus}
-                            className="mt-1 block cursor-pointer rounded-md bg-[#F0F7F1] px-3 py-2.5 text-sm font-semibold text-[#08794D] transition-colors hover:bg-[#E5F2E7]"
+                            className="mt-1 flex cursor-pointer items-center justify-between rounded-md bg-[#F0F7F1] px-3 py-2.5 text-sm font-semibold text-[#08794D] transition-colors hover:bg-[#E5F2E7]"
                           >
                             All IT Jobs
+                            <ArrowUpRight size={16} className={iconClass} />
                           </Link>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
 
-                  {/* Mobile employers */}
+                  {/* Mobile employers accordion */}
                   <button
                     type="button"
                     aria-expanded={dropdown === "employers"}
-                    onClick={() =>
-                      setDropdown(
-                        dropdown === "employers" ? null : "employers"
-                      )
-                    }
-                    className="flex w-full cursor-pointer items-center justify-between py-4 text-sm font-medium text-[#24352B]"
+                    onClick={() => toggleDropdown("employers")}
+                    className="flex w-full cursor-pointer items-center justify-between py-4 text-left text-sm font-medium text-[#24352B]"
                   >
                     For Employers
-                    <motion.span
-                      animate={{
-                        rotate: dropdown === "employers" ? 180 : 0,
-                      }}
-                      transition={{ duration: 0.2 }}
-                      className="flex"
-                    >
-                      <ChevronDown size={16} />
-                    </motion.span>
+                    <ChevronDown
+                      size={17}
+                      strokeWidth={1.8}
+                      className={`${iconClass} transition-transform duration-200 ${
+                        dropdown === "employers" ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
 
                   <AnimatePresence initial={false}>
@@ -715,20 +654,28 @@ export default function Navbar() {
                         exit="exit"
                         className="overflow-hidden"
                       >
-                        <div className="space-y-1 py-2 pl-3">
+                        <div className="space-y-1 py-2 pl-2">
                           <Link
                             href={POST_JOB}
                             onClick={closeMenus}
-                            className="block cursor-pointer rounded-md px-3 py-2.5 text-sm text-[#536158] transition-colors hover:bg-[#F3F8F4]"
+                            className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-sm text-[#536158] transition-colors hover:bg-[#F3F8F4]"
                           >
+                            <BriefcaseBusiness
+                              size={17}
+                              className={`${iconClass} text-[#0A8F5A]`}
+                            />
                             Post a job
                           </Link>
 
                           <Link
                             href={MY_JOBS}
                             onClick={closeMenus}
-                            className="block cursor-pointer rounded-md px-3 py-2.5 text-sm text-[#536158] transition-colors hover:bg-[#F3F8F4]"
+                            className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-sm text-[#536158] transition-colors hover:bg-[#F3F8F4]"
                           >
+                            <BriefcaseBusiness
+                              size={17}
+                              className={`${iconClass} text-[#738278]`}
+                            />
                             My jobs
                           </Link>
                         </div>
@@ -736,12 +683,12 @@ export default function Navbar() {
                     )}
                   </AnimatePresence>
 
-                  {/* Mobile public actions */}
-                  <div className="mt-5 grid grid-cols-2 gap-3">
+                  {/* Mobile actions */}
+                  <div className="mt-5 grid grid-cols-2 gap-3 border-t border-[#E8EDE9] pt-5">
                     <Link
                       href={LOGIN}
                       onClick={closeMenus}
-                      className="flex h-11 cursor-pointer items-center justify-center rounded-lg text-sm font-semibold text-[#24352B] transition-colors hover:bg-[#F3F8F4] active:scale-[0.98]"
+                      className="flex h-11 cursor-pointer items-center justify-center rounded-md border border-[#DCE6DE] bg-white px-3 text-sm font-semibold text-[#254536] transition-colors hover:border-[#0A8F5A] hover:bg-[#F4F9F5]"
                     >
                       Log in
                     </Link>
@@ -749,42 +696,43 @@ export default function Navbar() {
                     <Link
                       href={POST_JOB}
                       onClick={closeMenus}
-                      className="flex cursor-pointer items-center justify-center rounded-sm bg-emerald-700 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0A8F5A]"
+                      className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-md border border-[#087F50] bg-[#087F50] px-3 text-sm font-semibold text-white transition-colors hover:bg-[#066A43]"
                     >
                       Post a job
+                      <ArrowUpRight size={15} className={iconClass} />
                     </Link>
                   </div>
                 </>
               ) : (
                 <>
-                  <p className="pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[1.5px] text-[#849188]">
+                  <p className="pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[1.4px] text-[#849188]">
                     Administration
                   </p>
 
                   <Link
                     href="/admin"
                     onClick={closeMenus}
-                    className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-[#34423B] hover:bg-[#F3F8F4]"
+                    className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-[#34423B] hover:bg-[#F3F8F4]"
                   >
-                    <LayoutDashboard size={18} />
+                    <LayoutDashboard size={18} className={iconClass} />
                     Dashboard
                   </Link>
 
                   <Link
                     href="/admin/jobs"
                     onClick={closeMenus}
-                    className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-[#34423B] hover:bg-[#F3F8F4]"
+                    className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-[#34423B] hover:bg-[#F3F8F4]"
                   >
-                    <BriefcaseBusiness size={18} />
+                    <BriefcaseBusiness size={18} className={iconClass} />
                     Manage jobs
                   </Link>
 
                   <Link
                     href="/admin/jobs/add"
                     onClick={closeMenus}
-                    className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-[#34423B] hover:bg-[#F3F8F4]"
+                    className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-[#34423B] hover:bg-[#F3F8F4]"
                   >
-                    <Settings size={18} />
+                    <Settings size={18} className={iconClass} />
                     Add a job
                   </Link>
 
@@ -792,9 +740,9 @@ export default function Navbar() {
                     type="button"
                     disabled={loggingOut}
                     onClick={handleAdminLogout}
-                    className="mt-3 flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-60"
+                    className="mt-3 flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    <LogOut size={18} />
+                    <LogOut size={18} className={iconClass} />
                     {loggingOut ? "Logging out..." : "Log out"}
                   </button>
                 </>

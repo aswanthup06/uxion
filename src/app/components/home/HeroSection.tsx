@@ -188,7 +188,7 @@ export default function HeroSection({
                 >
                   <Link
                     href={active.href}
-                    className="group inline-flex h-11 items-center gap-3 rounded-md bg-emerald-700 px-5 text-[13px] font-medium text-white transition-colors hover:bg-emerald-800"
+                    className="group inline-flex h-9 items-center gap-3 rounded-sm bg-emerald-700 px-5 text-xs font-medium text-white transition-colors hover:bg-emerald-800"
                   >
                     {active.button}
                     <ArrowUpRight
