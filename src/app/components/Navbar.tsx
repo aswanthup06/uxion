@@ -500,22 +500,39 @@ export default function Navbar() {
             setMobileOpen((open) => !open);
             setDropdown(null);
           }}
-          className="ml-3 grid h-10 w-10 shrink-0 cursor-pointer place-items-center rounded-md border border-[#E4EAE5] bg-white text-[#173D2E] transition-colors hover:bg-[#F2F7F3] active:scale-95 md:hidden"
+          className="group ml-3 grid h-10 w-10 shrink-0 cursor-pointer place-items-center bg-transparent text-[#087F50] transition-transform duration-200 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A8F5A] focus-visible:ring-offset-2 md:hidden"
         >
           {mobileOpen ? (
             <X
-              size={22}
-              strokeWidth={2}
-              className={iconClass}
+              size={21}
+              strokeWidth={1.9}
+              className={`${iconClass} transition-transform duration-200 group-hover:rotate-90`}
               aria-hidden="true"
             />
           ) : (
-            <Menu
-              size={22}
-              strokeWidth={2}
-              className={iconClass}
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
               aria-hidden="true"
-            />
+              className={`${iconClass} overflow-visible`}
+            >
+              <path
+                d="M4 8.5H19"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                className="transition-transform duration-200 group-hover:translate-x-[1px]"
+              />
+              <path
+                d="M9 15.5H19"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                className="transition-transform duration-200 group-hover:-translate-x-[1px]"
+              />
+            </svg>
           )}
         </button>
       </div>
