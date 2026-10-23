@@ -65,7 +65,7 @@ function Modal({
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/45 p-0 backdrop-blur-[2px] sm:items-center sm:p-5"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -81,17 +81,17 @@ function Modal({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: 0.22, ease: EASE }}
-            className="max-h-[88dvh] w-full max-w-md overflow-y-auto rounded-t-xl bg-white shadow-2xl sm:rounded-xl sm:border sm:border-slate-200 sm:p-6"
+            className="relative max-h-[92dvh] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-lg border border-slate-200 bg-white px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-2xl sm:max-h-[88dvh] sm:rounded-lg sm:p-6"
           >
-            <div className="mb-5 flex justify-end">
+            <div className="sticky top-0 z-10 -mx-1 mb-1 flex justify-end bg-white/95 pb-1 backdrop-blur-sm sm:mb-2">
               <button
                 ref={closeRef}
                 type="button"
                 onClick={onClose}
                 aria-label="Close dialog"
-                className="cursor-pointer grid h-9 w-9 place-items-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                className="grid h-8 w-8 cursor-pointer place-items-center rounded-md text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
               >
-                <FiX className="h-5 w-5" />
+                <FiX className="h-[18px] w-[18px]" />
               </button>
             </div>
             {children}
@@ -119,7 +119,7 @@ function FieldSelect({
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-semibold text-slate-700">
+      <span className="mb-1.5 block text-xs font-semibold text-slate-700">
         {label}
       </span>
       <span className="relative block">
@@ -127,7 +127,7 @@ function FieldSelect({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           disabled={disabled}
-          className="w-full cursor-pointer appearance-none rounded-lg border border-slate-300 bg-white px-4 py-3.5 pr-11 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+          className="w-full cursor-pointer appearance-none rounded-md border border-slate-300 bg-white px-3 py-3 pr-10 text-sm text-slate-800 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
         >
           <option value="">{placeholder}</option>
           {options.map((option) => (
@@ -159,17 +159,17 @@ function GroupResult({
     <motion.article
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mt-5 rounded-lg bg-slate-50 p-4"
+      className="mt-4 border-t border-slate-200 pt-4"
     >
       <div className="flex items-start gap-3">
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-700">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-emerald-50 text-emerald-700">
           <FaWhatsapp className="h-6 w-6" />
         </span>
         <div className="min-w-0 flex-1">
           <span className="inline-flex text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-700">
             {category}
           </span>
-          <h3 className="mt-2 break-words text-lg font-bold text-slate-900">
+          <h3 className="mt-1 break-words text-base font-semibold leading-6 text-slate-900">
             {group.name}
           </h3>
           <p className="mt-1 break-words text-sm leading-6 text-slate-600">
@@ -181,7 +181,7 @@ function GroupResult({
         href={group.link}
         target="_blank"
         rel="noopener noreferrer"
-        className="cursor-pointer mt-4 inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-emerald-700 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
+        className="mt-4 inline-flex min-h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-emerald-700 px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
       >
         <FaWhatsapp className="h-5 w-5" /> Join WhatsApp group{" "}
         <FiArrowUpRight className="h-4 w-4" />
@@ -190,7 +190,7 @@ function GroupResult({
         <button
           type="button"
           onClick={() => onCopy(group.link)}
-          className="flex flex-1 items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50"
+          className="flex min-h-10 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50"
         >
           {copied ? (
             <IoCheckmark className="h-4 w-4 text-emerald-600" />
@@ -202,7 +202,7 @@ function GroupResult({
         <button
           type="button"
           onClick={() => onShare(group)}
-          className="flex flex-1 items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50"
+          className="flex min-h-10 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50"
         >
           <IoShareSocial className="h-4 w-4" /> Share
         </button>
@@ -302,75 +302,135 @@ export default function SharePage() {
 
   return (
     <main className="min-h-full w-full overflow-y-auto bg-white pb-16 text-slate-900 selection:bg-emerald-100">
-      <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 sm:py-1">
-        <header className="relative isolate bg-white px-0 py-8 text-slate-950 sm:py-12 lg:py-14">
-          <span className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.22em] text-emerald-700">
-            <FiUsers className="h-3.5 w-3.5" /> ZENOWAY COMMUNITY
-          </span>
-          <h1 className="mt-5 max-w-3xl text-4xl font-medium leading-[1.08] tracking-[-0.05em] sm:text-5xl lg:text-6xl">
-            Your next opportunity starts{" "}
-            <span className="text-emerald-700">with community.</span>
-          </h1>
-          <p className="mt-4 max-w-xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
-            Find job communities by category and state, or follow the channel
-            for important alerts and updates.
-          </p>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-7">
-            <button
-              type="button"
-              onClick={openGroupModal}
-              className="cursor-pointer group inline-flex min-h-9 items-center justify-center gap-2 self-start rounded-sm bg-emerald-700 px-4 py-3 text-xs font-semibold text-white transition-colors hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
+      <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-12 sm:py-1">
+        <header className="relative isolate bg-white py-4 text-[#202820] sm:py-6 lg:py-7">
+          <div className="grid items-center gap-8 lg:grid-cols-[1.22fr_0.78fr] lg:gap-12">
+            {/* Animated visual inspired by the Zenoway home hero */}
+            <motion.div
+              initial={reduce ? false : { opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.45, ease: EASE }}
+              className="relative mx-auto flex min-h-[210px] w-full max-w-[340px] items-center justify-center sm:min-h-[250px] order-last lg:min-h-[330px]"
+              aria-hidden="true"
             >
-              <FaWhatsapp className="h-4 w-4" />
-              <span>WhatsApp Groups</span>
-              <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setChannelModalOpen(true)}
-              className="group inline-flex min-h-9 items-center justify-center gap-2 self-start rounded-sm border border-slate-300 px-4 py-3 cursor-pointer text-xs font-semibold text-slate-800 transition-colors hover:border-slate-500 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
-            >
-              <HiOutlineSpeakerphone className="h-4 w-4 text-emerald-700" />
-              <span>WhatsApp Channel</span>
-              <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </button>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-slate-500">
-            <span className="inline-flex items-center gap-2">
-              <FiCheckCircle className="h-4 w-4 text-emerald-700" /> Direct
-              WhatsApp links
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <FiCheckCircle className="h-4 w-4 text-emerald-700" /> Pick your
-              field
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <FiCheckCircle className="h-4 w-4 text-emerald-700" /> Easy to
-              join
-            </span>
+              <div
+                className="absolute inset-2 opacity-50"
+                style={{
+                  backgroundImage: "radial-gradient(#b9c8ba 0.7px, transparent 0.7px)",
+                  backgroundSize: "17px 17px",
+                  maskImage: "radial-gradient(ellipse at center, black 15%, transparent 75%)",
+                }}
+              />
+              <motion.svg
+                viewBox="0 0 340 300"
+                fill="none"
+                className="absolute inset-0 h-full w-full"
+                animate={reduce ? undefined : { rotate: [0, 2, 0] }}
+                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <ellipse cx="170" cy="150" rx="125" ry="94" stroke="#dce7dc" strokeDasharray="3 7" />
+                <ellipse cx="170" cy="150" rx="88" ry="120" stroke="#e7ede5" transform="rotate(-28 170 150)" />
+                <path d="M45 195 C95 195 105 90 160 112 S235 210 295 72" stroke="#b9d1bc" strokeDasharray="4 6" />
+                <circle cx="45" cy="195" r="4" fill="#059669" />
+                <circle cx="160" cy="112" r="4" fill="#059669" />
+                <circle cx="295" cy="72" r="4" fill="#059669" />
+              </motion.svg>
+              <motion.div
+                animate={reduce ? undefined : { y: [0, -5, 0] }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+                className="relative z-10 w-[78%] max-w-[250px] border border-[#e8ece6] bg-white p-4 shadow-[0_16px_50px_-30px_rgba(25,60,35,0.2)]"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-700">
+                    <FaWhatsapp className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-emerald-700">Zenoway community</p>
+                    <p className="mt-1 text-sm font-medium text-[#202820]">Find your people.</p>
+                  </div>
+                </div>
+                <div className="my-4 h-px bg-[#edf0eb]" />
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-600" />
+                    <span className="h-2 w-24 bg-[#e7ece6]" />
+                    <span className="ml-auto text-[10px] text-[#737971]">Jobs</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-300" />
+                    <span className="h-2 w-16 bg-[#e7ece6]" />
+                    <span className="ml-auto text-[10px] text-[#737971]">Groups</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <span className="h-2 w-2 rounded-full bg-[#b9d1bc]" />
+                    <span className="h-2 w-20 bg-[#e7ece6]" />
+                    <span className="ml-auto text-[10px] text-[#737971]">Updates</span>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            <div className="order-first min-w-0 lg:py-4">
+              <motion.span initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-[#657267]">
+                <FiUsers className="h-3.5 w-3.5 text-emerald-700" /> ZENOWAY COMMUNITY
+              </motion.span>
+              <motion.h1 initial={reduce ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.32, delay: 0.04, ease: EASE }} className="mt-4 max-w-[680px] text-[40px] font-medium leading-[1.12] tracking-[-0.045em] sm:text-[48px] lg:text-[54px]">
+                Your next opportunity starts{" "}
+                <span className="text-emerald-700">with community.</span>
+              </motion.h1>
+              <motion.p initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1, ease: EASE }} className="mt-4 max-w-[510px] text-[15px] leading-7 text-[#737971] sm:text-base">
+                Find job communities by category and state, or follow the channel
+                for important alerts and updates.
+              </motion.p>
+              <motion.div initial={reduce ? false : { opacity: 0, y: 7 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, delay: 0.16, ease: EASE }} className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <button
+                  type="button"
+                  onClick={openGroupModal}
+                  className="group inline-flex min-h-9 cursor-pointer items-center justify-center gap-2 self-start rounded-sm bg-emerald-700 px-4 py-3 text-xs font-semibold text-white transition-colors hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
+                >
+                  <FaWhatsapp className="h-4 w-4" />
+                  <span>WhatsApp Groups</span>
+                  <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setChannelModalOpen(true)}
+                  className="group inline-flex min-h-9 cursor-pointer items-center justify-center gap-2 self-start rounded-sm border border-slate-300 px-4 py-3 text-xs font-semibold text-slate-800 transition-colors hover:border-slate-500 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
+                >
+                  <HiOutlineSpeakerphone className="h-4 w-4 text-emerald-700" />
+                  <span>WhatsApp Channel</span>
+                  <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </button>
+              </motion.div>
+              <motion.div initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3, delay: 0.22 }} className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-[#7b8179]">
+                <span className="inline-flex items-center gap-2"><FiCheckCircle className="h-4 w-4 text-emerald-700" /> Direct WhatsApp links</span>
+                <span className="inline-flex items-center gap-2"><FiCheckCircle className="h-4 w-4 text-emerald-700" /> Pick your field</span>
+                <span className="inline-flex items-center gap-2"><FiCheckCircle className="h-4 w-4 text-emerald-700" /> Easy to join</span>
+              </motion.div>
+            </div>
           </div>
         </header>
 
-        <section className="mt-7 grid grid-cols-1 divide-y divide-slate-200 border-y border-slate-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+        <motion.section initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.38, delay: 0.18, ease: EASE }} className="mt-7 grid grid-cols-1 divide-y divide-slate-200 border-y border-slate-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           <div className="flex items-center gap-4 py-5 sm:px-5 sm:first:pl-0">
-            <span className="text-2xl font-semibold tracking-tight text-slate-950">
+            <span className="text-2xl font-semibold tracking-tight text-[#202820]">
               {categories.length}
             </span>
-            <span className="text-sm text-slate-500">Job categories</span>
+            <span className="text-sm text-[#737971]">Job categories</span>
           </div>
           <div className="flex items-center gap-4 py-5 sm:px-5">
             <FiMapPin className="h-5 w-5 text-emerald-700" />
-            <span className="text-sm text-slate-600">
+            <span className="text-sm text-[#737971]">
               State-based communities
             </span>
           </div>
           <div className="flex items-center gap-4 py-5 sm:px-5">
             <FaWhatsapp className="h-5 w-5 text-emerald-700" />
-            <span className="text-sm text-slate-600">
+            <span className="text-sm text-[#737971]">
               Direct WhatsApp access
             </span>
           </div>
-        </section>
+        </motion.section>
 
         <footer className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-slate-200 pt-6 text-center sm:flex-row sm:text-left">
           <p className="text-sm text-slate-500">
@@ -388,23 +448,19 @@ export default function SharePage() {
         labelledBy="group-modal-title"
       >
         <div className="mx-auto max-w-md">
-          <span className="mx-auto grid h-10 w-10 place-items-center rounded-full bg-emerald-50 text-emerald-700">
-            <FaWhatsapp className="h-7 w-7" />
-          </span>
-          <p className="mt-4 text-center text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">
-            Find your community
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-emerald-50 text-emerald-700">
+              <FaWhatsapp className="h-6 w-6" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-700">Find your community</p>
+              <h2 id="group-modal-title" className="mt-1 text-lg font-semibold tracking-tight text-slate-950 sm:text-xl">Join a WhatsApp group</h2>
+            </div>
+          </div>
+          <p className="mt-3 text-sm leading-5 text-slate-500">
+            Choose a job category and state to find the right group.
           </p>
-          <h2
-            id="group-modal-title"
-            className="mt-2 text-center text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl"
-          >
-            Join a WhatsApp group
-          </h2>
-          <p className="mt-2 text-center text-sm leading-6 text-slate-500">
-            Choose your job category, then select a state or group to see the
-            join link.
-          </p>
-          <div className="mt-7 space-y-4">
+          <div className="mt-5 space-y-4">
             <FieldSelect
               label="1. Choose a job category"
               value={selectedCategory}
@@ -437,10 +493,10 @@ export default function SharePage() {
           </div>
           {selectedCategory && availableGroups.length > 5 && (
             <div className="mt-4">
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
+              <label className="mb-1.5 block text-xs font-semibold text-slate-700">
                 Or search available groups
               </label>
-              <div className="flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-3 focus-within:border-emerald-500 focus-within:ring-4 focus-within:ring-emerald-50">
+              <div className="flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2.5 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-50">
                 <FiSearch className="h-4 w-4 text-slate-400" />
                 <input
                   value={query}
@@ -459,7 +515,7 @@ export default function SharePage() {
                         setSelectedGroupName(group.name);
                         setQuery("");
                       }}
-                      className="block w-full border-b border-slate-100 px-3 py-3 text-left text-sm last:border-0 hover:bg-emerald-50"
+                      className="block w-full cursor-pointer border-b border-slate-100 px-3 py-3 text-left text-sm last:border-0 hover:bg-emerald-50"
                     >
                       {group.name}
                     </button>
@@ -483,7 +539,7 @@ export default function SharePage() {
             />
           )}
           {selectedCategory && !selectedGroup && (
-            <p className="mt-4 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-500">
+            <p className="mt-4 bg-slate-50 px-3 py-3 text-sm leading-5 text-slate-600">
               {availableGroups.length
                 ? "Select a state or group above to see its details and join link."
                 : "No groups have been added to this category yet."}
@@ -492,7 +548,7 @@ export default function SharePage() {
           <button
             type="button"
             onClick={closeGroupModal}
-            className="cursor-pointer mt-5 w-full rounded-md px-4 py-3 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+            className="mt-3 w-full cursor-pointer rounded-md px-3 py-2.5 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
           >
             Close
           </button>
@@ -543,7 +599,7 @@ export default function SharePage() {
             href={channel.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="cursor-pointer mt-6 inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-emerald-700 px-4 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-200"
+            className="mt-6 inline-flex min-h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
           >
             <FaWhatsapp className="h-5 w-5" /> Join WhatsApp Channel{" "}
             <FiArrowUpRight className="h-4 w-4" />
@@ -551,7 +607,7 @@ export default function SharePage() {
           <button
             type="button"
             onClick={closeChannelModal}
-            className="cursor-pointer mt-3 w-full rounded-md px-4 py-3 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+            className="mt-3 w-full cursor-pointer rounded-md px-3 py-2.5 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
           >
             Maybe later
           </button>
