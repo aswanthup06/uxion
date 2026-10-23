@@ -14,11 +14,18 @@ const manrope = Manrope({
   variable: "--font-manrope",
 });
 
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://zenoway.online"),
-  title: "Zenoway",
+
+  title: "Zenoway | Find Your Next Opportunity",
   description:
-    "Zenoway is a dedicated job portal for UI/UX designers, UI developers, frontend developers, and creative professionals. Discover jobs from startups and top companies across India.",
+    "Find genuine job opportunities for UI/UX designers, frontend developers, and creative professionals across India.",
+
+  alternates: {
+    canonical: "https://zenoway.online",
+  },
+
   keywords: [
     "UI jobs",
     "UX jobs",
@@ -33,36 +40,42 @@ export const metadata: Metadata = {
     "Startup Jobs",
     "Zenoway",
   ],
+
   authors: [{ name: "Zenoway" }],
+
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",
     apple: "/favicon.png",
   },
+
   openGraph: {
-    title: "Zenoway",
+    title: "Zenoway | Find Your Next Opportunity",
     description:
-      "Find UI/UX and Frontend jobs across India. Connect with employers and grow your design & development career.",
+      "Discover genuine job opportunities and grow your career with Zenoway.",
     url: "https://zenoway.online",
     siteName: "Zenoway",
     locale: "en_IN",
     type: "website",
     images: [
       {
-        url: "/og-image.png",
+        url: "https://zenoway.online/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Zenoway Job Portal",
+        alt: "Zenoway — Genuine Job Opportunities",
       },
     ],
   },
+
   twitter: {
     card: "summary_large_image",
-    title: "Zenoway",
-    description: "Find UI/UX and Frontend jobs across India.",
-    images: ["/og-image.png"],
+    title: "Zenoway | Find Your Next Opportunity",
+    description:
+      "Discover genuine job opportunities across India.",
+    images: ["https://zenoway.online/og-image.png"],
   },
 };
+
 
 export default function RootLayout({
   children,
