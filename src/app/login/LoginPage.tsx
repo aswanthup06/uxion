@@ -91,10 +91,10 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
               />
             </Link>
             <Link
-              href="/jobs"
+              href="/"
               className="ml-auto inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-[#6F7C73] transition hover:text-[#164E3B]"
             >
-              Browse jobs <ArrowUpRight size={14} />
+              Home <ArrowUpRight size={14} />
             </Link>
           </header>
 

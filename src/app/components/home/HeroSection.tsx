@@ -18,7 +18,7 @@ import {
 
 const ROLES = [
   {
-    company: "Daiviksoft Technologies",
+    company: "Technologies",
     title: "UI/UX Designer",
     place: "Kochi",
     exp: "1–3 yrs",
