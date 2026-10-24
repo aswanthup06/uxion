@@ -1,117 +1,190 @@
+
 "use client";
 
+import Link from "next/link";
 import {
-  ArrowLeft,
-  Home,
   Target,
   Users,
   Rocket,
+  Instagram,
+  ArrowUpRight,
 } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { PiLinkedinLogoFill } from "react-icons/pi";
+import SiteFooter from "@/app/components/home/SiteFooter";
 
 const values = [
   {
     icon: Target,
-    title: "Our Mission",
-    body: "Zenoway connects early-stage startups with first-time job seekers, making it easier for both sides to find the right fit without the noise of traditional job boards.",
+    title: "Our mission",
+    body: "Zenoway connects early-stage startups with job seekers, making it easier for both sides to find the right fit without the noise of traditional job boards.",
   },
   {
     icon: Users,
-    title: "Who It's For",
-    body: "Built for UI/UX professionals and developers just starting out, alongside startups that need to move fast and hire people who care about doing good work.",
+    title: "Who it's for",
+    body: "We're building for people looking for their next opportunity and employers who want to connect with people who care about doing good work.",
   },
   {
     icon: Rocket,
-    title: "Why We Built It",
-    body: "Job hunting shouldn't feel like shouting into a void. Zenoway focuses on direct, transparent listings so applicants know exactly who they're reaching and why.",
+    title: "Why we built it",
+    body: "Job hunting shouldn't feel like shouting into a void. We focus on clear job listings and direct connections to make finding the right opportunity simpler.",
   },
 ];
 
 export default function AboutPage() {
-  const router = useRouter();
-
   return (
-    <main className="max-w-3xl mx-auto px-6 py-16">
-      {/* Nav */}
-      <div className="flex items-center justify-between mb-10">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 pl-2.5 pr-4 py-2 border border-gray-200 rounded-sm text-sm text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors cursor-pointer"
-        >
-          <ArrowLeft size={15} strokeWidth={2} />
-          <span>Back</span>
-        </button>
-
-        <Link
-          href="/"
-          className="flex items-center gap-2 pl-2.5 pr-4 py-2 border border-gray-200 rounded-sm text-sm text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors"
-        >
-          <Home size={15} strokeWidth={2} />
-          <span>Home</span>
-        </Link>
-      </div>
-
-      {/* Header */}
-      <div className="mb-10">
-        <span className="text-xs font-semibold tracking-wider text-amber-600 uppercase">
-          About Us
-        </span>
-        <h1 className="text-3xl md:text-4xl font-bold mt-2 mb-3 text-gray-900">
-          Built to make job hunting simpler
-        </h1>
-        <p className="text-gray-500 leading-7 max-w-xl">
-          Zenoway is a career platform designed for early-stage startups and
-          first-time job seekers — a straightforward way to connect without
-          the clutter of traditional hiring platforms.
-        </p>
-      </div>
-
-      {/* Value cards */}
-      <div className="space-y-3 mb-10">
-        {values.map((value) => {
-          const Icon = value.icon;
-          return (
-            <div
-              key={value.title}
-              className="group flex gap-5 p-5 border border-gray-200 rounded-sm hover:border-amber-600 transition-colors"
+    <>
+      <main className="min-h-screen bg-white text-[#17231D]">
+        <div className="mx-auto w-full max-w-5xl px-5 pb-16 pt-8 sm:px-8 sm:pt-10 lg:px-10 lg:pb-24">
+          {/* Breadcrumb */}
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-12 flex items-center gap-2 text-sm sm:mb-16"
+          >
+            <Link
+              href="/"
+              className="text-gray-500 transition-colors hover:text-[#087F50]"
             >
-              <span className="flex-none w-9 h-9 flex items-center justify-center rounded-sm bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors">
-                <Icon size={16} strokeWidth={1.75} />
-              </span>
-              <div>
-                <h2 className="text-base font-semibold text-gray-900 mb-1.5">
-                  {value.title}
+              Home
+            </Link>
+
+            <span className="text-gray-300">/</span>
+
+            <span
+              aria-current="page"
+              className="font-medium text-[#087F50]"
+            >
+              About
+            </span>
+          </nav>
+
+          {/* Hero */}
+          <section className="mb-16 max-w-3xl sm:mb-20">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#087F50]">
+              About Zenoway
+            </p>
+
+            <h1 className="max-w-2xl text-3xl font-semibold leading-tight tracking-tight text-[#17231D] sm:text-4xl md:text-5xl">
+              A simpler way to find your next opportunity.
+            </h1>
+
+            <p className="mt-6 max-w-2xl text-base leading-7 text-gray-500 sm:text-lg sm:leading-8">
+              Zenoway is a career platform built to bring job seekers and
+              employers closer together. We want finding work and discovering
+              the right people to feel clearer, more direct, and less
+              complicated.
+            </p>
+
+            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <Link
+                href="/jobs"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-sm bg-[#087F50] px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-[#066640]"
+              >
+                Explore opportunities
+                <ArrowUpRight size={16} strokeWidth={1.8} />
+              </Link>
+
+              <Link
+                href="/contact"
+                className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-[#087F50]"
+              >
+                Get in touch
+                <ArrowUpRight size={16} strokeWidth={1.8} />
+              </Link>
+            </div>
+          </section>
+
+          {/* Values */}
+          <section aria-labelledby="about-values-heading">
+            <div className="mb-8">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#087F50]">
+                What drives us
+              </p>
+
+              <h2
+                id="about-values-heading"
+                className="text-2xl font-semibold tracking-tight text-[#17231D] sm:text-3xl"
+              >
+                Built around people.
+              </h2>
+            </div>
+
+            <div className="border-y border-gray-100">
+              {values.map((value) => {
+                const Icon = value.icon;
+
+                return (
+                  <article
+                    key={value.title}
+                    className="grid grid-cols-[40px_minmax(0,1fr)] items-start gap-4 border-b border-gray-100 py-7 last:border-b-0 sm:gap-5 sm:py-8"
+                  >
+                    <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-[#EAF6EF] text-[#087F50]">
+                      <Icon size={19} strokeWidth={1.7} />
+                    </span>
+
+                    <div className="min-w-0">
+                      <h3 className="text-base font-semibold leading-6 text-[#17231D] sm:text-lg">
+                        {value.title}
+                      </h3>
+
+                      <p className="mt-2 max-w-2xl text-sm leading-7 text-gray-500 sm:text-base">
+                        {value.body}
+                      </p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Social links */}
+          <section className="mt-16 border-t border-gray-100 pt-8 sm:mt-20 sm:pt-10">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#087F50]">
+                  Stay connected
+                </p>
+
+                <h2 className="text-xl font-semibold tracking-tight text-[#17231D]">
+                  Follow our journey.
                 </h2>
-                <p className="text-sm text-gray-500 leading-7">{value.body}</p>
+
+                <p className="mt-2 max-w-md text-sm leading-6 text-gray-500">
+                  Follow Zenoway for career updates, new job postings, and
+                  opportunities.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 sm:shrink-0">
+                <a
+                  href="https://linkedin.com/company/zenoway"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow Zenoway on LinkedIn"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-sm bg-[#087F50] px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-[#066640]"
+                >
+                  <PiLinkedinLogoFill size={17} />
+                  <span>LinkedIn</span>
+                  <ArrowUpRight size={14} />
+                </a>
+
+                <a
+                  href="https://www.instagram.com/zenoway_career/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow Zenoway on Instagram"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-sm border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:border-[#087F50] hover:text-[#087F50]"
+                >
+                  <Instagram size={17} strokeWidth={1.8} />
+                  <span>Instagram</span>
+                  <ArrowUpRight size={14} />
+                </a>
               </div>
             </div>
-          );
-        })}
-      </div>
+          </section>
+        </div>
+      </main>
 
-      {/* Creator card */}
-  {/* Creator card */}
-<div className="flex items-center justify-between gap-4 p-5 border border-gray-200 rounded-sm bg-gray-50">
-  <div>
-    <h2 className="text-sm font-semibold text-gray-900 mb-1">
-      Zenoway
-    </h2>
-    <p className="text-sm text-gray-500">
-      Follow us for updates and new job postings
-    </p>
-  </div>
-  <a
-    href="https://linkedin.com/company/zenoway"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="flex-none flex items-center gap-2 px-4 py-2 bg-black text-white rounded-sm text-sm hover:bg-gray-800 transition-colors"
-  >
-    <PiLinkedinLogoFill />
-    <span>LinkedIn</span>
-  </a>
-</div>
-    </main>
+      <SiteFooter />
+    </>
   );
 }

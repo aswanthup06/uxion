@@ -1,8 +1,8 @@
 "use client";
 
-import { ArrowLeft, Home, Mail, Lock } from "lucide-react";
+import { Lock, Mail } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import SiteFooter from "@/app/components/home/SiteFooter";
 
 const sections = [
   {
@@ -24,84 +24,96 @@ const sections = [
 ];
 
 export default function PrivacyPolicyPage() {
-  const router = useRouter();
-
   return (
-    <main className="max-w-3xl mx-auto px-6 py-16">
-      {/* Nav */}
-      <div className="flex items-center justify-between mb-10">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 pl-2.5 pr-4 py-2 border border-gray-200 rounded-sm text-sm text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors cursor-pointer"
+    <main className="min-h-dvh bg-white text-slate-900">
+      <div className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-16">
+        {/* Breadcrumb */}
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-12 flex items-center gap-2 text-sm sm:mb-16"
         >
-          <ArrowLeft size={15} strokeWidth={2} />
-          <span>Back</span>
-        </button>
-
-        <Link
-          href="/"
-          className="flex items-center gap-2 pl-2.5 pr-4 py-2 border border-gray-200 rounded-sm text-sm text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors"
-        >
-          <Home size={15} strokeWidth={2} />
-          <span>Home</span>
-        </Link>
-      </div>
-
-      {/* Header */}
-      <div className="mb-10 pb-8 border-b border-gray-200">
-        <div className="flex items-center gap-2 mb-3">
-          <Lock size={14} strokeWidth={2} className="text-amber-600" />
-          <span className="text-xs font-semibold tracking-wider text-amber-600 uppercase">
-            Legal
-          </span>
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold mb-3 text-gray-900">
-          Privacy Policy
-        </h1>
-        <p className="text-gray-500 leading-7 max-w-xl">
-          At Zenoway, we respect your privacy and are committed to protecting
-          your personal information. This Privacy Policy explains how we
-          collect, use, and safeguard your data.
-        </p>
-      </div>
-
-      {/* Sections */}
-      <div className="space-y-3">
-        {sections.map((section, i) => (
-          <div
-            key={section.title}
-            className="group flex gap-5 p-5 border border-gray-200 rounded-sm hover:border-amber-600 transition-colors"
+          <Link
+            href="/"
+            className="text-slate-500 transition-colors hover:text-[#087F50]"
           >
-            <span className="flex-none w-9 h-9 flex items-center justify-center rounded-sm bg-amber-50 text-amber-600 text-sm font-semibold group-hover:bg-amber-600 group-hover:text-white transition-colors">
-              {String(i + 1).padStart(2, "0")}
-            </span>
+            Home
+          </Link>
+          <span className="text-slate-300">/</span>
+          <span aria-current="page" className="font-medium text-[#087F50]">
+            Privacy Policy
+          </span>
+        </nav>
+
+        {/* Header */}
+        <header className="mb-12 max-w-2xl border-b border-slate-200 pb-8 sm:mb-16">
+          <div className="mb-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#087F50]">
+            <Lock size={14} strokeWidth={1.8} />
+            Legal
+          </div>
+
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl md:text-5xl">
+            Privacy Policy
+          </h1>
+
+          <p className="mt-5 max-w-xl text-sm leading-7 text-slate-500 sm:text-base">
+            At Zenoway, we respect your privacy and are committed to protecting
+            your personal information. This Privacy Policy explains how we
+            collect, use, and safeguard your data.
+          </p>
+        </header>
+
+        {/* Policy Sections */}
+        <section aria-label="Privacy policy sections">
+          <div className="divide-y divide-slate-200">
+            {sections.map((section, index) => (
+              <article
+                key={section.title}
+                className="flex gap-4 py-6 sm:gap-6 sm:py-7"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-sm font-semibold text-[#087F50]">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+
+                <div className="min-w-0">
+                  <h2 className="text-base font-semibold text-slate-900">
+                    {section.title}
+                  </h2>
+                  <p className="mt-2 text-sm leading-7 text-slate-500">
+                    {section.body}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* Contact */}
+        <section className="mt-10 border-t border-slate-200 pt-8 sm:mt-12 sm:pt-10">
+          <div className="flex items-start gap-4">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-[#087F50]">
+              <Mail size={19} strokeWidth={1.7} />
+            </div>
+
             <div>
-              <h2 className="text-base font-semibold text-gray-900 mb-1.5">
-                {section.title}
+              <h2 className="text-sm font-semibold text-slate-900">
+                Questions about this policy?
               </h2>
-              <p className="text-sm text-gray-500 leading-7">{section.body}</p>
+              <p className="mt-1 text-sm leading-6 text-slate-500">
+                Contact us if you have questions about your personal
+                information or privacy.
+              </p>
+              <a
+                href="mailto:support@zenoway.online"
+                className="mt-2 inline-block text-sm font-medium text-[#087F50] transition-colors hover:text-[#066640]"
+              >
+                support@zenoway.online
+              </a>
             </div>
           </div>
-        ))}
+        </section>
       </div>
 
-      {/* Contact footer */}
-      <div className="mt-8 flex items-start gap-4 p-5 border border-gray-200 rounded-sm bg-gray-50">
-        <div className="p-2.5 bg-amber-50 rounded-sm text-amber-600">
-          <Mail size={18} strokeWidth={1.75} />
-        </div>
-        <div>
-          <h2 className="text-sm font-semibold text-gray-900 mb-1">
-            Questions about this Policy?
-          </h2>
-          <a
-            href="mailto:support@zenoway.online"
-            className="text-sm text-amber-600 hover:text-amber-700 transition-colors"
-          >
-            support@zenoway.online
-          </a>
-        </div>
-      </div>
+      <SiteFooter />
     </main>
   );
 }

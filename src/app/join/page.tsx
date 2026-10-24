@@ -9,6 +9,10 @@ import { BiSolidCopy } from "react-icons/bi";
 import {
   FiArrowRight,
   FiArrowUpRight,
+  FiBell,
+  FiBriefcase,
+  FiMessageCircle,
+  FiCompass,
   FiCheckCircle,
   FiChevronDown,
   FiMapPin,
@@ -17,6 +21,7 @@ import {
   FiX,
 } from "react-icons/fi";
 import { CATEGORIES } from "./job-communities";
+import SiteFooter from "../components/home/SiteFooter";
 
 type Group = { name: string; description: string; link: string };
 type Category = {
@@ -251,6 +256,14 @@ export default function SharePage() {
     setSelectedGroupName("");
     setQuery("");
   };
+
+  const openGroupModalForCategory = (categoryName: string) => {
+    setGroupModalOpen(true);
+    setChannelModalOpen(false);
+    setSelectedCategory(categoryName);
+    setSelectedGroupName("");
+    setQuery("");
+  };
   const closeGroupModal = () => setGroupModalOpen(false);
   const closeChannelModal = () => setChannelModalOpen(false);
 
@@ -301,8 +314,9 @@ export default function SharePage() {
   };
 
   return (
-    <main className="min-h-full w-full overflow-y-auto bg-white pb-16 text-slate-900 selection:bg-emerald-100">
-      <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-12 sm:py-1">
+    <>
+    <main className="w-full bg-white text-slate-900 selection:bg-emerald-100">
+      <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10">
         <header className="relative isolate bg-white py-4 text-[#202820] sm:py-6 lg:py-7">
           <div className="grid items-center gap-8 lg:grid-cols-[1.22fr_0.78fr] lg:gap-12">
             {/* Animated visual inspired by the Zenoway home hero */}
@@ -432,17 +446,116 @@ export default function SharePage() {
           </div>
         </motion.section>
 
-        <footer className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-slate-200 pt-6 text-center sm:flex-row sm:text-left">
-          <p className="text-sm text-slate-500">
-            More job communities and state groups are being added regularly.
-          </p>
-          <span className="text-xs font-medium text-slate-400">
-            Built for your next step
-          </span>
+        {/* Community benefits */}
+        <section className="py-14 sm:py-16 lg:py-20" aria-labelledby="benefits-title">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">A community that moves you forward</p>
+            <h2 id="benefits-title" className="mt-3 text-2xl font-medium tracking-tight text-[#202820] sm:text-3xl">
+              More than job links. A place to find your next step.
+            </h2>
+            <p className="mt-3 max-w-xl text-sm leading-7 text-[#737971] sm:text-base">
+              Find relevant opportunities and stay connected with updates that match your career interests.
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-7 border-y border-slate-200 py-7 sm:grid-cols-3 sm:gap-8">
+            <div className="flex gap-3">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-emerald-50 text-emerald-700"><FiBriefcase className="h-5 w-5" /></span>
+              <div><h3 className="text-sm font-semibold text-slate-900">Relevant opportunities</h3><p className="mt-1.5 text-sm leading-6 text-slate-500">Explore job communities connected to your field and interests.</p></div>
+            </div>
+            <div className="flex gap-3">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-emerald-50 text-emerald-700"><FiBell className="h-5 w-5" /></span>
+              <div><h3 className="text-sm font-semibold text-slate-900">Useful updates</h3><p className="mt-1.5 text-sm leading-6 text-slate-500">Follow the channel for job alerts and important Zenoway announcements.</p></div>
+            </div>
+            <div className="flex gap-3">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-emerald-50 text-emerald-700"><FiMessageCircle className="h-5 w-5" /></span>
+              <div><h3 className="text-sm font-semibold text-slate-900">A focused community</h3><p className="mt-1.5 text-sm leading-6 text-slate-500">Choose a group by category and state, then join directly on WhatsApp.</p></div>
+            </div>
+          </div>
+        </section>
+
+        {/* Find your community */}
+        <section className="pb-14 sm:pb-16 lg:pb-20" aria-labelledby="categories-title">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Explore by interest</p>
+              <h2 id="categories-title" className="mt-3 text-2xl font-medium tracking-tight text-[#202820] sm:text-3xl">Find your community</h2>
+              <p className="mt-3 text-sm leading-7 text-[#737971] sm:text-base">Start with a field that fits you. You can choose an available state or group next.</p>
+            </div>
+            <button type="button" onClick={openGroupModal} className="cursor-pointer inline-flex min-h-10 shrink-0 items-center justify-center gap-2 self-start rounded-sm border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-emerald-700 hover:text-emerald-800 sm:self-auto">
+              View all communities <FiArrowUpRight className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="mt-7 grid gap-0 border-y border-slate-200 sm:grid-cols-2 sm:border-b-0 lg:grid-cols-3">
+            {categories.slice(0, 6).map((category, index) => (
+              <button key={category.name} type="button" onClick={() => openGroupModalForCategory(category.name)} className={`group flex min-h-[126px] cursor-pointer items-start gap-4 border-b border-slate-200 py-5 text-left transition-colors hover:bg-emerald-50/50 sm:px-4 ${index % 2 === 0 ? "sm:border-r lg:border-r" : ""} lg:border-r ${index % 3 === 2 ? "lg:border-r-0" : ""}`}>
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-emerald-50 text-emerald-700 transition-colors group-hover:bg-emerald-100"><FiCompass className="h-5 w-5" /></span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold text-slate-900">{category.name}</span>
+                  <span className="mt-1.5 block text-sm leading-6 text-slate-500">{category.description || `Explore ${category.name.toLowerCase()} communities and available groups.`}</span>
+                  <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700">Explore community <FiArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
+                </span>
+              </button>
+            ))}
+          </div>
+          {categories.length > 6 && <p className="mt-4 text-xs text-slate-500">Showing a selection of categories. Use “View all communities” to browse every available option.</p>}
+        </section>
+
+        {/* Groups vs channel */}
+        <section className="border-y border-slate-200 py-12 sm:py-14" aria-labelledby="choose-title">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Choose what works for you</p>
+            <h2 id="choose-title" className="mt-3 text-2xl font-medium tracking-tight text-[#202820] sm:text-3xl">WhatsApp group or channel?</h2>
+            <p className="mt-3 text-sm leading-7 text-[#737971] sm:text-base">Both keep you connected to Zenoway. Pick the experience you prefer.</p>
+          </div>
+          <div className="mt-7 grid gap-8 md:grid-cols-2 md:gap-12">
+            <div>
+              <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-md bg-emerald-50 text-emerald-700"><FaWhatsapp className="h-5 w-5" /></span><h3 className="text-base font-semibold text-slate-900">Community groups</h3></div>
+              <p className="mt-3 text-sm leading-6 text-slate-500">Best when you want to find a community for a particular job category or state.</p>
+              <button type="button" onClick={openGroupModal} className="cursor-pointer mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-900">Find a group <FiArrowRight className="h-4 w-4" /></button>
+            </div>
+            <div>
+              <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-md bg-emerald-50 text-emerald-700"><HiOutlineSpeakerphone className="h-6 w-6" /></span><h3 className="text-base font-semibold text-slate-900">Updates channel</h3></div>
+              <p className="mt-3 text-sm leading-6 text-slate-500">Best for one-way job alerts, platform announcements, and new community updates without group chat noise.</p>
+              <button type="button" onClick={() => setChannelModalOpen(true)} className="cursor-pointer mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-900">Explore the channel <FiArrowRight className="h-4 w-4" /></button>
+            </div>
+          </div>
+        </section>
+
+        {/* How to get started */}
+        <section className="py-14 sm:py-16 lg:py-20" aria-labelledby="steps-title">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Simple to join</p>
+            <h2 id="steps-title" className="mt-3 text-2xl font-medium tracking-tight text-[#202820] sm:text-3xl">Your community is three steps away</h2>
+          </div>
+          <div className="mt-8 grid gap-7 sm:grid-cols-3 sm:gap-8">
+            {[
+              { number: "01", title: "Choose your field", description: "Pick the career category that best matches your interests." },
+              { number: "02", title: "Select a group", description: "Choose an available state or community from the list." },
+              { number: "03", title: "Join on WhatsApp", description: "Open the direct invite link and join the community." },
+            ].map((step) => (
+              <div key={step.number} className="border-t border-slate-200 pt-4">
+                <span className="text-xs font-semibold tracking-[0.12em] text-emerald-700">{step.number}</span>
+                <h3 className="mt-3 text-base font-semibold text-slate-900">{step.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-500">{step.description}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 flex flex-col gap-4 border-t border-slate-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <p className="max-w-xl text-sm leading-6 text-slate-500">Ready to find your people? Explore the available groups and choose the one that fits.</p>
+            <button type="button" onClick={openGroupModal} className="cursor-pointer inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-sm bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800">Find a community <FiArrowRight className="h-4 w-4" /></button>
+          </div>
+        </section>
+
+        <footer className="mt-2 mb-8 flex flex-col items-center justify-between gap-3 border-t border-slate-200 pt-5 text-center sm:flex-row sm:text-left">
+          <p className="text-sm text-slate-500">More job communities and state groups are being added regularly.</p>
+          <span className="text-xs font-medium text-slate-400">Built for your next step</span>
         </footer>
       </div>
+    </main>
 
-      <Modal
+    <Modal
         open={groupModalOpen}
         onClose={closeGroupModal}
         labelledBy="group-modal-title"
@@ -614,7 +727,7 @@ export default function SharePage() {
         </div>
       </Modal>
 
-
-    </main>
+    <SiteFooter />
+    </>
   );
 }

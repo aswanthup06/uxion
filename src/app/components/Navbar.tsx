@@ -175,16 +175,16 @@ export default function Navbar() {
         >
           <motion.span
             whileHover={reduceMotion ? undefined : { rotate: 5, scale: 1.04 }}
-            className="relative grid h-8 w-8 shrink-0 place-items-center"
+            className="relative grid  shrink-0 place-items-center"
           >
             <Image
               src="/logo.png"
-              alt=""
-              width={32}
-              height={32}
+              alt="zenoway logo"
+              width={300}
+              height={100}
               priority
-              sizes="32px"
-              className="block h-8 w-8 object-contain"
+             
+              className="block h-6 w-auto object-contain"
             />
           </motion.span>
 

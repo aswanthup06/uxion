@@ -1,93 +1,180 @@
 "use client";
 
-import { Mail, Globe, MessageCircle, ArrowLeft, Home } from "lucide-react";
+import {
+  ArrowUpRight,
+  Globe,
+  Instagram,
+  Mail,
+  MessageCircle,
+} from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import SiteFooter from "@/app/components/home/SiteFooter";
+
+const contactOptions = [
+  {
+    title: "Email",
+    description: "Questions, support, or partnership enquiries.",
+    detail: "support@zenoway.online",
+    href: "mailto:support@zenoway.online",
+    icon: Mail,
+    external: false,
+  },
+  {
+    title: "Website",
+    description: "Explore career opportunities on Zenoway.",
+    detail: "www.zenoway.online",
+    href: "https://www.zenoway.online",
+    icon: Globe,
+    external: true,
+  },
+  {
+    title: "Instagram",
+    description: "Follow us for career updates and opportunities.",
+    detail: "@zenoway_career",
+    href: "https://www.instagram.com/zenoway_career/",
+    icon: Instagram,
+    external: true,
+  },
+];
 
 export default function ContactPage() {
-  const router = useRouter();
-
   return (
-    <main className="max-w-3xl mx-auto px-6 py-16">
-      {/* Nav */}
-      <div className="flex items-center justify-between mb-10">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 pl-2.5 pr-4 py-2 border border-gray-200 rounded-sm text-sm text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors cursor-pointer"
+    <main className="min-h-dvh bg-white text-slate-900">
+      <div className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-16">
+        {/* Breadcrumb */}
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-12 flex items-center gap-2 text-sm sm:mb-16"
         >
-          <ArrowLeft size={15} strokeWidth={2} />
-          <span>Back</span>
-        </button>
+          <Link
+            href="/"
+            className="text-slate-500 transition-colors hover:text-[#087F50]"
+          >
+            Home
+          </Link>
 
-        <Link
-          href="/"
-          className="flex items-center gap-2 pl-2.5 pr-4 py-2 border border-gray-200 rounded-sm text-sm text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors"
-        >
-          <Home size={15} strokeWidth={2} />
-          <span>Home</span>
-        </Link>
+          <span aria-hidden="true" className="text-slate-300">
+            /
+          </span>
+
+          <span
+            aria-current="page"
+            className="font-medium text-[#087F50]"
+          >
+            Contact
+          </span>
+        </nav>
+
+        {/* Header */}
+        <header className="mb-12 max-w-2xl sm:mb-16">
+          <div className="mb-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#087F50]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#087F50]" />
+            Contact Zenoway
+          </div>
+
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl md:text-5xl">
+            Let&apos;s start a conversation.
+          </h1>
+
+          <p className="mt-5 max-w-xl text-sm leading-7 text-slate-500 sm:text-base">
+            Have a question about a job, want to collaborate, or have an idea
+            to share? Choose the best way to reach us. We&apos;d love to hear
+            from you.
+          </p>
+        </header>
+
+        {/* Contact Options */}
+        <section aria-labelledby="contact-options-heading">
+          <div className="mb-5 flex items-end justify-between gap-4 border-b border-slate-200 pb-4">
+            <h2
+              id="contact-options-heading"
+              className="text-sm font-semibold text-slate-900"
+            >
+              Get in touch
+            </h2>
+
+            <span className="text-xs text-slate-400">
+              Contact options
+            </span>
+          </div>
+
+          <div className="divide-y divide-slate-200">
+            {contactOptions.map((option) => {
+              const Icon = option.icon;
+
+              return (
+                <a
+                  key={option.title}
+                  href={option.href}
+                  target={option.external ? "_blank" : undefined}
+                  rel={
+                    option.external ? "noopener noreferrer" : undefined
+                  }
+                  className="group flex items-center gap-4 py-6 transition-colors sm:gap-6 sm:py-7"
+                >
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-[#087F50] transition-colors group-hover:bg-[#087F50] group-hover:text-white">
+                    <Icon size={19} strokeWidth={1.7} />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-sm font-semibold text-slate-900 transition-colors group-hover:text-[#087F50] sm:text-base">
+                      {option.title}
+                    </h3>
+
+                    <p className="mt-1 text-sm leading-6 text-slate-500">
+                      {option.description}
+                    </p>
+
+                    <p className="mt-2 break-all text-sm font-medium text-[#087F50]">
+                      {option.detail}
+                    </p>
+                  </div>
+
+                  <ArrowUpRight
+                    size={18}
+                    strokeWidth={1.7}
+                    aria-hidden="true"
+                    className="shrink-0 text-slate-400 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#087F50]"
+                  />
+                </a>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Community */}
+        <section className="mt-12 border-t border-slate-200 pt-8 sm:mt-16 sm:pt-10">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-[#087F50]">
+                <MessageCircle size={19} strokeWidth={1.7} />
+              </div>
+
+              <div>
+                <h2 className="text-base font-semibold text-slate-900">
+                  Be part of our community
+                </h2>
+
+                <p className="mt-1 max-w-md text-sm leading-6 text-slate-500">
+                  Connect with our community and stay close to new job
+                  opportunities and updates.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href="/join"
+              className="inline-flex w-fit items-center justify-center gap-2 rounded-sm bg-[#087F50] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#066640] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#087F50] focus-visible:ring-offset-2"
+            >
+              Join the community
+              <ArrowUpRight size={16} strokeWidth={1.8} />
+            </Link>
+          </div>
+        </section>
       </div>
 
-      {/* Header */}
-      <div className="mb-10">
-        <span className="text-xs font-semibold tracking-wider text-amber-600 uppercase">
-          Get in touch
-        </span>
-        <h1 className="text-3xl md:text-4xl font-bold mt-2 mb-3 text-gray-900">
-          Contact Us
-        </h1>
-        <p className="text-gray-500 leading-7 max-w-xl">
-          We&apos;d love to hear from you. Whether it&apos;s a question, feedback,
-          or a partnership idea — reach out and our team will get back to you
-          soon.
-        </p>
-      </div>
-
-      {/* Contact cards */}
-      <div className="grid sm:grid-cols-2 gap-4 mb-10">
-        <a
-          href="mailto:support@zenoway.online"
-          className="group flex items-start gap-4 p-5 border border-gray-200 rounded-sm hover:border-amber-600 transition-colors"
-        >
-          <div className="p-2.5 bg-amber-50 rounded-sm text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors">
-            <Mail size={18} strokeWidth={1.75} />
-          </div>
-          <div>
-            <h2 className="text-sm font-semibold text-gray-900 mb-1">Email</h2>
-            <p className="text-sm text-gray-500 break-all">
-              support@zenoway.online
-            </p>
-          </div>
-        </a>
-
-        <a
-          href="https://zenoway.online"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-start gap-4 p-5 border border-gray-200 rounded-sm hover:border-amber-600 transition-colors"
-        >
-          <div className="p-2.5 bg-amber-50 rounded-sm text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors">
-            <Globe size={18} strokeWidth={1.75} />
-          </div>
-          <div>
-            <h2 className="text-sm font-semibold text-gray-900 mb-1">Website</h2>
-            <p className="text-sm text-gray-500">www.zenoway.online</p>
-          </div>
-        </a>
-      </div>
-
-      {/* Optional community link */}
-      <Link
-        href="/join"
-        className="flex items-center justify-center gap-2 w-full py-3 border border-gray-300 rounded-sm text-sm font-medium text-gray-700 hover:bg-gray-100 transition mb-10"
-      >
-        <MessageCircle size={16} strokeWidth={1.75} />
-        <span>Join our Community</span>
-      </Link>
-
-      <p className="text-sm text-gray-400 text-center">
-        Our team typically responds within 24–48 hours.
-      </p>
+      {/* Shared Site Footer */}
+      <SiteFooter />
     </main>
   );
 }

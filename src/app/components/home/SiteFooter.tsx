@@ -1,5 +1,7 @@
+
+import Image from "next/image";
 import Link from "next/link";
-import { Github, Linkedin, Instagram } from "lucide-react";
+import { Linkedin, Instagram } from "lucide-react";
 
 const COLUMNS = [
   {
@@ -35,7 +37,7 @@ const SOCIALS = [
   },
   {
     label: "Instagram",
-    href: "https://www.instagram.com/zenoway_career",
+    href: "https://www.instagram.com/zenoway_career/",
     Icon: Instagram,
   },
 ];
@@ -50,12 +52,21 @@ export default function SiteFooter() {
             <Link
               href="/"
               aria-label="Zenoway home"
-              className="inline-flex items-center gap-1.5"
+              className="inline-flex items-center gap-2"
             >
+             <Image
+  src="/logo.png"
+  alt="Zenoway logo"
+  width={300}
+  height={100}
+  className="h-6 w-auto object-contain"
+/>
+
               <span className="text-xl font-bold tracking-tight text-neutral-900">
                 zenoway
               </span>
-              <span className="h-1.5 w-1.5 rounded-full bg-[#0FA968]" />
+
+           
             </Link>
 
             <p className="mt-3 max-w-xs text-sm leading-6 text-neutral-500">
@@ -63,6 +74,7 @@ export default function SiteFooter() {
               creative technologists across India.
             </p>
 
+            {/* Social links */}
             <div className="mt-4 flex items-center gap-3">
               {SOCIALS.map(({ label, href, Icon }) => (
                 <a
@@ -70,16 +82,16 @@ export default function SiteFooter() {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={label}
-                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-[#087F50]"
+                  aria-label={`Visit Zenoway on ${label}`}
+                  className="flex h-9 w-9 items-center justify-center rounded-md text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-[#087F50]"
                 >
-                  <Icon size={17} strokeWidth={1.7} />
+                  <Icon size={18} strokeWidth={1.7} />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Navigation */}
+          {/* Navigation columns */}
           {COLUMNS.map(({ title, links }) => (
             <nav key={title} aria-label={title}>
               <h3 className="mb-4 text-sm font-semibold text-neutral-900">
@@ -104,8 +116,11 @@ export default function SiteFooter() {
 
         {/* Copyright */}
         <div className="mt-10 flex flex-col gap-2 border-t border-neutral-200 pt-5 text-xs text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Zenoway. All rights reserved.</p>
-          <p>Made for designers & developers in India.</p>
+          <p>
+            © {new Date().getFullYear()} Zenoway. All rights reserved.
+          </p>
+
+          <p>Made for designers &amp; developers in India.</p>
         </div>
       </div>
     </footer>
