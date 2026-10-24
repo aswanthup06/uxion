@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -183,7 +182,6 @@ export default function Navbar() {
               width={300}
               height={100}
               priority
-             
               className="block h-6 w-auto object-contain"
             />
           </motion.span>
@@ -213,6 +211,15 @@ export default function Navbar() {
                 className={linkClass("/join")}
               >
                 Community
+              </Link>
+
+              <Link
+                href="/jobs"
+                onMouseEnter={() => setDropdown(null)}
+                onClick={closeMenus}
+                className={linkClass("/jobs")}
+              >
+                Explore Jobs
               </Link>
 
               {/* Job seekers */}
