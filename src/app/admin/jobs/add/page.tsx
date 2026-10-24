@@ -1,9 +1,9 @@
+
 "use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
-  ArrowLeft,
   BriefcaseBusiness,
   Building2,
   MapPin,
@@ -35,10 +35,10 @@ interface JobForm {
 }
 
 const inputClass =
-  "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-800 focus:ring-4 focus:ring-slate-900/[0.05] disabled:cursor-not-allowed disabled:bg-slate-50";
+  "w-full rounded-lg border border-[#E2E9E3] bg-white px-4 py-3 text-sm text-[#172820] outline-none transition placeholder:text-slate-400 hover:border-[#B8CDBE] focus:border-[#087F50] focus:ring-4 focus:ring-[#087F50]/[0.07] disabled:cursor-not-allowed disabled:bg-slate-50";
 
 const labelClass =
-  "mb-2 block text-[13px] font-semibold text-slate-700";
+  "mb-2 block text-[13px] font-semibold text-[#34483B]";
 
 function Field({
   label,
@@ -76,7 +76,7 @@ function Field({
 
       <div className="group relative">
         <Icon
-          className="pointer-events-none absolute left-3.5 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-slate-700"
+          className="pointer-events-none absolute left-3.5 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-[#087F50]"
           strokeWidth={1.8}
         />
 
@@ -111,19 +111,24 @@ function SectionHeader({
 }) {
   return (
     <div className="mb-6 flex items-start gap-3.5">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
-        <Icon className="h-[19px] w-[19px] text-slate-700" strokeWidth={1.8} />
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#E2E9E3] bg-[#F7FAF7]">
+        <Icon
+          className="h-[19px] w-[19px] text-[#087F50]"
+          strokeWidth={1.8}
+        />
       </div>
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="text-base font-bold tracking-tight text-slate-900">
+          <h2 className="text-base font-bold tracking-tight text-[#172820]">
             {title}
           </h2>
-          <span className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500">
+
+          <span className="rounded bg-[#F0F5F1] px-1.5 py-0.5 text-[10px] font-semibold text-[#54705D]">
             {number}
           </span>
         </div>
+
         <p className="mt-1 text-sm leading-5 text-slate-500">
           {description}
         </p>
@@ -135,12 +140,12 @@ function SectionHeader({
 export default function AddJobPage() {
   const router = useRouter();
 
-  // Use local calendar date instead of UTC to avoid date shifts.
   const getToday = () => {
     const date = new Date();
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
+
     return `${year}-${month}-${day}`;
   };
 
@@ -175,7 +180,6 @@ export default function AddJobPage() {
   };
 
   const formatDateForStorage = (dateString: string) => {
-    // Format the date without UTC/time-zone conversion.
     const [year, month, day] = dateString.split("-");
     return `${day}/${month}/${year}`;
   };
@@ -186,6 +190,7 @@ export default function AddJobPage() {
     if (isSubmitting) return;
 
     const minExperience = Number(form.experienceMin);
+
     const maxExperience =
       form.experienceMax.trim() === ""
         ? null
@@ -257,6 +262,7 @@ export default function AddJobPage() {
 
         try {
           const data = await response.json();
+
           if (typeof data?.error === "string" && data.error.trim()) {
             message = data.error;
           } else if (
@@ -266,7 +272,7 @@ export default function AddJobPage() {
             message = data.message;
           }
         } catch {
-          // Use the fallback message if the response isn't JSON.
+          // Keep the fallback error message.
         }
 
         setError(message);
@@ -283,27 +289,50 @@ export default function AddJobPage() {
   };
 
   return (
-    <main className="min-h-full bg-[#f8fafc]">
-      <div className="mx-auto max-w-5xl">
-        {/* Page heading */}
+    <main className="min-h-full bg-white text-[#172820]">
+      <div className="mx-auto max-w-5xl px-5 pb-32 pt-6 sm:px-8 sm:pt-9">
+        {/* Breadcrumb navigation and page heading */}
         <div className="mb-7">
-          <button
-            type="button"
-            onClick={() => router.push("/admin/jobs")}
-            className="mb-5 inline-flex items-center gap-2 rounded-lg text-sm font-medium text-slate-500 transition hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-6 flex flex-wrap items-center gap-2 text-sm"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Back to jobs
-          </button>
+            <button
+              type="button"
+              onClick={() => router.push("/admin")}
+              className="text-slate-500 transition hover:text-[#087F50]"
+            >
+              Dashboard
+            </button>
+
+            <span className="text-slate-300">/</span>
+
+            <button
+              type="button"
+              onClick={() => router.push("/admin/jobs")}
+              className="text-slate-500 transition hover:text-[#087F50]"
+            >
+              Manage jobs
+            </button>
+
+            <span className="text-slate-300">/</span>
+
+            <span
+              aria-current="page"
+              className="font-semibold text-[#172820]"
+            >
+              Add listing
+            </span>
+          </nav>
 
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm">
+              <div className="mb-3 inline-flex items-center gap-2 text-xs font-semibold text-[#087F50]">
                 <Sparkles className="h-3.5 w-3.5" />
                 Job management
               </div>
 
-              <h1 className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
+              <h1 className="text-2xl font-bold tracking-tight text-[#172820] sm:text-3xl">
                 Add a new job
               </h1>
 
@@ -313,8 +342,7 @@ export default function AddJobPage() {
               </p>
             </div>
 
-            <div className="flex items-center gap-2 self-start rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 sm:self-auto">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <div className="flex items-center gap-2 self-start border-l-2 border-[#087F50] pl-3 sm:self-auto">
               <span className="text-xs font-medium text-slate-600">
                 New listing
               </span>
@@ -323,8 +351,8 @@ export default function AddJobPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Section 1 */}
-          <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-7">
+          {/* Section 1: Job information */}
+          <section className="border-b border-[#E2E9E3] pb-7">
             <SectionHeader
               number="01"
               title="Job information"
@@ -387,8 +415,8 @@ export default function AddJobPage() {
             </div>
           </section>
 
-          {/* Section 2 */}
-          <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-7">
+          {/* Section 2: Experience */}
+          <section className="border-b border-[#E2E9E3] pb-7">
             <SectionHeader
               number="02"
               title="Experience requirements"
@@ -423,18 +451,20 @@ export default function AddJobPage() {
               />
             </div>
 
-            <div className="mt-4 flex items-start gap-2.5 rounded-xl bg-slate-50 px-4 py-3">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
+            <div className="mt-4 flex items-start gap-2.5 bg-[#F7FAF7] px-4 py-3">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#087F50]" />
+
               <p className="text-xs leading-5 text-slate-500">
-                Enter <strong className="font-semibold text-slate-700">0</strong>{" "}
+                Enter{" "}
+                <strong className="font-semibold text-[#34483B]">0</strong>{" "}
                 for minimum experience to include entry-level candidates.
                 Leave maximum experience empty if there is no upper limit.
               </p>
             </div>
           </section>
 
-          {/* Section 3 */}
-          <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-7">
+          {/* Section 3: Application details */}
+          <section className="border-b border-[#E2E9E3] pb-7">
             <SectionHeader
               number="03"
               title="Application details"
@@ -473,6 +503,7 @@ export default function AddJobPage() {
                   placeholder="https://company.com/careers/apply"
                   icon={ExternalLink}
                 />
+
                 <p className="mt-2 text-xs text-slate-400">
                   Add the direct application page so candidates can apply easily.
                 </p>
@@ -480,8 +511,8 @@ export default function AddJobPage() {
             </div>
           </section>
 
-          {/* Section 4 */}
-          <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-7">
+          {/* Section 4: Description */}
+          <section className="pb-2">
             <SectionHeader
               number="04"
               title="Job description"
@@ -499,7 +530,16 @@ export default function AddJobPage() {
               value={form.description}
               onChange={handleChange}
               rows={8}
-              placeholder={`About the role\n\nResponsibilities:\n• Describe the key responsibilities\n\nRequirements:\n• List the essential skills and qualifications\n\nBenefits:\n• Add relevant perks and benefits`}
+              placeholder={`About the role
+
+Responsibilities:
+• Describe the key responsibilities
+
+Requirements:
+• List the essential skills and qualifications
+
+Benefits:
+• Add relevant perks and benefits`}
               required
               className={`${inputClass} min-h-48 resize-y leading-6`}
             />
@@ -515,15 +555,15 @@ export default function AddJobPage() {
             <div
               role="alert"
               aria-live="polite"
-              className="flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3.5"
+              className="flex items-start gap-3 border border-rose-200 bg-rose-50 px-4 py-3.5"
             >
               <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose-600" />
               <p className="text-sm leading-5 text-rose-700">{error}</p>
             </div>
           )}
 
-          {/* Actions */}
-          <div className="sticky bottom-0 z-10 -mx-4 border-t border-slate-200 bg-white/95 px-4 py-4 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+          {/* Fixed bottom action bar */}
+          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#E2E9E3] bg-white/95 px-4 py-3 backdrop-blur-md sm:px-8">
             <div className="mx-auto flex max-w-5xl flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="hidden text-xs text-slate-400 sm:block">
                 <span className="text-rose-500">*</span> Required fields
@@ -534,7 +574,7 @@ export default function AddJobPage() {
                   type="button"
                   onClick={() => router.push("/admin/jobs")}
                   disabled={isSubmitting}
-                  className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-900/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center justify-center rounded-lg border border-[#E2E9E3] bg-white px-5 py-2.5 text-sm font-semibold text-[#34483B] transition hover:bg-[#F7FAF7] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#087F50]/10 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -542,7 +582,7 @@ export default function AddJobPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-900/20 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#087F50] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#066640] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#087F50]/20 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isSubmitting ? (
                     <>
