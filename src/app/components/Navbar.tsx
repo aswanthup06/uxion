@@ -205,21 +205,21 @@ export default function Navbar() {
               </Link>
 
               <Link
-                href="/join"
-                onMouseEnter={() => setDropdown(null)}
-                onClick={closeMenus}
-                className={linkClass("/join")}
-              >
-                Community
-              </Link>
-
-              <Link
                 href="/jobs"
                 onMouseEnter={() => setDropdown(null)}
                 onClick={closeMenus}
                 className={linkClass("/jobs")}
               >
                 Explore Jobs
+              </Link>
+
+              <Link
+                href="/join"
+                onMouseEnter={() => setDropdown(null)}
+                onClick={closeMenus}
+                className={linkClass("/join")}
+              >
+                Community
               </Link>
 
               {/* Job seekers */}
@@ -498,50 +498,62 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Mobile menu toggle: keep icons mounted without AnimatePresence */}
-        <button
-          type="button"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileOpen}
-          onClick={() => {
-            setMobileOpen((open) => !open);
-            setDropdown(null);
-          }}
-          className="group ml-3 grid h-10 w-10 shrink-0 cursor-pointer place-items-center bg-transparent text-brand transition-transform duration-200 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 md:hidden"
-        >
-          {mobileOpen ? (
-            <X
-              size={21}
-              strokeWidth={1.9}
-              className={`${iconClass} transition-transform duration-200 group-hover:rotate-90`}
-              aria-hidden="true"
-            />
-          ) : (
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden="true"
-              className={`${iconClass} overflow-visible`}
+        {/* Mobile menu toggle & quick action */}
+        <div className="flex shrink-0 items-center gap-2.5 md:hidden">
+          {!isAdminRoute && (
+            <Link
+              href={JOBS}
+              onClick={closeMenus}
+              className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control bg-brand-soft px-3 text-xs font-semibold text-brand transition-colors duration-200 hover:bg-brand-soft-hover hover:text-brand-dark"
             >
-              <path
-                d="M4 8.5H19"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                className="transition-transform duration-200 group-hover:translate-x-[1px]"
-              />
-              <path
-                d="M9 15.5H19"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                className="transition-transform duration-200 group-hover:-translate-x-[1px]"
-              />
-            </svg>
+              Explore Jobs
+            </Link>
           )}
-        </button>
+
+          <button
+            type="button"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            onClick={() => {
+              setMobileOpen((open) => !open);
+              setDropdown(null);
+            }}
+            className="group grid h-10 w-10 shrink-0 cursor-pointer place-items-center bg-transparent text-brand transition-transform duration-200 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+          >
+            {mobileOpen ? (
+              <X
+                size={21}
+                strokeWidth={1.9}
+                className={`${iconClass} transition-transform duration-200 group-hover:rotate-90`}
+                aria-hidden="true"
+              />
+            ) : (
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+                className={`${iconClass} overflow-visible`}
+              >
+                <path
+                  d="M4 8.5H19"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  className="transition-transform duration-200 group-hover:translate-x-[1px]"
+                />
+                <path
+                  d="M9 15.5H19"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  className="transition-transform duration-200 group-hover:-translate-x-[1px]"
+                />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile navigation */}
@@ -561,15 +573,29 @@ export default function Navbar() {
                   <Link
                     href="/"
                     onClick={closeMenus}
-                    className="block cursor-pointer py-4 text-sm font-medium text-text-primary transition-colors hover:text-brand"
+                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${
+                      pathname === "/" ? "text-brand" : "text-text-primary"
+                    }`}
                   >
                     Home
                   </Link>
 
                   <Link
+                    href="/jobs"
+                    onClick={closeMenus}
+                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${
+                      pathname === "/jobs" ? "text-brand" : "text-text-primary"
+                    }`}
+                  >
+                    Explore Jobs
+                  </Link>
+
+                  <Link
                     href="/join"
                     onClick={closeMenus}
-                    className="block cursor-pointer py-4 text-sm font-medium text-text-primary transition-colors hover:text-brand"
+                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${
+                      pathname === "/join" ? "text-brand" : "text-text-primary"
+                    }`}
                   >
                     Community
                   </Link>
