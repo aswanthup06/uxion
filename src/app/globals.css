@@ -61,11 +61,6 @@
 }
 
 :root {
-  /* Centralized Radius Tokens */
-  --radius-control: 4px;
-  --radius-card: 8px;
-  --radius-panel: 10px;
-
   /* Layout & Spacing Tokens */
   --container-max: 1200px;
   --container-narrow: 1024px;
