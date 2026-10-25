@@ -315,247 +315,247 @@ export default function SharePage() {
 
   return (
     <>
-    <main className="w-full bg-white text-slate-900 selection:bg-brand-soft">
-      <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10">
-        <header className="relative isolate bg-white py-4 text-[#202820] sm:py-6 lg:py-7">
-          <div className="grid items-center gap-8 lg:grid-cols-[1.22fr_0.78fr] lg:gap-12">
-            {/* Animated visual inspired by the Zenoway home hero */}
-            <motion.div
-              initial={reduce ? false : { opacity: 0, x: -12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.45, ease: EASE }}
-              className="relative mx-auto flex min-h-[210px] w-full max-w-[340px] items-center justify-center sm:min-h-[250px] order-last lg:min-h-[330px]"
-              aria-hidden="true"
-            >
-              <div
-                className="absolute inset-2 opacity-50"
-                style={{
-                  backgroundImage: "radial-gradient(#b9c8ba 0.7px, transparent 0.7px)",
-                  backgroundSize: "17px 17px",
-                  maskImage: "radial-gradient(ellipse at center, black 15%, transparent 75%)",
-                }}
-              />
-              <motion.svg
-                viewBox="0 0 340 300"
-                fill="none"
-                className="absolute inset-0 h-full w-full"
-                animate={reduce ? undefined : { rotate: [0, 2, 0] }}
-                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <ellipse cx="170" cy="150" rx="125" ry="94" stroke="#dce7dc" strokeDasharray="3 7" />
-                <ellipse cx="170" cy="150" rx="88" ry="120" stroke="#e7ede5" transform="rotate(-28 170 150)" />
-                <path d="M45 195 C95 195 105 90 160 112 S235 210 295 72" stroke="#b9d1bc" strokeDasharray="4 6" />
-                <circle cx="45" cy="195" r="4" fill="#059669" />
-                <circle cx="160" cy="112" r="4" fill="#059669" />
-                <circle cx="295" cy="72" r="4" fill="#059669" />
-              </motion.svg>
+      <main className="w-full bg-white text-slate-900 selection:bg-brand-soft">
+        <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10">
+          <header className="relative isolate bg-white py-4 text-[#202820] sm:py-6 lg:py-7">
+            <div className="grid items-center gap-8 lg:grid-cols-[1.22fr_0.78fr] lg:gap-12">
+              {/* Animated visual inspired by the Zenoway home hero */}
               <motion.div
-                animate={reduce ? undefined : { y: [0, -5, 0] }}
-                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-                className="relative rounded-md z-10 w-[78%] max-w-[250px] border border-[#e8ece6] bg-white p-4 shadow-[0_16px_50px_-30px_rgba(25,60,35,0.2)]"
+                initial={reduce ? false : { opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.45, ease: EASE }}
+                className="relative mx-auto flex min-h-[210px] w-full max-w-[340px] items-center justify-center sm:min-h-[250px] order-last lg:min-h-[330px]"
+                aria-hidden="true"
               >
-                <div className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand-soft text-brand">
-                    <FaWhatsapp className="h-5 w-5" />
-                  </span>
-                  <div>
-                    <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-brand">Zenoway community</p>
-                    <p className="mt-1 text-sm font-medium text-text-primary">Find your people.</p>
-                  </div>
-                </div>
-                <div className="my-4 h-px bg-border-subtle" />
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2.5">
-                    <span className="h-2 w-2 rounded-pill bg-brand" />
-                    <span className="h-2 w-24 bg-surface-muted" />
-                    <span className="ml-auto text-[10px] text-text-muted">Jobs</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <span className="h-2 w-2 rounded-pill bg-brand-accent" />
-                    <span className="h-2 w-16 bg-surface-muted" />
-                    <span className="ml-auto text-[10px] text-text-muted">Groups</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <span className="h-2 w-2 rounded-pill bg-border-strong" />
-                    <span className="h-2 w-20 bg-surface-muted" />
-                    <span className="ml-auto text-[10px] text-text-muted">Updates</span>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            <div className="order-first min-w-0 lg:py-4">
-              <motion.span initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-text-muted">
-                <FiUsers className="h-3.5 w-3.5 text-brand" /> ZENOWAY COMMUNITY
-              </motion.span>
-              <motion.h1 initial={reduce ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.32, delay: 0.04, ease: EASE }} className="mt-4 max-w-[680px] text-[40px] font-medium leading-[1.12] tracking-[-0.045em] sm:text-[48px] lg:text-[54px] text-text-primary">
-                Your next opportunity starts{" "}
-                <span className="text-brand">with community.</span>
-              </motion.h1>
-              <motion.p initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1, ease: EASE }} className="mt-4 max-w-[510px] text-[15px] leading-7 text-text-secondary sm:text-base">
-                Find job communities by category and state, or follow the channel
-                for important alerts and updates.
-              </motion.p>
-              <motion.div initial={reduce ? false : { opacity: 0, y: 7 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, delay: 0.16, ease: EASE }} className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                <button
-                  type="button"
-                  onClick={openGroupModal}
-                  className="group inline-flex min-h-9 cursor-pointer items-center justify-center gap-2 self-start rounded-control bg-brand px-4 py-3 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                <div
+                  className="absolute inset-2 opacity-50"
+                  style={{
+                    backgroundImage: "radial-gradient(#b9c8ba 0.7px, transparent 0.7px)",
+                    backgroundSize: "17px 17px",
+                    maskImage: "radial-gradient(ellipse at center, black 15%, transparent 75%)",
+                  }}
+                />
+                <motion.svg
+                  viewBox="0 0 340 300"
+                  fill="none"
+                  className="absolute inset-0 h-full w-full"
+                  animate={reduce ? undefined : { rotate: [0, 2, 0] }}
+                  transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <FaWhatsapp className="h-4 w-4" />
-                  <span>WhatsApp Groups</span>
-                  <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setChannelModalOpen(true)}
-                  className="group inline-flex min-h-9 cursor-pointer items-center justify-center gap-2 self-start rounded-control border border-border-default px-4 py-3 text-xs font-semibold text-text-primary transition-colors hover:border-brand hover:bg-brand-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                  <ellipse cx="170" cy="150" rx="125" ry="94" stroke="#dce7dc" strokeDasharray="3 7" />
+                  <ellipse cx="170" cy="150" rx="88" ry="120" stroke="#e7ede5" transform="rotate(-28 170 150)" />
+                  <path d="M45 195 C95 195 105 90 160 112 S235 210 295 72" stroke="#b9d1bc" strokeDasharray="4 6" />
+                  <circle cx="45" cy="195" r="4" fill="#059669" />
+                  <circle cx="160" cy="112" r="4" fill="#059669" />
+                  <circle cx="295" cy="72" r="4" fill="#059669" />
+                </motion.svg>
+                <motion.div
+                  animate={reduce ? undefined : { y: [0, -5, 0] }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="relative rounded-md z-10 w-[78%] max-w-[250px] border border-[#e8ece6] bg-white p-4 shadow-[0_16px_50px_-30px_rgba(25,60,35,0.2)]"
                 >
-                  <HiOutlineSpeakerphone className="h-4 w-4 text-brand" />
-                  <span>WhatsApp Channel</span>
-                  <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </button>
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand-soft text-brand">
+                      <FaWhatsapp className="h-5 w-5" />
+                    </span>
+                    <div>
+                      <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-brand">Zenoway community</p>
+                      <p className="mt-1 text-sm font-medium text-text-primary">Find your people.</p>
+                    </div>
+                  </div>
+                  <div className="my-4 h-px bg-border-subtle" />
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="h-2 w-2 rounded-pill bg-brand" />
+                      <span className="h-2 w-24 bg-surface-muted" />
+                      <span className="ml-auto text-[10px] text-text-muted">Jobs</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <span className="h-2 w-2 rounded-pill bg-brand-accent" />
+                      <span className="h-2 w-16 bg-surface-muted" />
+                      <span className="ml-auto text-[10px] text-text-muted">Groups</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <span className="h-2 w-2 rounded-pill bg-border-strong" />
+                      <span className="h-2 w-20 bg-surface-muted" />
+                      <span className="ml-auto text-[10px] text-text-muted">Updates</span>
+                    </div>
+                  </div>
+                </motion.div>
               </motion.div>
-              <motion.div initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3, delay: 0.22 }} className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-text-secondary">
-                <span className="inline-flex items-center gap-2"><FiCheckCircle className="h-4 w-4 text-brand" /> Direct WhatsApp links</span>
-                <span className="inline-flex items-center gap-2"><FiCheckCircle className="h-4 w-4 text-brand" /> Pick your field</span>
-                <span className="inline-flex items-center gap-2"><FiCheckCircle className="h-4 w-4 text-brand" /> Easy to join</span>
-              </motion.div>
-            </div>
-          </div>
-        </header>
 
-        <motion.section initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.38, delay: 0.18, ease: EASE }} className="mt-7 grid grid-cols-1 divide-y divide-border-default border-y border-border-default sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-          <div className="flex items-center gap-4 py-5 sm:px-5 sm:first:pl-0">
-            <span className="text-2xl font-semibold tracking-tight text-text-primary">
-              {categories.length}
-            </span>
-            <span className="text-sm text-text-secondary">Job categories</span>
-          </div>
-          <div className="flex items-center gap-4 py-5 sm:px-5">
-            <FiMapPin className="h-5 w-5 text-brand" />
-            <span className="text-sm text-text-secondary">
-              State-based communities
-            </span>
-          </div>
-          <div className="flex items-center gap-4 py-5 sm:px-5">
-            <FaWhatsapp className="h-5 w-5 text-brand" />
-            <span className="text-sm text-text-secondary">
-              Direct WhatsApp access
-            </span>
-          </div>
-        </motion.section>
-
-        {/* Community benefits */}
-        <section className="py-14 sm:py-16 lg:py-20" aria-labelledby="benefits-title">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">A community that moves you forward</p>
-            <h2 id="benefits-title" className="mt-3 text-2xl font-medium tracking-tight text-text-primary sm:text-3xl">
-              More than job links. A place to find your next step.
-            </h2>
-            <p className="mt-3 max-w-xl text-sm leading-7 text-text-secondary sm:text-base">
-              Find relevant opportunities and stay connected with updates that match your career interests.
-            </p>
-          </div>
-
-          <div className="mt-8 grid gap-7 border-y border-border-default py-7 sm:grid-cols-3 sm:gap-8">
-            <div className="flex gap-3">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand-soft text-brand"><FiBriefcase className="h-5 w-5" /></span>
-              <div><h3 className="text-sm font-semibold text-text-primary">Relevant opportunities</h3><p className="mt-1.5 text-sm leading-6 text-text-secondary">Explore job communities connected to your field and interests.</p></div>
-            </div>
-            <div className="flex gap-3">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand-soft text-brand"><FiBell className="h-5 w-5" /></span>
-              <div><h3 className="text-sm font-semibold text-text-primary">Useful updates</h3><p className="mt-1.5 text-sm leading-6 text-text-secondary">Follow the channel for job alerts and important Zenoway announcements.</p></div>
-            </div>
-            <div className="flex gap-3">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand-soft text-brand"><FiMessageCircle className="h-5 w-5" /></span>
-              <div><h3 className="text-sm font-semibold text-text-primary">A focused community</h3><p className="mt-1.5 text-sm leading-6 text-text-secondary">Choose a group by category and state, then join directly on WhatsApp.</p></div>
-            </div>
-          </div>
-        </section>
-
-        {/* Find your community */}
-        <section className="pb-14 sm:pb-16 lg:pb-20" aria-labelledby="categories-title">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">Explore by interest</p>
-              <h2 id="categories-title" className="mt-3 text-2xl font-medium tracking-tight text-text-primary sm:text-3xl">Find your community</h2>
-              <p className="mt-3 text-sm leading-7 text-text-secondary sm:text-base">Start with a field that fits you. You can choose an available state or group next.</p>
-            </div>
-            <button type="button" onClick={openGroupModal} className="cursor-pointer inline-flex min-h-10 shrink-0 items-center justify-center gap-2 self-start rounded-control border border-border-default px-4 py-2.5 text-sm font-semibold text-text-primary transition hover:border-brand hover:text-brand sm:self-auto">
-              View all communities <FiArrowUpRight className="h-4 w-4" />
-            </button>
-          </div>
-
-          <div className="mt-7 grid gap-0 border-y border-border-default sm:grid-cols-2 sm:border-b-0 lg:grid-cols-3">
-            {categories.slice(0, 6).map((category, index) => (
-              <button key={category.name} type="button" onClick={() => openGroupModalForCategory(category.name)} className={`group flex min-h-[126px] cursor-pointer items-start gap-4 border-b border-border-default py-5 text-left transition-colors hover:bg-brand-subtle sm:px-4 ${index % 2 === 0 ? "sm:border-r lg:border-r" : ""} lg:border-r ${index % 3 === 2 ? "lg:border-r-0" : ""}`}>
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand-soft text-brand transition-colors group-hover:bg-brand-soft-hover"><FiCompass className="h-5 w-5" /></span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-semibold text-text-primary">{category.name}</span>
-                  <span className="mt-1.5 block text-sm leading-6 text-text-secondary">{category.description || `Explore ${category.name.toLowerCase()} communities and available groups.`}</span>
-                  <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-brand">Explore community <FiArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
-                </span>
-              </button>
-            ))}
-          </div>
-          {categories.length > 6 && <p className="mt-4 text-xs text-text-muted">Showing a selection of categories. Use “View all communities” to browse every available option.</p>}
-        </section>
-
-        {/* Groups vs channel */}
-        <section className="border-y border-border-default py-12 sm:py-14" aria-labelledby="choose-title">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">Choose what works for you</p>
-            <h2 id="choose-title" className="mt-3 text-2xl font-medium tracking-tight text-text-primary sm:text-3xl">WhatsApp group or channel?</h2>
-            <p className="mt-3 text-sm leading-7 text-text-secondary sm:text-base">Both keep you connected to Zenoway. Pick the experience you prefer.</p>
-          </div>
-          <div className="mt-7 grid gap-8 md:grid-cols-2 md:gap-12">
-            <div>
-              <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-control bg-brand-soft text-brand"><FaWhatsapp className="h-5 w-5" /></span><h3 className="text-base font-semibold text-text-primary">Community groups</h3></div>
-              <p className="mt-3 text-sm leading-6 text-text-secondary">Best when you want to find a community for a particular job category or state.</p>
-              <button type="button" onClick={openGroupModal} className="cursor-pointer mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-hover">Find a group <FiArrowRight className="h-4 w-4" /></button>
-            </div>
-            <div>
-              <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-control bg-brand-soft text-brand"><HiOutlineSpeakerphone className="h-6 w-6" /></span><h3 className="text-base font-semibold text-text-primary">Updates channel</h3></div>
-              <p className="mt-3 text-sm leading-6 text-text-secondary">Best for one-way job alerts, platform announcements, and new community updates without group chat noise.</p>
-              <button type="button" onClick={() => setChannelModalOpen(true)} className="cursor-pointer mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-hover">Explore the channel <FiArrowRight className="h-4 w-4" /></button>
-            </div>
-          </div>
-        </section>
-
-        {/* How to get started */}
-        <section className="py-14 sm:py-16 lg:py-20" aria-labelledby="steps-title">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">Simple to join</p>
-            <h2 id="steps-title" className="mt-3 text-2xl font-medium tracking-tight text-text-primary sm:text-3xl">Your community is three steps away</h2>
-          </div>
-          <div className="mt-8 grid gap-7 sm:grid-cols-3 sm:gap-8">
-            {[
-              { number: "01", title: "Choose your field", description: "Pick the career category that best matches your interests." },
-              { number: "02", title: "Select a group", description: "Choose an available state or community from the list." },
-              { number: "03", title: "Join on WhatsApp", description: "Open the direct invite link and join the community." },
-            ].map((step) => (
-              <div key={step.number} className="border-t border-border-default pt-4">
-                <span className="text-xs font-semibold tracking-[0.12em] text-brand">{step.number}</span>
-                <h3 className="mt-3 text-base font-semibold text-text-primary">{step.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-text-secondary">{step.description}</p>
+              <div className="order-first min-w-0 lg:py-4">
+                <motion.span initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-text-muted">
+                  <FiUsers className="h-3.5 w-3.5 text-brand" /> ZENOWAY COMMUNITY
+                </motion.span>
+                <motion.h1 initial={reduce ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.32, delay: 0.04, ease: EASE }} className="mt-4 max-w-[680px] text-[40px] font-medium leading-[1.12] tracking-[-0.045em] sm:text-[48px] lg:text-[54px] text-text-primary">
+                  Your next opportunity starts{" "}
+                  <span className="text-brand">with community.</span>
+                </motion.h1>
+                <motion.p initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1, ease: EASE }} className="mt-4 max-w-[510px] text-[15px] leading-7 text-text-secondary sm:text-base">
+                  Find job communities by category and state, or follow the channel
+                  for important alerts and updates.
+                </motion.p>
+                <motion.div initial={reduce ? false : { opacity: 0, y: 7 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, delay: 0.16, ease: EASE }} className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                  <button
+                    type="button"
+                    onClick={openGroupModal}
+                    className="group inline-flex min-h-9 cursor-pointer items-center justify-center gap-2 self-start rounded-control bg-brand px-4 py-3 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                  >
+                    <FaWhatsapp className="h-4 w-4" />
+                    <span>WhatsApp Groups</span>
+                    <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setChannelModalOpen(true)}
+                    className="group inline-flex min-h-9 cursor-pointer items-center justify-center gap-2 self-start rounded-control border border-border-default px-4 py-3 text-xs font-semibold text-text-primary transition-colors hover:border-brand hover:bg-brand-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                  >
+                    <HiOutlineSpeakerphone className="h-4 w-4 text-brand" />
+                    <span>WhatsApp Channel</span>
+                    <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </button>
+                </motion.div>
+                <motion.div initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3, delay: 0.22 }} className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-text-secondary">
+                  <span className="inline-flex items-center gap-2"><FiCheckCircle className="h-4 w-4 text-brand" /> Direct WhatsApp links</span>
+                  <span className="inline-flex items-center gap-2"><FiCheckCircle className="h-4 w-4 text-brand" /> Pick your field</span>
+                  <span className="inline-flex items-center gap-2"><FiCheckCircle className="h-4 w-4 text-brand" /> Easy to join</span>
+                </motion.div>
               </div>
-            ))}
-          </div>
-          <div className="mt-8 flex flex-col gap-4 border-t border-border-default pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-xl text-sm leading-6 text-text-secondary">Ready to find your people? Explore the available groups and choose the one that fits.</p>
-            <button type="button" onClick={openGroupModal} className="cursor-pointer inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-control bg-brand px-4 py-2.5 text-sm font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover">Find a community <FiArrowRight className="h-4 w-4" /></button>
-          </div>
-        </section>
+            </div>
+          </header>
 
-        <footer className="mt-2 mb-8 flex flex-col items-center justify-between gap-3 border-t border-slate-200 pt-5 text-center sm:flex-row sm:text-left">
-          <p className="text-sm text-slate-500">More job communities and state groups are being added regularly.</p>
-          <span className="text-xs font-medium text-slate-400">Built for your next step</span>
-        </footer>
-      </div>
-    </main>
+          <motion.section initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.38, delay: 0.18, ease: EASE }} className="mt-7 grid grid-cols-1 divide-y divide-border-default border-y border-border-default sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            <div className="flex items-center gap-4 py-5 sm:px-5 sm:first:pl-0">
+              <span className="text-2xl font-semibold tracking-tight text-text-primary">
+                {categories.length}
+              </span>
+              <span className="text-sm text-text-secondary">Job categories</span>
+            </div>
+            <div className="flex items-center gap-4 py-5 sm:px-5">
+              <FiMapPin className="h-5 w-5 text-brand" />
+              <span className="text-sm text-text-secondary">
+                State-based communities
+              </span>
+            </div>
+            <div className="flex items-center gap-4 py-5 sm:px-5">
+              <FaWhatsapp className="h-5 w-5 text-brand" />
+              <span className="text-sm text-text-secondary">
+                Direct WhatsApp access
+              </span>
+            </div>
+          </motion.section>
 
-    <Modal
+          {/* Community benefits */}
+          <section className="py-14 sm:py-16 lg:py-20" aria-labelledby="benefits-title">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">A community that moves you forward</p>
+              <h2 id="benefits-title" className="mt-3 text-2xl font-medium tracking-tight text-text-primary sm:text-3xl">
+                More than job links. A place to find your next step.
+              </h2>
+              <p className="mt-3 max-w-xl text-sm leading-7 text-text-secondary sm:text-base">
+                Find relevant opportunities and stay connected with updates that match your career interests.
+              </p>
+            </div>
+
+            <div className="mt-8 grid gap-7 border-y border-border-default py-7 sm:grid-cols-3 sm:gap-8">
+              <div className="flex gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand-soft text-brand"><FiBriefcase className="h-5 w-5" /></span>
+                <div><h3 className="text-sm font-semibold text-text-primary">Relevant opportunities</h3><p className="mt-1.5 text-sm leading-6 text-text-secondary">Explore job communities connected to your field and interests.</p></div>
+              </div>
+              <div className="flex gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand-soft text-brand"><FiBell className="h-5 w-5" /></span>
+                <div><h3 className="text-sm font-semibold text-text-primary">Useful updates</h3><p className="mt-1.5 text-sm leading-6 text-text-secondary">Follow the channel for job alerts and important Zenoway announcements.</p></div>
+              </div>
+              <div className="flex gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand-soft text-brand"><FiMessageCircle className="h-5 w-5" /></span>
+                <div><h3 className="text-sm font-semibold text-text-primary">A focused community</h3><p className="mt-1.5 text-sm leading-6 text-text-secondary">Choose a group by category and state, then join directly on WhatsApp.</p></div>
+              </div>
+            </div>
+          </section>
+
+          {/* Find your community */}
+          <section className="pb-14 sm:pb-16 lg:pb-20" aria-labelledby="categories-title">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">Explore by interest</p>
+                <h2 id="categories-title" className="mt-3 text-2xl font-medium tracking-tight text-text-primary sm:text-3xl">Find your community</h2>
+                <p className="mt-3 text-sm leading-7 text-text-secondary sm:text-base">Start with a field that fits you. You can choose an available state or group next.</p>
+              </div>
+              <button type="button" onClick={openGroupModal} className="cursor-pointer inline-flex min-h-10 shrink-0 items-center justify-center gap-2 self-start rounded-control border border-border-default px-4 py-2.5 text-sm font-semibold text-text-primary transition hover:border-brand hover:text-brand sm:self-auto">
+                View all communities <FiArrowUpRight className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="mt-7 grid gap-0 border-y border-border-default sm:grid-cols-2 sm:border-b-0 lg:grid-cols-3">
+              {categories.slice(0, 6).map((category, index) => (
+                <button key={category.name} type="button" onClick={() => openGroupModalForCategory(category.name)} className={`group flex min-h-[126px] cursor-pointer items-start gap-4 border-b border-border-default py-5 text-left transition-colors hover:bg-brand-subtle sm:px-4 ${index % 2 === 0 ? "sm:border-r lg:border-r" : ""} lg:border-r ${index % 3 === 2 ? "lg:border-r-0" : ""}`}>
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand-soft text-brand transition-colors group-hover:bg-brand-soft-hover"><FiCompass className="h-5 w-5" /></span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold text-text-primary">{category.name}</span>
+                    <span className="mt-1.5 block text-sm leading-6 text-text-secondary">{category.description || `Explore ${category.name.toLowerCase()} communities and available groups.`}</span>
+                    <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-brand">Explore community <FiArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
+                  </span>
+                </button>
+              ))}
+            </div>
+            {categories.length > 6 && <p className="mt-4 text-xs text-text-muted">Showing a selection of categories. Use “View all communities” to browse every available option.</p>}
+          </section>
+
+          {/* Groups vs channel */}
+          <section className="border-y border-border-default py-12 sm:py-14" aria-labelledby="choose-title">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">Choose what works for you</p>
+              <h2 id="choose-title" className="mt-3 text-2xl font-medium tracking-tight text-text-primary sm:text-3xl">WhatsApp group or channel?</h2>
+              <p className="mt-3 text-sm leading-7 text-text-secondary sm:text-base">Both keep you connected to Zenoway. Pick the experience you prefer.</p>
+            </div>
+            <div className="mt-7 grid gap-8 md:grid-cols-2 md:gap-12">
+              <div>
+                <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-control bg-brand-soft text-brand"><FaWhatsapp className="h-5 w-5" /></span><h3 className="text-base font-semibold text-text-primary">Community groups</h3></div>
+                <p className="mt-3 text-sm leading-6 text-text-secondary">Best when you want to find a community for a particular job category or state.</p>
+                <button type="button" onClick={openGroupModal} className="cursor-pointer mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-hover">Find a group <FiArrowRight className="h-4 w-4" /></button>
+              </div>
+              <div>
+                <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-control bg-brand-soft text-brand"><HiOutlineSpeakerphone className="h-6 w-6" /></span><h3 className="text-base font-semibold text-text-primary">Updates channel</h3></div>
+                <p className="mt-3 text-sm leading-6 text-text-secondary">Best for one-way job alerts, platform announcements, and new community updates without group chat noise.</p>
+                <button type="button" onClick={() => setChannelModalOpen(true)} className="cursor-pointer mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-hover">Explore the channel <FiArrowRight className="h-4 w-4" /></button>
+              </div>
+            </div>
+          </section>
+
+          {/* How to get started */}
+          <section className="py-14 sm:py-16 lg:py-20" aria-labelledby="steps-title">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">Simple to join</p>
+              <h2 id="steps-title" className="mt-3 text-2xl font-medium tracking-tight text-text-primary sm:text-3xl">Your community is three steps away</h2>
+            </div>
+            <div className="mt-8 grid gap-7 sm:grid-cols-3 sm:gap-8">
+              {[
+                { number: "01", title: "Choose your field", description: "Pick the career category that best matches your interests." },
+                { number: "02", title: "Select a group", description: "Choose an available state or community from the list." },
+                { number: "03", title: "Join on WhatsApp", description: "Open the direct invite link and join the community." },
+              ].map((step) => (
+                <div key={step.number} className="border-t border-border-default pt-4">
+                  <span className="text-xs font-semibold tracking-[0.12em] text-brand">{step.number}</span>
+                  <h3 className="mt-3 text-base font-semibold text-text-primary">{step.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-text-secondary">{step.description}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 flex flex-col gap-4 border-t border-border-default pt-6 sm:flex-row sm:items-center sm:justify-between">
+              <p className="max-w-xl text-sm leading-6 text-text-secondary">Ready to find your people? Explore the available groups and choose the one that fits.</p>
+              <button type="button" onClick={openGroupModal} className="cursor-pointer inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-control bg-brand px-4 py-2.5 text-sm font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover">Find a community <FiArrowRight className="h-4 w-4" /></button>
+            </div>
+          </section>
+
+          <footer className="mt-2 mb-8 flex flex-col items-center justify-between gap-3 border-t border-slate-200 pt-5 text-center sm:flex-row sm:text-left">
+            <p className="text-sm text-slate-500">More job communities and state groups are being added regularly.</p>
+            <span className="text-xs font-medium text-slate-400">Built for your next step</span>
+          </footer>
+        </div>
+      </main>
+
+      <Modal
         open={groupModalOpen}
         onClose={closeGroupModal}
         labelledBy="group-modal-title"
@@ -727,7 +727,7 @@ export default function SharePage() {
         </div>
       </Modal>
 
-    <SiteFooter />
+      <SiteFooter />
     </>
   );
 }
