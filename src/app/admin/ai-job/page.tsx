@@ -334,7 +334,7 @@ export default function AIJobPage() {
                   />
                 </Field>
 
-                <button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2">
+                <button className="w-full cursor-pointer bg-brand hover:bg-brand-hover text-text-inverse font-semibold py-3.5 rounded-xl shadow-subtle hover:shadow-card-hover transition-all duration-200 flex items-center justify-center gap-2">
                   <Save className="w-5 h-5" />
                   Save Job Post
                 </button>

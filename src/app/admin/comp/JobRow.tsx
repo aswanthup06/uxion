@@ -62,7 +62,7 @@ export default function JobRow({ job, onDelete }: Props) {
             href={`/admin/jobs/${job.id}`}
             aria-label={`Edit ${job.title}`}
             title="Edit job"
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-emerald-50 hover:text-[#087F50]"
+            className="inline-flex h-9 items-center gap-1.5 rounded-control px-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-brand-soft hover:text-brand"
           >
             <Pencil size={14} />
             <span>Edit</span>

@@ -112,12 +112,12 @@ export default function ContactPage() {
                   }
                   className="group flex items-center gap-4 py-6 transition-colors sm:gap-6 sm:py-7"
                 >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-[#087F50] transition-colors group-hover:bg-[#087F50] group-hover:text-white">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-text-inverse">
                     <Icon size={19} strokeWidth={1.7} />
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-semibold text-slate-900 transition-colors group-hover:text-[#087F50] sm:text-base">
+                    <h3 className="text-sm font-semibold text-slate-900 transition-colors group-hover:text-brand sm:text-base">
                       {option.title}
                     </h3>
 
@@ -125,7 +125,7 @@ export default function ContactPage() {
                       {option.description}
                     </p>
 
-                    <p className="mt-2 break-all text-sm font-medium text-[#087F50]">
+                    <p className="mt-2 break-all text-sm font-medium text-brand">
                       {option.detail}
                     </p>
                   </div>
@@ -134,7 +134,7 @@ export default function ContactPage() {
                     size={18}
                     strokeWidth={1.7}
                     aria-hidden="true"
-                    className="shrink-0 text-slate-400 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#087F50]"
+                    className="shrink-0 text-slate-400 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand"
                   />
                 </a>
               );
@@ -146,7 +146,7 @@ export default function ContactPage() {
         <section className="mt-12 border-t border-slate-200 pt-8 sm:mt-16 sm:pt-10">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-[#087F50]">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-brand-soft text-brand">
                 <MessageCircle size={19} strokeWidth={1.7} />
               </div>
 

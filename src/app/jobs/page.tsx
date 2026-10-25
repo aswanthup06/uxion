@@ -551,7 +551,7 @@ function JobsViewContent() {
               Explore open roles
               {!loading && !error && (
                 <span
-                  className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-sm font-semibold tabular-nums tracking-normal text-emerald-900"
+                  className="rounded-full bg-brand-soft px-2.5 py-0.5 text-sm font-semibold tabular-nums tracking-normal text-brand-dark"
                   aria-live="polite"
                 >
                   {filteredJobs.length}
@@ -569,13 +569,13 @@ function JobsViewContent() {
               onClick={() => setFiltersOpen((v) => !v)}
               className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border px-3.5 text-sm font-medium transition-colors duration-200 lg:hidden ${
                 filtersOpen
-                  ? "border-emerald-900 bg-emerald-50 text-emerald-900"
+                  ? "border-brand bg-brand-soft text-brand-dark"
                   : "border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-100"
               }`}
             >
               <SlidersHorizontal className="h-4 w-4" /> Filters{" "}
               {activeFilters > 0 && (
-                <span className="grid h-5 min-w-5 place-items-center rounded-full bg-emerald-900 px-1 text-[11px] text-white">
+                <span className="grid h-5 min-w-5 place-items-center rounded-full bg-brand-dark px-1 text-[11px] text-white">
                   {activeFilters}
                 </span>
               )}
@@ -598,9 +598,9 @@ function JobsViewContent() {
         </header>
 
         {/* Search Bar */}
-        <div className="mt-5 grid grid-cols-1 rounded-xl border border-slate-200 bg-white transition-colors focus-within:border-emerald-700 sm:grid-cols-2">
+        <div className="mt-5 grid grid-cols-1 rounded-xl border border-slate-200 bg-white transition-colors focus-within:border-brand sm:grid-cols-2">
           <label className="flex items-center gap-3 px-4 py-3.5">
-            <Search className="h-[18px] w-[18px] shrink-0 text-emerald-800" />
+            <Search className="h-[18px] w-[18px] shrink-0 text-brand" />
             <span className="sr-only">Search job title, skill or company</span>
             <input
               value={search}
@@ -620,7 +620,7 @@ function JobsViewContent() {
             )}
           </label>
           <label className="flex items-center gap-3 border-t border-slate-200 px-4 py-3.5 sm:border-l sm:border-t-0">
-            <MapPin className="h-[18px] w-[18px] shrink-0 text-emerald-800" />
+            <MapPin className="h-[18px] w-[18px] shrink-0 text-brand" />
             <span className="sr-only">Location</span>
             <input
               value={location}
@@ -733,10 +733,10 @@ function JobsViewContent() {
                       tabIndex={0}
                       role="button"
                       aria-label={`View ${job.title} at ${job.company}`}
-                      className="group flex min-h-[190px] cursor-pointer flex-col rounded-lg border border-slate-200 bg-white p-4 text-left transition-[border-color,box-shadow] duration-500 ease-out hover:border-emerald-700/70 hover:shadow-[0_8px_24px_-12px_rgba(6,78,59,0.18)] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 focus-visible:ring-offset-2 sm:p-5 motion-reduce:transition-none"
+                      className="group flex min-h-[190px] cursor-pointer flex-col rounded-lg border border-slate-200 bg-white p-4 text-left transition-[border-color,box-shadow] duration-500 ease-out hover:border-brand/70 hover:shadow-card-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 sm:p-5 motion-reduce:transition-none"
                     >
                       <div className="flex items-center justify-between gap-3">
-                        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-800">
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand">
                           <BriefcaseBusiness className="h-3.5 w-3.5" />
                           {cat}
                         </span>
@@ -754,8 +754,8 @@ function JobsViewContent() {
                             aria-pressed={isSaved}
                             className={`grid h-8 w-8 cursor-pointer place-items-center rounded-full transition-colors duration-200 ${
                               isSaved
-                                ? "bg-emerald-100 text-emerald-900"
-                                : "text-slate-400 hover:bg-slate-100 hover:text-emerald-800"
+                                ? "bg-brand-soft text-brand-dark"
+                                : "text-slate-400 hover:bg-slate-100 hover:text-brand"
                             }`}
                           >
                             <Bookmark
@@ -770,7 +770,7 @@ function JobsViewContent() {
                         <Link
                           href={`/jobs/${job.id}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="transition-colors hover:text-emerald-900"
+                          className="transition-colors hover:text-brand"
                         >
                           {job.title}
                         </Link>
@@ -790,7 +790,7 @@ function JobsViewContent() {
                           </span>
                         ))}
                         {recent && (
-                          <span className="rounded-md bg-emerald-50 px-2.5 py-1.5 text-[11px] font-semibold text-emerald-800">
+                          <span className="rounded-md bg-brand-soft px-2.5 py-1.5 text-[11px] font-semibold text-brand-dark">
                             New
                           </span>
                         )}
@@ -808,7 +808,7 @@ function JobsViewContent() {
                         </div>
                         <ArrowUpRight
                           aria-hidden="true"
-                          className="h-4 w-4 shrink-0 text-slate-400 transition-all duration-500 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-emerald-900 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0 motion-reduce:group-hover:translate-y-0"
+                          className="h-4 w-4 shrink-0 text-slate-400 transition-all duration-500 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand motion-reduce:transition-none motion-reduce:group-hover:translate-x-0 motion-reduce:group-hover:translate-y-0"
                         />
                       </div>
                     </article>
@@ -925,7 +925,7 @@ function JobsViewContent() {
                     href={activeJob.companyLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 transition hover:text-emerald-950"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand transition hover:text-brand-dark"
                   >
                     <span>Visit company website</span>
                     <ExternalLink className="h-3.5 w-3.5" />
@@ -1019,7 +1019,7 @@ export default function JobsPage() {
       fallback={
         <div className="flex h-screen w-full items-center justify-center bg-white">
           <div className="flex flex-col items-center gap-3">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-900 border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand border-t-transparent" />
             <p className="text-sm text-slate-500">Loading career opportunities...</p>
           </div>
         </div>

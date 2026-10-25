@@ -89,7 +89,7 @@ export default function JobTable({ jobs, onDelete }: Props) {
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search jobs, companies, locations..."
             aria-label="Search jobs"
-            className="h-10 w-full rounded-lg border border-gray-200 bg-white pl-9 pr-9 text-sm text-gray-900 outline-none transition focus:border-[#087F50] focus:ring-2 focus:ring-emerald-50"
+            className="h-10 w-full rounded-lg border border-gray-200 bg-white pl-9 pr-9 text-sm text-gray-900 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand-soft"
           />
 
           {search && (

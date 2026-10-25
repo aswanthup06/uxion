@@ -4,7 +4,7 @@ import { ArrowUpRight, BriefcaseBusiness } from "lucide-react";
 export default function JobEmptyState() {
   return (
     <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-[#087F50]">
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-soft text-brand">
         <BriefcaseBusiness size={22} strokeWidth={1.5} />
       </div>
 
@@ -18,7 +18,7 @@ export default function JobEmptyState() {
 
       <Link
         href="/admin/jobs/add"
-        className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#087F50] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#066640] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
+        className="mt-6 inline-flex items-center gap-2 rounded-control bg-brand px-4 py-2.5 text-sm font-medium text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
       >
         Add a job
         <ArrowUpRight size={16} />
