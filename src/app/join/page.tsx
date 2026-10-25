@@ -186,7 +186,7 @@ function GroupResult({
         href={group.link}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-4 inline-flex min-h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-emerald-700 px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
+        className="mt-4 inline-flex min-h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-3 py-2.5 text-sm font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
       >
         <FaWhatsapp className="h-5 w-5" /> Join WhatsApp group{" "}
         <FiArrowUpRight className="h-4 w-4" />
@@ -400,7 +400,7 @@ export default function SharePage() {
                 <button
                   type="button"
                   onClick={openGroupModal}
-                  className="group inline-flex min-h-9 cursor-pointer items-center justify-center gap-2 self-start rounded-sm bg-emerald-700 px-4 py-3 text-xs font-semibold text-white transition-colors hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
+                  className="group inline-flex min-h-9 cursor-pointer items-center justify-center gap-2 self-start rounded-control bg-brand px-4 py-3 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                 >
                   <FaWhatsapp className="h-4 w-4" />
                   <span>WhatsApp Groups</span>
@@ -544,7 +544,7 @@ export default function SharePage() {
           </div>
           <div className="mt-8 flex flex-col gap-4 border-t border-slate-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
             <p className="max-w-xl text-sm leading-6 text-slate-500">Ready to find your people? Explore the available groups and choose the one that fits.</p>
-            <button type="button" onClick={openGroupModal} className="cursor-pointer inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-sm bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800">Find a community <FiArrowRight className="h-4 w-4" /></button>
+            <button type="button" onClick={openGroupModal} className="cursor-pointer inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-control bg-brand px-4 py-2.5 text-sm font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover">Find a community <FiArrowRight className="h-4 w-4" /></button>
           </div>
         </section>
 
@@ -712,7 +712,7 @@ export default function SharePage() {
             href={channel.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 inline-flex min-h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
+            className="mt-6 inline-flex min-h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-4 py-2.5 text-sm font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
           >
             <FaWhatsapp className="h-5 w-5" /> Join WhatsApp Channel{" "}
             <FiArrowUpRight className="h-4 w-4" />

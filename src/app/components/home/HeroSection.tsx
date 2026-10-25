@@ -94,15 +94,15 @@ export default function HeroSection({
               transition={{ duration: 0.3 }}
               className="mb-6 flex items-center gap-2.5"
             >
-              <span className="h-2 w-2 rounded-full bg-emerald-600" />
-              <span className="text-xs font-medium uppercase tracking-[0.12em] text-[#657267]">
+              <span className="h-2 w-2 rounded-pill bg-brand" />
+              <span className="text-xs font-medium uppercase tracking-[0.12em] text-text-muted">
                 {active.eyebrow}
               </span>
             </motion.div>
 
             {/* Audience selector */}
             <div
-              className="mb-7 inline-flex items-center gap-1 rounded-lg border border-[#e8ece7] bg-[#f8faf7] p-1"
+              className="mb-7 inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle p-1"
               role="group"
               aria-label="Choose your audience"
             >
@@ -110,10 +110,10 @@ export default function HeroSection({
                 type="button"
                 onClick={() => setAudience("employee")}
                 aria-pressed={!isEmployer}
-                className={`flex items-center cursor-pointer gap-2 rounded-md px-3 py-2 text-xs font-medium transition-colors ${
+                className={`flex items-center cursor-pointer gap-2 rounded-control px-3 py-2 text-xs font-medium transition-colors ${
                   !isEmployer
-                    ? "bg-white text-emerald-800 shadow-sm ring-1 ring-black/[0.04]"
-                    : "text-[#777f75] hover:text-[#202820]"
+                    ? "bg-surface-card text-brand shadow-subtle ring-1 ring-border-default"
+                    : "text-text-muted hover:text-text-primary"
                 }`}
               >
                 <Users size={14} />
@@ -124,10 +124,10 @@ export default function HeroSection({
                 type="button"
                 onClick={() => setAudience("employer")}
                 aria-pressed={isEmployer}
-                className={`flex items-center cursor-pointer gap-2 rounded-md px-3 py-2 text-xs font-medium transition-colors ${
+                className={`flex items-center cursor-pointer gap-2 rounded-control px-3 py-2 text-xs font-medium transition-colors ${
                   isEmployer
-                    ? "bg-white text-emerald-800 shadow-sm ring-1 ring-black/[0.04]"
-                    : "text-[#777f75] hover:text-[#202820]"
+                    ? "bg-surface-card text-brand shadow-subtle ring-1 ring-border-default"
+                    : "text-text-muted hover:text-text-primary"
                 }`}
               >
                 <BriefcaseBusiness size={14} />
@@ -153,15 +153,15 @@ export default function HeroSection({
                   }
                   transition={{ duration: 0.28, ease: "easeOut" }}
                 >
-                  <h1 className="max-w-[590px] text-[40px] font-medium leading-[1.12] tracking-[-0.045em] sm:text-[48px] lg:text-[54px]">
+                  <h1 className="max-w-[590px] text-[40px] font-medium leading-[1.12] tracking-[-0.045em] sm:text-[48px] lg:text-[54px] text-text-primary">
                     {active.title}
                     <br />
-                    <span className="text-emerald-700">
+                    <span className="text-brand">
                       {active.highlight}
                     </span>
                   </h1>
 
-                  <p className="mt-5 max-w-[440px] text-[15px] leading-7 text-[#737971] sm:text-base">
+                  <p className="mt-5 max-w-[440px] text-[15px] leading-7 text-text-secondary sm:text-base">
                     {active.description}
                   </p>
                 </motion.div>
@@ -188,7 +188,7 @@ export default function HeroSection({
                 >
                   <Link
                     href={active.href}
-                    className="group inline-flex h-9 items-center gap-3 rounded-sm bg-emerald-700 px-5 text-xs font-medium text-white transition-colors hover:bg-emerald-800"
+                    className="group inline-flex h-9 items-center gap-3 rounded-control bg-brand px-5 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                   >
                     {active.button}
                     <ArrowUpRight
@@ -199,13 +199,13 @@ export default function HeroSection({
                 </motion.div>
               </AnimatePresence>
 
-              <span className="text-xs text-[#858b82]">
+              <span className="text-xs text-text-muted">
                 {active.secondary}
               </span>
             </div>
 
             {/* Trust points */}
-            <div className="mt-8 flex flex-wrap gap-x-5 gap-y-3 border-t border-[#ebeee9] pt-5">
+            <div className="mt-8 flex flex-wrap gap-x-5 gap-y-3 border-t border-border-default pt-5">
               {(isEmployer
                 ? ["Reach creative talent", "Direct applications", "Simple hiring"]
                 : ["Direct to HR", "Fresh opportunities", "Built for India"]
@@ -214,9 +214,9 @@ export default function HeroSection({
                   key={audience + item}
                   initial={reduceMotion ? false : { opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex items-center gap-1.5 text-xs text-[#7b8179]"
+                  className="flex items-center gap-1.5 text-xs text-text-secondary"
                 >
-                  <Check size={13} className="text-emerald-700" />
+                  <Check size={13} className="text-brand" />
                   {item}
                 </motion.span>
               ))}
@@ -300,26 +300,26 @@ export default function HeroSection({
               >
                 {isEmployer ? (
                   /* EMPLOYER VISUAL */
-                  <div className="rounded-xl border border-[#e8ece6] bg-white p-5 shadow-[0_16px_50px_-30px_rgba(25,60,35,0.2)] sm:p-6">
+                  <div className="rounded-panel border border-border-default bg-surface-card p-5 shadow-card sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-emerald-700">
+                        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-brand">
                           Your next hire
                         </p>
-                        <h2 className="mt-2 text-xl font-medium tracking-tight">
+                        <h2 className="mt-2 text-xl font-medium tracking-tight text-text-primary">
                           Build your team.
                         </h2>
                       </div>
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-control bg-brand-soft text-brand">
                         <BriefcaseBusiness size={19} />
                       </div>
                     </div>
 
-                    <p className="mt-2 text-xs leading-5 text-[#858b82]">
+                    <p className="mt-2 text-xs leading-5 text-text-muted">
                       Reach people who care about what they create.
                     </p>
 
-                    <div className="my-5 h-px bg-[#edf0eb]" />
+                    <div className="my-5 h-px bg-border-subtle" />
 
                     {[
                       { role: "Product Designer", skill: "Product & UX", initial: "P" },
@@ -334,50 +334,50 @@ export default function HeroSection({
                           duration: 0.35,
                           delay: reduceMotion ? 0 : 0.08 * i,
                         }}
-                        className="flex items-center gap-3 rounded-lg px-2 py-3"
+                        className="flex items-center gap-3 rounded-control px-2 py-3"
                       >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-emerald-100 bg-emerald-50 text-sm font-medium text-emerald-800">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-control border border-brand-soft bg-brand-soft text-sm font-semibold text-brand">
                           {person.initial}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-[13px] font-medium">
+                          <p className="text-[13px] font-medium text-text-primary">
                             {person.role}
                           </p>
-                          <p className="mt-1 text-[11px] text-[#858b82]">
+                          <p className="mt-1 text-[11px] text-text-muted">
                             {person.skill}
                           </p>
                         </div>
-                        <Check size={15} className="text-emerald-700" />
+                        <Check size={15} className="text-brand" />
                       </motion.div>
                     ))}
 
-                    <div className="mt-3 flex items-center gap-2 border-t border-[#edf0eb] pt-4 text-xs text-[#737971]">
-                      <Users size={14} className="text-emerald-700" />
+                    <div className="mt-3 flex items-center gap-2 border-t border-border-subtle pt-4 text-xs text-text-secondary">
+                      <Users size={14} className="text-brand" />
                       Your next great hire starts here.
                     </div>
                   </div>
                 ) : (
                   /* EMPLOYEE VISUAL */
-                  <div className="rounded-xl border border-[#e8ece6] bg-white p-5 shadow-[0_16px_50px_-30px_rgba(25,60,35,0.2)] sm:p-6">
+                  <div className="rounded-panel border border-border-default bg-surface-card p-5 shadow-card sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-emerald-700">
+                        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-brand">
                           Curated opportunities
                         </p>
-                        <h2 className="mt-2 text-xl font-medium tracking-tight">
+                        <h2 className="mt-2 text-xl font-medium tracking-tight text-text-primary">
                           Find your next role.
                         </h2>
                       </div>
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-control bg-brand-soft text-brand">
                         <ArrowUpRight size={19} />
                       </div>
                     </div>
 
-                    <p className="mt-1 text-xs text-[#8a9087]">
+                    <p className="mt-1 text-xs text-text-muted">
                       A better kind of job search.
                     </p>
 
-                    <div className="my-5 h-px bg-[#edf0eb]" />
+                    <div className="my-5 h-px bg-border-subtle" />
 
                     {jobs.slice(0, 3).map((job, index) => (
                       <motion.div
@@ -388,37 +388,37 @@ export default function HeroSection({
                           duration: 0.35,
                           delay: reduceMotion ? 0 : 0.08 * index,
                         }}
-                        className="group flex items-center gap-3 rounded-lg px-2 py-3 transition-colors hover:bg-[#f6f8f4]"
+                        className="group flex items-center gap-3 rounded-control px-2 py-3 transition-colors hover:bg-surface-subtle"
                       >
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-emerald-100 bg-emerald-50 text-sm font-medium text-emerald-800">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-brand-soft bg-brand-soft text-sm font-semibold text-brand">
                           {job.mark}
                         </div>
 
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-medium">
+                          <p className="truncate text-[13px] font-medium text-text-primary">
                             {job.title}
                           </p>
-                          <p className="mt-1 truncate text-[11px] text-[#8a9087]">
+                          <p className="mt-1 truncate text-[11px] text-text-muted">
                             {job.company}
                           </p>
-                          <p className="mt-1.5 flex items-center gap-1 text-[10px] text-[#777f75]">
+                          <p className="mt-1.5 flex items-center gap-1 text-[10px] text-text-secondary">
                             <MapPin size={11} />
                             {job.place}
-                            <span className="mx-1 text-[#c4c9c0]">·</span>
+                            <span className="mx-1 text-border-default">·</span>
                             {job.exp}
                           </p>
                         </div>
 
                         <ArrowUpRight
                           size={15}
-                          className="text-[#a4aca1] transition-colors group-hover:text-emerald-700"
+                          className="text-text-muted transition-colors group-hover:text-brand"
                         />
                       </motion.div>
                     ))}
 
                     <Link
                       href="/jobs"
-                      className="mt-3 flex items-center justify-between border-t border-[#edf0eb] pt-4 text-xs font-medium text-emerald-800"
+                      className="mt-3 flex items-center justify-between border-t border-border-subtle pt-4 text-xs font-semibold text-brand hover:text-brand-hover"
                     >
                       Browse all roles
                       <ArrowRight size={14} />
@@ -436,17 +436,17 @@ export default function HeroSection({
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="absolute bottom-[7%] left-0 z-20 hidden rounded-lg border border-[#e8ece6] bg-white px-3.5 py-3 shadow-sm sm:block"
+              className="absolute bottom-[7%] left-0 z-20 hidden rounded-control border border-border-default bg-surface-card px-3.5 py-3 shadow-subtle sm:block"
             >
               <div className="flex items-center gap-2.5">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
+                <span className="flex h-7 w-7 items-center justify-center rounded-pill bg-brand-soft text-brand">
                   <Check size={14} />
                 </span>
                 <div>
-                  <p className="text-[11px] font-medium">
+                  <p className="text-[11px] font-medium text-text-primary">
                     {isEmployer ? "Post your opening" : "Apply directly"}
                   </p>
-                  <p className="mt-0.5 text-[10px] text-[#8a9087]">
+                  <p className="mt-0.5 text-[10px] text-text-muted">
                     {isEmployer ? "Meet the right talent" : "No middleman"}
                   </p>
                 </div>
@@ -460,9 +460,9 @@ export default function HeroSection({
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="absolute right-0 top-[8%] z-20 hidden rounded-lg border border-[#e8ece6] bg-white px-3.5 py-2.5 text-[11px] text-[#566454] shadow-sm sm:block"
+              className="absolute right-0 top-[8%] z-20 hidden rounded-control border border-border-default bg-surface-card px-3.5 py-2.5 text-[11px] text-text-secondary shadow-subtle sm:block"
             >
-              <span className="mr-2 text-emerald-600">✳</span>
+              <span className="mr-2 text-brand">✳</span>
               {isEmployer ? "Talent · Teams · Growth" : "Design · Product · Tech"}
             </motion.div>
           </div>

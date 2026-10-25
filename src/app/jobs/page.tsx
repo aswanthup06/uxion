@@ -683,7 +683,7 @@ function JobsViewContent() {
               <button
                 type="button"
                 onClick={loadJobs}
-                className="mt-5 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-900 px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-emerald-800"
+                className="mt-5 inline-flex cursor-pointer items-center gap-2 rounded-control bg-brand px-4 py-2.5 text-sm font-semibold text-text-inverse shadow-subtle transition-colors duration-200 hover:bg-brand-hover"
               >
                 <RotateCcw className="h-3.5 w-3.5" /> Try again
               </button>
