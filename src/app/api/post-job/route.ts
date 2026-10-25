@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     } = await req.json();
 
     // ✅ Required field validation
-    if (!title || !company || !location || !description || !contactEmail || !apply) {
+    if (!title || !company || !location || !description || !contactEmail) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -35,8 +35,7 @@ export async function POST(req: Request) {
       <p><strong>Company:</strong> ${company}</p>
       <p><strong>Location:</strong> ${location}</p>
       <p><strong>Description:</strong> ${description}</p>
-      <p><strong>Apply Link / Email:</strong> ${apply}</p>
-      <p><strong>Contact Email:</strong> ${contactEmail}</p>
+      <p><strong>Application Email:</strong> ${contactEmail}</p>
     `;
 
     if (salary) html += `<p><strong>Salary:</strong> ${salary}</p>`;

@@ -16,6 +16,61 @@ body {
   scrollbar-width: none;
 }
 
+:root {
+  /* Brand */
+  --color-brand: #087f50;
+  --color-brand-hover: #066b43;
+  --color-brand-accent: #0fa968;
+  --color-brand-dark: #164e3b;
+  --color-brand-soft: #edf7f1;
+
+  /* Surfaces */
+  --color-background: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f8faf9;
+
+  /* Text */
+  --color-text: #18231e;
+  --color-text-secondary: #64716a;
+  --color-text-muted: #89948e;
+
+  /* Borders */
+  --color-border: #e5eae7;
+  --color-border-strong: #d2dbd5;
+
+  /* Status */
+  --color-success: #087f50;
+  --color-warning: #a16207;
+  --color-danger: #dc2626;
+
+  /* Radius — keep corners subtle */
+  --radius-control: 6px;
+  --radius-card: 8px;
+  --radius-panel: 10px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgb(24 35 30 / 4%);
+  --shadow-dropdown: 0 8px 24px rgb(24 35 30 / 10%);
+
+  /* Layout */
+  --container-width: 1200px;
+  --page-gutter: 24px;
+
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-normal: 220ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
 ::-webkit-scrollbar {
   display: none;
 }

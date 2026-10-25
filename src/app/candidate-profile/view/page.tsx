@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
@@ -280,9 +281,9 @@ export default function CandidatePublicProfilePage() {
               </div>
             </section>
 
-            <a href="/jobs" className="flex cursor-pointer items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-emerald-200 hover:text-emerald-800">
+            <Link href="/jobs" className="flex cursor-pointer items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-emerald-200 hover:text-emerald-800">
               Explore open jobs <ArrowUpRight className="h-4 w-4" />
-            </a>
+            </Link>
           </aside>
         </div>
 

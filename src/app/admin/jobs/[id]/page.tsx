@@ -17,7 +17,6 @@ import {
   Check,
   ChevronRight,
   Clock3,
-  ExternalLink,
   FileText,
   Globe,
   LoaderCircle,
@@ -38,7 +37,6 @@ interface JobForm {
   salary: string;
   mail: string;
   companyLink: string;
-  apply: string;
   description: string;
 }
 
@@ -54,7 +52,6 @@ interface JobFromAPI {
   salary?: string;
   mail?: string;
   companyLink?: string;
-  apply?: string;
   description?: string;
 }
 
@@ -300,7 +297,6 @@ export default function EditJobPage() {
           salary: job.salary ?? "",
           mail: job.mail ?? "",
           companyLink: job.companyLink ?? "",
-          apply: job.apply ?? "",
           description: job.description ?? "",
         });
       } catch (error) {
@@ -377,33 +373,31 @@ export default function EditJobPage() {
       return;
     }
 
-    for (const [label, value] of [
-      ["Company website", form.companyLink],
-      ["Application link", form.apply],
-    ]) {
-      if (value.trim()) {
-        try {
-          const url = new URL(value.trim());
+    if (form.companyLink.trim()) {
+      try {
+        const url = new URL(form.companyLink.trim());
 
-          if (url.protocol !== "http:" && url.protocol !== "https:") {
-            throw new Error("Invalid protocol");
-          }
-        } catch {
-          toast.error(`${label} must be a valid HTTP or HTTPS URL.`);
-          return;
+        if (url.protocol !== "http:" && url.protocol !== "https:") {
+          throw new Error("Invalid protocol");
         }
+      } catch {
+        toast.error("Company website must be a valid HTTP or HTTPS URL.");
+        return;
       }
     }
 
-    if (form.mail.trim()) {
-      const emailLooksValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-        form.mail.trim()
-      );
+    if (!form.mail.trim()) {
+      toast.error("Please enter an application email.");
+      return;
+    }
 
-      if (!emailLooksValid) {
-        toast.error("Enter a valid contact email.");
-        return;
-      }
+    const emailLooksValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+      form.mail.trim()
+    );
+
+    if (!emailLooksValid) {
+      toast.error("Enter a valid application email.");
+      return;
     }
 
     setIsSubmitting(true);
@@ -424,7 +418,6 @@ export default function EditJobPage() {
         salary: form.salary.trim(),
         mail: form.mail.trim(),
         companyLink: form.companyLink.trim(),
-        apply: form.apply.trim(),
         description: form.description.trim(),
       };
 
@@ -688,14 +681,15 @@ export default function EditJobPage() {
             description="Give applicants a reliable way to contact the employer."
           >
             <Field
-              label="Contact email"
+              label="Application email"
               name="mail"
               value={form.mail}
               onChange={handleChange}
               type="email"
               placeholder="careers@company.com"
               icon={Mail}
-              hint="Optional. Use a monitored recruitment email."
+              required
+              hint="Candidates will apply by sending an email to this address."
             />
 
             <Field
@@ -708,19 +702,6 @@ export default function EditJobPage() {
               icon={Globe}
               hint="Optional. Include https:// or http://."
             />
-
-            <div className="sm:col-span-2">
-              <Field
-                label="Application URL"
-                name="apply"
-                value={form.apply}
-                onChange={handleChange}
-                type="url"
-                placeholder="https://company.com/careers/apply"
-                icon={ExternalLink}
-                hint="Optional. Link directly to the application page."
-              />
-            </div>
           </Section>
 
           <Section

@@ -1,312 +1,188 @@
-import { google, sheets_v4 } from "googleapis";
-import { NextRequest } from "next/server";
+// src/app/api/jobs/route.ts
+// Supabase-backed REST API route for Job listings.
+// Replaces Google Sheets API entirely with PostgreSQL queries.
 
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  experience: string;
-  postedDate: string;
-  salary: string;
-  mail: string;
-  companyLink: string;
-  apply: string;
-  description: string;
-}
+import { NextRequest, NextResponse } from "next/server";
+import {
+  getAllJobs,
+  createJob,
+  updateJob,
+  deleteJob,
+} from "@/lib/supabase/jobs";
+import type { Job } from "@/app/types/job";
 
-interface SheetsValueRange {
-  values?: string[][];
-}
+/**
+ * Helper to verify that the request comes from an authenticated admin session
+ * via the admin-auth HTTP-only cookie or valid authorization header.
+ */
+function isAuthorizedAdmin(req: NextRequest): boolean {
+  const adminCookie = req.cookies.get("admin-auth");
+  if (adminCookie?.value === "true") return true;
 
-interface SheetsAppendParams {
-  spreadsheetId: string;
-  range: string;
-  valueInputOption: string;
-  requestBody: SheetsValueRange;
-}
-
-interface SheetsGetParams {
-  spreadsheetId: string;
-  range: string;
-}
-
-interface SheetsUpdateParams {
-  spreadsheetId: string;
-  range: string;
-  valueInputOption: string;
-  requestBody: SheetsValueRange;
-}
-
-interface SheetsClearParams {
-  spreadsheetId: string;
-  range: string;
-}
-
-interface SheetsClient {
-  spreadsheets: {
-    values: {
-      get: (params: SheetsGetParams) => Promise<{ data: sheets_v4.Schema$ValueRange }>;
-      append: (params: SheetsAppendParams) => Promise<{ data: sheets_v4.Schema$AppendValuesResponse }>;
-      update: (params: SheetsUpdateParams) => Promise<{ data: sheets_v4.Schema$UpdateValuesResponse }>;
-      clear: (params: SheetsClearParams) => Promise<{ data: sheets_v4.Schema$ClearValuesResponse }>;
-    };
-  };
-}
-
-async function getSheetsClient(readonly = true): Promise<SheetsClient> {
-  const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") || "";
-
-  if (!process.env.GOOGLE_CLIENT_EMAIL || !privateKey || !process.env.GOOGLE_SHEET_ID) {
-    throw new Error("Google Sheets credentials are missing");
+  // Optional: Allow service key or admin key via Authorization header for machine-to-machine calls
+  const authHeader = req.headers.get("authorization");
+  if (authHeader) {
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    if (token && (token === process.env.ADMIN_KEY || token === process.env.SUPABASE_SERVICE_ROLE_KEY)) {
+      return true;
+    }
   }
 
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_CLIENT_EMAIL,
-      private_key: privateKey,
-    },
-    scopes: [
-      readonly
-        ? "https://www.googleapis.com/auth/spreadsheets.readonly"
-        : "https://www.googleapis.com/auth/spreadsheets",
-    ],
-  });
-
-  return google.sheets({ version: "v4", auth }) as SheetsClient;
+  return false;
 }
 
-// 🔹 Generate incremental ID like JOB1000, JOB1001...
-async function generateNumericId(sheets: SheetsClient): Promise<string> {
-  const response = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.GOOGLE_SHEET_ID!,
-    range: "Sheet1!A:A", // Only ID column
-  });
-
-  const rows: string[][] = response.data.values || [];
-  let maxId = 999; // ensures first ID will be JOB1000
-
-  rows.forEach((row) => {
-    const id = row[0];
-    if (id && id.startsWith("JOB")) {
-      const num = parseInt(id.replace("JOB", ""), 10);
-      if (!isNaN(num) && num > maxId) {
-        maxId = num;
-      }
-    }
-  });
-
-  return `JOB${maxId + 1}`;
-}
-
-// ✅ GET → Fetch jobs (sorted by postedDate descending)
-export async function GET() {
+// ✅ GET → Fetch all published jobs (sorted by postedDate descending, with optional page & limit pagination)
+export async function GET(req: NextRequest) {
   try {
-    const sheets = await getSheetsClient(true);
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.GOOGLE_SHEET_ID!,
-      range: "Sheet1!A2:K",
-    });
+    const { searchParams } = new URL(req.url);
+    const pageParam = searchParams.get("page");
+    const limitParam = searchParams.get("limit");
 
-    const rows: string[][] = response.data.values || [];
-    const jobs: Job[] = rows.map((row) => ({
-      id: row[0] || "",
-      title: row[1] || "",
-      company: row[2] || "",
-      location: row[3] || "",
-      experience: row[4] || "",
-      postedDate: row[5] || "",
-      salary: row[6] || "",
-      mail: row[7] || "",
-      companyLink: row[8] || "",
-      apply: row[9] || "",
-      description: row[10] || "",
-    }));
+    const page = pageParam ? Math.max(1, parseInt(pageParam, 10)) : undefined;
+    const limit = limitParam ? Math.max(1, parseInt(limitParam, 10)) : undefined;
 
-    jobs.sort((a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime());
+    const jobs = await getAllJobs(
+      page && limit ? { page, limit } : undefined
+    );
 
-    return new Response(JSON.stringify(jobs), { 
-      headers: { "Content-Type": "application/json" } 
+    return NextResponse.json(jobs, {
+      status: 200,
+      headers: {
+        "Cache-Control": "public, s-maxage=10, stale-while-revalidate=59",
+      },
     });
   } catch (error) {
-    console.error("Error fetching Google Sheets data:", error);
-    return new Response("Server error", { status: 500 });
+    console.error("Error fetching jobs from Supabase:", error);
+    return NextResponse.json(
+      { error: "Server error retrieving jobs" },
+      { status: 500 }
+    );
   }
 }
 
-// ✅ POST → Add new job (auto incremental ID + timestamp)
+// ✅ POST → Add new job (auto-generated ID + timestamp via Supabase sequence)
 export async function POST(req: NextRequest) {
   try {
-    const sheets = await getSheetsClient(false);
-    const body: Job = await req.json();
+    if (!isAuthorizedAdmin(req)) {
+      return NextResponse.json(
+        { error: "Unauthorized: Admin authentication required" },
+        { status: 401 }
+      );
+    }
 
-    const newRow = [
-      await generateNumericId(sheets), // auto increment
-      body.title,
-      body.company,
-      body.location,
-      body.experience,
-      new Date().toISOString(), // timestamp
-      body.salary || "Not Disclosed",
-      body.mail || "",
-      body.companyLink || "",
-      body.apply || "",
-      body.description,
-    ];
+    const body: Partial<Job> = await req.json();
 
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: process.env.GOOGLE_SHEET_ID!,
-      range: "Sheet1!A:K",
-      valueInputOption: "USER_ENTERED",
-      requestBody: { values: [newRow] },
+    if (!body.title?.trim() || !body.company?.trim() || !body.location?.trim() || !body.description?.trim()) {
+      return NextResponse.json(
+        { error: "Missing required fields (title, company, location, description)" },
+        { status: 400 }
+      );
+    }
+
+    const newJob = await createJob({
+      ...body,
+      title: body.title.trim(),
+      company: body.company.trim(),
+      location: body.location.trim(),
+      description: body.description.trim(),
+      salary: body.salary?.trim() || "Not Disclosed",
+      mail: body.mail?.trim() || "",
+      companyLink: body.companyLink?.trim() || "",
+      apply: "",
+      experience: body.experience?.trim() || "Fresher",
     });
 
-    return new Response(JSON.stringify({ message: "Job added successfully" }), {
-      headers: { "Content-Type": "application/json" },
-      status: 201,
-    });
+    return NextResponse.json(
+      { message: "Job added successfully", job: newJob },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error("Error adding job:", error);
-    return new Response("Server error", { status: 500 });
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Error adding job to Supabase:", message);
+    return NextResponse.json(
+      { error: `Server error: ${message}` },
+      { status: 500 }
+    );
   }
 }
 
 // ✅ PUT → Update existing job
 export async function PUT(req: NextRequest) {
   try {
-    const sheets = await getSheetsClient(false);
-    const body: Job = await req.json();
-
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.GOOGLE_SHEET_ID!,
-      range: "Sheet1!A2:K",
-    });
-
-    const rows: string[][] = response.data.values || [];
-    const rowIndex = rows.findIndex((row) => row[0] === body.id);
-
-    if (rowIndex === -1) {
-      return new Response(JSON.stringify({ message: "Job not found" }), {
-        headers: { "Content-Type": "application/json" },
-        status: 404,
-      });
+    if (!isAuthorizedAdmin(req)) {
+      return NextResponse.json(
+        { error: "Unauthorized: Admin authentication required" },
+        { status: 401 }
+      );
     }
 
-    const sheetRow = rowIndex + 2;
+    const body: Partial<Job> = await req.json();
 
-    const updatedRow = [
-      body.id,
-      body.title,
-      body.company,
-      body.location,
-      body.experience,
-      body.postedDate,
-      body.salary || "Not Disclosed",
-      body.mail || "",
-      body.companyLink || "",
-      body.apply || "",
-      body.description,
-    ];
+    if (!body.id) {
+      return NextResponse.json(
+        { error: "Job ID is required for updating" },
+        { status: 400 }
+      );
+    }
 
-    await sheets.spreadsheets.values.update({
-      spreadsheetId: process.env.GOOGLE_SHEET_ID!,
-      range: `Sheet1!A${sheetRow}:K${sheetRow}`,
-      valueInputOption: "USER_ENTERED",
-      requestBody: { values: [updatedRow] },
+    const updatedJob = await updateJob(body.id, {
+      ...body,
+      title: body.title?.trim(),
+      company: body.company?.trim(),
+      location: body.location?.trim(),
+      description: body.description?.trim(),
+      salary: body.salary?.trim(),
+      mail: body.mail?.trim(),
+      companyLink: body.companyLink?.trim(),
+      apply: "",
+      experience: body.experience?.trim(),
     });
 
-    return new Response(JSON.stringify({ message: "Job updated successfully" }), {
-      headers: { "Content-Type": "application/json" },
-      status: 200,
-    });
+    return NextResponse.json(
+      { message: "Job updated successfully", job: updatedJob },
+      { status: 200 }
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("Error updating job:", message);
-    return new Response(`Server error: ${message}`, { status: 500 });
+    console.error("Error updating job in Supabase:", message);
+    return NextResponse.json(
+      { error: `Server error: ${message}` },
+      { status: 500 }
+    );
   }
 }
 
 // ✅ DELETE → Remove a job
 export async function DELETE(req: NextRequest) {
   try {
-    const sheets = await getSheetsClient(false);
+    if (!isAuthorizedAdmin(req)) {
+      return NextResponse.json(
+        { error: "Unauthorized: Admin authentication required" },
+        { status: 401 }
+      );
+    }
+
     const { id } = await req.json();
 
     if (!id) {
-      return new Response(JSON.stringify({ message: "Job ID is required" }), {
-        headers: { "Content-Type": "application/json" },
-        status: 400,
-      });
+      return NextResponse.json(
+        { message: "Job ID is required" },
+        { status: 400 }
+      );
     }
 
-    // Get all rows to find the correct row
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.GOOGLE_SHEET_ID!,
-      range: "A:A", // Only need the ID column
-    });
+    await deleteJob(id);
 
-    const rows: string[][] = response.data.values || [];
-    
-    // Find the row index (0-based including header)
-    let rowIndex = -1;
-    
-    for (let i = 0; i < rows.length; i++) {
-      if (rows[i] && rows[i][0] === id) {
-        rowIndex = i; // 0-based index including header
-        break;
-      }
-    }
-
-    if (rowIndex === -1) {
-      return new Response(JSON.stringify({ message: "Job not found" }), {
-        headers: { "Content-Type": "application/json" },
-        status: 404,
-      });
-    }
-
-    console.log(`Deleting row ${rowIndex + 1} with ID: ${id}`);
-
-    // Copy all rows except the one to delete, then overwrite the entire sheet
-    const allDataResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.GOOGLE_SHEET_ID!,
-      range: "A:K",
-    });
-
-    const allRows: string[][] = allDataResponse.data.values || [];
-    
-    // Remove the target row
-    const updatedRows = [
-      ...allRows.slice(0, rowIndex),
-      ...allRows.slice(rowIndex + 1)
-    ];
-
-    // Clear the entire sheet and rewrite without the deleted row
-    await sheets.spreadsheets.values.clear({
-      spreadsheetId: process.env.GOOGLE_SHEET_ID!,
-      range: "A:K",
-    });
-
-    if (updatedRows.length > 0) {
-      await sheets.spreadsheets.values.update({
-        spreadsheetId: process.env.GOOGLE_SHEET_ID!,
-        range: "A1",
-        valueInputOption: "USER_ENTERED",
-        requestBody: {
-          values: updatedRows,
-        },
-      });
-    }
-
-    return new Response(JSON.stringify({ message: "Job deleted successfully" }), {
-      headers: { "Content-Type": "application/json" },
-      status: 200,
-    });
+    return NextResponse.json(
+      { message: "Job deleted successfully" },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("Error deleting job:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
-    return new Response(JSON.stringify({ message: `Server error: ${message}` }), {
-      headers: { "Content-Type": "application/json" },
-      status: 500,
-    });
+    console.error("Error deleting job from Supabase:", message);
+    return NextResponse.json(
+      { message: `Server error: ${message}` },
+      { status: 500 }
+    );
   }
 }

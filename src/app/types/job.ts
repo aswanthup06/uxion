@@ -12,4 +12,9 @@ export type Job = {
   apply: string;
   description: string;
   views: number;
+  applicantCountry?: string;
+  validThrough?: string;
+  employmentType?: string;
+  workMode?: string;
+  isTestData?: boolean;
 };

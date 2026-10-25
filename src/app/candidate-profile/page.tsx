@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, Check, ChevronDown, FileText, Plus, Save, UserRound, X } from "lucide-react";
 
 const inputClass = "mt-1.5 w-full rounded-md border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10";
@@ -53,7 +54,7 @@ export default function CandidateProfilePage() {
   return <main className="min-h-screen bg-[#f8faf9] text-slate-900">
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-5 sm:px-6 lg:px-8">
       <div className="mb-6 flex items-center justify-between gap-3">
-        <a href="/jobs" className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-600 hover:text-emerald-800"><ArrowLeft className="h-4 w-4" />Back to jobs</a>
+        <Link href="/jobs" className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-600 hover:text-emerald-800"><ArrowLeft className="h-4 w-4" />Back to jobs</Link>
         <span className="inline-flex items-center gap-2 text-xs text-slate-500"><span className="h-2 w-2 rounded-full bg-emerald-600" />Candidate profile</span>
       </div>
       <header className="mb-6 flex flex-col justify-between gap-5 border-b border-slate-200 pb-6 sm:flex-row sm:items-end">
@@ -150,7 +151,7 @@ export default function CandidateProfilePage() {
 
         <div className="sticky bottom-0 z-20 -mx-4 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:pt-1"><div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between"><p className="text-xs text-slate-500">Fields marked <span className="text-rose-600">*</span> are required.</p><div className="flex flex-col-reverse gap-2 sm:flex-row"><button type="button" onClick={reset} className="cursor-pointer rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Reset form</button><button type="submit" className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"><Save className="h-4 w-4"/>Complete profile</button></div></div></div>
       </form>
-      <footer className="mt-8 border-t border-slate-200 pt-5 text-xs text-slate-500"><div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><p>Keep your profile clear, accurate and up to date.</p><a href="/jobs" className="inline-flex cursor-pointer items-center gap-1 font-medium text-emerald-800 hover:text-emerald-950">Explore jobs <ArrowUpRight className="h-3.5 w-3.5"/></a></div></footer>
+      <footer className="mt-8 border-t border-slate-200 pt-5 text-xs text-slate-500"><div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><p>Keep your profile clear, accurate and up to date.</p><Link href="/jobs" className="inline-flex cursor-pointer items-center gap-1 font-medium text-emerald-800 hover:text-emerald-950">Explore jobs <ArrowUpRight className="h-3.5 w-3.5"/></Link></div></footer>
     </div>
   </main>;
 }

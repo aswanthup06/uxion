@@ -5,7 +5,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { FiMapPin, FiChevronDown } from "react-icons/fi";
 
-type ApplyMode = "email" | "url" | "both";
 
 const inputClass =
   "mt-1.5 w-full rounded-md border border-[#E2E8E4] bg-white px-3 py-2.5 text-sm text-[#17251F] outline-none transition focus:border-[#0FA968] focus:ring-2 focus:ring-[#0FA968]/10";
@@ -28,27 +27,6 @@ const benefits = [
   "Equipment provided",
 ];
 
-const applicationOptions: {
-  value: ApplyMode;
-  label: string;
-  description: string;
-}[] = [
-  {
-    value: "email",
-    label: "Direct email",
-    description: "Candidates apply by email.",
-  },
-  {
-    value: "url",
-    label: "Application URL",
-    description: "Send candidates to your website.",
-  },
-  {
-    value: "both",
-    label: "Both",
-    description: "Offer email and website options.",
-  },
-];
 
 function Field({
   label,
@@ -105,9 +83,7 @@ export default function PostJobPage() {
   const [salaryPeriod, setSalaryPeriod] = useState("year");
   const [showSalary, setShowSalary] = useState(true);
 
-  const [applyMode, setApplyMode] = useState<ApplyMode>("email");
   const [email, setEmail] = useState("");
-  const [applicationUrl, setApplicationUrl] = useState("");
 
   const [expiry, setExpiry] = useState("30");
   const [selectedBenefits, setSelectedBenefits] = useState<string[]>([]);
@@ -122,12 +98,7 @@ export default function PostJobPage() {
       "Job location";
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  const validUrl = /^https?:\/\/\S+\.\S+/.test(applicationUrl.trim());
-
-  const applicationComplete =
-    (applyMode === "email" && validEmail) ||
-    (applyMode === "url" && validUrl) ||
-    (applyMode === "both" && validEmail && validUrl);
+  const applicationComplete = validEmail;
 
   const salary = (() => {
     if (!showSalary || (!minSalary && !maxSalary)) return "";
@@ -579,100 +550,27 @@ export default function PostJobPage() {
             <section className="rounded-lg border border-[#E6EBE7] bg-white p-5 sm:p-6">
               <h2 className="text-base font-semibold">How to apply</h2>
               <p className="mt-1 text-sm text-[#7A8780]">
-                Choose how candidates can apply for this role.
+                Candidates will apply directly by sending an email.
               </p>
 
-              <p className="mt-4 text-xs text-[#718078]">
-                Fields marked <span className="font-semibold text-red-600">*</span>{" "}
-                are mandatory.
-              </p>
-
-              {/* Application method options */}
-              <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                {applicationOptions.map((option) => {
-                  const selected = applyMode === option.value;
-
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      aria-pressed={selected}
-                      onClick={() => setApplyMode(option.value)}
-                      className={`cursor-pointer rounded-md border p-3 text-left transition-colors ${
-                        selected
-                          ? "border-[#0FA968] bg-[#F0F9F3]"
-                          : "border-[#E2E8E3] bg-white hover:bg-[#F8FAF8]"
-                      }`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span
-                          className={`grid h-4 w-4 shrink-0 place-items-center rounded-full border ${
-                            selected
-                              ? "border-[#0FA968]"
-                              : "border-[#C9D2CC]"
-                          }`}
-                        >
-                          {selected && (
-                            <span className="h-2 w-2 rounded-full bg-[#0FA968]" />
-                          )}
-                        </span>
-
-                        <span className="text-sm font-medium text-[#26372F]">
-                          {option.label}
-                        </span>
-                      </span>
-
-                      <span className="mt-2 block pl-6 text-xs leading-5 text-[#7A8780]">
-                        {option.description}
-                      </span>
-                    </button>
-                  );
-                })}
+              <div className="mt-5">
+                <Field
+                  label="Application email"
+                  htmlFor="application-email"
+                  required
+                  hint="Candidates will send their applications and resumes to this email address."
+                >
+                  <input
+                    id="application-email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="careers@company.com"
+                    className={inputClass}
+                  />
+                </Field>
               </div>
-
-              {/* Email field */}
-              {(applyMode === "email" || applyMode === "both") && (
-                <div className="mt-5">
-                  <Field
-                    label="Hiring email"
-                    htmlFor="application-email"
-                    required
-                    hint="Use a shared hiring inbox if possible."
-                  >
-                    <input
-                      id="application-email"
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(event) => setEmail(event.target.value)}
-                      placeholder="careers@company.com"
-                      className={inputClass}
-                    />
-                  </Field>
-                </div>
-              )}
-
-              {/* URL field */}
-              {(applyMode === "url" || applyMode === "both") && (
-                <div className="mt-5">
-                  <Field
-                    label="Application URL"
-                    htmlFor="application-url"
-                    required
-                    hint="Link directly to the role's application page."
-                  >
-                    <input
-                      id="application-url"
-                      type="url"
-                      required
-                      value={applicationUrl}
-                      onChange={(event) => setApplicationUrl(event.target.value)}
-                      placeholder="https://company.com/careers"
-                      className={inputClass}
-                    />
-                  </Field>
-                </div>
-              )}
             </section>
 
             {/* 6. Listing dates */}

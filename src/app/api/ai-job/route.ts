@@ -25,7 +25,7 @@ Return ONLY valid JSON.
   "skills": [],
   "requirements": [],
   "responsibilities": [],
-  "applyLink": ""
+  "email": ""
 }
 
 Job:

@@ -30,7 +30,6 @@ interface JobForm {
   salary: string;
   mail: string;
   companyLink: string;
-  apply: string;
   description: string;
 }
 
@@ -159,7 +158,6 @@ export default function AddJobPage() {
     salary: "",
     mail: "",
     companyLink: "",
-    apply: "",
     description: "",
   });
 
@@ -244,7 +242,6 @@ export default function AddJobPage() {
         salary: form.salary.trim() || "Not Disclosed",
         mail: form.mail.trim(),
         companyLink: form.companyLink.trim(),
-        apply: form.apply.trim(),
         description: form.description.trim(),
         experience,
       };
@@ -474,13 +471,14 @@ export default function AddJobPage() {
 
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <Field
-                label="Contact email"
+                label="Application email"
                 name="mail"
                 type="email"
                 value={form.mail}
                 onChange={handleChange}
                 placeholder="careers@company.com"
                 icon={Mail}
+                required
               />
 
               <Field
@@ -492,22 +490,6 @@ export default function AddJobPage() {
                 placeholder="https://company.com"
                 icon={Globe}
               />
-
-              <div className="md:col-span-2">
-                <Field
-                  label="Application URL"
-                  name="apply"
-                  type="url"
-                  value={form.apply}
-                  onChange={handleChange}
-                  placeholder="https://company.com/careers/apply"
-                  icon={ExternalLink}
-                />
-
-                <p className="mt-2 text-xs text-slate-400">
-                  Add the direct application page so candidates can apply easily.
-                </p>
-              </div>
             </div>
           </section>
 

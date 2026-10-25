@@ -12,7 +12,7 @@ import {
   Award,
   DollarSign,
   Tag,
-  Link2,
+  Mail,
   FileText,
   Wrench,
   ListChecks,
@@ -27,6 +27,16 @@ type FieldProps = {
   label: string;
   children: ReactNode;
 };
+
+const Field = ({ icon: Icon, label, children }: FieldProps) => (
+  <div className="space-y-1.5">
+    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+      <Icon className="w-4 h-4 text-gray-500" />
+      {label}
+    </label>
+    {children}
+  </div>
+);
 
 const autoResize = (el: HTMLTextAreaElement) => {
   el.style.height = "auto";
@@ -46,7 +56,7 @@ export default function AIJobPage() {
     experience: "",
     salary: "",
     category: "",
-    applyLink: "",
+    email: "",
     description: "",
     skills: "",
     responsibilities: "",
@@ -81,7 +91,7 @@ export default function AIJobPage() {
         experience: json.experience || "",
         salary: json.salary || "",
         category: json.category || "",
-        applyLink: json.applyLink || "",
+        email: json.email || json.mail || "",
         description: json.description || "",
         skills: (json.skills || []).join(", "),
         responsibilities: (json.responsibilities || []).join("\n"),
@@ -91,16 +101,6 @@ export default function AIJobPage() {
 
     setLoading(false);
   };
-
-  const Field = ({ icon: Icon, label, children }: FieldProps) => (
-    <div className="space-y-1.5">
-      <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-        <Icon className="w-4 h-4 text-gray-500" />
-        {label}
-      </label>
-      {children}
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 p-6">
@@ -270,13 +270,14 @@ export default function AIJobPage() {
                   </Field>
                 </div>
 
-                <Field icon={Link2} label="Application URL">
+                <Field icon={Mail} label="Application Email">
                   <input
+                    type="email"
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
-                    placeholder="https://..."
-                    value={job.applyLink}
+                    placeholder="careers@company.com"
+                    value={job.email}
                     onChange={(e) =>
-                      setJob({ ...job, applyLink: e.target.value })
+                      setJob({ ...job, email: e.target.value })
                     }
                   />
                 </Field>

@@ -9,6 +9,7 @@ import {
   CalendarDays,
   Clock3,
   Globe,
+  Mail,
   MapPin,
   Share2,
   Wallet,
@@ -26,7 +27,6 @@ export type Job = {
   salary: string;
   mail: string;
   companyLink: string;
-  apply: string;
   description: string;
   applicantCountry?: string;
   validThrough?: string;
@@ -108,6 +108,7 @@ function ActionButton({
   onClick,
   primary = false,
   external = false,
+  disabled = false,
   className = "",
 }: {
   children: React.ReactNode;
@@ -115,6 +116,7 @@ function ActionButton({
   onClick?: () => void;
   primary?: boolean;
   external?: boolean;
+  disabled?: boolean;
   className?: string;
 }) {
   const classes = [
@@ -125,10 +127,11 @@ function ActionButton({
     primary
       ? "bg-[#176B4D] text-white shadow-sm hover:bg-[#12583F]"
       : "border border-[#DDE6DE] bg-white text-[#19352A] hover:bg-[#F6F9F6]",
+    disabled ? "cursor-not-allowed opacity-50 pointer-events-none" : "",
     className,
   ].join(" ");
 
-  if (href) {
+  if (href && !disabled) {
     return (
       <a
         href={href}
@@ -141,7 +144,7 @@ function ActionButton({
   }
 
   return (
-    <button type="button" onClick={onClick} className={classes}>
+    <button type="button" onClick={onClick} disabled={disabled} className={classes}>
       {children}
     </button>
   );
@@ -180,8 +183,6 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
     () => normalizeUrl(job.companyLink),
     [job.companyLink],
   );
-
-  const applyUrl = useMemo(() => normalizeUrl(job.apply), [job.apply]);
 
   const postedDate = useMemo(
     () => formatDate(job.postedDate),
@@ -254,7 +255,7 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
       !job.company?.trim() ||
       !description ||
       !job.postedDate ||
-      (!applyUrl && !job.mail?.trim())
+      !job.mail?.trim()
     ) {
       return null;
     }
@@ -343,7 +344,6 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
     description,
     companyUrl,
     isFullyRemote,
-    applyUrl,
   ]);
 
   return (
@@ -443,10 +443,30 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
                 Share
               </ActionButton>
 
-              <ActionButton primary onClick={() => setApplyOpen(true)}>
-                Apply for job
-                <ArrowUpRight size={16} />
-              </ActionButton>
+              {job.mail?.trim() ? (
+                <>
+                  <ActionButton
+                    primary
+                    href={`mailto:${job.mail.trim()}?subject=${encodeURIComponent(
+                      `Application for ${job.title} at ${job.company}`
+                    )}&body=${encodeURIComponent(
+                      `Hi Hiring Team,\n\nI am writing to apply for the ${job.title} position at ${job.company}.\n\nPlease find my resume attached.\n\nBest regards,`
+                    )}`}
+                  >
+                    Apply for job
+                    <ArrowUpRight size={16} />
+                  </ActionButton>
+
+                  <ActionButton onClick={() => setApplyOpen(true)}>
+                    <Mail size={16} />
+                    Email details
+                  </ActionButton>
+                </>
+              ) : (
+                <ActionButton primary disabled>
+                  Applications closed
+                </ActionButton>
+              )}
             </div>
           </div>
         </motion.header>
@@ -526,8 +546,9 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
       <ApplyModal
         open={applyOpen}
         onClose={() => setApplyOpen(false)}
-        applyUrl={applyUrl}
         email={job.mail}
+        jobTitle={job.title}
+        company={job.company}
       />
     </main>
   );

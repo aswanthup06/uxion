@@ -16,8 +16,9 @@ import { IoLogoWhatsapp } from "react-icons/io";
 type ApplyModalProps = {
   open: boolean;
   onClose: () => void;
-  applyUrl: string | null;
   email: string;
+  jobTitle?: string;
+  company?: string;
 };
 
 async function copyText(value: string): Promise<boolean> {
@@ -56,8 +57,9 @@ async function copyText(value: string): Promise<boolean> {
 export default function ApplyModal({
   open,
   onClose,
-  applyUrl,
   email,
+  jobTitle = "the role",
+  company = "the hiring company",
 }: ApplyModalProps) {
   const reduceMotion = useReducedMotion();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -100,7 +102,7 @@ export default function ApplyModal({
   const handleCopyEmail = async () => {
     if (!email?.trim()) return;
 
-    const copied = await copyText(email);
+    const copied = await copyText(email.trim());
 
     setEmailCopied(copied);
     setCopyMessage(
@@ -111,6 +113,14 @@ export default function ApplyModal({
       setTimeout(() => setEmailCopied(false), 1800);
     }
   };
+
+  const mailtoUrl = email?.trim()
+    ? `mailto:${email.trim()}?subject=${encodeURIComponent(
+        `Application for ${jobTitle} at ${company}`
+      )}&body=${encodeURIComponent(
+        `Hi Hiring Team,\n\nI am writing to express my interest in the ${jobTitle} position at ${company}.\n\nPlease find my resume attached.\n\nBest regards,`
+      )}`
+    : "";
 
   return (
     <AnimatePresence>
@@ -152,11 +162,11 @@ export default function ApplyModal({
                   id="apply-modal-title"
                   className="mt-2 text-xl font-semibold tracking-tight text-[#19352A]"
                 >
-                  How would you like to apply?
+                  Apply by email
                 </h2>
 
                 <p className="mt-2 text-sm leading-6 text-[#68776D]">
-                  Choose an application method below.
+                  Send your resume and introduction directly to the employer.
                 </p>
               </div>
 
@@ -172,26 +182,14 @@ export default function ApplyModal({
             </div>
 
             <div className="mt-6 space-y-3">
-              {applyUrl && (
-                <a
-                  href={applyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#176B4D] px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-[#12583F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#176B4D] focus-visible:ring-offset-2"
-                >
-                  Continue to application
-                  <ArrowUpRight size={16} />
-                </a>
-              )}
-
-              {email?.trim() && (
+              {email?.trim() ? (
                 <div className="rounded-xl border border-[#E3EAE4] p-4">
                   <p className="text-sm font-medium text-[#19352A]">
-                    Apply by email
+                    Employer recruitment email
                   </p>
 
                   <p className="mt-1 text-sm leading-6 text-[#68776D]">
-                    Contact the hiring team using this email address.
+                    Contact the hiring team using this address.
                   </p>
 
                   <div className="mt-3 flex items-center gap-2 rounded-lg bg-[#F6F9F6] p-3">
@@ -200,8 +198,8 @@ export default function ApplyModal({
                       className="shrink-0 text-[#176B4D]"
                     />
 
-                    <span className="min-w-0 flex-1 break-all text-sm text-[#19352A]">
-                      {email}
+                    <span className="min-w-0 flex-1 break-all text-sm font-medium text-[#19352A]">
+                      {email.trim()}
                     </span>
 
                     <button
@@ -225,20 +223,17 @@ export default function ApplyModal({
                   )}
 
                   <a
-                    href={`mailto:${email}`}
-                    className="mt-3 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#DDE6DE] px-4 py-2.5 text-sm font-medium text-[#19352A] transition-colors hover:bg-[#F6F9F6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#176B4D]"
+                    href={mailtoUrl}
+                    className="mt-3 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#176B4D] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#12583F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#176B4D]"
                   >
                     <Mail size={16} />
-                    Open email app
+                    Open email client
                     <ArrowUpRight size={15} />
                   </a>
                 </div>
-              )}
-
-              {!applyUrl && !email?.trim() && (
+              ) : (
                 <p className="rounded-xl bg-[#F6F9F6] p-4 text-sm leading-6 text-[#68776D]">
-                  Application instructions are not available for this role
-                  yet. Please check back later.
+                  Application email is not available for this role.
                 </p>
               )}
             </div>

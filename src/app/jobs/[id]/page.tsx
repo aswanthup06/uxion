@@ -1,49 +1,52 @@
 // src/app/jobs/[id]/page.tsx
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import JobDetailsClient from "./JobDetailsClient";
-import type { Job } from "./JobDetailsClient";
-
-async function getJobs(): Promise<Job[]> {
-  try {
-    // Use your live site URL since the API is working there
-    const apiUrl = 'https://www.zenoway.online/api/jobs';
-
-    // const apiUrl = 'http://localhost:3000//api/jobs';
-    // const apiUrl = 'http://uxion.vercel.app//api/jobs';
-    
-    const res = await fetch(apiUrl, {
-      next: { revalidate: 1 },
-    });
-
-    if (!res.ok) {
-      console.error("Failed to fetch jobs:", res.status, res.statusText);
-      return [];
-    }
-
-    const data = await res.json();
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.error("Error fetching jobs:", error);
-    return [];
-  }
-}
+import { getJobById } from "@/lib/supabase/jobs";
 
 interface JobDetailsPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
+export async function generateMetadata({
+  params,
+}: JobDetailsPageProps): Promise<Metadata> {
   const { id } = await params;
-  console.log('Looking for job ID:', id);
-
-  const jobs = await getJobs();
-  console.log('Total jobs found:', jobs.length);
-
-  // Find the job with matching ID
-  const job = jobs.find(j => j.id === id);
+  const job = await getJobById(id);
 
   if (!job) {
-    console.log('Job not found. Available IDs:', jobs.map(j => j.id));
+    return {
+      title: "Job Not Found | Zenoway",
+      description: "The requested career opportunity could not be found.",
+    };
+  }
+
+  const excerpt = job.description
+    ? job.description.replace(/[#*`_]/g, "").slice(0, 155).trim() + "..."
+    : `Apply for ${job.title} at ${job.company} in ${job.location} on Zenoway.`;
+
+  return {
+    title: `${job.title} at ${job.company} | Zenoway`,
+    description: excerpt,
+    openGraph: {
+      title: `${job.title} at ${job.company}`,
+      description: excerpt,
+      url: `https://www.zenoway.online/jobs/${job.id}`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${job.title} at ${job.company}`,
+      description: excerpt,
+    },
+  };
+}
+
+export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
+  const { id } = await params;
+  const job = await getJobById(id);
+
+  if (!job) {
     notFound();
   }
 
