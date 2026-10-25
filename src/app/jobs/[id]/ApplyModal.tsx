@@ -10,6 +10,7 @@ import {
   Copy,
   Mail,
   X,
+  FileText,
 } from "lucide-react";
 import { IoLogoWhatsapp } from "react-icons/io";
 
@@ -64,7 +65,9 @@ export default function ApplyModal({
   const reduceMotion = useReducedMotion();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [emailCopied, setEmailCopied] = useState(false);
-  const [copyMessage, setCopyMessage] = useState("");
+  const [subjectCopied, setSubjectCopied] = useState(false);
+
+  const subjectText = `Application for ${jobTitle} at ${company}`;
 
   useEffect(() => {
     if (!open) return;
@@ -92,31 +95,29 @@ export default function ApplyModal({
     };
   }, [open, onClose]);
 
-  useEffect(() => {
-    if (!copyMessage) return;
-
-    const timer = setTimeout(() => setCopyMessage(""), 2200);
-    return () => clearTimeout(timer);
-  }, [copyMessage]);
-
   const handleCopyEmail = async () => {
     if (!email?.trim()) return;
 
     const copied = await copyText(email.trim());
-
     setEmailCopied(copied);
-    setCopyMessage(
-      copied ? "Email address copied" : "Couldn't copy email address",
-    );
 
     if (copied) {
-      setTimeout(() => setEmailCopied(false), 1800);
+      setTimeout(() => setEmailCopied(false), 2000);
+    }
+  };
+
+  const handleCopySubject = async () => {
+    const copied = await copyText(subjectText);
+    setSubjectCopied(copied);
+
+    if (copied) {
+      setTimeout(() => setSubjectCopied(false), 2000);
     }
   };
 
   const mailtoUrl = email?.trim()
     ? `mailto:${email.trim()}?subject=${encodeURIComponent(
-        `Application for ${jobTitle} at ${company}`
+        subjectText
       )}&body=${encodeURIComponent(
         `Hi Hiring Team,\n\nI am writing to express my interest in the ${jobTitle} position at ${company}.\n\nPlease find my resume attached.\n\nBest regards,`
       )}`
@@ -150,23 +151,23 @@ export default function ApplyModal({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ duration: 0.2 }}
-            className="relative z-10 my-auto w-full max-w-md rounded-modal border border-border-default bg-surface-card p-5 shadow-modal sm:p-6"
+            className="relative z-10 my-auto w-full max-w-md rounded-panel border border-border-default bg-surface-card p-5 shadow-modal sm:p-6"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-medium uppercase tracking-[0.12em] text-brand">
-                  Application
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand">
+                  Apply for this role
                 </p>
 
                 <h2
                   id="apply-modal-title"
-                  className="mt-2 text-xl font-semibold tracking-tight text-text-primary"
+                  className="mt-1.5 text-xl font-semibold tracking-tight text-text-primary"
                 >
-                  Apply by email
+                  Employer contact details
                 </h2>
 
-                <p className="mt-2 text-sm leading-6 text-text-secondary">
-                  Send your resume and introduction directly to the employer.
+                <p className="mt-1 text-sm text-text-secondary">
+                  Send your resume and introduction directly to the hiring team.
                 </p>
               </div>
 
@@ -181,55 +182,96 @@ export default function ApplyModal({
               </button>
             </div>
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-5 space-y-3">
               {email?.trim() ? (
-                <div className="rounded-panel border border-border-default p-4">
-                  <p className="text-sm font-medium text-text-primary">
-                    Employer recruitment email
-                  </p>
+                <div className="space-y-3">
+                  {/* Employer email address */}
+                  <div className="rounded-card border border-border-default bg-surface-subtle p-3.5">
+                    <p className="text-xs font-medium text-text-muted">
+                      Employer recruitment email
+                    </p>
 
-                  <p className="mt-1 text-sm leading-6 text-text-secondary">
-                    Contact the hiring team using this address.
-                  </p>
+                    <div className="mt-1.5 flex items-center justify-between gap-2">
+                      <div className="flex min-w-0 flex-1 items-center gap-2">
+                        <Mail size={16} className="shrink-0 text-brand" />
+                        <span className="min-w-0 flex-1 select-all break-all text-sm font-semibold text-text-primary">
+                          {email.trim()}
+                        </span>
+                      </div>
 
-                  <div className="mt-3 flex items-center gap-2 rounded-control bg-surface-subtle p-3">
-                    <Mail
-                      size={16}
-                      className="shrink-0 text-brand"
-                    />
-
-                    <span className="min-w-0 flex-1 break-all text-sm font-medium text-text-primary">
-                      {email.trim()}
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={handleCopyEmail}
-                      aria-label="Copy contact email"
-                      className="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-control text-brand transition-colors hover:bg-surface-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-                    >
-                      {emailCopied ? (
-                        <Check size={16} />
-                      ) : (
-                        <Copy size={16} />
-                      )}
-                    </button>
+                      <button
+                        type="button"
+                        onClick={handleCopyEmail}
+                        aria-label="Copy contact email"
+                        className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-2.5 text-xs font-medium text-brand transition-colors hover:bg-brand-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                      >
+                        {emailCopied ? (
+                          <>
+                            <Check size={14} className="text-brand" />
+                            <span>Copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={14} />
+                            <span>Copy</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
 
-                  {copyMessage && (
-                    <p role="status" className="mt-2 text-xs text-brand">
-                      {copyMessage}
+                  {/* Suggested subject line */}
+                  <div className="rounded-card border border-border-default bg-surface-subtle p-3.5">
+                    <p className="text-xs font-medium text-text-muted">
+                      Suggested subject line
                     </p>
-                  )}
 
-                  <a
-                    href={mailtoUrl}
-                    className="mt-3 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-4 py-2.5 text-sm font-medium text-text-inverse transition-colors hover:bg-brand-hover shadow-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                    <div className="mt-1.5 flex items-center justify-between gap-2">
+                      <span className="min-w-0 flex-1 truncate text-xs font-medium text-text-secondary">
+                        {subjectText}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={handleCopySubject}
+                        aria-label="Copy subject line"
+                        className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-2.5 text-xs font-medium text-brand transition-colors hover:bg-brand-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                      >
+                        {subjectCopied ? (
+                          <>
+                            <Check size={14} className="text-brand" />
+                            <span>Copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={14} />
+                            <span>Copy</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Primary button: Copy Email */}
+                  <button
+                    type="button"
+                    onClick={handleCopyEmail}
+                    className="mt-1 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-4 py-2.5 text-sm font-semibold text-text-inverse transition-colors hover:bg-brand-hover shadow-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                   >
-                    <Mail size={16} />
-                    Open email client
-                    <ArrowUpRight size={15} />
-                  </a>
+                    {emailCopied ? <Check size={16} /> : <Copy size={16} />}
+                    {emailCopied ? "Email copied to clipboard!" : "Copy email address"}
+                  </button>
+
+                  {/* Optional secondary mailto */}
+                  <div className="text-center pt-1">
+                    <a
+                      href={mailtoUrl}
+                      className="inline-flex items-center gap-1 text-xs text-text-muted transition-colors hover:text-brand underline decoration-border-default underline-offset-2 hover:decoration-brand"
+                    >
+                      <span>Or open in default mail app</span>
+                      <ArrowUpRight size={13} />
+                    </a>
+                  </div>
                 </div>
               ) : (
                 <p className="rounded-panel bg-surface-subtle p-4 text-sm leading-6 text-text-secondary">
@@ -238,33 +280,38 @@ export default function ApplyModal({
               )}
             </div>
 
+            {/* Email guide recommendation */}
+            <div className="mt-5 border-t border-border-subtle pt-4">
+              <div className="flex items-center justify-between text-xs text-text-muted">
+                <span className="flex items-center gap-1.5">
+                  <FileText size={14} className="text-brand" />
+                  Need email tips?
+                </span>
+                <Link
+                  href="/email"
+                  onClick={onClose}
+                  className="font-medium text-brand hover:underline inline-flex items-center gap-1"
+                >
+                  Read Email Guide <ArrowUpRight size={12} />
+                </Link>
+              </div>
+            </div>
+
             {/* Community link */}
-            <div className="mt-6 border-t border-border-subtle pt-5">
-              <h3 className="text-sm font-semibold text-text-primary">
-                Stay connected
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-text-secondary">
-                Join the Zenoway community for more career opportunities.
-              </p>
-
+            <div className="mt-4 border-t border-border-subtle pt-4">
               <Link
                 href="/join"
                 onClick={onClose}
-                className="mt-4 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default px-4 py-2.5 text-sm font-medium text-text-primary transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="inline-flex min-h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default px-4 py-2 text-xs font-semibold text-text-primary transition-colors hover:border-brand hover:bg-brand-soft"
               >
                 <IoLogoWhatsapp
-                  size={17}
+                  size={16}
                   className="text-brand"
                 />
-                Join the community
-                <ArrowUpRight size={15} />
+                Join Zenoway Community
+                <ArrowUpRight size={14} />
               </Link>
             </div>
-
-            <p className="mt-5 text-center text-xs leading-5 text-text-muted">
-              Check the application instructions before submitting.
-            </p>
           </motion.section>
         </motion.div>
       )}

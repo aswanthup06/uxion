@@ -444,24 +444,13 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
               </ActionButton>
 
               {job.mail?.trim() ? (
-                <>
-                  <ActionButton
-                    primary
-                    href={`mailto:${job.mail.trim()}?subject=${encodeURIComponent(
-                      `Application for ${job.title} at ${job.company}`
-                    )}&body=${encodeURIComponent(
-                      `Hi Hiring Team,\n\nI am writing to apply for the ${job.title} position at ${job.company}.\n\nPlease find my resume attached.\n\nBest regards,`
-                    )}`}
-                  >
-                    Apply for job
-                    <ArrowUpRight size={16} />
-                  </ActionButton>
-
-                  <ActionButton onClick={() => setApplyOpen(true)}>
-                    <Mail size={16} />
-                    Email details
-                  </ActionButton>
-                </>
+                <ActionButton
+                  primary
+                  onClick={() => setApplyOpen(true)}
+                >
+                  Apply now
+                  <ArrowUpRight size={16} />
+                </ActionButton>
               ) : (
                 <ActionButton primary disabled>
                   Applications closed
