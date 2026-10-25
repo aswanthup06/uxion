@@ -85,9 +85,9 @@ export default function Faq() {
 
           <Link
             href="/contact"
-            className="group mt-6 inline-flex cursor-pointer items-center gap-3 rounded-md border border-[#E5EAE6] bg-white p-3 transition-colors hover:border-[#0FA968]/40"
+            className="group mt-6 inline-flex cursor-pointer items-center gap-3 rounded-card border border-[#E5EAE6] bg-white p-3 transition-colors hover:border-[#0FA968]/40"
           >
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-sm bg-[#EAF6EF] text-[#087F50]">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-control bg-[#EAF6EF] text-[#087F50]">
               <MessageCircle size={17} strokeWidth={1.8} />
             </span>
 
@@ -152,7 +152,7 @@ export default function Faq() {
                         transition={{
                           duration: reduceMotion ? 0 : 0.2,
                         }}
-                        className="grid h-7 w-7 shrink-0 place-items-center rounded-md"
+                        className="grid h-7 w-7 shrink-0 place-items-center rounded-control"
                         style={{
                           color: isOpen ? "#087F50" : "#737D76",
                           background: isOpen ? "#EAF6EF" : "#F5F7F5",

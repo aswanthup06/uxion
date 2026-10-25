@@ -39,7 +39,7 @@ export function JobListItem({ job }: { job: Job }) {
         <div className="flex min-w-0 items-center gap-3.5">
           <div
             aria-hidden
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-panel text-sm font-semibold"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-control text-sm font-semibold"
             style={{ background: `hsl(${h} 42% 92%)`, color: `hsl(${h} 50% 28%)` }}
           >
             {job.company?.charAt(0).toUpperCase()}
@@ -82,7 +82,7 @@ export function JobListItem({ job }: { job: Job }) {
 export function JobListSkeleton() {
   return (
     <li className="flex animate-pulse items-center gap-3.5 px-5 py-4">
-      <div className="h-10 w-10 shrink-0 rounded-panel bg-surface-muted" />
+      <div className="h-10 w-10 shrink-0 rounded-control bg-surface-muted" />
       <div className="flex-1">
         <div className="h-4 w-2/5 rounded-control bg-border-subtle" />
         <div className="mt-2 h-3.5 w-1/4 rounded-control bg-surface-muted" />

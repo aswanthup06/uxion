@@ -37,7 +37,7 @@ export function MobileFilterSheet({
         role="dialog"
         aria-modal="true"
         aria-label="Job filters"
-        className={`fixed inset-x-0 bottom-0 z-50 flex max-h-[90dvh] flex-col rounded-t-3xl bg-white shadow-2xl transition-[transform,visibility] duration-300 ${
+        className={`fixed inset-x-0 bottom-0 z-50 flex max-h-[90dvh] flex-col rounded-t-panel bg-white shadow-2xl transition-[transform,visibility] duration-300 ${
           open ? "visible translate-y-0" : "invisible translate-y-full"
         }`}
       >
@@ -47,7 +47,7 @@ export function MobileFilterSheet({
           <button
             type="button"
             onClick={onClose}
-            className="w-full rounded-xl bg-[#0FA968] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0C9559] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#0FA968]/40"
+            className="w-full rounded-control bg-[#0FA968] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0C9559] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#0FA968]/40"
           >
             Show {resultCount} {resultCount === 1 ? "job" : "jobs"}
           </button>

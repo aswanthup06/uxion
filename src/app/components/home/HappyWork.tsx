@@ -73,9 +73,9 @@ export default function HappyWork() {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="absolute left-0 top-[14%] flex items-center gap-2 rounded-md border border-[#E6EEE8] bg-white px-3 py-2.5 shadow-[0_5px_20px_rgba(0,0,0,0.04)] sm:left-2"
+              className="absolute left-0 top-[14%] flex items-center gap-2 rounded-card border border-[#E6EEE8] bg-white px-3 py-2.5 shadow-[0_5px_20px_rgba(0,0,0,0.04)] sm:left-2"
             >
-              <span className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#FFF4D9] text-[#B77916]">
+              <span className="flex h-8 w-8 items-center justify-center rounded-control bg-[#FFF4D9] text-[#B77916]">
                 <Sun size={17} />
               </span>
               <span className="text-xs font-medium text-neutral-800">
@@ -91,9 +91,9 @@ export default function HappyWork() {
                 ease: "easeInOut",
                 delay: 0.4,
               }}
-              className="absolute bottom-[15%] right-0 flex items-center gap-2 rounded-md border border-[#E6EEE8] bg-white px-3 py-2.5 shadow-[0_5px_20px_rgba(0,0,0,0.04)] sm:right-1"
+              className="absolute bottom-[15%] right-0 flex items-center gap-2 rounded-card border border-[#E6EEE8] bg-white px-3 py-2.5 shadow-[0_5px_20px_rgba(0,0,0,0.04)] sm:right-1"
             >
-              <span className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#F0EAFE] text-[#7955B8]">
+              <span className="flex h-8 w-8 items-center justify-center rounded-control bg-[#F0EAFE] text-[#7955B8]">
                 <Sparkles size={17} />
               </span>
               <span className="text-xs font-medium text-neutral-800">

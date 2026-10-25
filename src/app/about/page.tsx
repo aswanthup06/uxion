@@ -77,7 +77,7 @@ export default function AboutPage() {
             <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
               <Link
                 href="/jobs"
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-sm bg-[#087F50] px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-[#066640]"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-[#087F50] px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-[#066640]"
               >
                 Explore opportunities
                 <ArrowUpRight size={16} strokeWidth={1.8} />
@@ -117,7 +117,7 @@ export default function AboutPage() {
                     key={value.title}
                     className="grid grid-cols-[40px_minmax(0,1fr)] items-start gap-4 border-b border-gray-100 py-7 last:border-b-0 sm:gap-5 sm:py-8"
                   >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-[#EAF6EF] text-[#087F50]">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-control bg-[#EAF6EF] text-[#087F50]">
                       <Icon size={19} strokeWidth={1.7} />
                     </span>
 
@@ -160,7 +160,7 @@ export default function AboutPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Follow Zenoway on LinkedIn"
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-sm bg-[#087F50] px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-[#066640]"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-[#087F50] px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-[#066640]"
                 >
                   <PiLinkedinLogoFill size={17} />
                   <span>LinkedIn</span>
@@ -172,7 +172,7 @@ export default function AboutPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Follow Zenoway on Instagram"
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-sm border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:border-[#087F50] hover:text-[#087F50]"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:border-[#087F50] hover:text-[#087F50]"
                 >
                   <Instagram size={17} strokeWidth={1.8} />
                   <span>Instagram</span>

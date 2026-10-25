@@ -201,7 +201,7 @@ export default function PostJobPage() {
           {/* Main form */}
           <form onSubmit={handlePublish} className="min-w-0 space-y-5">
             {/* 1. Job details */}
-            <section className="rounded-lg border border-[#E6EBE7] bg-white p-5 sm:p-6">
+            <section className="rounded-panel border border-[#E6EBE7] bg-white p-5 sm:p-6">
               <h2 className="text-base font-semibold">Job details</h2>
               <p className="mt-1 text-sm text-[#7A8780]">
                 Introduce the role and its responsibilities.
@@ -304,7 +304,7 @@ export default function PostJobPage() {
                     <button
                       type="button"
                       onClick={addSkill}
-                      className="mt-1.5 shrink-0 cursor-pointer rounded-md border border-[#DCE5DE] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[#F3F8F4]"
+                      className="mt-1.5 shrink-0 cursor-pointer rounded-control border border-[#DCE5DE] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[#F3F8F4]"
                     >
                       Add
                     </button>
@@ -322,7 +322,7 @@ export default function PostJobPage() {
                             )
                           }
                           aria-label={`Remove ${skill}`}
-                          className="cursor-pointer rounded-md bg-[#EAF6EF] px-2.5 py-1.5 text-xs font-medium text-[#087F50] transition-colors hover:bg-[#DDF0E4]"
+                          className="cursor-pointer rounded-control bg-[#EAF6EF] px-2.5 py-1.5 text-xs font-medium text-[#087F50] transition-colors hover:bg-[#DDF0E4]"
                         >
                           {skill} ×
                         </button>
@@ -334,7 +334,7 @@ export default function PostJobPage() {
             </section>
 
             {/* 2. Hiring company */}
-            <section className="rounded-lg border border-[#E6EBE7] bg-white p-5 sm:p-6">
+            <section className="rounded-panel border border-[#E6EBE7] bg-white p-5 sm:p-6">
               <h2 className="text-base font-semibold">Hiring company</h2>
               <p className="mt-1 text-sm text-[#7A8780]">
                 Add the company name candidates will see.
@@ -355,7 +355,7 @@ export default function PostJobPage() {
             </section>
 
             {/* 3. Location */}
-            <section className="rounded-lg border border-[#E6EBE7] bg-white p-5 sm:p-6">
+            <section className="rounded-panel border border-[#E6EBE7] bg-white p-5 sm:p-6">
               <h2 className="text-base font-semibold">Location</h2>
               <p className="mt-1 text-sm text-[#7A8780]">
                 Tell candidates where they will work.
@@ -373,7 +373,7 @@ export default function PostJobPage() {
                           type="button"
                           aria-pressed={selected}
                           onClick={() => setArrangement(option)}
-                          className={`cursor-pointer rounded-md border px-3 py-2.5 text-sm font-medium transition-colors ${
+                          className={`cursor-pointer rounded-control border px-3 py-2.5 text-sm font-medium transition-colors ${
                             selected
                               ? "border-[#0FA968] bg-[#EDF8F1] text-[#087F50]"
                               : "border-[#E2E8E3] text-[#53635A] hover:bg-[#F7FAF7]"
@@ -426,7 +426,7 @@ export default function PostJobPage() {
             </section>
 
             {/* 4. Pay and benefits */}
-            <section className="rounded-lg border border-[#E6EBE7] bg-white p-5 sm:p-6">
+            <section className="rounded-panel border border-[#E6EBE7] bg-white p-5 sm:p-6">
               <h2 className="text-base font-semibold">Pay and benefits</h2>
               <p className="mt-1 text-sm text-[#7A8780]">
                 Share compensation details and optional perks.
@@ -531,7 +531,7 @@ export default function PostJobPage() {
                           type="button"
                           aria-pressed={selected}
                           onClick={() => toggleBenefit(benefit)}
-                          className={`cursor-pointer rounded-md border px-3 py-2 text-xs font-medium transition-colors ${
+                          className={`cursor-pointer rounded-control border px-3 py-2 text-xs font-medium transition-colors ${
                             selected
                               ? "border-[#0FA968] bg-[#EDF8F1] text-[#087F50]"
                               : "border-[#E2E8E3] text-[#53635A] hover:bg-[#F7FAF7]"
@@ -547,7 +547,7 @@ export default function PostJobPage() {
             </section>
 
             {/* 5. How to apply */}
-            <section className="rounded-lg border border-[#E6EBE7] bg-white p-5 sm:p-6">
+            <section className="rounded-panel border border-[#E6EBE7] bg-white p-5 sm:p-6">
               <h2 className="text-base font-semibold">How to apply</h2>
               <p className="mt-1 text-sm text-[#7A8780]">
                 Candidates will apply directly by sending an email.
@@ -574,7 +574,7 @@ export default function PostJobPage() {
             </section>
 
             {/* 6. Listing dates */}
-            <section className="rounded-lg border border-[#E6EBE7] bg-white p-5 sm:p-6">
+            <section className="rounded-panel border border-[#E6EBE7] bg-white p-5 sm:p-6">
               <h2 className="text-base font-semibold">Listing dates</h2>
               <p className="mt-1 text-sm text-[#7A8780]">
                 Choose how long the listing stays active.
@@ -655,7 +655,7 @@ export default function PostJobPage() {
             </section>
 
             {/* Short checklist */}
-            <section className="rounded-lg border border-[#E6EBE7] bg-white p-4">
+            <section className="rounded-panel border border-[#E6EBE7] bg-white p-4">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-sm font-semibold">Required fields</h2>
                 <span className="text-xs tabular-nums text-[#718078]">

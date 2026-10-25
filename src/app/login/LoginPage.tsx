@@ -168,7 +168,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
               type="button"
               aria-label="Close modal"
               onClick={() => setIsModalOpen(false)}
-              className="absolute right-3 top-3 flex h-9 w-9 cursor-pointer items-center justify-center rounded-pill text-text-muted transition hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="absolute right-3 top-3 flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-text-muted transition hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             >
               <X size={18} />
             </button>

@@ -86,7 +86,7 @@ function Modal({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: 0.22, ease: EASE }}
-            className="relative max-h-[92dvh] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-lg border border-slate-200 bg-white px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-2xl sm:max-h-[88dvh] sm:rounded-lg sm:p-6"
+            className="relative max-h-[92dvh] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-panel border border-slate-200 bg-white px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-2xl sm:max-h-[88dvh] sm:rounded-panel sm:p-6"
           >
             <div className="sticky top-0 z-10 -mx-1 mb-1 flex justify-end bg-white/95 pb-1 backdrop-blur-sm sm:mb-2">
               <button
@@ -94,7 +94,7 @@ function Modal({
                 type="button"
                 onClick={onClose}
                 aria-label="Close dialog"
-                className="grid h-8 w-8 cursor-pointer place-items-center rounded-md text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="grid h-8 w-8 cursor-pointer place-items-center rounded-control text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <FiX className="h-[18px] w-[18px]" />
               </button>
@@ -132,7 +132,7 @@ function FieldSelect({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           disabled={disabled}
-          className="w-full cursor-pointer appearance-none rounded-md border border-slate-300 bg-white px-3 py-3 pr-10 text-sm text-slate-800 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand-soft disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+          className="w-full cursor-pointer appearance-none rounded-control border border-slate-300 bg-white px-3 py-3 pr-10 text-sm text-slate-800 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand-soft disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
         >
           <option value="">{placeholder}</option>
           {options.map((option) => (
@@ -352,7 +352,7 @@ export default function SharePage() {
                 <motion.div
                   animate={reduce ? undefined : { y: [0, -5, 0] }}
                   transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-                  className="relative rounded-md z-10 w-[78%] max-w-[250px] border border-[#e8ece6] bg-white p-4 shadow-[0_16px_50px_-30px_rgba(25,60,35,0.2)]"
+                  className="relative rounded-card z-10 w-[78%] max-w-[250px] border border-[#e8ece6] bg-white p-4 shadow-[0_16px_50px_-30px_rgba(25,60,35,0.2)]"
                 >
                   <div className="flex items-center gap-3">
                     <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand-soft text-brand">
@@ -720,7 +720,7 @@ export default function SharePage() {
           <button
             type="button"
             onClick={closeChannelModal}
-            className="mt-3 w-full cursor-pointer rounded-md px-3 py-2.5 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+            className="mt-3 w-full cursor-pointer rounded-control px-3 py-2.5 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
           >
             Maybe later
           </button>

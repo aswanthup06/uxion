@@ -436,7 +436,7 @@ export default function HeroSection({
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="absolute bottom-[7%] left-0 z-20 hidden rounded-control border border-border-default bg-surface-card px-3.5 py-3 shadow-subtle sm:block"
+              className="absolute bottom-[7%] left-0 z-20 hidden rounded-card border border-border-default bg-surface-card px-3.5 py-3 shadow-subtle sm:block"
             >
               <div className="flex items-center gap-2.5">
                 <span className="flex h-7 w-7 items-center justify-center rounded-pill bg-brand-soft text-brand">
@@ -460,7 +460,7 @@ export default function HeroSection({
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="absolute right-0 top-[8%] z-20 hidden rounded-control border border-border-default bg-surface-card px-3.5 py-2.5 text-[11px] text-text-secondary shadow-subtle sm:block"
+              className="absolute right-0 top-[8%] z-20 hidden rounded-card border border-border-default bg-surface-card px-3.5 py-2.5 text-[11px] text-text-secondary shadow-subtle sm:block"
             >
               <span className="mr-2 text-brand">✳</span>
               {isEmployer ? "Talent · Teams · Growth" : "Design · Product · Tech"}

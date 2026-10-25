@@ -37,7 +37,7 @@ function FilterSection({
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-[#0FA968]/60"
+        className="flex w-full items-center justify-between rounded-control text-left outline-none focus-visible:ring-2 focus-visible:ring-[#0FA968]/60"
       >
         <span className="flex items-center gap-2 text-sm font-semibold text-[#111815]">
           {title}
@@ -80,12 +80,12 @@ function ChoiceOption({
   count?: number;
 }) {
   return (
-    <label className="group flex cursor-pointer items-center gap-3 rounded-md px-1.5 py-1.5 text-sm text-[#3A4640] transition-colors hover:bg-[#F6F7F5] hover:text-[#111815]">
+    <label className="group flex cursor-pointer items-center gap-3 rounded-control px-1.5 py-1.5 text-sm text-[#3A4640] transition-colors hover:bg-[#F6F7F5] hover:text-[#111815]">
       <input type={type} name={name} checked={checked} onChange={onChange} className="peer sr-only" />
       <span
         aria-hidden
         className={`grid h-4 w-4 shrink-0 place-items-center border transition-colors peer-focus-visible:ring-4 peer-focus-visible:ring-[#0FA968]/30 ${
-          type === "radio" ? "rounded-full" : "rounded"
+          type === "radio" ? "rounded-full" : "rounded-control"
         } ${checked ? "border-[#0FA968] bg-[#0FA968]" : "border-[#C9D1CB] group-hover:border-[#B5C0B8]"}`}
       >
         {checked &&
@@ -138,7 +138,7 @@ function TitleSearch({
 
   return (
     <div ref={wrap} className="relative">
-      <div className="flex items-center gap-2 rounded-xl border border-[#E3E8E4] bg-[#F6F7F5] px-3 transition-colors focus-within:border-[#0FA968] focus-within:ring-4 focus-within:ring-[#0FA968]/20">
+      <div className="flex items-center gap-2 rounded-control border border-[#E3E8E4] bg-[#F6F7F5] px-3 transition-colors focus-within:border-[#0FA968] focus-within:ring-4 focus-within:ring-[#0FA968]/20">
         <Search aria-hidden className="h-4 w-4 shrink-0 text-[#8A958E]" />
         <input
           type="text"
@@ -186,7 +186,7 @@ function TitleSearch({
         <ul
           id={`${id}-list`}
           role="listbox"
-          className="absolute inset-x-0 top-full z-30 mt-1.5 max-h-60 overflow-auto rounded-xl border border-[#EEF1EE] bg-white p-1 shadow-xl shadow-black/10"
+          className="absolute inset-x-0 top-full z-30 mt-1.5 max-h-60 overflow-auto rounded-card border border-[#EEF1EE] bg-white p-1 shadow-xl shadow-black/10"
         >
           {matches.map((m, i) => (
             <li
@@ -196,7 +196,7 @@ function TitleSearch({
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => pick(m)}
               onMouseEnter={() => setHi(i)}
-              className={`cursor-pointer rounded-lg px-3 py-2 text-sm text-[#3A4640] ${i === hi ? "bg-[#F1F4F1]" : ""}`}
+              className={`cursor-pointer rounded-control px-3 py-2 text-sm text-[#3A4640] ${i === hi ? "bg-[#F1F4F1]" : ""}`}
             >
               {m}
             </li>
@@ -283,7 +283,7 @@ export function FilterPanel({
             <button
               type="button"
               onClick={onClear}
-              className="rounded-md px-2 py-1 text-sm font-medium text-[#0B7A4B] hover:bg-[#F6F7F5]"
+              className="rounded-control px-2 py-1 text-sm font-medium text-[#0B7A4B] hover:bg-[#F6F7F5]"
             >
               Clear all
             </button>
@@ -293,7 +293,7 @@ export function FilterPanel({
               type="button"
               aria-label="Close filters"
               onClick={onClose}
-              className="grid h-8 w-8 place-items-center rounded-md text-[#8A958E] hover:bg-[#EEF1EE] hover:text-[#111815]"
+              className="grid h-8 w-8 place-items-center rounded-control text-[#8A958E] hover:bg-[#EEF1EE] hover:text-[#111815]"
             >
               <X className="h-4 w-4" />
             </button>
@@ -344,7 +344,7 @@ export function FilterPanel({
               placeholder="Search locations"
               value={locQuery}
               onChange={(e) => setLocQuery(e.target.value)}
-              className="mb-2 w-full rounded-lg border border-[#E3E8E4] bg-[#F6F7F5] px-3 py-2 text-sm text-[#111815] outline-none placeholder:text-[#8A958E] focus:border-[#0FA968]"
+              className="mb-2 w-full rounded-control border border-[#E3E8E4] bg-[#F6F7F5] px-3 py-2 text-sm text-[#111815] outline-none placeholder:text-[#8A958E] focus:border-[#0FA968]"
             />
           )}
           <div className="flex flex-col">

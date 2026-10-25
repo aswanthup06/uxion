@@ -27,14 +27,14 @@ export default function GlobalError({
           <div className="flex justify-center gap-4">
             <button
               onClick={reset}
-              className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#ea580c] px-6 py-3 rounded-lg transition"
+              className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#ea580c] px-6 py-3 rounded-control transition"
             >
               <RefreshCw size={18} />
               Try Again
             </button>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 border border-gray-500 hover:border-white px-6 py-3 rounded-lg transition"
+              className="inline-flex items-center gap-2 border border-gray-500 hover:border-white px-6 py-3 rounded-control transition"
             >
               Go Home
             </Link>

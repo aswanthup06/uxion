@@ -52,7 +52,7 @@ export default function LatestJobs() {
         </h2>
         <Link
           href="/jobs"
-          className="text-xs h-8 rounded-sm flex items-center justify-center gap-2  transition"
+          className="text-xs h-8 rounded-control flex items-center justify-center gap-2 transition"
         >
           All jobs{" "}
           <ArrowUpRight size={16} strokeWidth={1.5} className="" />

@@ -83,7 +83,7 @@ export default function SiteFooter() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Visit Zenoway on ${label}`}
-                  className="flex h-9 w-9 items-center justify-center rounded-md text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-[#087F50]"
+                  className="flex h-9 w-9 items-center justify-center rounded-control text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-[#087F50]"
                 >
                   <Icon size={18} strokeWidth={1.7} />
                 </a>

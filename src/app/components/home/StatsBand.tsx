@@ -60,7 +60,7 @@ export default function StatsBand({
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="rounded-md border border-[#E8EDE9] bg-white px-4 py-5 sm:px-5 sm:py-6"
+              className="rounded-card border border-[#E8EDE9] bg-white px-4 py-5 sm:px-5 sm:py-6"
             >
               <dd className="text-2xl font-semibold leading-tight tracking-tight text-[#087F50] sm:text-3xl">
                 {"text" in stat ? (

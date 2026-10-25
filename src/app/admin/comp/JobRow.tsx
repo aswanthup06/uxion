@@ -74,7 +74,7 @@ export default function JobRow({ job, onDelete }: Props) {
             onClick={() => onDelete(job.id)}
             aria-label={`Delete ${job.title}`}
             title="Delete job"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-control text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
           >
             <Trash2 size={15} />
           </button>

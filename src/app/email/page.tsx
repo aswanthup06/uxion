@@ -261,7 +261,7 @@ export default function EmailGuidePage() {
             </p>
           </div>
 
-          <div className="overflow-hidden rounded-sm border border-gray-200 bg-white">
+          <div className="overflow-hidden rounded-panel border border-gray-200 bg-white">
             {/* Email header */}
             <div className="flex items-center gap-3 border-b border-gray-100 bg-gray-50/70 px-5 py-4 sm:px-7">
               <Mail
@@ -309,7 +309,7 @@ export default function EmailGuidePage() {
                   view selected projects in my portfolio:
                 </p>
 
-                <div className="rounded-sm bg-[#F5FAF7] px-4 py-3 sm:px-5">
+                <div className="rounded-card bg-[#F5FAF7] px-4 py-3 sm:px-5">
                   <span className="font-medium text-[#17231D]">
                     Portfolio:{" "}
                   </span>

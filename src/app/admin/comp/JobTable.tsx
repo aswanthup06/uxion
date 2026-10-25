@@ -74,7 +74,7 @@ export default function JobTable({ jobs, onDelete }: Props) {
   }
 
   return (
-    <section className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+    <section className="overflow-hidden rounded-panel border border-gray-200 bg-white">
       {/* Search and result count */}
       <div className="flex flex-col gap-3 border-b border-gray-100 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-sm">
@@ -89,7 +89,7 @@ export default function JobTable({ jobs, onDelete }: Props) {
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search jobs, companies, locations..."
             aria-label="Search jobs"
-            className="h-10 w-full rounded-lg border border-gray-200 bg-white pl-9 pr-9 text-sm text-gray-900 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand-soft"
+            className="h-10 w-full rounded-control border border-gray-200 bg-white pl-9 pr-9 text-sm text-gray-900 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand-soft"
           />
 
           {search && (
@@ -97,7 +97,7 @@ export default function JobTable({ jobs, onDelete }: Props) {
               type="button"
               onClick={() => setSearch("")}
               aria-label="Clear search"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:text-gray-700"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-control p-1 text-gray-400 hover:text-gray-700"
             >
               <X size={15} />
             </button>
@@ -181,7 +181,7 @@ export default function JobTable({ jobs, onDelete }: Props) {
                 type="button"
                 disabled={page === 1}
                 onClick={() => setPage((current) => current - 1)}
-                className="inline-flex h-9 items-center gap-1 rounded-lg border border-gray-200 px-3 text-sm text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                className="inline-flex h-9 items-center gap-1 rounded-control border border-gray-200 px-3 text-sm text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ChevronLeft size={15} />
                 Previous
@@ -195,7 +195,7 @@ export default function JobTable({ jobs, onDelete }: Props) {
                 type="button"
                 disabled={page === totalPages}
                 onClick={() => setPage((current) => current + 1)}
-                className="inline-flex h-9 items-center gap-1 rounded-lg border border-gray-200 px-3 text-sm text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                className="inline-flex h-9 items-center gap-1 rounded-control border border-gray-200 px-3 text-sm text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Next
                 <ChevronRight size={15} />

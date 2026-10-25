@@ -55,8 +55,8 @@ const statusStyles: Record<CandidateStatus, string> = {
   Rejected: "bg-rose-50 text-rose-700",
 };
 
-const panelClass = "rounded-lg border border-slate-200/80 bg-white";
-const controlClass = "h-10 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand-soft";
+const panelClass = "rounded-panel border border-slate-200/80 bg-white";
+const controlClass = "h-10 rounded-control border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand-soft";
 
 function StatusBadge({ status }: { status: CandidateStatus }) {
   return <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${statusStyles[status]}`}>{status}</span>;
@@ -162,14 +162,14 @@ export default function HRManagementPage() {
           </div>
         </header>
 
-        {notice && <div role="status" className="mt-5 flex items-center gap-2 rounded-md border border-brand-light bg-brand-soft px-3 py-2.5 text-sm text-brand-dark"><Check className="h-4 w-4" />{notice}</div>}
+        {notice && <div role="status" className="mt-5 flex items-center gap-2 rounded-control border border-brand-light bg-brand-soft px-3 py-2.5 text-sm text-brand-dark"><Check className="h-4 w-4" />{notice}</div>}
 
         <section aria-label="Hiring overview" className="mt-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {stats.map(({ label, value, note, icon: Icon }) => (
             <article key={label} className={`${panelClass} p-5`}>
               <div className="flex items-start justify-between gap-3">
                 <div><p className="text-sm text-slate-500">{label}</p><p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{value}</p><p className="mt-1 text-xs text-slate-400">{note}</p></div>
-                <span className="grid h-10 w-10 place-items-center rounded-md bg-brand-soft text-brand"><Icon className="h-5 w-5" /></span>
+                <span className="grid h-10 w-10 place-items-center rounded-control bg-brand-soft text-brand"><Icon className="h-5 w-5" /></span>
               </div>
             </article>
           ))}
@@ -243,7 +243,7 @@ export default function HRManagementPage() {
                     <td className="px-3 py-4"><label className="sr-only" htmlFor={`status-${candidate.id}`}>Status for {candidate.name}</label><select id={`status-${candidate.id}`} value={candidate.status} onChange={(event) => updateStatus(candidate.id, event.target.value as CandidateStatus)} className="cursor-pointer rounded-full border-0 bg-transparent py-1 pl-0 pr-6 text-xs font-medium outline-none focus:ring-2 focus:ring-brand-soft"><option value="New">New</option><option value="Screening">Screening</option><option value="Interview">Interview</option><option value="Offer">Offer</option><option value="Hired">Hired</option><option value="Rejected">Rejected</option></select></td>
                     <td className="px-3 py-4 text-sm text-slate-600">{candidate.experience}</td>
                     <td className="px-3 py-4 text-sm text-slate-500">{candidate.source}</td>
-                    <td className="px-4 py-4 text-right"><button type="button" onClick={() => setActiveCandidate(candidate)} aria-label={`View ${candidate.name}`} className="inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-brand transition-colors hover:bg-brand-soft">View <ArrowUpRight className="h-3.5 w-3.5" /></button></td>
+                    <td className="px-4 py-4 text-right"><button type="button" onClick={() => setActiveCandidate(candidate)} aria-label={`View ${candidate.name}`} className="inline-flex cursor-pointer items-center gap-1 rounded-control px-2 py-1.5 text-xs font-semibold text-brand transition-colors hover:bg-brand-soft">View <ArrowUpRight className="h-3.5 w-3.5" /></button></td>
                   </tr>
                 ))}
                 {filtered.length === 0 && <tr><td colSpan={8} className="px-4 py-14 text-center"><Search className="mx-auto h-6 w-6 text-slate-300" /><p className="mt-3 text-sm font-medium text-slate-700">No candidates found</p><p className="mt-1 text-xs text-slate-500">Try another search or clear your filters.</p><button type="button" onClick={() => { setSearch(""); setStatusFilter("All statuses"); setRoleFilter("All roles"); }} className="mt-3 cursor-pointer text-xs font-semibold text-brand hover:text-brand-dark">Clear filters</button></td></tr>}
@@ -255,8 +255,8 @@ export default function HRManagementPage() {
 
         {showAddForm && (
           <div role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowAddForm(false); }} className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/30 p-4 backdrop-blur-[2px]">
-            <section role="dialog" aria-modal="true" aria-labelledby="add-candidate-title" className="w-full max-w-lg rounded-lg bg-white p-5 shadow-xl sm:p-6">
-              <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand">Recruitment</p><h2 id="add-candidate-title" className="mt-1 text-lg font-semibold text-slate-950">Add candidate</h2><p className="mt-1 text-sm text-slate-500">Add a candidate to this local demo list.</p></div><button type="button" aria-label="Close dialog" onClick={() => setShowAddForm(false)} className="cursor-pointer rounded-md p-2 text-slate-500 hover:bg-slate-100"><X className="h-4 w-4" /></button></div>
+            <section role="dialog" aria-modal="true" aria-labelledby="add-candidate-title" className="w-full max-w-lg rounded-panel bg-white p-5 shadow-xl sm:p-6">
+              <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand">Recruitment</p><h2 id="add-candidate-title" className="mt-1 text-lg font-semibold text-slate-950">Add candidate</h2><p className="mt-1 text-sm text-slate-500">Add a candidate to this local demo list.</p></div><button type="button" aria-label="Close dialog" onClick={() => setShowAddForm(false)} className="cursor-pointer rounded-control p-2 text-slate-500 hover:bg-slate-100"><X className="h-4 w-4" /></button></div>
               <form onSubmit={addCandidate} className="mt-5 space-y-4">
                 <label className="block"><span className="mb-1.5 block text-xs font-medium text-slate-600">Full name *</span><input required value={newName} onChange={(event) => setNewName(event.target.value)} placeholder="Candidate name" className={`${controlClass} w-full`} /></label>
                 <label className="block"><span className="mb-1.5 block text-xs font-medium text-slate-600">Email address *</span><input required type="email" value={newEmail} onChange={(event) => setNewEmail(event.target.value)} placeholder="name@example.com" className={`${controlClass} w-full`} /></label>
@@ -270,12 +270,12 @@ export default function HRManagementPage() {
 
         {activeCandidate && (
           <div role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setActiveCandidate(null); }} className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/30 p-4 backdrop-blur-[2px]">
-            <section role="dialog" aria-modal="true" aria-labelledby="candidate-details-title" className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-lg bg-white p-5 shadow-xl sm:p-6">
-              <div className="flex items-start justify-between gap-4"><div className="flex items-center gap-3"><span className="grid h-12 w-12 place-items-center rounded-full bg-brand-soft text-sm font-semibold text-brand-dark">{activeCandidate.initials}</span><div><h2 id="candidate-details-title" className="text-lg font-semibold text-slate-950">{activeCandidate.name}</h2><p className="mt-1 text-sm text-slate-500">{activeCandidate.role}</p></div></div><button type="button" aria-label="Close details" onClick={() => setActiveCandidate(null)} className="cursor-pointer rounded-md p-2 text-slate-500 hover:bg-slate-100"><X className="h-4 w-4" /></button></div>
+            <section role="dialog" aria-modal="true" aria-labelledby="candidate-details-title" className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-panel bg-white p-5 shadow-xl sm:p-6">
+              <div className="flex items-start justify-between gap-4"><div className="flex items-center gap-3"><span className="grid h-12 w-12 place-items-center rounded-full bg-brand-soft text-sm font-semibold text-brand-dark">{activeCandidate.initials}</span><div><h2 id="candidate-details-title" className="text-lg font-semibold text-slate-950">{activeCandidate.name}</h2><p className="mt-1 text-sm text-slate-500">{activeCandidate.role}</p></div></div><button type="button" aria-label="Close details" onClick={() => setActiveCandidate(null)} className="cursor-pointer rounded-control p-2 text-slate-500 hover:bg-slate-100"><X className="h-4 w-4" /></button></div>
               <div className="mt-5 flex flex-wrap items-center gap-2"><StatusBadge status={activeCandidate.status} /><span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-600">{activeCandidate.experience} experience</span></div>
-              <div className="mt-5 grid gap-4 rounded-md bg-slate-50 p-4 sm:grid-cols-2"><div><p className="text-xs text-slate-400">Email</p><a href={`mailto:${activeCandidate.email}`} className="mt-1 inline-flex cursor-pointer items-center gap-2 break-all text-sm text-slate-700 hover:text-brand"><Mail className="h-3.5 w-3.5 shrink-0" />{activeCandidate.email}</a></div><div><p className="text-xs text-slate-400">Location</p><p className="mt-1 text-sm text-slate-700">{activeCandidate.location}</p></div><div><p className="text-xs text-slate-400">Applied</p><p className="mt-1 text-sm text-slate-700">{activeCandidate.applied}</p></div><div><p className="text-xs text-slate-400">Source</p><p className="mt-1 text-sm text-slate-700">{activeCandidate.source}</p></div></div>
+              <div className="mt-5 grid gap-4 rounded-card bg-slate-50 p-4 sm:grid-cols-2"><div><p className="text-xs text-slate-400">Email</p><a href={`mailto:${activeCandidate.email}`} className="mt-1 inline-flex cursor-pointer items-center gap-2 break-all text-sm text-slate-700 hover:text-brand"><Mail className="h-3.5 w-3.5 shrink-0" />{activeCandidate.email}</a></div><div><p className="text-xs text-slate-400">Location</p><p className="mt-1 text-sm text-slate-700">{activeCandidate.location}</p></div><div><p className="text-xs text-slate-400">Applied</p><p className="mt-1 text-sm text-slate-700">{activeCandidate.applied}</p></div><div><p className="text-xs text-slate-400">Source</p><p className="mt-1 text-sm text-slate-700">{activeCandidate.source}</p></div></div>
               <div className="mt-5"><label htmlFor="detail-status" className="mb-1.5 block text-xs font-medium text-slate-600">Update hiring stage</label><select id="detail-status" value={activeCandidate.status} onChange={(event) => { const status = event.target.value as CandidateStatus; updateStatus(activeCandidate.id, status); setActiveCandidate({ ...activeCandidate, status }); }} className={`${controlClass} w-full cursor-pointer`}>{statuses.map((status) => <option key={status}>{status}</option>)}</select></div>
-              <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-4"><a href={`mailto:${activeCandidate.email}`} className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"><Mail className="h-4 w-4" /> Email candidate</a><button type="button" onClick={() => setActiveCandidate(null)} className="cursor-pointer rounded-control bg-brand px-4 py-2 text-sm font-semibold text-text-inverse shadow-subtle hover:bg-brand-hover">Done</button></div>
+              <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-4"><a href={`mailto:${activeCandidate.email}`} className="inline-flex cursor-pointer items-center gap-2 rounded-control border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"><Mail className="h-4 w-4" /> Email candidate</a><button type="button" onClick={() => setActiveCandidate(null)} className="cursor-pointer rounded-control bg-brand px-4 py-2 text-sm font-semibold text-text-inverse shadow-subtle hover:bg-brand-hover">Done</button></div>
             </section>
           </div>
         )}

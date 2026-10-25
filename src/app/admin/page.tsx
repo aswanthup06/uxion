@@ -159,7 +159,7 @@ function Stat({
       </div>
 
       {loading ? (
-        <div className="mt-3 h-9 w-16 animate-pulse rounded bg-[#edf1ed]" />
+        <div className="mt-3 h-9 w-16 animate-pulse rounded-control bg-[#edf1ed]" />
       ) : (
         <p className="mt-2 text-3xl font-semibold tracking-[-0.045em] text-[#19231c]">
           {value.toLocaleString("en-IN")}
@@ -281,7 +281,7 @@ export default function AdminDashboard() {
               type="button"
               onClick={() => setRetryKey((key) => key + 1)}
               disabled={loading}
-              className="inline-flex h-10 items-center gap-2 rounded-md border border-[#e3e8e3] px-3.5 text-sm font-medium text-[#48544b] transition hover:bg-[#f7f9f7] disabled:opacity-50"
+              className="inline-flex h-10 items-center gap-2 rounded-control border border-[#e3e8e3] px-3.5 text-sm font-medium text-[#48544b] transition hover:bg-[#f7f9f7] disabled:opacity-50"
             >
               <RefreshCw
                 size={15}
@@ -292,7 +292,7 @@ export default function AdminDashboard() {
 
             <Link
               href="/admin/jobs/add"
-              className="inline-flex h-10 items-center gap-2 rounded-md bg-[#087F50] px-4 text-sm font-medium text-white transition hover:bg-[#066943]"
+              className="inline-flex h-10 items-center gap-2 rounded-control bg-[#087F50] px-4 text-sm font-medium text-white transition hover:bg-[#066943]"
             >
               <Plus size={16} />
               Add a job
@@ -430,13 +430,13 @@ export default function AdminDashboard() {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search jobs..."
-                  className="h-10 w-full rounded-md border border-[#e3e8e3] bg-white pl-9 pr-3 text-sm outline-none transition placeholder:text-[#9aa29b] focus:border-[#087F50] focus:ring-2 focus:ring-[#087F50]/10"
+                  className="h-10 w-full rounded-control border border-[#e3e8e3] bg-white pl-9 pr-3 text-sm outline-none transition placeholder:text-[#9aa29b] focus:border-[#087F50] focus:ring-2 focus:ring-[#087F50]/10"
                 />
               </label>
 
               <Link
                 href="/admin/jobs"
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#e3e8e3] px-3.5 text-sm font-medium text-[#48544b] transition hover:bg-[#f7f9f7]"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-control border border-[#e3e8e3] px-3.5 text-sm font-medium text-[#48544b] transition hover:bg-[#f7f9f7]"
               >
                 All jobs
                 <ArrowUpRight size={15} />
@@ -452,10 +452,10 @@ export default function AdminDashboard() {
                     key={index}
                     className="flex animate-pulse items-center gap-4"
                   >
-                    <div className="h-10 w-10 rounded-md bg-[#edf1ed]" />
+                    <div className="h-10 w-10 rounded-control bg-[#edf1ed]" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-3.5 w-1/3 rounded bg-[#edf1ed]" />
-                      <div className="h-3 w-1/2 rounded bg-[#f2f4f2]" />
+                      <div className="h-3.5 w-1/3 rounded-pill bg-[#edf1ed]" />
+                      <div className="h-3 w-1/2 rounded-pill bg-[#f2f4f2]" />
                     </div>
                   </div>
                 ))}
@@ -509,7 +509,7 @@ export default function AdminDashboard() {
                         <tr key={job.id} className="group hover:bg-[#fafcfa]">
                           <td className="py-4 pr-4">
                             <div className="flex min-w-0 items-center gap-3">
-                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[#edf6f0] text-xs font-semibold text-[#087F50]">
+                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-[#edf6f0] text-xs font-semibold text-[#087F50]">
                                 {getInitials(job.company)}
                               </div>
                               <div className="min-w-0">
@@ -554,7 +554,7 @@ export default function AdminDashboard() {
                 <div className="divide-y divide-[#edf0ed] md:hidden">
                   {filteredJobs.slice(0, 8).map((job) => (
                     <div key={job.id} className="flex gap-3 py-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[#edf6f0] text-xs font-semibold text-[#087F50]">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-[#edf6f0] text-xs font-semibold text-[#087F50]">
                         {getInitials(job.company)}
                       </div>
 

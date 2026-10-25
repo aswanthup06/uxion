@@ -251,7 +251,7 @@ export default function Navbar() {
                     <motion.div
                       key="jobs-dropdown"
                       {...motionProps}
-                      className="absolute left-0 top-[calc(100%-1px)] w-[290px] origin-top-left rounded-panel border border-border-default bg-surface-card p-2 shadow-dropdown"
+                      className="absolute left-0 top-[calc(100%-1px)] w-[290px] origin-top-left rounded-card border border-border-default bg-surface-card p-2 shadow-dropdown"
                     >
                       <p className="px-3 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[1.4px] text-text-muted">
                         Explore IT jobs
@@ -345,7 +345,7 @@ export default function Navbar() {
                     <motion.div
                       key="employers-dropdown"
                       {...motionProps}
-                      className="absolute left-0 top-[calc(100%-1px)] w-[235px] origin-top-left rounded-panel border border-border-default bg-surface-card p-2 shadow-dropdown"
+                      className="absolute left-0 top-[calc(100%-1px)] w-[235px] origin-top-left rounded-card border border-border-default bg-surface-card p-2 shadow-dropdown"
                     >
                       <Link
                         href={POST_JOB}
@@ -416,7 +416,7 @@ export default function Navbar() {
                   <motion.div
                     key="admin-dropdown"
                     {...motionProps}
-                    className="absolute left-0 top-[calc(100%-1px)] w-[235px] rounded-panel border border-border-default bg-surface-card p-2 shadow-dropdown"
+                    className="absolute left-0 top-[calc(100%-1px)] w-[235px] rounded-card border border-border-default bg-surface-card p-2 shadow-dropdown"
                   >
                     <p className="px-3 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[1.4px] text-text-muted">
                       Administration

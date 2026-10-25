@@ -4,7 +4,7 @@ import { ArrowUpRight, BriefcaseBusiness } from "lucide-react";
 export default function JobEmptyState() {
   return (
     <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-soft text-brand">
+      <div className="flex h-12 w-12 items-center justify-center rounded-control bg-brand-soft text-brand">
         <BriefcaseBusiness size={22} strokeWidth={1.5} />
       </div>
 

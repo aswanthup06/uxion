@@ -8,7 +8,7 @@ import { ChevronDown, ChevronRight, SearchIcon, SadIcon } from './icons';
 // ✅ JobCard component
 const JobCard = ({ job }) => {
   return (
-    <div className="bg-[#0B1F38] p-3 rounded-lg border border-[#122B45] hover:border-orange-500/30 transition-all duration-200">
+    <div className="bg-[#0B1F38] p-3 rounded-card border border-[#122B45] hover:border-orange-500/30 transition-all duration-200">
       <div className="flex items-center">
         <div className="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
         <span className="text-sm text-white/90">{job}</span>
@@ -61,7 +61,7 @@ const Category = ({ category, defaultExpanded = false }) => {
   }, [defaultExpanded]);
 
   return (
-    <div className="bg-[#0B1F38] rounded-xl overflow-hidden mb-2 border border-[#122B45]">
+    <div className="bg-[#0B1F38] rounded-panel overflow-hidden mb-2 border border-[#122B45]">
       <div
         className="flex items-center justify-between p-4 cursor-pointer group"
         onClick={() => setExpanded(!expanded)}
@@ -111,7 +111,7 @@ const SearchBar = ({ onSearch }) => {
       </div>
       <input
         type="text"
-        className="block rounded-full w-full pl-10 pr-3 py-4 border border-[#122B45] bg-[#0B1F38] text-white/90 placeholder-white/50 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+        className="block rounded-control w-full pl-10 pr-3 py-4 border border-[#122B45] bg-[#0B1F38] text-white/90 placeholder-white/50 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
         placeholder="Search for IT jobs..."
         value={query}
         onChange={handleChange}

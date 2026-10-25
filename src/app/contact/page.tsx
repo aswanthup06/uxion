@@ -112,7 +112,7 @@ export default function ContactPage() {
                   }
                   className="group flex items-center gap-4 py-6 transition-colors sm:gap-6 sm:py-7"
                 >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-text-inverse">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-text-inverse">
                     <Icon size={19} strokeWidth={1.7} />
                   </div>
 
@@ -146,7 +146,7 @@ export default function ContactPage() {
         <section className="mt-12 border-t border-slate-200 pt-8 sm:mt-16 sm:pt-10">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-brand-soft text-brand">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control bg-brand-soft text-brand">
                 <MessageCircle size={19} strokeWidth={1.7} />
               </div>
 
@@ -164,7 +164,7 @@ export default function ContactPage() {
 
             <Link
               href="/join"
-              className="inline-flex w-fit items-center justify-center gap-2 rounded-sm bg-[#087F50] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#066640] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#087F50] focus-visible:ring-offset-2"
+              className="inline-flex w-fit items-center justify-center gap-2 rounded-control bg-[#087F50] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#066640] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#087F50] focus-visible:ring-offset-2"
             >
               Join the community
               <ArrowUpRight size={16} strokeWidth={1.8} />

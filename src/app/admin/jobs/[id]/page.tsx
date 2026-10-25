@@ -455,19 +455,19 @@ export default function EditJobPage() {
     return (
       <main className="min-h-full bg-white px-5 py-8 sm:px-8">
         <div className="mx-auto max-w-5xl animate-pulse">
-          <div className="h-3 w-28 rounded bg-[#E9EEE9]" />
-          <div className="mt-5 h-8 w-56 rounded bg-[#E9EEE9]" />
-          <div className="mt-3 h-4 w-80 max-w-full rounded bg-[#F0F3F0]" />
+          <div className="h-3 w-28 rounded-pill bg-[#E9EEE9]" />
+          <div className="mt-5 h-8 w-56 rounded-pill bg-[#E9EEE9]" />
+          <div className="mt-3 h-4 w-80 max-w-full rounded-pill bg-[#F0F3F0]" />
 
           {[1, 2, 3, 4].map((item) => (
             <div
               key={item}
               className="mt-8 border-b border-[#E7ECE8] py-8"
             >
-              <div className="h-4 w-40 rounded bg-[#E9EEE9]" />
+              <div className="h-4 w-40 rounded-pill bg-[#E9EEE9]" />
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
-                <div className="h-11 rounded-md bg-[#F0F3F0]" />
-                <div className="h-11 rounded-md bg-[#F0F3F0]" />
+                <div className="h-11 rounded-control bg-[#F0F3F0]" />
+                <div className="h-11 rounded-control bg-[#F0F3F0]" />
               </div>
             </div>
           ))}
@@ -480,7 +480,7 @@ export default function EditJobPage() {
     return (
       <main className="flex min-h-[60vh] items-center justify-center bg-white px-5 py-12">
         <div className="w-full max-w-md text-center">
-          <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-md bg-red-50 text-red-600">
+          <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-control bg-red-50 text-red-600">
             <AlertCircle size={21} />
           </span>
 
@@ -498,14 +498,14 @@ export default function EditJobPage() {
                 const controller = new AbortController();
                 void loadJob(controller.signal);
               }}
-              className="rounded-md border border-[#DDE5DE] px-4 py-2.5 text-sm font-medium text-[#34463A] transition hover:bg-[#F7F9F7]"
+              className="rounded-control border border-[#DDE5DE] px-4 py-2.5 text-sm font-medium text-[#34463A] transition hover:bg-[#F7F9F7]"
             >
               Try again
             </button>
 
             <Link
               href="/admin/jobs"
-              className="rounded-md bg-[#087F50] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#066640]"
+              className="rounded-control bg-[#087F50] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#066640]"
             >
               Back to jobs
             </Link>
@@ -551,7 +551,7 @@ export default function EditJobPage() {
 
           <Link
             href="/admin/jobs"
-            className="inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-md border border-[#E1E8E2] px-3.5 text-sm font-medium text-[#45554A] transition hover:border-[#C8D7CC] hover:bg-[#F8FAF8] sm:self-auto"
+            className="inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-control border border-[#E1E8E2] px-3.5 text-sm font-medium text-[#45554A] transition hover:border-[#C8D7CC] hover:bg-[#F8FAF8] sm:self-auto"
           >
             <ArrowLeft size={15} />
             Back to jobs
@@ -559,7 +559,7 @@ export default function EditJobPage() {
         </header>
 
         <div className="flex items-start gap-3 border-b border-[#E7ECE8] py-5">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[#EFF7F0] text-[#087F50]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-[#EFF7F0] text-[#087F50]">
             <BriefcaseBusiness size={19} strokeWidth={1.7} />
           </span>
 

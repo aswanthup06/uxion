@@ -154,7 +154,7 @@ export default function HowItWorks() {
 
           {/* Right: Animated job preview */}
           <div className="flex min-w-0 items-center">
-            <div className="relative w-full overflow-hidden rounded-lg border border-[#E8EDE9] bg-[#FBFCFB] p-4 sm:p-6">
+            <div className="relative w-full overflow-hidden rounded-panel border border-[#E8EDE9] bg-[#FBFCFB] p-4 sm:p-6">
               {/* Preview header */}
               <div className="flex items-center justify-between border-b border-[#E8EDE9] pb-4">
                 <span className="text-xs font-medium text-[#16251F]">
@@ -182,7 +182,7 @@ export default function HowItWorks() {
                   {/* Step 1: Search jobs */}
                   {active === 0 && (
                     <div>
-                      <div className="flex items-center gap-2 rounded-md border border-[#E2E8E3] bg-white px-3 py-2.5">
+                      <div className="flex items-center gap-2 rounded-control border border-[#E2E8E3] bg-white px-3 py-2.5">
                         <Search
                           size={15}
                           className="shrink-0 text-neutral-400"
@@ -201,9 +201,9 @@ export default function HowItWorks() {
                         {JOBS.map(([title, meta], index) => (
                           <div
                             key={title}
-                            className="flex items-center gap-3 rounded-md border border-[#E8EDE9] bg-white p-3"
+                            className="flex items-center gap-3 rounded-card border border-[#E8EDE9] bg-white p-3"
                           >
-                            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-sm bg-[#EAF6EF] text-xs font-semibold text-[#087F50]">
+                            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-control bg-[#EAF6EF] text-xs font-semibold text-[#087F50]">
                               {title[0]}
                             </span>
 
@@ -230,7 +230,7 @@ export default function HowItWorks() {
 
                   {/* Step 2: Read role details */}
                   {active === 1 && (
-                    <div className="rounded-md border border-[#E8EDE9] bg-white p-4 sm:p-5">
+                    <div className="rounded-card border border-[#E8EDE9] bg-white p-4 sm:p-5">
                       <span className="text-xs text-[#0FA968]">
                         DESIGN · FULL-TIME
                       </span>
@@ -253,7 +253,7 @@ export default function HowItWorks() {
                         {[100, 92, 72, 84].map((width, index) => (
                           <motion.div
                             key={index}
-                            className="h-1.5 rounded-sm bg-[#EDF0ED]"
+                            className="h-1.5 rounded-pill bg-[#EDF0ED]"
                             initial={{ width: 0 }}
                             animate={{ width: `${width}%` }}
                             transition={{
@@ -276,9 +276,9 @@ export default function HowItWorks() {
 
                   {/* Step 3: Contact the employer */}
                   {active === 2 && (
-                    <div className="rounded-md border border-[#E8EDE9] bg-white p-4 sm:p-5">
+                    <div className="rounded-card border border-[#E8EDE9] bg-white p-4 sm:p-5">
                       <div className="flex items-center gap-3">
-                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-sm bg-[#EAF6EF] text-sm font-semibold text-[#087F50]">
+                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-control bg-[#EAF6EF] text-sm font-semibold text-[#087F50]">
                           A
                         </span>
 

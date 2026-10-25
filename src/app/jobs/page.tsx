@@ -394,7 +394,7 @@ function JobsViewContent() {
             type="button"
             onClick={() => setFiltersOpen(false)}
             aria-label="Close filters"
-            className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100"
+            className="rounded-control p-1.5 text-slate-500 hover:bg-slate-100"
           >
             <X className="h-4 w-4" />
           </button>
@@ -528,7 +528,7 @@ function JobsViewContent() {
           type="button"
           onClick={clearFilters}
           disabled={!hasActiveCriteria}
-          className="mt-2 inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-5 text-sm font-medium text-slate-700 transition-colors duration-200 hover:border-slate-400 hover:bg-slate-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400 disabled:hover:bg-slate-50"
+          className="mt-2 inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-slate-300 bg-white px-5 text-sm font-medium text-slate-700 transition-colors duration-200 hover:border-slate-400 hover:bg-slate-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400 disabled:hover:bg-slate-50"
         >
           <RotateCcw className="h-3.5 w-3.5 shrink-0" />
           <span>Reset filters</span>
@@ -567,7 +567,7 @@ function JobsViewContent() {
             <button
               type="button"
               onClick={() => setFiltersOpen((v) => !v)}
-              className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border px-3.5 text-sm font-medium transition-colors duration-200 lg:hidden ${
+              className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-control border px-3.5 text-sm font-medium transition-colors duration-200 lg:hidden ${
                 filtersOpen
                   ? "border-brand bg-brand-soft text-brand-dark"
                   : "border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-100"
@@ -580,7 +580,7 @@ function JobsViewContent() {
                 </span>
               )}
             </button>
-            <label className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3.5 text-sm text-slate-500">
+            <label className="inline-flex h-10 items-center gap-2 rounded-control border border-slate-200 bg-white px-3.5 text-sm text-slate-500">
               <ArrowDownUp className="h-4 w-4" />
               <select
                 aria-label="Sort jobs"
@@ -598,7 +598,7 @@ function JobsViewContent() {
         </header>
 
         {/* Search Bar */}
-        <div className="mt-5 grid grid-cols-1 rounded-xl border border-slate-200 bg-white transition-colors focus-within:border-brand sm:grid-cols-2">
+        <div className="mt-5 grid grid-cols-1 rounded-control border border-slate-200 bg-white transition-colors focus-within:border-brand sm:grid-cols-2">
           <label className="flex items-center gap-3 px-4 py-3.5">
             <Search className="h-[18px] w-[18px] shrink-0 text-brand" />
             <span className="sr-only">Search job title, skill or company</span>
@@ -648,30 +648,30 @@ function JobsViewContent() {
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="flex min-h-[190px] animate-pulse flex-col justify-between rounded-lg border border-slate-200 bg-white p-5"
+                  className="flex min-h-[190px] animate-pulse flex-col justify-between rounded-card border border-slate-200 bg-white p-5"
                 >
                   <div>
                     <div className="flex items-center justify-between">
-                      <div className="h-3.5 w-24 rounded bg-slate-100" />
-                      <div className="h-3.5 w-16 rounded bg-slate-100" />
+                      <div className="h-3.5 w-24 rounded-control bg-slate-100" />
+                      <div className="h-3.5 w-16 rounded-control bg-slate-100" />
                     </div>
-                    <div className="mt-4 h-5 w-3/4 rounded bg-slate-200" />
-                    <div className="mt-2 h-4 w-1/3 rounded bg-slate-100" />
+                    <div className="mt-4 h-5 w-3/4 rounded-control bg-slate-200" />
+                    <div className="mt-2 h-4 w-1/3 rounded-control bg-slate-100" />
                     <div className="mt-3 flex gap-1.5">
-                      <div className="h-6 w-16 rounded bg-slate-100" />
-                      <div className="h-6 w-16 rounded bg-slate-100" />
+                      <div className="h-6 w-16 rounded-control bg-slate-100" />
+                      <div className="h-6 w-16 rounded-control bg-slate-100" />
                     </div>
                   </div>
                   <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
-                    <div className="h-4 w-28 rounded bg-slate-100" />
-                    <div className="h-4 w-4 rounded bg-slate-100" />
+                    <div className="h-4 w-28 rounded-control bg-slate-100" />
+                    <div className="h-4 w-4 rounded-control bg-slate-100" />
                   </div>
                 </div>
               ))}
             </div>
           ) : error ? (
-            <div className="rounded-2xl border border-dashed border-red-200 bg-white px-5 py-16 text-center">
-              <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-red-50 text-red-500">
+            <div className="rounded-panel border border-dashed border-red-200 bg-white px-5 py-16 text-center">
+              <div className="mx-auto grid h-12 w-12 place-items-center rounded-pill bg-red-50 text-red-500">
                 <WifiOff className="h-5 w-5" />
               </div>
               <h3 className="mt-4 text-base font-semibold text-slate-900">
@@ -689,8 +689,8 @@ function JobsViewContent() {
               </button>
             </div>
           ) : filteredJobs.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-16 text-center">
-              <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-slate-400">
+            <div className="rounded-panel border border-dashed border-slate-300 bg-white px-5 py-16 text-center">
+              <div className="mx-auto grid h-12 w-12 place-items-center rounded-pill bg-slate-100 text-slate-400">
                 {noSavedYet ? <Bookmark className="h-5 w-5" /> : <Search className="h-5 w-5" />}
               </div>
               <h3 className="mt-4 text-base font-semibold text-slate-900">
@@ -704,7 +704,7 @@ function JobsViewContent() {
               <button
                 type="button"
                 onClick={noSavedYet ? () => setSavedOnly(false) : clearFilters}
-                className="mt-5 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors duration-200 hover:bg-slate-50"
+                className="mt-5 inline-flex cursor-pointer items-center gap-2 rounded-control border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors duration-200 hover:bg-slate-50"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 {noSavedYet ? "Browse all jobs" : "Reset search and filters"}
@@ -733,7 +733,7 @@ function JobsViewContent() {
                       tabIndex={0}
                       role="button"
                       aria-label={`View ${job.title} at ${job.company}`}
-                      className="group flex min-h-[190px] cursor-pointer flex-col rounded-lg border border-slate-200 bg-white p-4 text-left transition-[border-color,box-shadow] duration-500 ease-out hover:border-brand/70 hover:shadow-card-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 sm:p-5 motion-reduce:transition-none"
+                      className="group flex min-h-[190px] cursor-pointer flex-col rounded-card border border-slate-200 bg-white p-4 text-left transition-[border-color,box-shadow] duration-500 ease-out hover:border-brand/70 hover:shadow-card-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 sm:p-5 motion-reduce:transition-none"
                     >
                       <div className="flex items-center justify-between gap-3">
                         <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand">
@@ -784,13 +784,13 @@ function JobsViewContent() {
                         {[typeTag, modeTag, job.experience || "Fresher"].filter(Boolean).map((tag) => (
                           <span
                             key={tag}
-                            className="rounded-md bg-[#f3f6f4] px-2.5 py-1.5 text-[11px] font-medium text-slate-600"
+                            className="rounded-pill bg-[#f3f6f4] px-2.5 py-1.5 text-[11px] font-medium text-slate-600"
                           >
                             {tag}
                           </span>
                         ))}
                         {recent && (
-                          <span className="rounded-md bg-brand-soft px-2.5 py-1.5 text-[11px] font-semibold text-brand-dark">
+                          <span className="rounded-pill bg-brand-soft px-2.5 py-1.5 text-[11px] font-semibold text-brand-dark">
                             New
                           </span>
                         )}
@@ -827,7 +827,7 @@ function JobsViewContent() {
                     onClick={() =>
                       setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, filteredJobs.length))
                     }
-                    className="cursor-pointer rounded-full border border-slate-300 bg-white px-6 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:border-slate-400 hover:bg-slate-50"
+                    className="cursor-pointer rounded-control border border-slate-300 bg-white px-6 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:border-slate-400 hover:bg-slate-50"
                   >
                     Load more roles
                   </button>
@@ -869,7 +869,7 @@ function JobsViewContent() {
                 type="button"
                 aria-label="Close job details"
                 onClick={() => setActiveJob(null)}
-                className="absolute right-4 top-4 z-10 cursor-pointer rounded-pill border border-white/15 bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+                className="absolute right-4 top-4 z-10 cursor-pointer rounded-control border border-white/15 bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
               >
                 <X className="h-4 w-4" />
               </button>
