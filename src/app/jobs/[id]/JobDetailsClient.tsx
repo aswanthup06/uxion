@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import ApplyModal from "./ApplyModal";
+import { getJobCategory } from "@/app/components/jobs/jobs-utils";
 
 export type Job = {
   id: string;
@@ -346,6 +347,8 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
     isFullyRemote,
   ]);
 
+  const category = useMemo(() => getJobCategory(job), [job]);
+
   return (
     <main className="min-h-screen bg-surface-base text-text-primary">
       {schema && (
@@ -381,20 +384,31 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
             href="/jobs"
             className="cursor-pointer font-medium text-text-muted transition-colors hover:text-brand"
           >
-            All jobs
+            Jobs
           </Link>
 
           <span aria-hidden="true" className="text-border-strong">
             /
           </span>
 
-          <span className="font-medium text-brand">{job.company}</span>
+          <Link
+            href={`/jobs?category=${encodeURIComponent(category.toLowerCase())}`}
+            className="cursor-pointer font-medium text-text-muted transition-colors hover:text-brand"
+          >
+            {category}
+          </Link>
 
           <span aria-hidden="true" className="text-border-strong">
             /
           </span>
 
-          <span className="text-text-muted">Job opportunity</span>
+          <span
+            aria-current="page"
+            className="max-w-[260px] truncate font-medium text-text-primary sm:max-w-md"
+            title={job.title}
+          >
+            {job.title}
+          </span>
         </motion.nav>
 
         <motion.header

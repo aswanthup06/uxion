@@ -21,7 +21,7 @@ import {
   X,
 } from "lucide-react";
 import type { Job } from "@/app/types/job";
-import { parseExperience, timeAgo, isRecent } from "@/app/components/jobs/jobs-utils";
+import { parseExperience, timeAgo, isRecent, getJobCategory } from "@/app/components/jobs/jobs-utils";
 
 type JobType = "Full-time" | "Part-time" | "Contract" | "Internship";
 type WorkMode = "On-site" | "Hybrid" | "Remote";
@@ -51,20 +51,6 @@ const experiences = [
 ];
 
 const PAGE_SIZE = 12;
-
-function getJobCategory(job: Job): string {
-  const text = `${job.title} ${job.description || ""}`.toLowerCase();
-  if (/design|ui|ux|product design|visual|motion|interaction|figma/i.test(text)) return "Design";
-  if (/frontend|backend|engineer|developer|software|fullstack|devops|cloud|react|node|web/i.test(text)) return "Engineering";
-  if (/product manager|product management|pm|scrum|owner/i.test(text)) return "Product";
-  if (/data|analyst|analytics|science|sql|python|bi/i.test(text)) return "Data";
-  if (/marketing|seo|growth|content|social media/i.test(text)) return "Marketing";
-  if (/hr|recruit|human resources|talent|people/i.test(text)) return "Human Resources";
-  if (/support|customer service|customer success|client/i.test(text)) return "Customer Support";
-  if (/finance|accountant|accounts|audit|tax/i.test(text)) return "Finance";
-  if (/sales|business development|sdr|account executive/i.test(text)) return "Sales";
-  return "Engineering";
-}
 
 function getWorkMode(job: Job): WorkMode {
   const m = (job.workMode || "").toLowerCase();
