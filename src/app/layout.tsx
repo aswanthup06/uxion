@@ -46,9 +46,9 @@ export const metadata: Metadata = {
   authors: [{ name: "Zenoway" }],
 
   icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
   },
 
   openGraph: {
@@ -61,9 +61,19 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: `${SITE_URL}/og-image.png`,
+        url: `${SITE_URL}/og-image.jpg`,
+        secureUrl: `${SITE_URL}/og-image.jpg`,
         width: 1200,
         height: 630,
+        type: "image/jpeg",
+        alt: "Zenoway — Genuine Job Opportunities",
+      },
+      {
+        url: `${SITE_URL}/og-image.png`,
+        secureUrl: `${SITE_URL}/og-image.png`,
+        width: 1200,
+        height: 630,
+        type: "image/png",
         alt: "Zenoway — Genuine Job Opportunities",
       },
     ],
@@ -73,7 +83,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Zenoway | Find Your Next Opportunity",
     description: "Discover genuine job opportunities across India.",
-    images: [`${SITE_URL}/og-image.png`],
+    images: [`${SITE_URL}/og-image.jpg`],
   },
 };
 

@@ -33,11 +33,22 @@ export async function generateMetadata({
       description: excerpt,
       url: `https://www.zenoway.online/jobs/${job.id}`,
       type: "website",
+      images: [
+        {
+          url: "https://www.zenoway.online/og-image.jpg",
+          secureUrl: "https://www.zenoway.online/og-image.jpg",
+          width: 1200,
+          height: 630,
+          type: "image/jpeg",
+          alt: `${job.title} at ${job.company} — Zenoway`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: `${job.title} at ${job.company}`,
       description: excerpt,
+      images: ["https://www.zenoway.online/og-image.jpg"],
     },
   };
 }

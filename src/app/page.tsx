@@ -18,7 +18,7 @@ const organizationJsonLd = {
   "@type": "Organization",
   name: "Zenoway",
   url: "https://www.zenoway.online",
-  logo: "https://zenoway.online/og-image.png",
+  logo: "https://www.zenoway.online/og-image.jpg",
   areaServed: "IN",
   description:
     "Zenoway is a dedicated job portal for UI/UX designers, UI developers, frontend developers, and creative professionals.",
