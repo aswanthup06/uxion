@@ -34,10 +34,10 @@ interface JobForm {
 }
 
 const inputClass =
-  "w-full rounded-lg border border-[#E2E9E3] bg-white px-4 py-3 text-sm text-[#172820] outline-none transition placeholder:text-slate-400 hover:border-[#B8CDBE] focus:border-[#087F50] focus:ring-4 focus:ring-[#087F50]/[0.07] disabled:cursor-not-allowed disabled:bg-slate-50";
+  "w-full rounded-control border border-border-default bg-surface-card px-4 py-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring disabled:cursor-not-allowed disabled:bg-surface-subtle";
 
 const labelClass =
-  "mb-2 block text-[13px] font-semibold text-[#34483B]";
+  "mb-2 block text-[13px] font-semibold text-text-secondary";
 
 function Field({
   label,
@@ -70,12 +70,12 @@ function Field({
     <div className="min-w-0">
       <label htmlFor={name} className={labelClass}>
         {label}
-        {required && <span className="ml-1 text-rose-500">*</span>}
+        {required && <span className="ml-1 text-status-error">*</span>}
       </label>
 
       <div className="group relative">
         <Icon
-          className="pointer-events-none absolute left-3.5 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-[#087F50]"
+          className="pointer-events-none absolute left-3.5 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand"
           strokeWidth={1.8}
         />
 
@@ -110,25 +110,25 @@ function SectionHeader({
 }) {
   return (
     <div className="mb-6 flex items-start gap-3.5">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#E2E9E3] bg-[#F7FAF7]">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-border-default bg-surface-subtle">
         <Icon
-          className="h-[19px] w-[19px] text-[#087F50]"
+          className="h-[19px] w-[19px] text-brand"
           strokeWidth={1.8}
         />
       </div>
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="text-base font-bold tracking-tight text-[#172820]">
+          <h2 className="text-base font-bold tracking-tight text-text-primary">
             {title}
           </h2>
 
-          <span className="rounded bg-[#F0F5F1] px-1.5 py-0.5 text-[10px] font-semibold text-[#54705D]">
+          <span className="rounded-control bg-brand-soft px-1.5 py-0.5 text-[10px] font-semibold text-brand-dark">
             {number}
           </span>
         </div>
 
-        <p className="mt-1 text-sm leading-5 text-slate-500">
+        <p className="mt-1 text-sm leading-5 text-text-muted">
           {description}
         </p>
       </div>
@@ -537,18 +537,18 @@ Benefits:
             <div
               role="alert"
               aria-live="polite"
-              className="flex items-start gap-3 border border-rose-200 bg-rose-50 px-4 py-3.5"
+              className="flex items-start gap-3 rounded-control border border-status-error-border bg-status-error-bg px-4 py-3.5"
             >
-              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose-600" />
-              <p className="text-sm leading-5 text-rose-700">{error}</p>
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-status-error" />
+              <p className="text-sm leading-5 text-status-error">{error}</p>
             </div>
           )}
 
           {/* Fixed bottom action bar */}
-          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#E2E9E3] bg-white/95 px-4 py-3 backdrop-blur-md sm:px-8">
+          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border-default bg-surface-base/95 px-4 py-3 backdrop-blur-md sm:px-8">
             <div className="mx-auto flex max-w-5xl flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="hidden text-xs text-slate-400 sm:block">
-                <span className="text-rose-500">*</span> Required fields
+              <p className="hidden text-xs text-text-muted sm:block">
+                <span className="text-status-error">*</span> Required fields
               </p>
 
               <div className="flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row">
@@ -556,7 +556,7 @@ Benefits:
                   type="button"
                   onClick={() => router.push("/admin/jobs")}
                   disabled={isSubmitting}
-                  className="inline-flex items-center justify-center rounded-lg border border-[#E2E9E3] bg-white px-5 py-2.5 text-sm font-semibold text-[#34483B] transition hover:bg-[#F7FAF7] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#087F50]/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center justify-center rounded-control border border-border-default bg-surface-card px-5 py-2.5 text-sm font-semibold text-text-secondary transition hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus-ring disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -564,7 +564,7 @@ Benefits:
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#087F50] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#066640] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#087F50]/20 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-2 rounded-control bg-brand px-6 py-2.5 text-sm font-semibold text-text-inverse transition hover:bg-brand-hover shadow-subtle focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus-ring disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isSubmitting ? (
                     <>

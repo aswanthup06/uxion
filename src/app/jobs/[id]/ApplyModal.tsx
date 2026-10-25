@@ -150,22 +150,22 @@ export default function ApplyModal({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ duration: 0.2 }}
-            className="relative z-10 my-auto w-full max-w-md rounded-2xl border border-[#E3EAE4] bg-white p-5 shadow-2xl sm:p-6"
+            className="relative z-10 my-auto w-full max-w-md rounded-modal border border-border-default bg-surface-card p-5 shadow-modal sm:p-6"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-medium uppercase tracking-[0.12em] text-[#176B4D]">
+                <p className="text-xs font-medium uppercase tracking-[0.12em] text-brand">
                   Application
                 </p>
 
                 <h2
                   id="apply-modal-title"
-                  className="mt-2 text-xl font-semibold tracking-tight text-[#19352A]"
+                  className="mt-2 text-xl font-semibold tracking-tight text-text-primary"
                 >
                   Apply by email
                 </h2>
 
-                <p className="mt-2 text-sm leading-6 text-[#68776D]">
+                <p className="mt-2 text-sm leading-6 text-text-secondary">
                   Send your resume and introduction directly to the employer.
                 </p>
               </div>
@@ -175,7 +175,7 @@ export default function ApplyModal({
                 type="button"
                 onClick={onClose}
                 aria-label="Close modal"
-                className="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[#68776D] transition-colors hover:bg-[#F6F9F6] hover:text-[#19352A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#176B4D]"
+                className="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-control text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <X size={18} />
               </button>
@@ -183,22 +183,22 @@ export default function ApplyModal({
 
             <div className="mt-6 space-y-3">
               {email?.trim() ? (
-                <div className="rounded-xl border border-[#E3EAE4] p-4">
-                  <p className="text-sm font-medium text-[#19352A]">
+                <div className="rounded-panel border border-border-default p-4">
+                  <p className="text-sm font-medium text-text-primary">
                     Employer recruitment email
                   </p>
 
-                  <p className="mt-1 text-sm leading-6 text-[#68776D]">
+                  <p className="mt-1 text-sm leading-6 text-text-secondary">
                     Contact the hiring team using this address.
                   </p>
 
-                  <div className="mt-3 flex items-center gap-2 rounded-lg bg-[#F6F9F6] p-3">
+                  <div className="mt-3 flex items-center gap-2 rounded-control bg-surface-subtle p-3">
                     <Mail
                       size={16}
-                      className="shrink-0 text-[#176B4D]"
+                      className="shrink-0 text-brand"
                     />
 
-                    <span className="min-w-0 flex-1 break-all text-sm font-medium text-[#19352A]">
+                    <span className="min-w-0 flex-1 break-all text-sm font-medium text-text-primary">
                       {email.trim()}
                     </span>
 
@@ -206,7 +206,7 @@ export default function ApplyModal({
                       type="button"
                       onClick={handleCopyEmail}
                       aria-label="Copy contact email"
-                      className="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[#176B4D] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#176B4D]"
+                      className="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-control text-brand transition-colors hover:bg-surface-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                     >
                       {emailCopied ? (
                         <Check size={16} />
@@ -217,14 +217,14 @@ export default function ApplyModal({
                   </div>
 
                   {copyMessage && (
-                    <p role="status" className="mt-2 text-xs text-[#176B4D]">
+                    <p role="status" className="mt-2 text-xs text-brand">
                       {copyMessage}
                     </p>
                   )}
 
                   <a
                     href={mailtoUrl}
-                    className="mt-3 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#176B4D] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#12583F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#176B4D]"
+                    className="mt-3 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-4 py-2.5 text-sm font-medium text-text-inverse transition-colors hover:bg-brand-hover shadow-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                   >
                     <Mail size={16} />
                     Open email client
@@ -232,37 +232,37 @@ export default function ApplyModal({
                   </a>
                 </div>
               ) : (
-                <p className="rounded-xl bg-[#F6F9F6] p-4 text-sm leading-6 text-[#68776D]">
+                <p className="rounded-panel bg-surface-subtle p-4 text-sm leading-6 text-text-secondary">
                   Application email is not available for this role.
                 </p>
               )}
             </div>
 
             {/* Community link */}
-            <div className="mt-6 border-t border-[#E8EDE8] pt-5">
-              <h3 className="text-sm font-semibold text-[#19352A]">
+            <div className="mt-6 border-t border-border-subtle pt-5">
+              <h3 className="text-sm font-semibold text-text-primary">
                 Stay connected
               </h3>
 
-              <p className="mt-2 text-sm leading-6 text-[#68776D]">
+              <p className="mt-2 text-sm leading-6 text-text-secondary">
                 Join the Zenoway community for more career opportunities.
               </p>
 
               <Link
                 href="/join"
                 onClick={onClose}
-                className="mt-4 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#DDE6DE] px-4 py-2.5 text-sm font-medium text-[#19352A] transition-colors hover:bg-[#F6F9F6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#176B4D]"
+                className="mt-4 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default px-4 py-2.5 text-sm font-medium text-text-primary transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <IoLogoWhatsapp
                   size={17}
-                  className="text-[#176B4D]"
+                  className="text-brand"
                 />
                 Join the community
                 <ArrowUpRight size={15} />
               </Link>
             </div>
 
-            <p className="mt-5 text-center text-xs leading-5 text-[#89958C]">
+            <p className="mt-5 text-center text-xs leading-5 text-text-muted">
               Check the application instructions before submitting.
             </p>
           </motion.section>

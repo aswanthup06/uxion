@@ -115,8 +115,8 @@ export default function Navbar() {
   const linkClass = (href: string) =>
     `cursor-pointer text-sm font-medium transition-colors duration-200 ${
       pathname === href
-        ? "text-[#0A8F5A]"
-        : "text-[#34423B] hover:text-[#0A8F5A]"
+        ? "text-brand"
+        : "text-text-secondary hover:text-brand"
     }`;
 
   const motionProps = reduceMotion
@@ -161,7 +161,7 @@ export default function Navbar() {
 
   return (
     <header
-      className="relative z-50 shrink-0 border-b border-[#E8EDE9] bg-white"
+      className="relative z-50 shrink-0 border-b border-border-default bg-surface-card"
       onMouseLeave={() => setDropdown(null)}
     >
       <div className="mx-auto flex h-[68px] items-center px-4 sm:px-6 lg:px-8">
@@ -186,7 +186,7 @@ export default function Navbar() {
             />
           </motion.span>
 
-          <span className="text-[20px] font-bold tracking-[-0.8px] text-[#092C20] sm:text-[21px]">
+          <span className="text-[20px] font-bold tracking-[-0.8px] text-text-primary sm:text-[21px]">
             zenoway
           </span>
         </Link>
@@ -232,8 +232,8 @@ export default function Navbar() {
                   onClick={() => toggleDropdown("jobs")}
                   className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors ${
                     dropdown === "jobs"
-                      ? "text-[#0A8F5A]"
-                      : "text-[#34423B] hover:text-[#0A8F5A]"
+                      ? "text-brand"
+                      : "text-text-secondary hover:text-brand"
                   }`}
                 >
                   For Job Seekers
@@ -251,9 +251,9 @@ export default function Navbar() {
                     <motion.div
                       key="jobs-dropdown"
                       {...motionProps}
-                      className="absolute left-0 top-[calc(100%-1px)] w-[290px] origin-top-left rounded-lg border border-[#E6EBE7] bg-white p-2 shadow-[0_14px_35px_rgba(9,44,32,0.12)]"
+                      className="absolute left-0 top-[calc(100%-1px)] w-[290px] origin-top-left rounded-panel border border-border-default bg-surface-card p-2 shadow-dropdown"
                     >
-                      <p className="px-3 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[1.4px] text-[#849188]">
+                      <p className="px-3 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[1.4px] text-text-muted">
                         Explore IT jobs
                       </p>
 
@@ -262,51 +262,51 @@ export default function Navbar() {
                           key={label}
                           href={href}
                           onClick={closeMenus}
-                          className="group flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-[13px] font-medium text-[#34423B] transition-colors hover:bg-[#F3F8F4] hover:text-[#08794D]"
+                          className="group flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-[13px] font-medium text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
                         >
                           <Icon
                             size={17}
                             strokeWidth={1.8}
                             aria-hidden="true"
-                            className={`${iconClass} text-[#738278] group-hover:text-[#0A8F5A]`}
+                            className={`${iconClass} text-text-muted group-hover:text-brand`}
                           />
                           <span className="flex-1">{label}</span>
                           <ArrowUpRight
                             size={14}
                             aria-hidden="true"
-                            className={`${iconClass} text-[#9AA79E] transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#0A8F5A]`}
+                            className={`${iconClass} text-text-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand`}
                           />
                         </Link>
                       ))}
 
-                      <div className="mx-2 my-2 border-t border-[#E8EDE9]" />
+                      <div className="mx-2 my-2 border-t border-border-default" />
 
                       <Link
                         href="/email"
                         onClick={closeMenus}
-                        className="group flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-[13px] text-[#34423B] transition-colors hover:bg-[#F3F8F4]"
+                        className="group flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-[13px] text-text-secondary transition-colors hover:bg-surface-subtle"
                       >
                         <Mail
                           size={17}
                           strokeWidth={1.8}
-                          className={`${iconClass} text-[#0A8F5A]`}
+                          className={`${iconClass} text-brand`}
                         />
                         <span className="min-w-0 flex-1">
                           <span className="block font-medium">Email Guide</span>
-                          <span className="mt-0.5 block text-xs text-[#849188]">
+                          <span className="mt-0.5 block text-xs text-text-muted">
                             Write better professional emails
                           </span>
                         </span>
                         <ArrowUpRight
                           size={14}
-                          className={`${iconClass} text-[#849188]`}
+                          className={`${iconClass} text-text-muted`}
                         />
                       </Link>
 
                       <Link
                         href={JOBS}
                         onClick={closeMenus}
-                        className="mt-1 flex cursor-pointer items-center justify-between rounded-md bg-[#F0F7F1] px-3 py-2.5 text-[13px] font-semibold text-[#08794D] transition-colors hover:bg-[#E5F2E7]"
+                        className="mt-1 flex cursor-pointer items-center justify-between rounded-control bg-brand-soft px-3 py-2.5 text-[13px] font-semibold text-brand transition-colors hover:bg-brand-soft-hover"
                       >
                         View all IT jobs
                         <ArrowUpRight size={16} className={iconClass} />
@@ -326,8 +326,8 @@ export default function Navbar() {
                   onClick={() => toggleDropdown("employers")}
                   className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors ${
                     dropdown === "employers"
-                      ? "text-[#0A8F5A]"
-                      : "text-[#34423B] hover:text-[#0A8F5A]"
+                      ? "text-brand"
+                      : "text-text-secondary hover:text-brand"
                   }`}
                 >
                   For Employers
@@ -345,22 +345,22 @@ export default function Navbar() {
                     <motion.div
                       key="employers-dropdown"
                       {...motionProps}
-                      className="absolute left-0 top-[calc(100%-1px)] w-[235px] origin-top-left rounded-lg border border-[#E6EBE7] bg-white p-2 shadow-[0_14px_35px_rgba(9,44,32,0.12)]"
+                      className="absolute left-0 top-[calc(100%-1px)] w-[235px] origin-top-left rounded-panel border border-border-default bg-surface-card p-2 shadow-dropdown"
                     >
                       <Link
                         href={POST_JOB}
                         onClick={closeMenus}
-                        className="group flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 transition-colors hover:bg-[#F3F8F4]"
+                        className="group flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 transition-colors hover:bg-surface-subtle"
                       >
                         <BriefcaseBusiness
                           size={18}
-                          className={`${iconClass} text-[#0A8F5A]`}
+                          className={`${iconClass} text-brand`}
                         />
                         <span>
-                          <span className="block text-[13px] font-semibold text-[#24352B]">
+                          <span className="block text-[13px] font-semibold text-text-primary">
                             Post a job
                           </span>
-                          <span className="mt-0.5 block text-xs text-[#849188]">
+                          <span className="mt-0.5 block text-xs text-text-muted">
                             Find IT talent
                           </span>
                         </span>
@@ -369,17 +369,17 @@ export default function Navbar() {
                       <Link
                         href={MY_JOBS}
                         onClick={closeMenus}
-                        className="group flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 transition-colors hover:bg-[#F3F8F4]"
+                        className="group flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 transition-colors hover:bg-surface-subtle"
                       >
                         <BriefcaseBusiness
                           size={18}
-                          className={`${iconClass} text-[#738278] group-hover:text-[#0A8F5A]`}
+                          className={`${iconClass} text-text-muted group-hover:text-brand`}
                         />
                         <span>
-                          <span className="block text-[13px] font-semibold text-[#24352B]">
+                          <span className="block text-[13px] font-semibold text-text-primary">
                             My jobs
                           </span>
-                          <span className="mt-0.5 block text-xs text-[#849188]">
+                          <span className="mt-0.5 block text-xs text-text-muted">
                             Manage listings
                           </span>
                         </span>
@@ -400,7 +400,7 @@ export default function Navbar() {
                 aria-haspopup="true"
                 onMouseEnter={() => setDropdown("admin")}
                 onClick={() => toggleDropdown("admin")}
-                className="flex cursor-pointer items-center gap-1.5 text-sm font-medium text-[#34423B] transition-colors hover:text-[#0A8F5A]"
+                className="flex cursor-pointer items-center gap-1.5 text-sm font-medium text-text-secondary transition-colors hover:text-brand"
               >
                 Admin
                 <ChevronDown
@@ -416,16 +416,16 @@ export default function Navbar() {
                   <motion.div
                     key="admin-dropdown"
                     {...motionProps}
-                    className="absolute left-0 top-[calc(100%-1px)] w-[235px] rounded-lg border border-[#E6EBE7] bg-white p-2 shadow-[0_14px_35px_rgba(9,44,32,0.12)]"
+                    className="absolute left-0 top-[calc(100%-1px)] w-[235px] rounded-panel border border-border-default bg-surface-card p-2 shadow-dropdown"
                   >
-                    <p className="px-3 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[1.4px] text-[#849188]">
+                    <p className="px-3 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[1.4px] text-text-muted">
                       Administration
                     </p>
 
                     <Link
                       href="/admin"
                       onClick={closeMenus}
-                      className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-[13px] font-medium text-[#34423B] hover:bg-[#F3F8F4]"
+                      className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-[13px] font-medium text-text-secondary hover:bg-surface-subtle"
                     >
                       <LayoutDashboard size={17} className={iconClass} />
                       Dashboard
@@ -434,7 +434,7 @@ export default function Navbar() {
                     <Link
                       href="/admin/jobs"
                       onClick={closeMenus}
-                      className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-[13px] font-medium text-[#34423B] hover:bg-[#F3F8F4]"
+                      className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-[13px] font-medium text-text-secondary hover:bg-surface-subtle"
                     >
                       <BriefcaseBusiness size={17} className={iconClass} />
                       Manage jobs
@@ -443,19 +443,19 @@ export default function Navbar() {
                     <Link
                       href="/admin/jobs/add"
                       onClick={closeMenus}
-                      className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-[13px] font-medium text-[#34423B] hover:bg-[#F3F8F4]"
+                      className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-[13px] font-medium text-text-secondary hover:bg-surface-subtle"
                     >
                       <Settings size={17} className={iconClass} />
                       Add a job
                     </Link>
 
-                    <div className="mx-2 my-2 border-t border-[#E8EDE9]" />
+                    <div className="mx-2 my-2 border-t border-border-default" />
 
                     <button
                       type="button"
                       disabled={loggingOut}
                       onClick={handleAdminLogout}
-                      className="flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-left text-[13px] font-medium text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="flex w-full cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-left text-[13px] font-medium text-status-error hover:bg-status-error-bg disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <LogOut size={17} className={iconClass} />
                       {loggingOut ? "Logging out..." : "Log out"}
@@ -474,7 +474,7 @@ export default function Navbar() {
           <div className="hidden shrink-0 items-center gap-3 md:flex lg:gap-3">
             <Link
               href={LOGIN}
-              className="inline-flex h-9 cursor-pointer items-center justify-center rounded-sm border border-[#DCE6DE] bg-white px-4 text-xs font-semibold text-[#254536] transition-colors duration-200 hover:border-[#0A8F5A] hover:bg-[#F4F9F5] hover:text-[#087F50] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A8F5A] focus-visible:ring-offset-2"
+              className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-4 text-xs font-semibold text-text-primary transition-colors duration-200 hover:border-brand hover:bg-brand-soft hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
             >
               Log in
             </Link>
@@ -485,7 +485,7 @@ export default function Navbar() {
             >
               <Link
                 href={POST_JOB}
-                className="group inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-sm bg-emerald-800 px-4 text-xs font-semibold text-white shadow-sm transition-colors duration-200 hover:border-[#066A43] hover:bg-[#066A43] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A8F5A] focus-visible:ring-offset-2"
+                className="group inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-4 text-xs font-semibold text-text-inverse shadow-subtle transition-colors duration-200 hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
               >
                 Post a job
                 <ArrowUpRight
@@ -507,7 +507,7 @@ export default function Navbar() {
             setMobileOpen((open) => !open);
             setDropdown(null);
           }}
-          className="group ml-3 grid h-10 w-10 shrink-0 cursor-pointer place-items-center bg-transparent text-[#087F50] transition-transform duration-200 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A8F5A] focus-visible:ring-offset-2 md:hidden"
+          className="group ml-3 grid h-10 w-10 shrink-0 cursor-pointer place-items-center bg-transparent text-brand transition-transform duration-200 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 md:hidden"
         >
           {mobileOpen ? (
             <X
@@ -553,7 +553,7 @@ export default function Navbar() {
             animate="visible"
             exit="exit"
             variants={mobileVariants}
-            className="absolute inset-x-0 top-full overflow-hidden border-b border-[#E5EBE6] bg-white shadow-lg md:hidden"
+            className="absolute inset-x-0 top-full overflow-hidden border-b border-border-default bg-surface-card shadow-dropdown md:hidden"
           >
             <div className="max-h-[calc(100dvh-68px)] overflow-y-auto px-5 pb-6">
               {!isAdminRoute ? (
@@ -561,7 +561,7 @@ export default function Navbar() {
                   <Link
                     href="/"
                     onClick={closeMenus}
-                    className="block cursor-pointer py-4 text-sm font-medium text-[#24352B] transition-colors hover:text-[#0A8F5A]"
+                    className="block cursor-pointer py-4 text-sm font-medium text-text-primary transition-colors hover:text-brand"
                   >
                     Home
                   </Link>
@@ -569,7 +569,7 @@ export default function Navbar() {
                   <Link
                     href="/join"
                     onClick={closeMenus}
-                    className="block cursor-pointer py-4 text-sm font-medium text-[#24352B] transition-colors hover:text-[#0A8F5A]"
+                    className="block cursor-pointer py-4 text-sm font-medium text-text-primary transition-colors hover:text-brand"
                   >
                     Community
                   </Link>
@@ -579,7 +579,7 @@ export default function Navbar() {
                     type="button"
                     aria-expanded={dropdown === "jobs"}
                     onClick={() => toggleDropdown("jobs")}
-                    className="flex w-full cursor-pointer items-center justify-between py-4 text-left text-sm font-medium text-[#24352B]"
+                    className="flex w-full cursor-pointer items-center justify-between py-4 text-left text-sm font-medium text-text-primary"
                   >
                     For Job Seekers
                     <ChevronDown
@@ -607,12 +607,12 @@ export default function Navbar() {
                               key={label}
                               href={href}
                               onClick={closeMenus}
-                              className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-sm text-[#536158] transition-colors hover:bg-[#F3F8F4] hover:text-[#08794D]"
+                              className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-sm text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
                             >
                               <Icon
                                 size={17}
                                 strokeWidth={1.8}
-                                className={`${iconClass} text-[#0A8F5A]`}
+                                className={`${iconClass} text-brand`}
                                 aria-hidden="true"
                               />
                               {label}
@@ -622,17 +622,17 @@ export default function Navbar() {
                           <Link
                             href="/email"
                             onClick={closeMenus}
-                            className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-sm text-[#536158] transition-colors hover:bg-[#F3F8F4]"
+                            className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
                           >
                             <Mail
                               size={17}
-                              className={`${iconClass} text-[#0A8F5A]`}
+                              className={`${iconClass} text-brand`}
                             />
                             <span>
                               <span className="block font-medium">
                                 Email Guide
                               </span>
-                              <span className="mt-0.5 block text-xs text-[#849188]">
+                              <span className="mt-0.5 block text-xs text-text-muted">
                                 Write better professional emails
                               </span>
                             </span>
@@ -641,7 +641,7 @@ export default function Navbar() {
                           <Link
                             href={JOBS}
                             onClick={closeMenus}
-                            className="mt-1 flex cursor-pointer items-center justify-between rounded-md bg-[#F0F7F1] px-3 py-2.5 text-sm font-semibold text-[#08794D] transition-colors hover:bg-[#E5F2E7]"
+                            className="mt-1 flex cursor-pointer items-center justify-between rounded-control bg-brand-soft px-3 py-2.5 text-sm font-semibold text-brand transition-colors hover:bg-brand-soft-hover"
                           >
                             All IT Jobs
                             <ArrowUpRight size={16} className={iconClass} />
@@ -656,7 +656,7 @@ export default function Navbar() {
                     type="button"
                     aria-expanded={dropdown === "employers"}
                     onClick={() => toggleDropdown("employers")}
-                    className="flex w-full cursor-pointer items-center justify-between py-4 text-left text-sm font-medium text-[#24352B]"
+                    className="flex w-full cursor-pointer items-center justify-between py-4 text-left text-sm font-medium text-text-primary"
                   >
                     For Employers
                     <ChevronDown
@@ -682,11 +682,11 @@ export default function Navbar() {
                           <Link
                             href={POST_JOB}
                             onClick={closeMenus}
-                            className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-sm text-[#536158] transition-colors hover:bg-[#F3F8F4]"
+                            className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
                           >
                             <BriefcaseBusiness
                               size={17}
-                              className={`${iconClass} text-[#0A8F5A]`}
+                              className={`${iconClass} text-brand`}
                             />
                             Post a job
                           </Link>
@@ -694,11 +694,11 @@ export default function Navbar() {
                           <Link
                             href={MY_JOBS}
                             onClick={closeMenus}
-                            className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-sm text-[#536158] transition-colors hover:bg-[#F3F8F4]"
+                            className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
                           >
                             <BriefcaseBusiness
                               size={17}
-                              className={`${iconClass} text-[#738278]`}
+                              className={`${iconClass} text-text-muted`}
                             />
                             My jobs
                           </Link>
@@ -708,11 +708,11 @@ export default function Navbar() {
                   </AnimatePresence>
 
                   {/* Mobile actions */}
-                  <div className="mt-5 grid grid-cols-2 gap-3 border-t border-[#E8EDE9] pt-5">
+                  <div className="mt-5 grid grid-cols-2 gap-3 border-t border-border-default pt-5">
                     <Link
                       href={LOGIN}
                       onClick={closeMenus}
-                      className="flex h-11 cursor-pointer items-center justify-center rounded-md border border-[#DCE6DE] bg-white px-3 text-sm font-semibold text-[#254536] transition-colors hover:border-[#0A8F5A] hover:bg-[#F4F9F5]"
+                      className="flex h-11 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-3 text-sm font-semibold text-text-primary transition-colors hover:border-brand hover:bg-brand-soft"
                     >
                       Log in
                     </Link>
@@ -720,7 +720,7 @@ export default function Navbar() {
                     <Link
                       href={POST_JOB}
                       onClick={closeMenus}
-                      className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-md border border-[#087F50] bg-[#087F50] px-3 text-sm font-semibold text-white transition-colors hover:bg-[#066A43]"
+                      className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-3 text-sm font-semibold text-text-inverse transition-colors hover:bg-brand-hover"
                     >
                       Post a job
                       <ArrowUpRight size={15} className={iconClass} />
@@ -729,14 +729,14 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <p className="pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[1.4px] text-[#849188]">
+                  <p className="pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[1.4px] text-text-muted">
                     Administration
                   </p>
 
                   <Link
                     href="/admin"
                     onClick={closeMenus}
-                    className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-[#34423B] hover:bg-[#F3F8F4]"
+                    className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary hover:bg-surface-subtle"
                   >
                     <LayoutDashboard size={18} className={iconClass} />
                     Dashboard
@@ -745,7 +745,7 @@ export default function Navbar() {
                   <Link
                     href="/admin/jobs"
                     onClick={closeMenus}
-                    className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-[#34423B] hover:bg-[#F3F8F4]"
+                    className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary hover:bg-surface-subtle"
                   >
                     <BriefcaseBusiness size={18} className={iconClass} />
                     Manage jobs
@@ -754,7 +754,7 @@ export default function Navbar() {
                   <Link
                     href="/admin/jobs/add"
                     onClick={closeMenus}
-                    className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-[#34423B] hover:bg-[#F3F8F4]"
+                    className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary hover:bg-surface-subtle"
                   >
                     <Settings size={18} className={iconClass} />
                     Add a job
@@ -764,7 +764,7 @@ export default function Navbar() {
                     type="button"
                     disabled={loggingOut}
                     onClick={handleAdminLogout}
-                    className="mt-3 flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="mt-3 flex w-full cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-left text-sm font-medium text-status-error hover:bg-status-error-bg disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <LogOut size={18} className={iconClass} />
                     {loggingOut ? "Logging out..." : "Log out"}

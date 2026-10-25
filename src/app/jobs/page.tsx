@@ -114,10 +114,10 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
+      className={`cursor-pointer rounded-pill border px-3 py-1.5 text-xs font-medium transition-colors duration-normal ease-standard ${
         active
-          ? "border-emerald-900 bg-emerald-900 text-white hover:bg-emerald-800"
-          : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900"
+          ? "border-brand bg-brand text-text-inverse hover:bg-brand-hover shadow-subtle"
+          : "border-border-default bg-surface-card text-text-secondary hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
       }`}
     >
       {children}
@@ -126,14 +126,14 @@ function Chip({
 }
 
 const navCls = (active: boolean) =>
-  `flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-200 ${
+  `flex w-full cursor-pointer items-center gap-2.5 rounded-control px-3 py-2.5 text-sm font-medium transition-colors duration-normal ${
     active
-      ? "bg-emerald-50 text-emerald-900"
-      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+      ? "bg-brand-soft text-brand font-semibold"
+      : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
   }`;
 
 const selectCls =
-  "mt-2 h-10 w-full cursor-pointer rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition-colors hover:border-slate-300 focus:border-emerald-700";
+  "mt-2 h-10 w-full cursor-pointer rounded-control border border-border-default bg-surface-card px-3 text-sm text-text-primary outline-none transition-colors hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring";
 
 function JobsViewContent() {
   const searchParams = useSearchParams();
@@ -473,16 +473,16 @@ function JobsViewContent() {
                     <button
                       type="button"
                       onClick={() => setCategory(active ? "All categories" : c)}
-                      className={`flex w-full cursor-pointer items-center justify-between rounded-md px-2.5 py-1.5 text-sm transition-colors duration-200 ${
+                      className={`flex w-full cursor-pointer items-center justify-between rounded-control px-2.5 py-1.5 text-sm transition-colors duration-normal ${
                         active
-                          ? "bg-emerald-50 font-semibold text-emerald-900 hover:bg-emerald-100/70"
-                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                          ? "bg-brand-soft font-semibold text-brand hover:bg-brand-soft-hover"
+                          : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
                       }`}
                     >
                       {c}
                       <span
                         className={`text-xs ${
-                          active ? "text-emerald-800" : "text-slate-400"
+                          active ? "text-brand" : "text-text-muted"
                         }`}
                       >
                         {count}
@@ -857,10 +857,10 @@ function JobsViewContent() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="job-modal-title"
-            className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-white shadow-2xl"
+            className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-modal bg-surface-card shadow-modal"
           >
             {/* Modal Header */}
-            <div className="relative overflow-hidden bg-[#064e3b] px-6 pb-6 pt-7 text-white sm:px-8">
+            <div className="relative overflow-hidden bg-brand-dark px-6 pb-6 pt-7 text-text-inverse sm:px-8">
               <div
                 aria-hidden="true"
                 className="absolute -right-10 -top-20 h-48 w-48 rounded-full border border-white/10"
@@ -869,11 +869,11 @@ function JobsViewContent() {
                 type="button"
                 aria-label="Close job details"
                 onClick={() => setActiveJob(null)}
-                className="absolute right-4 top-4 z-10 cursor-pointer rounded-full border border-white/15 bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+                className="absolute right-4 top-4 z-10 cursor-pointer rounded-pill border border-white/15 bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
               >
                 <X className="h-4 w-4" />
               </button>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-200">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-accent">
                 {getJobCategory(activeJob)}
               </p>
               <h2
@@ -882,16 +882,16 @@ function JobsViewContent() {
               >
                 {activeJob.title}
               </h2>
-              <p className="mt-2 text-sm text-emerald-50/80">{activeJob.company}</p>
-              <div className="mt-4 flex flex-wrap gap-2 text-xs text-emerald-50/90">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5">
+              <p className="mt-2 text-sm text-white/80">{activeJob.company}</p>
+              <div className="mt-4 flex flex-wrap gap-2 text-xs text-white/90">
+                <span className="inline-flex items-center gap-1.5 rounded-pill bg-white/10 px-3 py-1.5">
                   <MapPin className="h-3.5 w-3.5" />
                   {activeJob.location}
                 </span>
-                <span className="rounded-full bg-white/10 px-3 py-1.5">
+                <span className="rounded-pill bg-white/10 px-3 py-1.5">
                   {getWorkMode(activeJob)}
                 </span>
-                <span className="rounded-full bg-white/10 px-3 py-1.5">
+                <span className="rounded-pill bg-white/10 px-3 py-1.5">
                   {getJobType(activeJob)}
                 </span>
               </div>
@@ -899,12 +899,12 @@ function JobsViewContent() {
 
             {/* Modal Body */}
             <div className="p-6 sm:p-8">
-              <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4">
-                <p className="text-xs font-medium text-emerald-800">Compensation</p>
-                <p className="mt-1 text-lg font-semibold text-slate-950">
+              <div className="rounded-panel border border-brand-soft bg-brand-soft/70 p-4">
+                <p className="text-xs font-medium text-brand">Compensation</p>
+                <p className="mt-1 text-lg font-semibold text-text-primary">
                   {activeJob.salary || "Not Disclosed"}
                 </p>
-                <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
+                <p className="mt-1 flex items-center gap-1.5 text-xs text-text-muted">
                   <Clock3 className="h-3.5 w-3.5" />
                   {activeJob.experience || "Fresher"} · Posted {timeAgo(activeJob.postedDate)}
                 </p>
@@ -937,23 +937,23 @@ function JobsViewContent() {
               <div className="mt-7 space-y-3 border-t border-slate-100 pt-5">
                 {/* Email Apply if configured */}
                 {activeJob.mail && (
-                  <div className="flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs">
-                    <div className="flex items-center gap-2 text-slate-700">
-                      <Mail className="h-4 w-4 text-emerald-800" />
+                  <div className="flex items-center justify-between gap-2 rounded-control border border-border-default bg-surface-subtle p-3 text-xs">
+                    <div className="flex items-center gap-2 text-text-primary">
+                      <Mail className="h-4 w-4 text-brand" />
                       <span className="font-medium break-all">{activeJob.mail}</span>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
                       <button
                         type="button"
                         onClick={() => copyEmailAddress(activeJob.mail)}
-                        className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 font-medium text-slate-700 hover:bg-slate-50"
+                        className="inline-flex cursor-pointer items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 py-1.5 font-medium text-text-secondary hover:bg-surface-subtle"
                       >
-                        {emailCopied ? <Check className="h-3 w-3 text-emerald-700" /> : <Copy className="h-3 w-3" />}
+                        {emailCopied ? <Check className="h-3 w-3 text-brand" /> : <Copy className="h-3 w-3" />}
                         {emailCopied ? "Copied" : "Copy"}
                       </button>
                       <a
                         href={`mailto:${activeJob.mail}`}
-                        className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-emerald-900 px-2.5 py-1.5 font-medium text-white hover:bg-emerald-800"
+                        className="inline-flex cursor-pointer items-center gap-1 rounded-control bg-brand px-2.5 py-1.5 font-medium text-text-inverse hover:bg-brand-hover"
                       >
                         Email
                       </a>
@@ -966,7 +966,7 @@ function JobsViewContent() {
                     <button
                       type="button"
                       onClick={() => toggleSaved(activeJob.id)}
-                      className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                      className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default px-4 py-3 text-sm font-semibold text-text-secondary transition-colors hover:bg-surface-subtle"
                     >
                       <Bookmark
                         className="h-4 w-4"
@@ -976,10 +976,10 @@ function JobsViewContent() {
                     </button>
                     <Link
                       href={`/jobs/${activeJob.id}`}
-                      className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                      className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-control border border-border-default px-4 py-3 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-subtle"
                     >
                       <span>Full page</span>
-                      <ArrowUpRight className="h-4 w-4 text-slate-400" />
+                      <ArrowUpRight className="h-4 w-4 text-text-muted" />
                     </Link>
                   </div>
 
@@ -990,7 +990,7 @@ function JobsViewContent() {
                       )}&body=${encodeURIComponent(
                         `Hi Hiring Team,\n\nI am interested in applying for the ${activeJob.title} position at ${activeJob.company}.\n\nPlease find my resume attached.\n\nBest regards,`
                       )}`}
-                      className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-950"
+                      className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-6 py-3 text-sm font-semibold text-text-inverse transition-colors hover:bg-brand-hover shadow-subtle"
                     >
                       Apply via email <ArrowUpRight className="h-4 w-4" />
                     </a>
@@ -998,7 +998,7 @@ function JobsViewContent() {
                     <button
                       type="button"
                       disabled
-                      className="inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-slate-200 px-6 py-3 text-sm font-semibold text-slate-400"
+                      className="inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-control bg-surface-muted px-6 py-3 text-sm font-semibold text-text-muted"
                     >
                       Application unavailable
                     </button>

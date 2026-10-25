@@ -100,13 +100,13 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
 
           <div className="mx-auto flex w-full max-w-[390px] flex-1 flex-col justify-center py-8 sm:py-10 lg:flex-initial lg:py-12">
             <div className="mb-8 sm:mb-9">
-              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#087F50]">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand">
                 Welcome to Zenoway
               </p>
-              <h1 className="text-[32px] font-medium leading-[1.12] tracking-[-0.045em] text-[#17251E] sm:text-[38px]">
+              <h1 className="text-[32px] font-medium leading-[1.12] tracking-[-0.045em] text-text-primary sm:text-[38px]">
                 {isSignin ? "Good to have you back." : "Start your next chapter."}
               </h1>
-              <p className="mt-3 max-w-[340px] text-sm leading-6 text-[#778279]">
+              <p className="mt-3 max-w-[340px] text-sm leading-6 text-text-muted">
                 {isSignin
                   ? "Sign in to continue your career journey."
                   : "Continue to explore opportunities made for you."}
@@ -116,29 +116,29 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
-              className="group flex min-h-[50px] w-full cursor-pointer items-center justify-center gap-3 rounded-lg border border-[#DDE3DE] bg-white px-4 py-3 text-sm font-medium text-[#24352B] transition-colors hover:border-[#B9C9BD] hover:bg-[#FAFCFA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#087F50] focus-visible:ring-offset-2"
+              className="group flex min-h-[50px] w-full cursor-pointer items-center justify-center gap-3 rounded-control border border-border-default bg-surface-card px-4 py-3 text-sm font-medium text-text-primary transition-colors hover:border-border-strong hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
             >
               <FcGoogle size={20} />
               Continue with Google
             </button>
 
-            <p className="mt-5 text-left text-sm text-[#778279]">
+            <p className="mt-5 text-left text-sm text-text-muted">
               {isSignin ? "Looking for opportunities?" : "Ready to explore opportunities?"}{" "}
               <Link
                 href="/jobs"
-                className="cursor-pointer font-semibold text-[#087F50] underline-offset-4 hover:underline"
+                className="cursor-pointer font-semibold text-brand underline-offset-4 hover:underline"
               >
                 Browse jobs
               </Link>
             </p>
 
-            <p className="mt-8 max-w-[340px] text-left text-[11px] leading-5 text-[#9AA49D]">
+            <p className="mt-8 max-w-[340px] text-left text-[11px] leading-5 text-text-muted">
               By continuing, you agree to our{" "}
-              <Link href="/terms" className="cursor-pointer underline underline-offset-2 hover:text-[#5D6D62]">
+              <Link href="/terms" className="cursor-pointer underline underline-offset-2 hover:text-text-primary">
                 Terms
               </Link>{" "}
               and{" "}
-              <Link href="/privacy" className="cursor-pointer underline underline-offset-2 hover:text-[#5D6D62]">
+              <Link href="/privacy" className="cursor-pointer underline underline-offset-2 hover:text-text-primary">
                 Privacy Policy
               </Link>
               .
@@ -162,27 +162,27 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="explore-modal-title"
-            className="relative my-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-[410px] overflow-y-auto rounded-2xl bg-white p-6 shadow-xl sm:max-h-[calc(100dvh-3rem)] sm:p-8"
+            className="relative my-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-[410px] overflow-y-auto rounded-modal border border-border-default bg-surface-card p-6 shadow-modal sm:max-h-[calc(100dvh-3rem)] sm:p-8"
           >
             <button
               type="button"
               aria-label="Close modal"
               onClick={() => setIsModalOpen(false)}
-              className="absolute right-3 top-3 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-[#7A867D] transition hover:bg-[#F2F5F2] hover:text-[#26372C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#087F50]"
+              className="absolute right-3 top-3 flex h-9 w-9 cursor-pointer items-center justify-center rounded-pill text-text-muted transition hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             >
               <X size={18} />
             </button>
 
-            <div className="mb-5 mt-1 flex h-11 w-11 items-center justify-center rounded-xl bg-[#EFF5F0] text-[#087F50]">
+            <div className="mb-5 mt-1 flex h-11 w-11 items-center justify-center rounded-control bg-brand-soft text-brand">
               <Compass size={22} strokeWidth={1.7} />
             </div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#087F50]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
               Explore first
             </p>
-            <h2 id="explore-modal-title" className="mt-2 pr-5 text-2xl font-medium leading-tight tracking-[-0.035em] text-[#17251E]">
+            <h2 id="explore-modal-title" className="mt-2 pr-5 text-2xl font-medium leading-tight tracking-[-0.035em] text-text-primary">
               Take a look around.
             </h2>
-            <p className="mt-3 text-sm leading-6 text-[#778279]">
+            <p className="mt-3 text-sm leading-6 text-text-muted">
               Browse Zenoway and discover opportunities without creating an
               account. We’re continuing to build more ways to support your
               career journey.
@@ -190,7 +190,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
             <Link
               href="/"
               onClick={() => setIsModalOpen(false)}
-              className="mt-6 flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#087F50] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#066B43] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#087F50] focus-visible:ring-offset-2"
+              className="mt-6 flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 py-3 text-sm font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
             >
               Explore Zenoway <ArrowUpRight size={16} />
             </Link>

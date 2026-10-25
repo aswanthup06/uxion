@@ -56,10 +56,10 @@ interface JobFromAPI {
 }
 
 const inputClass =
-  "w-full min-w-0 rounded-md border border-[#E1E8E2] bg-white px-3.5 py-3 text-sm text-[#172820] outline-none transition placeholder:text-[#A0AAA2] hover:border-[#C8D7CC] focus:border-[#0A8F5A] focus:ring-2 focus:ring-[#0A8F5A]/10 disabled:bg-[#F7F9F7] disabled:text-[#89958C]";
+  "w-full min-w-0 rounded-control border border-border-default bg-surface-card px-3.5 py-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring disabled:bg-surface-subtle disabled:text-text-muted";
 
 const labelClass =
-  "mb-2 block text-[13px] font-medium text-[#35463A]";
+  "mb-2 block text-[13px] font-medium text-text-secondary";
 
 function dateForInput(value?: string): string {
   if (!value) return "";
@@ -173,15 +173,15 @@ function Field({
     <div className="min-w-0">
       <label htmlFor={name} className={labelClass}>
         {label}
-        {required && <span className="ml-1 text-red-500">*</span>}
+        {required && <span className="ml-1 text-status-error">*</span>}
       </label>
 
-      <div className="relative">
+      <div className="group relative">
         {Icon && (
           <Icon
             size={16}
             strokeWidth={1.7}
-            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8B988E]"
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand"
           />
         )}
 
@@ -200,7 +200,7 @@ function Field({
       </div>
 
       {hint && (
-        <p className="mt-1.5 text-xs leading-5 text-[#849087]">{hint}</p>
+        <p className="mt-1.5 text-xs leading-5 text-text-muted">{hint}</p>
       )}
     </div>
   );
@@ -218,17 +218,17 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <section className="border-b border-[#E7ECE8] py-7 sm:py-8">
+    <section className="border-b border-border-default py-7 sm:py-8">
       <div className="mb-6 flex items-start gap-3">
-        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#EFF7F0] text-[#087F50]">
+        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-brand-soft text-brand">
           <Icon size={17} strokeWidth={1.7} />
         </span>
 
         <div className="min-w-0">
-          <h2 className="text-[15px] font-semibold tracking-[-0.02em] text-[#172820]">
+          <h2 className="text-[15px] font-semibold tracking-[-0.02em] text-text-primary">
             {title}
           </h2>
-          <p className="mt-1 text-xs leading-5 text-[#818C83] sm:text-[13px]">
+          <p className="mt-1 text-xs leading-5 text-text-muted sm:text-[13px]">
             {description}
           </p>
         </div>
@@ -736,10 +736,10 @@ export default function EditJobPage() {
             </div>
           </Section>
 
-          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#E2E9E3] bg-white/95 px-4 py-3 backdrop-blur-md sm:px-8">
+          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border-default bg-surface-base/95 px-4 py-3 backdrop-blur-md sm:px-8">
             <div className="mx-auto flex max-w-5xl flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="hidden text-xs text-[#849087] sm:block">
-                <span className="text-red-500">*</span> Required fields
+              <p className="hidden text-xs text-text-muted sm:block">
+                <span className="text-status-error">*</span> Required fields
               </p>
 
               <div className="flex flex-col-reverse gap-2 sm:flex-row">
@@ -747,7 +747,7 @@ export default function EditJobPage() {
                   type="button"
                   onClick={() => router.push("/admin/jobs")}
                   disabled={isSubmitting}
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md px-4 text-sm font-medium text-[#58665B] transition hover:bg-[#F4F7F4] disabled:opacity-50"
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-4 text-sm font-medium text-text-secondary transition hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus-ring disabled:opacity-50"
                 >
                   <X size={15} />
                   Cancel
@@ -756,7 +756,7 @@ export default function EditJobPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-[#087F50] px-5 text-sm font-medium text-white transition hover:bg-[#066640] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-control bg-brand px-5 text-sm font-medium text-text-inverse transition hover:bg-brand-hover shadow-subtle focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus-ring disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isSubmitting ? (
                     <>

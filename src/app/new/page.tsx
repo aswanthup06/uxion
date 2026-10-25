@@ -7,9 +7,9 @@ import { FiMapPin, FiChevronDown } from "react-icons/fi";
 
 
 const inputClass =
-  "mt-1.5 w-full rounded-md border border-[#E2E8E4] bg-white px-3 py-2.5 text-sm text-[#17251F] outline-none transition focus:border-[#0FA968] focus:ring-2 focus:ring-[#0FA968]/10";
+  "mt-1.5 w-full rounded-control border border-border-default bg-surface-card px-3 py-2.5 text-sm text-text-primary outline-none transition placeholder:text-text-muted hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring";
 
-const labelClass = "text-sm font-medium text-[#26372F]";
+const labelClass = "text-sm font-medium text-text-secondary";
 
 const employmentTypes = [
   "Full-time",
@@ -601,7 +601,7 @@ export default function PostJobPage() {
             <div className="flex justify-end pt-1">
               <button
                 type="submit"
-                className="cursor-pointer rounded-md bg-[#0FA968] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#087F50]"
+                className="cursor-pointer rounded-control bg-brand px-5 py-3 text-sm font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
               >
                 Publish job
               </button>
@@ -611,24 +611,24 @@ export default function PostJobPage() {
           {/* Compact sidebar */}
           <aside className="space-y-4 lg:sticky lg:top-6">
             {/* Live preview */}
-            <section className="overflow-hidden rounded-lg border border-[#E6EBE7] bg-white">
-              <div className="border-b border-[#E8EDE9] px-4 py-3">
-                <h2 className="text-sm font-semibold">Live preview</h2>
-                <p className="mt-0.5 text-xs text-[#7A8780]">
+            <section className="overflow-hidden rounded-panel border border-border-default bg-surface-card shadow-subtle">
+              <div className="border-b border-border-subtle px-4 py-3">
+                <h2 className="text-sm font-semibold text-text-primary">Live preview</h2>
+                <p className="mt-0.5 text-xs text-text-muted">
                   Preview of your listing
                 </p>
               </div>
 
               <div className="p-4">
-                <h3 className="break-words text-base font-semibold leading-snug text-[#17251F]">
+                <h3 className="break-words text-base font-semibold leading-snug text-text-primary">
                   {title.trim() || "Job title"}
                 </h3>
 
-                <p className="mt-1 text-sm text-[#53635A]">
+                <p className="mt-1 text-sm text-text-secondary">
                   {company.trim() || "Company name"}
                 </p>
 
-                <p className="mt-2 flex items-center gap-1.5 text-xs text-[#718078]">
+                <p className="mt-2 flex items-center gap-1.5 text-xs text-text-muted">
                   <FiMapPin className="shrink-0" />
                   <span>{location}</span>
                 </p>
@@ -639,7 +639,7 @@ export default function PostJobPage() {
                     .map((item) => (
                       <span
                         key={item}
-                        className="rounded-md bg-[#F2F6F3] px-2 py-1 text-xs text-[#53635A]"
+                        className="rounded-control bg-surface-muted px-2 py-1 text-xs text-text-secondary"
                       >
                         {item}
                       </span>
@@ -647,7 +647,7 @@ export default function PostJobPage() {
                 </div>
 
                 {salary && (
-                  <p className="mt-3 text-sm font-semibold text-[#087F50]">
+                  <p className="mt-3 text-sm font-semibold text-brand">
                     {salary}
                   </p>
                 )}

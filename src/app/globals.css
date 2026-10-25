@@ -1,7 +1,85 @@
 @import "tailwindcss";
 
-@theme inline {
+@theme {
   --font-sans: var(--font-manrope);
+
+  /* Brand Palette (Zenoway Emerald) */
+  --color-brand: #087f50;
+  --color-brand-hover: #066640;
+  --color-brand-accent: #0fa968;
+  --color-brand-dark: #164e3b;
+  --color-brand-soft: #edf7f1;
+  --color-brand-soft-hover: #e3f2e8;
+
+  /* Surfaces & Backgrounds */
+  --color-surface-base: #ffffff;
+  --color-surface-subtle: #f8faf8;
+  --color-surface-muted: #f2f6f3;
+  --color-surface-card: #ffffff;
+  --color-surface-dark: #164e3b;
+
+  /* Typography / Text Colors */
+  --color-text-primary: #17251f;
+  --color-text-secondary: #536258;
+  --color-text-muted: #849087;
+  --color-text-inverse: #ffffff;
+
+  /* Borders & Focus Rings */
+  --color-border-subtle: #e6ebe7;
+  --color-border-default: #dde8df;
+  --color-border-strong: #b7d1be;
+  --color-focus-ring: rgba(8, 127, 80, 0.2);
+
+  /* Status States */
+  --color-status-success: #087f50;
+  --color-status-success-bg: #edf7f1;
+  --color-status-success-border: #b7d1be;
+  --color-status-warning: #d97706;
+  --color-status-warning-bg: #fffbeb;
+  --color-status-warning-border: #fde68a;
+  --color-status-error: #dc2626;
+  --color-status-error-bg: #fef2f2;
+  --color-status-error-border: #fecaca;
+
+  /* Border Radii */
+  --radius-control: 6px;
+  --radius-card: 8px;
+  --radius-panel: 12px;
+  --radius-modal: 16px;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-subtle: 0 1px 2px 0 rgba(24, 35, 30, 0.04);
+  --shadow-card: 0 1px 3px 0 rgba(24, 35, 30, 0.06), 0 1px 2px -1px rgba(24, 35, 30, 0.06);
+  --shadow-card-hover: 0 10px 24px -10px rgba(8, 127, 80, 0.25);
+  --shadow-dropdown: 0 8px 24px -4px rgba(24, 35, 30, 0.12);
+  --shadow-modal: 0 20px 40px -12px rgba(16, 37, 27, 0.22);
+
+  /* Motion & Easing */
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  /* Layout & Spacing Tokens */
+  --container-max: 1200px;
+  --container-narrow: 1024px;
+  --container-wide: 1280px;
+  --gutter-mobile: 16px;
+  --gutter-desktop: 32px;
+
+  /* Animation Durations */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+
+  /* Legacy & Semantic Variable Aliases */
+  --color-background: var(--color-surface-base);
+  --color-surface: var(--color-surface-base);
+  --color-text: var(--color-text-primary);
+  --color-border: var(--color-border-subtle);
+  --container-width: var(--container-max);
+  --page-gutter: var(--gutter-desktop);
 }
 
 html,
@@ -9,6 +87,12 @@ body {
   height: 100%;
   overflow: hidden;
   font-family: var(--font-manrope), Arial, sans-serif;
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-surface-base);
+  color: var(--color-text-primary);
 }
 
 * {
@@ -16,61 +100,19 @@ body {
   scrollbar-width: none;
 }
 
-:root {
-  /* Brand */
-  --color-brand: #087f50;
-  --color-brand-hover: #066b43;
-  --color-brand-accent: #0fa968;
-  --color-brand-dark: #164e3b;
-  --color-brand-soft: #edf7f1;
-
-  /* Surfaces */
-  --color-background: #ffffff;
-  --color-surface: #ffffff;
-  --color-surface-subtle: #f8faf9;
-
-  /* Text */
-  --color-text: #18231e;
-  --color-text-secondary: #64716a;
-  --color-text-muted: #89948e;
-
-  /* Borders */
-  --color-border: #e5eae7;
-  --color-border-strong: #d2dbd5;
-
-  /* Status */
-  --color-success: #087f50;
-  --color-warning: #a16207;
-  --color-danger: #dc2626;
-
-  /* Radius — keep corners subtle */
-  --radius-control: 6px;
-  --radius-card: 8px;
-  --radius-panel: 10px;
-
-  /* Shadows */
-  --shadow-card: 0 1px 3px rgb(24 35 30 / 4%);
-  --shadow-dropdown: 0 8px 24px rgb(24 35 30 / 10%);
-
-  /* Layout */
-  --container-width: 1200px;
-  --page-gutter: 24px;
-
-  /* Motion */
-  --duration-fast: 150ms;
-  --duration-normal: 220ms;
-  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
-}
-
-html {
-  color-scheme: light;
-}
-
-body {
-  background: var(--color-background);
-  color: var(--color-text);
-}
-
 ::-webkit-scrollbar {
   display: none;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

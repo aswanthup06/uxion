@@ -81,8 +81,8 @@ const steps = [
 
 function CheckItem({ children }: { children: React.ReactNode }) {
   return (
-    <li className="flex items-start gap-3 text-sm leading-6 text-gray-600">
-      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#EAF6EF] text-[#087F50]">
+    <li className="flex items-start gap-3 text-sm leading-6 text-text-secondary">
+      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-control bg-brand-soft text-brand">
         <Check size={12} strokeWidth={2.5} />
       </span>
       <span>{children}</span>
@@ -92,7 +92,7 @@ function CheckItem({ children }: { children: React.ReactNode }) {
 
 export default function EmailGuidePage() {
   return (
-    <main className="min-h-screen bg-white text-[#17231D]">
+    <main className="min-h-screen bg-surface-base text-text-primary">
       <div className="mx-auto w-full max-w-5xl px-5 pb-16 pt-8 sm:px-8 sm:pb-20 sm:pt-10 lg:px-10">
         {/* Breadcrumb */}
         <nav
@@ -101,40 +101,40 @@ export default function EmailGuidePage() {
         >
           <Link
             href="/"
-            className="text-gray-500 transition-colors hover:text-[#087F50]"
+            className="text-text-muted transition-colors hover:text-brand"
           >
             Home
           </Link>
 
-          <span className="text-gray-300">/</span>
+          <span className="text-border-strong">/</span>
 
-          <span className="font-medium text-[#087F50]" aria-current="page">
+          <span className="font-medium text-brand" aria-current="page">
             Career Guide
           </span>
         </nav>
 
         {/* Hero */}
         <header className="mb-16 max-w-3xl sm:mb-20">
-          <div className="mb-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#087F50]">
+          <div className="mb-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand">
             <Mail size={17} strokeWidth={1.8} />
             <span>Zenoway Career Guide</span>
           </div>
 
-          <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight text-[#17231D] sm:text-4xl md:text-5xl">
+          <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight text-text-primary sm:text-4xl md:text-5xl">
             How to write a professional job application email
           </h1>
 
-          <p className="mt-6 max-w-2xl text-base leading-7 text-gray-500 sm:text-lg sm:leading-8">
+          <p className="mt-6 max-w-2xl text-base leading-7 text-text-secondary sm:text-lg sm:leading-8">
             A thoughtful email helps recruiters understand who you are and why
             you could be a good fit. Follow these practical steps to make a
             confident first impression.
           </p>
 
-          <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-500">
+          <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-text-muted">
             <span>4 simple steps</span>
-            <span className="text-gray-300" aria-hidden="true">·</span>
+            <span className="text-border-strong" aria-hidden="true">·</span>
             <span>Sample email</span>
-            <span className="text-gray-300" aria-hidden="true">·</span>
+            <span className="text-border-strong" aria-hidden="true">·</span>
             <span>Pre-send checklist</span>
           </div>
         </header>
@@ -353,21 +353,21 @@ export default function EmailGuidePage() {
         {/* Common mistakes */}
         <section
           aria-labelledby="mistakes-heading"
-          className="border-t border-gray-100 pt-10 sm:pt-12"
+          className="border-t border-border-default pt-10 sm:pt-12"
         >
           <div className="flex items-start gap-4">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-[#EAF6EF] text-[#087F50]">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-brand-soft text-brand">
               <AlertTriangle size={19} strokeWidth={1.7} />
             </span>
 
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#087F50]">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">
                 Final reminders
               </p>
 
               <h2
                 id="mistakes-heading"
-                className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl"
+                className="mt-2 text-xl font-semibold tracking-tight text-text-primary sm:text-2xl"
               >
                 Common mistakes to avoid
               </h2>
@@ -378,9 +378,9 @@ export default function EmailGuidePage() {
             {mistakes.map((mistake) => (
               <li
                 key={mistake}
-                className="flex items-start gap-3 text-sm leading-6 text-gray-600"
+                className="flex items-start gap-3 text-sm leading-6 text-text-secondary"
               >
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#087F50]" />
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-pill bg-brand" />
                 <span>{mistake}</span>
               </li>
             ))}
@@ -388,21 +388,21 @@ export default function EmailGuidePage() {
         </section>
 
         {/* Closing */}
-        <footer className="mt-14 border-t border-gray-100 pt-6">
-          <p className="text-sm leading-7 text-gray-500">
+        <footer className="mt-14 border-t border-border-default pt-6">
+          <p className="text-sm leading-7 text-text-secondary">
             A thoughtful email is a small step toward presenting your
             application professionally.
           </p>
 
           <Link
             href="/jobs"
-            className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[#087F50] transition-colors hover:text-[#066640]"
+            className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-brand transition-colors hover:text-brand-hover"
           >
             Explore job opportunities
             <ArrowUpRight size={16} />
           </Link>
 
-          <p className="mt-8 text-xs text-gray-400">
+          <p className="mt-8 text-xs text-text-muted">
             Zenoway · Career resources
           </p>
         </footer>

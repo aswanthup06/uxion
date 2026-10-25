@@ -11,13 +11,13 @@ import {
 
 function Chip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white py-1 pl-3 pr-1.5 text-xs font-medium text-slate-700">
+    <span className="inline-flex items-center gap-1 rounded-pill border border-border-default bg-surface-card py-1 pl-3 pr-1.5 text-xs font-medium text-text-primary">
       {label}
       <button
         type="button"
         aria-label={`Remove filter ${label}`}
         onClick={onRemove}
-        className="grid h-4 w-4 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+        className="grid h-4 w-4 place-items-center rounded-pill text-text-muted hover:bg-surface-muted hover:text-text-primary"
       >
         <X className="h-3 w-3" />
       </button>
@@ -59,7 +59,7 @@ export function ActiveFilters({
       {chips.map((c) => (
         <Chip key={c.key} label={c.label} onRemove={c.remove} />
       ))}
-      <button type="button" onClick={onClear} className="px-1 text-xs font-medium text-[#0B7A4B] hover:underline">
+      <button type="button" onClick={onClear} className="px-1 text-xs font-medium text-brand hover:underline">
         Clear all
       </button>
     </div>
@@ -68,17 +68,17 @@ export function ActiveFilters({
 
 export function SortSelect({ value, onChange }: { value: Sort; onChange: (s: Sort) => void }) {
   return (
-    <label className="relative inline-flex items-center text-sm text-slate-500">
+    <label className="relative inline-flex items-center text-sm text-text-secondary">
       <span className="mr-2 hidden sm:inline">Sort by</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as Sort)}
-        className="appearance-none rounded-lg border border-slate-300 bg-white py-1.5 pl-3 pr-8 text-sm font-medium text-slate-800 outline-none focus:border-[#0FA968] focus:ring-4 focus:ring-[#0FA968]/15"
+        className="appearance-none rounded-control border border-border-default bg-surface-card py-1.5 pl-3 pr-8 text-sm font-medium text-text-primary outline-none focus:border-brand-accent focus:ring-4 focus:ring-focus-ring"
       >
         <option value="newest">Newest</option>
         <option value="oldest">Oldest</option>
       </select>
-      <ChevronDown aria-hidden className="pointer-events-none absolute right-2.5 h-4 w-4 text-slate-400" />
+      <ChevronDown aria-hidden className="pointer-events-none absolute right-2.5 h-4 w-4 text-text-muted" />
     </label>
   );
 }
