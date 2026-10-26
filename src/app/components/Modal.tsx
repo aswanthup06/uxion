@@ -182,20 +182,18 @@ export default function Modal({
                 : "max-h-[calc(100dvh-3rem)] rounded-modal"
             } ${className}`}
           >
-            {/* Header (if title or close button provided) */}
-            {(title || showCloseButton) && (
+            {/* Header (when title is provided) */}
+            {title ? (
               <div
                 className={`flex shrink-0 items-start justify-between gap-4 border-b border-border-subtle p-5 sm:p-6 ${headerClassName}`}
               >
                 <div className="min-w-0 flex-1">
-                  {title && (
-                    <h2
-                      id={titleId}
-                      className="text-lg font-semibold tracking-tight text-text-primary sm:text-xl"
-                    >
-                      {title}
-                    </h2>
-                  )}
+                  <h2
+                    id={titleId}
+                    className="text-lg font-semibold tracking-tight text-text-primary sm:text-xl"
+                  >
+                    {title}
+                  </h2>
                   {description && (
                     <p
                       id={descId}
@@ -217,6 +215,17 @@ export default function Modal({
                   </button>
                 )}
               </div>
+            ) : (
+              showCloseButton && (
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close dialog"
+                  className="absolute right-4 top-4 z-20 grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-control text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )
             )}
 
             {/* Modal Body */}
