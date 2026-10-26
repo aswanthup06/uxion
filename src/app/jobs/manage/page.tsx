@@ -17,6 +17,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import Modal from "@/app/components/Modal";
 
 type CandidateStatus = "New" | "Screening" | "Interview" | "Offer" | "Hired" | "Rejected";
 type Candidate = {
@@ -248,32 +249,139 @@ export default function HRManagementPage() {
           <div className="flex flex-col gap-2 border-t border-border-subtle px-4 py-3 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between"><span>Showing {filtered.length} of {candidates.length} candidates</span><span className="inline-flex items-center gap-1.5"><CircleHelp className="h-3.5 w-3.5" /> Demo data — connect your recruitment API for live records.</span></div>
         </section>
 
-        {showAddForm && (
-          <div role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowAddForm(false); }} className="fixed inset-0 z-50 flex items-center justify-center bg-surface-dark/30 p-4 backdrop-blur-[2px]">
-            <section role="dialog" aria-modal="true" aria-labelledby="add-candidate-title" className="w-full max-w-lg rounded-panel bg-surface-card p-5 shadow-modal sm:p-6">
-              <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand">Recruitment</p><h2 id="add-candidate-title" className="mt-1 text-lg font-semibold text-text-primary">Add candidate</h2><p className="mt-1 text-sm text-text-muted">Add a candidate to this local demo list.</p></div><button type="button" aria-label="Close dialog" onClick={() => setShowAddForm(false)} className="cursor-pointer rounded-control p-2 text-text-muted hover:bg-surface-subtle hover:text-text-primary"><X className="h-4 w-4" /></button></div>
-              <form onSubmit={addCandidate} className="mt-5 space-y-4">
-                <label className="block"><span className="mb-1.5 block text-xs font-medium text-text-secondary">Full name *</span><input required value={newName} onChange={(event) => setNewName(event.target.value)} placeholder="Candidate name" className={`${controlClass} w-full`} /></label>
-                <label className="block"><span className="mb-1.5 block text-xs font-medium text-text-secondary">Email address *</span><input required type="email" value={newEmail} onChange={(event) => setNewEmail(event.target.value)} placeholder="name@example.com" className={`${controlClass} w-full`} /></label>
-                <label className="block"><span className="mb-1.5 block text-xs font-medium text-text-secondary">Applied for</span><select value={newRole} onChange={(event) => setNewRole(event.target.value)} className={`${controlClass} w-full cursor-pointer`}>{Array.from(new Set(candidates.map((candidate) => candidate.role))).map((role) => <option key={role}>{role}</option>)}</select></label>
-                <label className="block"><span className="mb-1.5 block text-xs font-medium text-text-secondary">Location</span><input value={newLocation} onChange={(event) => setNewLocation(event.target.value)} placeholder="City, state or remote" className={`${controlClass} w-full`} /></label>
-                <div className="flex justify-end gap-2 border-t border-border-subtle pt-4"><button type="button" onClick={() => setShowAddForm(false)} className={`${controlClass} cursor-pointer`}>Cancel</button><button type="submit" className="inline-flex cursor-pointer items-center gap-2 rounded-control bg-brand px-4 py-2 text-sm font-semibold text-text-inverse shadow-subtle hover:bg-brand-hover"><Plus className="h-4 w-4" /> Add candidate</button></div>
-              </form>
-            </section>
+        <Modal
+          isOpen={showAddForm}
+          onClose={() => setShowAddForm(false)}
+          maxWidth="lg"
+          showCloseButton={false}
+          bodyClassName="p-5 sm:p-6"
+          labelledBy="add-candidate-title"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand">Recruitment</p>
+              <h2 id="add-candidate-title" className="mt-1 text-lg font-semibold text-text-primary">Add candidate</h2>
+              <p className="mt-1 text-sm text-text-muted">Add a candidate to this local demo list.</p>
+            </div>
+            <button
+              type="button"
+              aria-label="Close dialog"
+              onClick={() => setShowAddForm(false)}
+              className="cursor-pointer rounded-control p-2 text-text-muted hover:bg-surface-subtle hover:text-text-primary"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
-        )}
+          <form onSubmit={addCandidate} className="mt-5 space-y-4">
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-medium text-text-secondary">Full name *</span>
+              <input required value={newName} onChange={(event) => setNewName(event.target.value)} placeholder="Candidate name" className={`${controlClass} w-full`} />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-medium text-text-secondary">Email address *</span>
+              <input required type="email" value={newEmail} onChange={(event) => setNewEmail(event.target.value)} placeholder="name@example.com" className={`${controlClass} w-full`} />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-medium text-text-secondary">Applied for</span>
+              <select value={newRole} onChange={(event) => setNewRole(event.target.value)} className={`${controlClass} w-full cursor-pointer`}>
+                {Array.from(new Set(candidates.map((candidate) => candidate.role))).map((role) => <option key={role}>{role}</option>)}
+              </select>
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-medium text-text-secondary">Location</span>
+              <input value={newLocation} onChange={(event) => setNewLocation(event.target.value)} placeholder="City, state or remote" className={`${controlClass} w-full`} />
+            </label>
+            <div className="flex justify-end gap-2 border-t border-border-subtle pt-4">
+              <button type="button" onClick={() => setShowAddForm(false)} className={`${controlClass} cursor-pointer`}>Cancel</button>
+              <button type="submit" className="inline-flex cursor-pointer items-center gap-2 rounded-control bg-brand px-4 py-2 text-sm font-semibold text-text-inverse shadow-subtle hover:bg-brand-hover">
+                <Plus className="h-4 w-4" /> Add candidate
+              </button>
+            </div>
+          </form>
+        </Modal>
 
-        {activeCandidate && (
-          <div role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setActiveCandidate(null); }} className="fixed inset-0 z-50 flex items-center justify-center bg-surface-dark/30 p-4 backdrop-blur-[2px]">
-            <section role="dialog" aria-modal="true" aria-labelledby="candidate-details-title" className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-panel bg-surface-card p-5 shadow-modal sm:p-6">
-              <div className="flex items-start justify-between gap-4"><div className="flex items-center gap-3"><span className="grid h-12 w-12 place-items-center rounded-full bg-brand-soft text-sm font-semibold text-brand-dark">{activeCandidate.initials}</span><div><h2 id="candidate-details-title" className="text-lg font-semibold text-text-primary">{activeCandidate.name}</h2><p className="mt-1 text-sm text-text-muted">{activeCandidate.role}</p></div></div><button type="button" aria-label="Close details" onClick={() => setActiveCandidate(null)} className="cursor-pointer rounded-control p-2 text-text-muted hover:bg-surface-subtle hover:text-text-primary"><X className="h-4 w-4" /></button></div>
-              <div className="mt-5 flex flex-wrap items-center gap-2"><StatusBadge status={activeCandidate.status} /><span className="rounded-full bg-surface-muted px-2.5 py-1 text-xs text-text-secondary">{activeCandidate.experience} experience</span></div>
-              <div className="mt-5 grid gap-4 rounded-card bg-surface-subtle p-4 sm:grid-cols-2"><div><p className="text-xs text-text-muted">Email</p><a href={`mailto:${activeCandidate.email}`} className="mt-1 inline-flex cursor-pointer items-center gap-2 break-all text-sm text-text-secondary hover:text-brand"><Mail className="h-3.5 w-3.5 shrink-0" />{activeCandidate.email}</a></div><div><p className="text-xs text-text-muted">Location</p><p className="mt-1 text-sm text-text-secondary">{activeCandidate.location}</p></div><div><p className="text-xs text-text-muted">Applied</p><p className="mt-1 text-sm text-text-secondary">{activeCandidate.applied}</p></div><div><p className="text-xs text-text-muted">Source</p><p className="mt-1 text-sm text-text-secondary">{activeCandidate.source}</p></div></div>
-              <div className="mt-5"><label htmlFor="detail-status" className="mb-1.5 block text-xs font-medium text-text-secondary">Update hiring stage</label><select id="detail-status" value={activeCandidate.status} onChange={(event) => { const status = event.target.value as CandidateStatus; updateStatus(activeCandidate.id, status); setActiveCandidate({ ...activeCandidate, status }); }} className={`${controlClass} w-full cursor-pointer`}>{statuses.map((status) => <option key={status}>{status}</option>)}</select></div>
-              <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-border-subtle pt-4"><a href={`mailto:${activeCandidate.email}`} className="inline-flex cursor-pointer items-center gap-2 rounded-control border border-border-default px-3 py-2 text-sm font-medium text-text-secondary hover:bg-surface-subtle hover:text-text-primary"><Mail className="h-4 w-4" /> Email candidate</a><button type="button" onClick={() => setActiveCandidate(null)} className="cursor-pointer rounded-control bg-brand px-4 py-2 text-sm font-semibold text-text-inverse shadow-subtle hover:bg-brand-hover">Done</button></div>
-            </section>
-          </div>
-        )}
+        <Modal
+          isOpen={Boolean(activeCandidate)}
+          onClose={() => setActiveCandidate(null)}
+          maxWidth="xl"
+          showCloseButton={false}
+          bodyClassName="p-5 sm:p-6"
+          labelledBy="candidate-details-title"
+        >
+          {activeCandidate && (
+            <div>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="grid h-12 w-12 place-items-center rounded-full bg-brand-soft text-sm font-semibold text-brand-dark">{activeCandidate.initials}</span>
+                  <div>
+                    <h2 id="candidate-details-title" className="text-lg font-semibold text-text-primary">{activeCandidate.name}</h2>
+                    <p className="mt-1 text-sm text-text-muted">{activeCandidate.role}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Close details"
+                  onClick={() => setActiveCandidate(null)}
+                  className="cursor-pointer rounded-control p-2 text-text-muted hover:bg-surface-subtle hover:text-text-primary"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <StatusBadge status={activeCandidate.status} />
+                <span className="rounded-full bg-surface-muted px-2.5 py-1 text-xs text-text-secondary">{activeCandidate.experience} experience</span>
+              </div>
+              <div className="mt-5 grid gap-4 rounded-card bg-surface-subtle p-4 sm:grid-cols-2">
+                <div>
+                  <p className="text-xs text-text-muted">Email</p>
+                  <a href={`mailto:${activeCandidate.email}`} className="mt-1 inline-flex cursor-pointer items-center gap-2 break-all text-sm text-text-secondary hover:text-brand">
+                    <Mail className="h-3.5 w-3.5 shrink-0" />
+                    {activeCandidate.email}
+                  </a>
+                </div>
+                <div>
+                  <p className="text-xs text-text-muted">Location</p>
+                  <p className="mt-1 text-sm text-text-secondary">{activeCandidate.location}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-text-muted">Applied</p>
+                  <p className="mt-1 text-sm text-text-secondary">{activeCandidate.applied}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-text-muted">Source</p>
+                  <p className="mt-1 text-sm text-text-secondary">{activeCandidate.source}</p>
+                </div>
+              </div>
+              <div className="mt-5">
+                <label htmlFor="detail-status" className="mb-1.5 block text-xs font-medium text-text-secondary">Update hiring stage</label>
+                <select
+                  id="detail-status"
+                  value={activeCandidate.status}
+                  onChange={(event) => {
+                    const status = event.target.value as CandidateStatus;
+                    updateStatus(activeCandidate.id, status);
+                    setActiveCandidate({ ...activeCandidate, status });
+                  }}
+                  className={`${controlClass} w-full cursor-pointer`}
+                >
+                  {statuses.map((status) => <option key={status}>{status}</option>)}
+                </select>
+              </div>
+              <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-border-subtle pt-4">
+                <a href={`mailto:${activeCandidate.email}`} className="inline-flex cursor-pointer items-center gap-2 rounded-control border border-border-default px-3 py-2 text-sm font-medium text-text-secondary hover:bg-surface-subtle hover:text-text-primary">
+                  <Mail className="h-4 w-4" /> Email candidate
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setActiveCandidate(null)}
+                  className="cursor-pointer rounded-control bg-brand px-4 py-2 text-sm font-semibold text-text-inverse shadow-subtle hover:bg-brand-hover"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          )}
+        </Modal>
       </div>
     </div>
   );

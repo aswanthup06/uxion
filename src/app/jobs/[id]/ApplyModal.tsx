@@ -13,6 +13,7 @@ import {
   FileText,
 } from "lucide-react";
 import { IoLogoWhatsapp } from "react-icons/io";
+import Modal from "@/app/components/Modal";
 
 type ApplyModalProps = {
   open: boolean;
@@ -124,35 +125,14 @@ export default function ApplyModal({
     : "";
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto p-4 sm:p-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.18 }}
-        >
-          {/* Backdrop */}
-          <button
-            type="button"
-            aria-label="Close application details"
-            onClick={onClose}
-            className="absolute inset-0 cursor-pointer bg-[#10251B]/45 backdrop-blur-[2px]"
-          />
-
-          <motion.section
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="apply-modal-title"
-            initial={
-              reduceMotion ? false : { opacity: 0, y: 12, scale: 0.98 }
-            }
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.98 }}
-            transition={{ duration: 0.2 }}
-            className="relative z-10 my-auto w-full max-w-md rounded-panel border border-border-default bg-surface-card p-5 shadow-modal sm:p-6"
-          >
+    <Modal
+      isOpen={open}
+      onClose={onClose}
+      maxWidth="md"
+      showCloseButton={false}
+      bodyClassName="p-5 sm:p-6"
+      labelledBy="apply-modal-title"
+    >
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand">
@@ -312,9 +292,6 @@ export default function ApplyModal({
                 <ArrowUpRight size={14} />
               </Link>
             </div>
-          </motion.section>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    </Modal>
   );
 }

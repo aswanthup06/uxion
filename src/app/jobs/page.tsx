@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import type { Job } from "@/app/types/job";
 import { parseExperience, timeAgo, isRecent, getJobCategory } from "@/app/components/jobs/jobs-utils";
+import Modal from "@/app/components/Modal";
 
 type JobType = "Full-time" | "Part-time" | "Contract" | "Internship";
 type WorkMode = "On-site" | "Hybrid" | "Remote";
@@ -831,20 +832,15 @@ function JobsViewContent() {
       </div>
 
       {/* Quick Details & Apply Modal */}
-      {activeJob && (
-        <div
-          role="presentation"
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget) setActiveJob(null);
-          }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm"
-        >
-          <section
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="job-modal-title"
-            className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-modal bg-surface-card shadow-modal"
-          >
+      <Modal
+        isOpen={Boolean(activeJob)}
+        onClose={() => setActiveJob(null)}
+        maxWidth="xl"
+        showCloseButton={false}
+        className="p-0 border-border-default overflow-hidden"
+      >
+        {activeJob && (
+          <div>
             {/* Modal Header */}
             <div className="relative overflow-hidden bg-brand-dark px-6 pb-6 pt-7 text-text-inverse sm:px-8">
               <div
@@ -992,9 +988,9 @@ function JobsViewContent() {
                 </div>
               </div>
             </div>
-          </section>
-        </div>
-      )}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

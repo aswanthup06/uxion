@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
-import { ArrowUpRight, Compass, X } from "lucide-react";
+import { ArrowUpRight, Compass } from "lucide-react";
+import Modal from "@/app/components/Modal";
 
 type LoginPageProps = {
   mode?: "signin" | "signup";
@@ -13,23 +14,6 @@ type LoginPageProps = {
 export default function LoginPage({ mode = "signin" }: LoginPageProps) {
   const isSignin = mode === "signin";
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    if (!isModalOpen) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setIsModalOpen(false);
-    };
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    document.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [isModalOpen]);
 
   return (
     <main className="fixed inset-0 h-[100dvh] w-full overflow-hidden bg-surface-page text-text-primary">
@@ -151,52 +135,36 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
         </section>
       </div>
 
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-[#102218]/40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-[3px] sm:items-center sm:px-5 sm:py-6"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setIsModalOpen(false);
-          }}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="explore-modal-title"
-            className="relative my-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-[410px] overflow-y-auto rounded-modal border border-border-default bg-surface-card p-6 shadow-modal sm:max-h-[calc(100dvh-3rem)] sm:p-8"
-          >
-            <button
-              type="button"
-              aria-label="Close modal"
-              onClick={() => setIsModalOpen(false)}
-              className="absolute right-3 top-3 flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-text-muted transition hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-            >
-              <X size={18} />
-            </button>
-
-            <div className="mb-5 mt-1 flex h-11 w-11 items-center justify-center rounded-control bg-brand-soft text-brand">
-              <Compass size={22} strokeWidth={1.7} />
-            </div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
-              Explore first
-            </p>
-            <h2 id="explore-modal-title" className="mt-2 pr-5 text-2xl font-medium leading-tight tracking-[-0.035em] text-text-primary">
-              Take a look around.
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-text-muted">
-              Browse Zenoway and discover opportunities without creating an
-              account. We’re continuing to build more ways to support your
-              career journey.
-            </p>
-            <Link
-              href="/"
-              onClick={() => setIsModalOpen(false)}
-              className="mt-6 flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 py-3 text-sm font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-            >
-              Explore Zenoway <ArrowUpRight size={16} />
-            </Link>
-          </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        maxWidth="sm"
+        showCloseButton={true}
+        bodyClassName="p-6 sm:p-8"
+        labelledBy="explore-modal-title"
+      >
+        <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-control bg-brand-soft text-brand">
+          <Compass size={22} strokeWidth={1.7} />
         </div>
-      )}
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
+          Explore first
+        </p>
+        <h2 id="explore-modal-title" className="mt-2 pr-5 text-2xl font-medium leading-tight tracking-[-0.035em] text-text-primary">
+          Take a look around.
+        </h2>
+        <p className="mt-3 text-sm leading-6 text-text-muted">
+          Browse Zenoway and discover opportunities without creating an
+          account. We’re continuing to build more ways to support your
+          career journey.
+        </p>
+        <Link
+          href="/"
+          onClick={() => setIsModalOpen(false)}
+          className="mt-6 flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 py-3 text-sm font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+        >
+          Explore Zenoway <ArrowUpRight size={16} />
+        </Link>
+      </Modal>
     </main>
   );
 }

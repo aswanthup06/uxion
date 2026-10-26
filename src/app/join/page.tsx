@@ -37,6 +37,8 @@ const channel = {
     "Get job alerts, important announcements, new community launches, and platform updates in one quiet, one-way WhatsApp channel.",
   link: "https://whatsapp.com/channel/0029VbC4AMcJpe8dy0vGfc1x",
 };
+import SharedModal from "../components/Modal";
+
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 function Modal({
@@ -50,60 +52,17 @@ function Modal({
   children: React.ReactNode;
   labelledBy: string;
 }) {
-  const closeRef = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    const previous = document.activeElement as HTMLElement | null;
-    closeRef.current?.focus();
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-      previous?.focus();
-    };
-  }, [open, onClose]);
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) onClose();
-          }}
-        >
-          <motion.section
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={labelledBy}
-            initial={{ opacity: 0, y: 24, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.98 }}
-            transition={{ duration: 0.22, ease: EASE }}
-            className="relative max-h-[92dvh] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-panel border border-border-default bg-surface-card px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-2xl sm:max-h-[88dvh] sm:rounded-panel sm:p-6"
-          >
-            <div className="sticky top-0 z-10 -mx-1 mb-1 flex justify-end bg-surface-card/95 pb-1 backdrop-blur-sm sm:mb-2">
-              <button
-                ref={closeRef}
-                type="button"
-                onClick={onClose}
-                aria-label="Close dialog"
-                className="grid h-8 w-8 cursor-pointer place-items-center rounded-control text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-              >
-                <FiX className="h-[18px] w-[18px]" />
-              </button>
-            </div>
-            {children}
-          </motion.section>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <SharedModal
+      isOpen={open}
+      onClose={onClose}
+      labelledBy={labelledBy}
+      maxWidth="md"
+      showCloseButton={false}
+      bodyClassName="px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 sm:p-6"
+    >
+      {children}
+    </SharedModal>
   );
 }
 
