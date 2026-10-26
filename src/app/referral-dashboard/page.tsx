@@ -45,20 +45,20 @@ type DashboardData = {
 const MOCK: DashboardData = {
     partnerName: "Partner",
     referralLink: "https://www.zenoway.com/?ref=your-code", // placeholder format
-    eligibleApplications: 780,
-    underReviewApplications: 62,
-    totalPaidOut: 1000,
-    last14Days: [22, 31, 18, 40, 55, 38, 27, 45, 62, 48, 33, 52, 67, 41],
+    eligibleApplications: 8640,
+    underReviewApplications: 480,
+    totalPaidOut: 6000,
+    last14Days: [220, 310, 180, 410, 550, 380, 270, 450, 620, 480, 340, 520, 670, 430],
     jobs: [
-        { title: "UI/UX Designer", company: "Technologies", place: "Kochi", applications: 214 },
-        { title: "Product Designer", company: "Product startup", place: "Remote", applications: 186 },
-        { title: "Frontend Developer", company: "Technology team", place: "Bengaluru", applications: 152 },
-        { title: "Customer Support Associate", company: "Retail company", place: "Kozhikode", applications: 120 },
-        { title: "Sales Executive", company: "Services firm", place: "Chennai", applications: 108 },
+        { title: "UI/UX Designer", company: "Technologies", place: "Kochi", applications: 2640 },
+        { title: "Product Designer", company: "Product startup", place: "Remote", applications: 2180 },
+        { title: "Frontend Developer", company: "Technology team", place: "Bengaluru", applications: 1720 },
+        { title: "Customer Support Associate", company: "Retail company", place: "Kozhikode", applications: 1160 },
+        { title: "Sales Executive", company: "Services firm", place: "Chennai", applications: 940 },
     ],
     payouts: [
-        { id: "p2", date: "12 Oct 2026", amount: 600, status: "Paid" },
-        { id: "p1", date: "28 Sep 2026", amount: 400, status: "Paid" },
+        { id: "p2", date: "12 Oct 2026", amount: 3500, status: "Paid" },
+        { id: "p1", date: "28 Sep 2026", amount: 2500, status: "Paid" },
     ],
 };
 
