@@ -12,11 +12,14 @@ import {
   Clock3,
   Copy,
   ExternalLink,
+  Globe,
   Mail,
   MapPin,
   RotateCcw,
   Search,
+  Share2,
   SlidersHorizontal,
+  Wallet,
   WifiOff,
   X,
 } from "lucide-react";
@@ -362,6 +365,27 @@ function JobsViewContent() {
       navigator.clipboard.writeText(email);
       setEmailCopied(true);
       setTimeout(() => setEmailCopied(false), 2000);
+    }
+  };
+
+  const [shareCopied, setShareCopied] = useState(false);
+
+  const shareJob = (job: Job) => {
+    const url = `${window.location.origin}/jobs/${job.id}`;
+    if (navigator.share) {
+      navigator
+        .share({
+          title: job.title,
+          text: `${job.title} at ${job.company} on Zenoway`,
+          url,
+        })
+        .catch(() => {});
+      return;
+    }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
     }
   };
 
@@ -835,157 +859,182 @@ function JobsViewContent() {
       <Modal
         isOpen={Boolean(activeJob)}
         onClose={() => setActiveJob(null)}
-        maxWidth="xl"
+        maxWidth="2xl"
         showCloseButton={false}
-        className="p-0 border-border-default overflow-hidden"
+        className="p-0 border border-border-default shadow-modal overflow-hidden rounded-2xl"
+        bodyClassName="overflow-hidden flex flex-col min-h-0 flex-1 bg-surface-card"
       >
         {activeJob && (
-          <div>
-            {/* Modal Header */}
-            <div className="relative overflow-hidden bg-brand-dark px-6 pb-6 pt-7 text-text-inverse sm:px-8">
-              <div
-                aria-hidden="true"
-                className="absolute -right-10 -top-20 h-48 w-48 rounded-full border border-white/10"
-              />
-              <button
-                type="button"
-                aria-label="Close job details"
-                onClick={() => setActiveJob(null)}
-                className="absolute right-4 top-4 z-10 cursor-pointer rounded-control border border-white/15 bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
-              >
-                <X className="h-4 w-4" />
-              </button>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-accent">
-                {getJobCategory(activeJob)}
-              </p>
+          <div className="flex flex-col min-h-0 flex-1 h-full">
+            {/* Minimal Header */}
+            <div className="relative shrink-0 border-b border-border-subtle bg-surface-card px-6 py-5 sm:px-8 sm:py-6">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="inline-flex items-center rounded-full bg-brand-soft px-2.5 py-0.5 font-semibold text-brand">
+                    {getJobCategory(activeJob)}
+                  </span>
+                  <span className="text-text-muted">
+                    Posted {timeAgo(activeJob.postedDate)}
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  aria-label="Close job details"
+                  onClick={() => setActiveJob(null)}
+                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand active:scale-95"
+                >
+                  <X className="h-4 w-4" strokeWidth={2} />
+                </button>
+              </div>
+
               <h2
                 id="job-modal-title"
-                className="mt-3 pr-8 text-2xl font-semibold tracking-tight sm:text-3xl"
+                className="mt-2.5 text-xl font-bold tracking-tight text-text-primary sm:text-2xl"
               >
                 {activeJob.title}
               </h2>
-              <p className="mt-2 text-sm text-white/80">{activeJob.company}</p>
-              <div className="mt-4 flex flex-wrap gap-2 text-xs text-white/90">
-                <span className="inline-flex items-center gap-1.5 rounded-pill bg-white/10 px-3 py-1.5">
-                  <MapPin className="h-3.5 w-3.5" />
-                  {activeJob.location}
-                </span>
-                <span className="rounded-pill bg-white/10 px-3 py-1.5">
-                  {getWorkMode(activeJob)}
-                </span>
-                <span className="rounded-pill bg-white/10 px-3 py-1.5">
-                  {getJobType(activeJob)}
-                </span>
+
+              <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-text-secondary">
+                <span className="font-medium text-text-primary">{activeJob.company}</span>
+                <span className="text-border-strong">·</span>
+                <span>{activeJob.location}</span>
+                {activeJob.companyLink && (
+                  <>
+                    <span className="text-border-strong">·</span>
+                    <a
+                      href={activeJob.companyLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-brand transition-colors hover:underline"
+                    >
+                      <span>Website</span>
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </>
+                )}
               </div>
             </div>
 
-            {/* Modal Body */}
-            <div className="p-6 sm:p-8">
-              <div className="rounded-panel border border-brand-soft bg-brand-soft/70 p-4">
-                <p className="text-xs font-medium text-brand">Compensation</p>
-                <p className="mt-1 text-lg font-semibold text-text-primary">
-                  {activeJob.salary || "Not Disclosed"}
-                </p>
-                <p className="mt-1 flex items-center gap-1.5 text-xs text-text-muted">
-                  <Clock3 className="h-3.5 w-3.5" />
-                  {activeJob.experience || "Fresher"} · Posted {timeAgo(activeJob.postedDate)}
-                </p>
+            {/* Scrollable Content */}
+            <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden p-6 sm:p-8 space-y-6">
+              {/* Minimal Key Details Grid */}
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-xl border border-border-default/70 bg-surface-subtle/50 p-4">
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted">Salary</p>
+                  <p className="mt-1 text-sm font-semibold text-brand truncate">
+                    {activeJob.salary || "Not Disclosed"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted">Experience</p>
+                  <p className="mt-1 text-sm font-semibold text-text-primary truncate">
+                    {activeJob.experience || "Fresher"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted">Location</p>
+                  <p className="mt-1 text-sm font-semibold text-text-primary truncate">
+                    {activeJob.location}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted">Work Setup</p>
+                  <p className="mt-1 text-sm font-semibold text-text-primary truncate">
+                    {getWorkMode(activeJob)} · {getJobType(activeJob)}
+                  </p>
+                </div>
               </div>
 
               {/* Description */}
-              <div className="mt-6">
-                <h3 className="text-sm font-semibold text-text-primary">About the role</h3>
-                <div className="mt-2 whitespace-pre-wrap text-sm leading-7 text-text-secondary">
+              <div className="space-y-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+                  About the role
+                </h3>
+                <div className="whitespace-pre-wrap text-sm leading-relaxed text-text-secondary font-normal">
                   {activeJob.description}
                 </div>
               </div>
 
-              {/* Company Link if available */}
-              {activeJob.companyLink && (
-                <div className="mt-4">
-                  <a
-                    href={activeJob.companyLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand transition hover:text-brand-dark"
+              {/* Direct email contact if available */}
+              {activeJob.mail && (
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border-default bg-surface-subtle/70 p-3.5 text-xs">
+                  <div className="flex items-center gap-2 text-text-secondary">
+                    <Mail className="h-4 w-4 text-brand shrink-0" />
+                    <span>Direct application email: <strong className="font-semibold text-text-primary select-all">{activeJob.mail}</strong></span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => copyEmailAddress(activeJob.mail)}
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-default bg-surface-card px-2.5 py-1.5 font-medium text-text-secondary shadow-subtle transition-all hover:bg-surface-subtle hover:text-text-primary active:scale-95"
                   >
-                    <span>Visit company website</span>
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
+                    {emailCopied ? <Check className="h-3.5 w-3.5 text-brand" /> : <Copy className="h-3.5 w-3.5" />}
+                    <span>{emailCopied ? "Copied" : "Copy"}</span>
+                  </button>
                 </div>
               )}
+            </div>
 
-              {/* Application Options & Actions */}
-              <div className="mt-7 space-y-3 border-t border-border-subtle pt-5">
-                {/* Email Apply if configured */}
-                {activeJob.mail && (
-                  <div className="flex items-center justify-between gap-2 rounded-control border border-border-default bg-surface-subtle p-3 text-xs">
-                    <div className="flex items-center gap-2 text-text-primary">
-                      <Mail className="h-4 w-4 text-brand" />
-                      <span className="font-medium break-all">{activeJob.mail}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => copyEmailAddress(activeJob.mail)}
-                        className="inline-flex cursor-pointer items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 py-1.5 font-medium text-text-secondary hover:bg-surface-subtle"
-                      >
-                        {emailCopied ? <Check className="h-3 w-3 text-brand" /> : <Copy className="h-3 w-3" />}
-                        {emailCopied ? "Copied" : "Copy"}
-                      </button>
-                      <a
-                        href={`mailto:${activeJob.mail}`}
-                        className="inline-flex cursor-pointer items-center gap-1 rounded-control bg-brand px-2.5 py-1.5 font-medium text-text-inverse hover:bg-brand-hover"
-                      >
-                        Email
-                      </a>
-                    </div>
-                  </div>
-                )}
+            {/* Pinned Sticky Footer Actions */}
+            <div className="shrink-0 border-t border-border-default bg-surface-card px-6 py-4 sm:px-8">
+              <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => toggleSaved(activeJob.id)}
+                    className={`inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-3.5 py-2.5 text-xs font-semibold transition-all ${
+                      saved.includes(activeJob.id)
+                        ? "border-brand bg-brand-soft text-brand"
+                        : "border-border-default bg-surface-card text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
+                    }`}
+                  >
+                    <Bookmark
+                      className="h-4 w-4"
+                      fill={saved.includes(activeJob.id) ? "currentColor" : "none"}
+                    />
+                    <span>{saved.includes(activeJob.id) ? "Saved" : "Save Job"}</span>
+                  </button>
 
-                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => toggleSaved(activeJob.id)}
-                      className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default px-4 py-3 text-sm font-semibold text-text-secondary transition-colors hover:bg-surface-subtle"
-                    >
-                      <Bookmark
-                        className="h-4 w-4"
-                        fill={saved.includes(activeJob.id) ? "currentColor" : "none"}
-                      />
-                      {saved.includes(activeJob.id) ? "Saved job" : "Save job"}
-                    </button>
-                    <Link
-                      href={`/jobs/${activeJob.id}`}
-                      className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-control border border-border-default px-4 py-3 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-subtle"
-                    >
-                      <span>Full page</span>
-                      <ArrowUpRight className="h-4 w-4 text-text-muted" />
-                    </Link>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => shareJob(activeJob)}
+                    className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-border-default bg-surface-card px-3.5 py-2.5 text-xs font-semibold text-text-secondary hover:bg-surface-subtle hover:text-text-primary transition-all"
+                  >
+                    {shareCopied ? <Check className="h-4 w-4 text-brand" /> : <Share2 className="h-4 w-4" />}
+                    <span>{shareCopied ? "Link Copied" : "Share"}</span>
+                  </button>
 
-                  {activeJob.mail?.trim() ? (
-                    <a
-                      href={`mailto:${activeJob.mail.trim()}?subject=${encodeURIComponent(
-                        `Application for ${activeJob.title} - ${activeJob.company}`
-                      )}&body=${encodeURIComponent(
-                        `Hi Hiring Team,\n\nI am interested in applying for the ${activeJob.title} position at ${activeJob.company}.\n\nPlease find my resume attached.\n\nBest regards,`
-                      )}`}
-                      className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-6 py-3 text-sm font-semibold text-text-inverse transition-colors hover:bg-brand-hover shadow-subtle"
-                    >
-                      Apply via email <ArrowUpRight className="h-4 w-4" />
-                    </a>
-                  ) : (
-                    <button
-                      type="button"
-                      disabled
-                      className="inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-control bg-surface-muted px-6 py-3 text-sm font-semibold text-text-muted"
-                    >
-                      Application unavailable
-                    </button>
-                  )}
+                  <Link
+                    href={`/jobs/${activeJob.id}`}
+                    className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-border-default bg-surface-card px-3.5 py-2.5 text-xs font-semibold text-text-secondary hover:bg-surface-subtle hover:text-text-primary transition-all"
+                  >
+                    <span>Full Page</span>
+                    <ArrowUpRight className="h-3.5 w-3.5 text-text-muted" />
+                  </Link>
                 </div>
+
+                {activeJob.mail?.trim() ? (
+                  <a
+                    href={`mailto:${activeJob.mail.trim()}?subject=${encodeURIComponent(
+                      `Application for ${activeJob.title} - ${activeJob.company}`
+                    )}&body=${encodeURIComponent(
+                      `Hi Hiring Team,\n\nI am interested in applying for the ${activeJob.title} position at ${activeJob.company}.\n\nPlease find my resume attached.\n\nBest regards,`
+                    )}`}
+                    className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white shadow-subtle transition-all hover:bg-brand-hover active:scale-[0.99]"
+                  >
+                    <Mail className="h-4 w-4" />
+                    <span>Apply via Email</span>
+                    <ArrowUpRight className="h-4 w-4" />
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    className="inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-lg bg-surface-muted px-6 py-2.5 text-sm font-semibold text-text-muted"
+                  >
+                    Application Unavailable
+                  </button>
+                )}
               </div>
             </div>
           </div>
