@@ -108,7 +108,7 @@ function Card({
             initial={reduce ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: reduce ? 0 : delay }}
-            className={`rounded-panel border border-border-default bg-surface-card shadow-subtle ${className}`}
+            className={`min-w-0 rounded-panel border border-border-default bg-surface-card shadow-subtle ${className}`}
         >
             {children}
         </motion.div>
@@ -117,7 +117,7 @@ function Card({
 
 function SectionTitle({ children, hint }: { children: React.ReactNode; hint?: string }) {
     return (
-        <div className="flex items-baseline justify-between gap-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
             <h2 className="text-[15px] font-medium tracking-tight">{children}</h2>
             {hint && <span className="text-[11px] text-text-muted">{hint}</span>}
         </div>
@@ -172,23 +172,23 @@ export default function ReferralDashboardPage({
     ] as const;
 
     return (
-        <main className="bg-surface-base text-text-primary">
-            <div className="mx-auto max-w-7xl px-6 pb-16 pt-6 sm:px-10 sm:pt-8 lg:px-12">
+        <main className="w-full min-w-0 overflow-x-hidden bg-surface-base text-text-primary">
+            <div className="mx-auto w-full max-w-7xl min-w-0 px-4 pb-16 pt-6 sm:px-6 sm:pt-8 md:px-10 lg:px-12">
                 {/* ---------- Heading ---------- */}
                 <motion.div
                     initial={reduce ? false : { opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="flex flex-wrap items-end justify-between gap-4"
+                    className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
                 >
-                    <div>
+                    <div className="min-w-0">
                         <div className="flex items-center gap-2.5">
-                            <span className="h-2 w-2 rounded-pill bg-brand" />
+                            <span className="h-2 w-2 shrink-0 rounded-pill bg-brand" />
                             <span className="text-xs font-medium uppercase tracking-[0.12em] text-text-muted">
                                 Referral partner
                             </span>
                         </div>
-                        <h1 className="mt-4 text-[32px] font-medium leading-[1.12] tracking-[-0.04em] sm:text-[40px]">
+                        <h1 className="mt-4 text-[28px] font-medium leading-[1.12] tracking-[-0.04em] min-[400px]:text-[32px] sm:text-[40px]">
                             Your referral earnings
                         </h1>
                         <p className="mt-2 max-w-md text-sm leading-6 text-text-secondary">
@@ -199,7 +199,7 @@ export default function ReferralDashboardPage({
                         href={ZENOWAY_URL}
                         target="_blank"
                         rel="noreferrer"
-                        className="group inline-flex h-9 items-center gap-2 rounded-control border border-border-default bg-surface-card px-4 text-xs font-semibold transition-colors hover:bg-surface-subtle"
+                        className="group inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-4 text-xs font-semibold transition-colors hover:bg-surface-subtle"
                     >
                         Browse jobs to share
                         <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -207,20 +207,20 @@ export default function ReferralDashboardPage({
                 </motion.div>
 
                 {/* ---------- Stat cards ---------- */}
-                <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                     {stats.map(({ label, value, prefix, icon: Icon, tone }, i) => (
-                        <Card key={label} delay={i * 0.06} className="p-4 sm:p-5">
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs text-text-muted">{label}</span>
+                        <Card key={label} delay={i * 0.06} className="p-3.5 sm:p-5">
+                            <div className="flex items-start justify-between gap-2">
+                                <span className="min-w-0 text-xs leading-snug text-text-muted">{label}</span>
                                 <span
-                                    className={`flex h-8 w-8 items-center justify-center rounded-control ${tone === "brand" ? "bg-brand text-white" : "bg-brand-soft text-brand"
+                                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-control ${tone === "brand" ? "bg-brand text-white" : "bg-brand-soft text-brand"
                                         }`}
                                 >
                                     <Icon size={15} />
                                 </span>
                             </div>
                             <p
-                                className={`mt-3 text-[28px] font-medium leading-none tracking-[-0.03em] sm:text-[32px] ${tone === "brand" ? "text-brand" : tone === "muted" ? "text-text-secondary" : ""
+                                className={`mt-3 truncate text-2xl font-medium leading-none tracking-[-0.03em] min-[400px]:text-[28px] sm:text-[32px] ${tone === "brand" ? "text-brand" : tone === "muted" ? "text-text-secondary" : ""
                                     }`}
                             >
                                 <CountUp value={value} prefix={prefix} />
@@ -230,17 +230,17 @@ export default function ReferralDashboardPage({
                 </div>
 
                 {/* ---------- Main grid ---------- */}
-                <div className="mt-4 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+                <div className="mt-4 grid min-w-0 gap-4 lg:grid-cols-[1.6fr_1fr]">
                     {/* LEFT COLUMN */}
-                    <div className="space-y-4">
+                    <div className="min-w-0 space-y-4">
                         {/* Activity chart */}
-                        <Card delay={0.2} className="p-5 sm:p-6">
+                        <Card delay={0.2} className="p-4 sm:p-6">
                             <SectionTitle hint="Applications per day">Last 14 days</SectionTitle>
-                            <div className="mt-2 flex items-center gap-2">
+                            <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
                                 <span className="text-2xl font-medium tracking-tight">{fmt(last7)}</span>
                                 <span className="text-xs text-text-muted">applications this week</span>
                                 <span
-                                    className={`ml-1 inline-flex items-center gap-1 rounded-pill px-2 py-0.5 text-[11px] font-medium ${change >= 0 ? "bg-brand-soft text-brand" : "bg-status-error-bg text-status-error"
+                                    className={`inline-flex items-center gap-1 rounded-pill px-2 py-0.5 text-[11px] font-medium ${change >= 0 ? "bg-brand-soft text-brand" : "bg-status-error-bg text-status-error"
                                         }`}
                                 >
                                     <TrendingUp size={11} className={change < 0 ? "rotate-180" : ""} />
@@ -249,9 +249,9 @@ export default function ReferralDashboardPage({
                                 </span>
                             </div>
 
-                            <div className="mt-6 flex h-36 items-end gap-1.5 sm:gap-2" role="img" aria-label="Applications per day, last 14 days">
+                            <div className="mt-6 flex h-36 items-end gap-1 sm:gap-2" role="img" aria-label="Applications per day, last 14 days">
                                 {data.last14Days.map((v, i) => (
-                                    <div key={i} className="group relative flex h-full flex-1 items-end">
+                                    <div key={i} className="group relative flex h-full flex-1 min-w-0 items-end">
                                         <motion.div
                                             initial={reduce ? false : { scaleY: 0 }}
                                             animate={{ scaleY: 1 }}
@@ -266,7 +266,7 @@ export default function ReferralDashboardPage({
                                     </div>
                                 ))}
                             </div>
-                            <div className="mt-2 flex items-center justify-between text-[10px] text-text-muted">
+                            <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[10px] text-text-muted">
                                 <span>14 days ago</span>
                                 <span className="flex items-center gap-3">
                                     <span className="flex items-center gap-1">
@@ -281,15 +281,15 @@ export default function ReferralDashboardPage({
                         </Card>
 
                         {/* Jobs table */}
-                        <Card delay={0.26} className="p-5 sm:p-6">
+                        <Card delay={0.26} className="p-4 sm:p-6">
                             <SectionTitle hint="Eligible applications × ₹2">Earnings by job</SectionTitle>
-                            <div className="mt-4 overflow-x-auto">
-                                <table className="w-full min-w-[480px] text-left text-xs">
+                            <div className="mt-4 w-full overflow-x-auto">
+                                <table className="w-full min-w-[340px] text-left text-xs sm:min-w-[480px]">
                                     <thead>
                                         <tr className="border-b border-border-subtle text-[11px] uppercase tracking-[0.1em] text-text-muted">
-                                            <th className="pb-3 font-medium">Job</th>
-                                            <th className="pb-3 text-right font-medium">Applications</th>
-                                            <th className="pb-3 text-right font-medium">Earned</th>
+                                            <th className="pb-3 pr-2 font-medium">Job</th>
+                                            <th className="pb-3 px-2 text-right font-medium">Applications</th>
+                                            <th className="pb-3 pl-2 text-right font-medium">Earned</th>
                                             <th className="hidden w-32 pb-3 pl-5 font-medium sm:table-cell">Share</th>
                                         </tr>
                                     </thead>
@@ -298,14 +298,14 @@ export default function ReferralDashboardPage({
                                             const share = (job.applications / data.eligibleApplications) * 100;
                                             return (
                                                 <tr key={job.title} className="transition-colors hover:bg-surface-subtle">
-                                                    <td className="py-3.5 pr-3">
-                                                        <p className="text-[13px] font-medium">{job.title}</p>
+                                                    <td className="py-3.5 pr-2">
+                                                        <p className="text-[13px] font-medium leading-snug">{job.title}</p>
                                                         <p className="mt-0.5 text-[11px] text-text-muted">
                                                             {job.company} · {job.place}
                                                         </p>
                                                     </td>
-                                                    <td className="py-3.5 text-right tabular-nums text-text-secondary">{fmt(job.applications)}</td>
-                                                    <td className="py-3.5 text-right font-medium tabular-nums text-brand">
+                                                    <td className="py-3.5 px-2 text-right tabular-nums text-text-secondary whitespace-nowrap">{fmt(job.applications)}</td>
+                                                    <td className="py-3.5 pl-2 text-right font-medium tabular-nums text-brand whitespace-nowrap">
                                                         ₹{fmt(job.applications * REWARD)}
                                                     </td>
                                                     <td className="hidden py-3.5 pl-5 sm:table-cell">
@@ -324,9 +324,9 @@ export default function ReferralDashboardPage({
                                     </tbody>
                                     <tfoot>
                                         <tr className="border-t border-border-default text-[13px] font-medium">
-                                            <td className="pt-3.5">Total</td>
-                                            <td className="pt-3.5 text-right tabular-nums">{fmt(data.eligibleApplications)}</td>
-                                            <td className="pt-3.5 text-right tabular-nums text-brand">₹{fmt(totalEarned)}</td>
+                                            <td className="pt-3.5 pr-2">Total</td>
+                                            <td className="pt-3.5 px-2 text-right tabular-nums whitespace-nowrap">{fmt(data.eligibleApplications)}</td>
+                                            <td className="pt-3.5 pl-2 text-right tabular-nums text-brand whitespace-nowrap">₹{fmt(totalEarned)}</td>
                                             <td className="hidden sm:table-cell" />
                                         </tr>
                                     </tfoot>
@@ -335,7 +335,7 @@ export default function ReferralDashboardPage({
                         </Card>
 
                         {/* Payout history */}
-                        <Card delay={0.32} className="p-5 sm:p-6">
+                        <Card delay={0.32} className="p-4 sm:p-6">
                             <SectionTitle>Payout history</SectionTitle>
                             {data.payouts.length === 0 ? (
                                 <p className="mt-4 text-xs text-text-muted">No payouts yet. Your first one unlocks at ₹{MIN_PAYOUT}.</p>
@@ -343,14 +343,14 @@ export default function ReferralDashboardPage({
                                 <ul className="mt-4 divide-y divide-border-subtle">
                                     {data.payouts.map((p) => (
                                         <li key={p.id} className="flex items-center gap-3 py-3">
-                                            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-soft text-brand">
+                                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand">
                                                 <Check size={14} />
                                             </span>
-                                            <div className="flex-1">
+                                            <div className="min-w-0 flex-1">
                                                 <p className="text-[13px] font-medium">₹{fmt(p.amount)}</p>
                                                 <p className="text-[11px] text-text-muted">{p.date}</p>
                                             </div>
-                                            <span className="rounded-pill bg-brand-soft px-2.5 py-1 text-[11px] font-medium text-brand">
+                                            <span className="shrink-0 rounded-pill bg-brand-soft px-2.5 py-1 text-[11px] font-medium text-brand">
                                                 {p.status}
                                             </span>
                                         </li>
@@ -361,11 +361,11 @@ export default function ReferralDashboardPage({
                     </div>
 
                     {/* RIGHT COLUMN */}
-                    <div className="space-y-4">
+                    <div className="min-w-0 space-y-4">
                         {/* Payout card */}
-                        <Card delay={0.22} className="p-5 sm:p-6">
+                        <Card delay={0.22} className="p-4 sm:p-6">
                             <SectionTitle>Withdraw</SectionTitle>
-                            <p className="mt-3 text-[32px] font-medium leading-none tracking-[-0.03em]">₹{fmt(available)}</p>
+                            <p className="mt-3 text-2xl font-medium leading-none tracking-[-0.03em] sm:text-[32px]">₹{fmt(available)}</p>
                             <p className="mt-1.5 text-xs text-text-muted">available now</p>
 
                             <div className="mt-5 h-1.5 overflow-hidden rounded-pill bg-surface-muted">
@@ -393,7 +393,7 @@ export default function ReferralDashboardPage({
                         </Card>
 
                         {/* Referral link */}
-                        <Card delay={0.28} className="p-5 sm:p-6">
+                        <Card delay={0.28} className="p-4 sm:p-6">
                             <SectionTitle>Your referral link</SectionTitle>
                             <div className="mt-4 flex items-center gap-2 rounded-control border border-border-default bg-surface-subtle p-1.5 pl-3">
                                 <Link2 size={14} className="shrink-0 text-brand" />
@@ -413,26 +413,27 @@ export default function ReferralDashboardPage({
                                     href={whatsappShare}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="inline-flex h-9 items-center justify-center gap-2 rounded-control border border-border-default text-xs font-semibold transition-colors hover:bg-surface-subtle"
+                                    className="inline-flex h-9 items-center justify-center gap-2 rounded-control border border-border-default px-2 text-xs font-semibold transition-colors hover:bg-surface-subtle"
                                 >
-                                    <MessageCircle size={14} className="text-brand" /> WhatsApp
+                                    <MessageCircle size={14} className="shrink-0 text-brand" />
+                                    <span className="truncate">WhatsApp</span>
                                 </a>
                                 <a
                                     href={linkedinShare}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="inline-flex h-9 items-center justify-center gap-2 rounded-control border border-border-default text-xs font-semibold transition-colors hover:bg-surface-subtle"
+                                    className="inline-flex h-9 items-center justify-center gap-2 rounded-control border border-border-default px-2 text-xs font-semibold transition-colors hover:bg-surface-subtle"
                                 >
-                                    <span className="text-brand">
+                                    <span className="shrink-0 text-brand">
                                         <LinkedInIcon />
                                     </span>
-                                    LinkedIn
+                                    <span className="truncate">LinkedIn</span>
                                 </a>
                             </div>
                         </Card>
 
                         {/* Program details */}
-                        <Card delay={0.34} className="p-5 sm:p-6">
+                        <Card delay={0.34} className="p-4 sm:p-6">
                             <SectionTitle>Program details</SectionTitle>
                             <dl className="mt-4 divide-y divide-border-subtle text-xs">
                                 {[
@@ -441,26 +442,28 @@ export default function ReferralDashboardPage({
                                     ["Launch offer", "First 3 months"],
                                     ["Tracking", "Through your referral link"],
                                 ].map(([k, v]) => (
-                                    <div key={k} className="flex items-center justify-between gap-4 py-2.5">
-                                        <dt className="text-text-muted">{k}</dt>
-                                        <dd className="text-right font-medium">{v}</dd>
+                                    <div key={k} className="flex items-center justify-between gap-3 py-2.5">
+                                        <dt className="shrink-0 text-text-muted">{k}</dt>
+                                        <dd className="min-w-0 text-right font-medium">{v}</dd>
                                     </div>
                                 ))}
                             </dl>
                             <p className="mt-3 flex items-start gap-2 text-[11px] leading-5 text-text-muted">
                                 <BadgeCheck size={14} className="mt-0.5 shrink-0 text-brand" />
-                                Zenoway is a premium job platform, not a free job portal. Rewards apply to eligible
-                                applications only. Terms and conditions apply.
+                                <span>
+                                    Zenoway is a premium job platform, not a free job portal. Rewards apply to eligible
+                                    applications only. Terms and conditions apply.
+                                </span>
                             </p>
                         </Card>
 
                         {/* Support */}
-                        <Card delay={0.4} className="bg-brand-soft p-5 sm:p-6">
+                        <Card delay={0.4} className="bg-brand-soft p-4 sm:p-6">
                             <div className="flex items-start gap-3">
                                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-surface-card text-brand">
                                     <FileText size={16} />
                                 </span>
-                                <div>
+                                <div className="min-w-0 flex-1">
                                     <h2 className="text-[13px] font-medium">Questions about earnings?</h2>
                                     <p className="mt-1 text-xs leading-5 text-text-secondary">
                                         Ask in the referral WhatsApp group for updates and support.
