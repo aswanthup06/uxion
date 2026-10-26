@@ -27,6 +27,8 @@ export default function MainLayout({
     );
   }
 
+  const isSplitPanePage = pathname === "/jobs";
+
   // All other pages: show the navbar and allow content to scroll.
   return (
     <div
@@ -35,7 +37,11 @@ export default function MainLayout({
     >
       <Navbar />
 
-      <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-y-contain">
+      <main
+        className={`min-h-0 min-w-0 flex-1 ${
+          isSplitPanePage ? "overflow-y-auto lg:overflow-hidden" : "overflow-y-auto"
+        } overscroll-y-contain`}
+      >
         {children}
       </main>
     </div>

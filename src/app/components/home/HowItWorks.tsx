@@ -59,17 +59,17 @@ export default function HowItWorks() {
         <div className="grid gap-9 md:grid-cols-[0.8fr_1.2fr] md:items-center md:gap-14">
           {/* Left: Introduction and steps */}
           <div>
-            <p className="text-xs font-medium uppercase tracking-[0.1em] text-[#0FA968]">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-accent">
               How it works
             </p>
 
-            <h2 className="mt-3 max-w-sm text-2xl font-semibold leading-tight tracking-tight text-[#16251F] sm:text-[28px]">
+            <h2 className="mt-3 max-w-sm text-2xl font-semibold leading-tight tracking-tight text-text-primary sm:text-[28px]">
               Your next role,
               <br />
               without the extra steps.
             </h2>
 
-            <p className="mt-3 max-w-sm text-sm leading-6 text-neutral-500">
+            <p className="mt-3 max-w-sm text-sm leading-6 text-text-secondary">
               Discover opportunities and connect with employers directly.
               No application portal in between.
             </p>
@@ -84,24 +84,21 @@ export default function HowItWorks() {
                     type="button"
                     onClick={() => setActive(index)}
                     aria-pressed={selected}
-                    className="group flex w-full cursor-pointer gap-3 border-t py-4 text-left last:border-b focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0FA968] focus-visible:ring-offset-2"
-                    style={{ borderColor: "#E8EDE9" }}
+                    className="group flex w-full cursor-pointer gap-3 border-t border-border-default py-4 text-left last:border-b outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
                   >
                     <span
-                      className="mt-0.5 w-6 shrink-0 text-xs tabular-nums"
-                      style={{
-                        color: selected ? "#0FA968" : "#A0A8A3",
-                      }}
+                      className={`mt-0.5 w-6 shrink-0 text-xs tabular-nums font-medium ${
+                        selected ? "text-brand-accent" : "text-text-muted"
+                      }`}
                     >
                       0{index + 1}
                     </span>
 
                     <span className="min-w-0 flex-1">
                       <span
-                        className="block text-sm font-semibold"
-                        style={{
-                          color: selected ? "#16251F" : "#66716B",
-                        }}
+                        className={`block text-sm font-semibold transition-colors ${
+                          selected ? "text-text-primary" : "text-text-secondary"
+                        }`}
                       >
                         {step.title}
                       </span>
@@ -123,7 +120,7 @@ export default function HowItWorks() {
                             transition={{ duration: 0.2 }}
                             className="block overflow-hidden"
                           >
-                            <span className="block max-w-xs pt-1.5 text-sm leading-5 text-neutral-500">
+                            <span className="block max-w-xs pt-1.5 text-sm leading-5 text-text-secondary">
                               {step.description}
                             </span>
                           </motion.span>
@@ -133,10 +130,9 @@ export default function HowItWorks() {
 
                     <ArrowRight
                       size={15}
-                      className="mt-0.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
-                      style={{
-                        color: selected ? "#0FA968" : "#B0B8B3",
-                      }}
+                      className={`mt-0.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5 ${
+                        selected ? "text-brand-accent" : "text-text-muted"
+                      }`}
                     />
                   </button>
                 );
@@ -145,7 +141,7 @@ export default function HowItWorks() {
 
             <Link
               href="/jobs"
-              className="mt-5 inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-[#0FA968] transition-colors hover:text-[#087F50]"
+              className="mt-5 inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-brand-accent transition-colors hover:text-brand"
             >
               Browse all jobs
               <ArrowRight size={15} />
@@ -154,14 +150,14 @@ export default function HowItWorks() {
 
           {/* Right: Animated job preview */}
           <div className="flex min-w-0 items-center">
-            <div className="relative w-full overflow-hidden rounded-panel border border-[#E8EDE9] bg-[#FBFCFB] p-4 sm:p-6">
+            <div className="relative w-full overflow-hidden rounded-panel border border-border-default bg-surface-subtle p-4 sm:p-6">
               {/* Preview header */}
-              <div className="flex items-center justify-between border-b border-[#E8EDE9] pb-4">
-                <span className="text-xs font-medium text-[#16251F]">
+              <div className="flex items-center justify-between border-b border-border-default pb-4">
+                <span className="text-xs font-semibold text-text-primary">
                   {["Job search", "Role details", "Application"][active]}
                 </span>
 
-                <span className="text-xs text-neutral-400">
+                <span className="text-xs text-text-muted">
                   Step 0{active + 1} of 03
                 </span>
               </div>
@@ -182,17 +178,17 @@ export default function HowItWorks() {
                   {/* Step 1: Search jobs */}
                   {active === 0 && (
                     <div>
-                      <div className="flex items-center gap-2 rounded-control border border-[#E2E8E3] bg-white px-3 py-2.5">
+                      <div className="flex items-center gap-2 rounded-control border border-border-default bg-surface-card px-3 py-2.5">
                         <Search
                           size={15}
-                          className="shrink-0 text-neutral-400"
+                          className="shrink-0 text-text-muted"
                         />
 
-                        <span className="text-sm text-neutral-600">
+                        <span className="text-sm text-text-primary">
                           UI/UX Designer
                         </span>
 
-                        <span className="ml-auto text-xs text-neutral-400">
+                        <span className="ml-auto text-xs text-text-muted">
                           India
                         </span>
                       </div>
@@ -201,24 +197,24 @@ export default function HowItWorks() {
                         {JOBS.map(([title, meta], index) => (
                           <div
                             key={title}
-                            className="flex items-center gap-3 rounded-card border border-[#E8EDE9] bg-white p-3"
+                            className="flex items-center gap-3 rounded-card border border-border-default bg-surface-card p-3 shadow-subtle"
                           >
-                            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-control bg-[#EAF6EF] text-xs font-semibold text-[#087F50]">
+                            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-control bg-brand-soft text-xs font-semibold text-brand">
                               {title[0]}
                             </span>
 
                             <span className="min-w-0 flex-1">
-                              <span className="block text-sm font-medium text-[#16251F]">
+                              <span className="block text-sm font-medium text-text-primary">
                                 {title}
                               </span>
 
-                              <span className="mt-1 block text-xs text-neutral-500">
+                              <span className="mt-1 block text-xs text-text-secondary">
                                 {meta}
                               </span>
                             </span>
 
                             {index === 0 && (
-                              <span className="text-xs text-[#0FA968]">
+                              <span className="text-xs font-semibold text-brand-accent">
                                 New
                               </span>
                             )}
@@ -230,22 +226,22 @@ export default function HowItWorks() {
 
                   {/* Step 2: Read role details */}
                   {active === 1 && (
-                    <div className="rounded-card border border-[#E8EDE9] bg-white p-4 sm:p-5">
-                      <span className="text-xs text-[#0FA968]">
+                    <div className="rounded-card border border-border-default bg-surface-card p-4 sm:p-5 shadow-subtle">
+                      <span className="text-xs font-semibold text-brand-accent">
                         DESIGN · FULL-TIME
                       </span>
 
-                      <h3 className="mt-3 text-base font-semibold tracking-tight text-[#16251F]">
+                      <h3 className="mt-3 text-base font-semibold tracking-tight text-text-primary">
                         Product Designer
                       </h3>
 
-                      <p className="mt-1 text-sm text-neutral-500">
+                      <p className="mt-1 text-sm text-text-secondary">
                         Company name · Remote, India
                       </p>
 
-                      <div className="my-5 border-t border-[#E8EDE9]" />
+                      <div className="my-5 border-t border-border-subtle" />
 
-                      <p className="text-sm font-medium text-[#16251F]">
+                      <p className="text-sm font-medium text-text-primary">
                         About the role
                       </p>
 
@@ -253,7 +249,7 @@ export default function HowItWorks() {
                         {[100, 92, 72, 84].map((width, index) => (
                           <motion.div
                             key={index}
-                            className="h-1.5 rounded-pill bg-[#EDF0ED]"
+                            className="h-1.5 rounded-pill bg-surface-muted"
                             initial={{ width: 0 }}
                             animate={{ width: `${width}%` }}
                             transition={{
@@ -264,10 +260,10 @@ export default function HowItWorks() {
                         ))}
                       </div>
 
-                      <div className="mt-5 flex items-center gap-2 border-t border-[#E8EDE9] pt-4 text-sm text-neutral-600">
+                      <div className="mt-5 flex items-center gap-2 border-t border-border-subtle pt-4 text-sm text-text-secondary">
                         <Check
                           size={15}
-                          className="shrink-0 text-[#0FA968]"
+                          className="shrink-0 text-brand-accent"
                         />
                         Direct employer contact available
                       </div>
@@ -276,45 +272,45 @@ export default function HowItWorks() {
 
                   {/* Step 3: Contact the employer */}
                   {active === 2 && (
-                    <div className="rounded-card border border-[#E8EDE9] bg-white p-4 sm:p-5">
+                    <div className="rounded-card border border-border-default bg-surface-card p-4 sm:p-5 shadow-subtle">
                       <div className="flex items-center gap-3">
-                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-control bg-[#EAF6EF] text-sm font-semibold text-[#087F50]">
+                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-control bg-brand-soft text-sm font-semibold text-brand">
                           A
                         </span>
 
                         <div>
-                          <p className="text-sm font-medium text-[#16251F]">
+                          <p className="text-sm font-medium text-text-primary">
                             Your application
                           </p>
 
-                          <p className="mt-0.5 text-xs text-neutral-500">
+                          <p className="mt-0.5 text-xs text-text-muted">
                             Email to the hiring team
                           </p>
                         </div>
                       </div>
 
                       <div className="mt-5 space-y-3 text-sm">
-                        <p className="break-words border-b border-[#E8EDE9] pb-3 text-neutral-500">
+                        <p className="break-words border-b border-border-subtle pb-3 text-text-muted">
                           To:{" "}
-                          <span className="text-[#16251F]">
+                          <span className="text-text-primary">
                             hr@company.com
                           </span>
                         </p>
 
-                        <p className="border-b border-[#E8EDE9] pb-3 text-neutral-500">
+                        <p className="border-b border-border-subtle pb-3 text-text-muted">
                           Subject:{" "}
-                          <span className="text-[#16251F]">
+                          <span className="text-text-primary">
                             Product Designer application
                           </span>
                         </p>
 
-                        <p className="min-h-20 leading-6 text-neutral-600">
+                        <p className="min-h-20 leading-6 text-text-secondary">
                           Hello, I’m interested in the Product Designer role.
                           Please find my portfolio and resume attached.
                         </p>
                       </div>
 
-                      <div className="mt-3 flex items-center gap-2 border-t border-[#E8EDE9] pt-4 text-sm font-medium text-[#087F50]">
+                      <div className="mt-3 flex items-center gap-2 border-t border-border-subtle pt-4 text-sm font-medium text-brand">
                         <Check size={15} className="shrink-0" />
                         Ready to contact the employer
                       </div>
@@ -332,11 +328,9 @@ export default function HowItWorks() {
                     aria-label={`Show step ${index + 1}`}
                     aria-pressed={active === index}
                     onClick={() => setActive(index)}
-                    className="h-1 flex-1 cursor-pointer rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0FA968]"
-                    style={{
-                      background:
-                        active === index ? "#0FA968" : "#E8EDE9",
-                    }}
+                    className={`h-1 flex-1 cursor-pointer rounded-pill transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                      active === index ? "bg-brand-accent" : "bg-border-default"
+                    }`}
                   />
                 ))}
               </div>

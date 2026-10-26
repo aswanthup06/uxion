@@ -53,7 +53,7 @@ function Field({
       </label>
       {children}
       {hint && (
-        <p className="mt-1.5 text-xs leading-5 text-[#7A8780]">{hint}</p>
+        <p className="mt-1.5 text-xs leading-5 text-text-muted">{hint}</p>
       )}
     </div>
   );
@@ -61,7 +61,7 @@ function Field({
 
 function SelectChevron() {
   return (
-    <FiChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#718078]" />
+    <FiChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-muted" />
   );
 }
 
@@ -164,7 +164,7 @@ export default function PostJobPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F8FAF8] text-[#17251F]">
+    <div className="min-h-screen bg-surface-page text-text-primary">
       <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav
@@ -173,25 +173,25 @@ export default function PostJobPage() {
         >
           <Link
             href="/"
-            className="cursor-pointer text-[#718078] transition-colors hover:text-[#087F50]"
+            className="cursor-pointer text-text-muted transition-colors hover:text-brand"
           >
             Home
           </Link>
-          <span className="text-[#B5BDB8]">/</span>
-          <span aria-current="page" className="font-medium text-[#17251F]">
+          <span className="text-border-strong">/</span>
+          <span aria-current="page" className="font-medium text-text-primary">
             Post Job
           </span>
         </nav>
 
         {/* Page heading */}
         <header className="mb-8">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#087F50]">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-brand">
             For employers
           </p>
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          <h1 className="text-2xl font-semibold tracking-tight text-text-primary sm:text-3xl">
             Post a job
           </h1>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-[#718078]">
+          <p className="mt-2 max-w-xl text-sm leading-6 text-text-secondary">
             Share your opportunity with designers, developers and creative
             technologists across India.
           </p>
@@ -201,9 +201,9 @@ export default function PostJobPage() {
           {/* Main form */}
           <form onSubmit={handlePublish} className="min-w-0 space-y-5">
             {/* 1. Job details */}
-            <section className="rounded-panel border border-[#E6EBE7] bg-white p-5 sm:p-6">
-              <h2 className="text-base font-semibold">Job details</h2>
-              <p className="mt-1 text-sm text-[#7A8780]">
+            <section className="rounded-panel border border-border-default bg-surface-card p-5 sm:p-6 shadow-xs">
+              <h2 className="text-base font-semibold text-text-primary">Job details</h2>
+              <p className="mt-1 text-sm text-text-muted">
                 Introduce the role and its responsibilities.
               </p>
 
@@ -304,7 +304,7 @@ export default function PostJobPage() {
                     <button
                       type="button"
                       onClick={addSkill}
-                      className="mt-1.5 shrink-0 cursor-pointer rounded-control border border-[#DCE5DE] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[#F3F8F4]"
+                      className="mt-1.5 shrink-0 cursor-pointer rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary"
                     >
                       Add
                     </button>
@@ -322,7 +322,7 @@ export default function PostJobPage() {
                             )
                           }
                           aria-label={`Remove ${skill}`}
-                          className="cursor-pointer rounded-control bg-[#EAF6EF] px-2.5 py-1.5 text-xs font-medium text-[#087F50] transition-colors hover:bg-[#DDF0E4]"
+                          className="cursor-pointer rounded-control bg-brand-soft px-2.5 py-1.5 text-xs font-medium text-brand transition-colors hover:bg-surface-muted"
                         >
                           {skill} ×
                         </button>
@@ -334,9 +334,9 @@ export default function PostJobPage() {
             </section>
 
             {/* 2. Hiring company */}
-            <section className="rounded-panel border border-[#E6EBE7] bg-white p-5 sm:p-6">
-              <h2 className="text-base font-semibold">Hiring company</h2>
-              <p className="mt-1 text-sm text-[#7A8780]">
+            <section className="rounded-panel border border-border-default bg-surface-card p-5 sm:p-6 shadow-xs">
+              <h2 className="text-base font-semibold text-text-primary">Hiring company</h2>
+              <p className="mt-1 text-sm text-text-muted">
                 Add the company name candidates will see.
               </p>
 
@@ -355,9 +355,9 @@ export default function PostJobPage() {
             </section>
 
             {/* 3. Location */}
-            <section className="rounded-panel border border-[#E6EBE7] bg-white p-5 sm:p-6">
-              <h2 className="text-base font-semibold">Location</h2>
-              <p className="mt-1 text-sm text-[#7A8780]">
+            <section className="rounded-panel border border-border-default bg-surface-card p-5 sm:p-6 shadow-xs">
+              <h2 className="text-base font-semibold text-text-primary">Location</h2>
+              <p className="mt-1 text-sm text-text-muted">
                 Tell candidates where they will work.
               </p>
 
@@ -375,8 +375,8 @@ export default function PostJobPage() {
                           onClick={() => setArrangement(option)}
                           className={`cursor-pointer rounded-control border px-3 py-2.5 text-sm font-medium transition-colors ${
                             selected
-                              ? "border-[#0FA968] bg-[#EDF8F1] text-[#087F50]"
-                              : "border-[#E2E8E3] text-[#53635A] hover:bg-[#F7FAF7]"
+                              ? "border-brand-accent bg-brand-soft text-brand shadow-xs"
+                              : "border-border-default text-text-secondary hover:bg-surface-subtle"
                           }`}
                         >
                           {option}
@@ -426,19 +426,19 @@ export default function PostJobPage() {
             </section>
 
             {/* 4. Pay and benefits */}
-            <section className="rounded-panel border border-[#E6EBE7] bg-white p-5 sm:p-6">
-              <h2 className="text-base font-semibold">Pay and benefits</h2>
-              <p className="mt-1 text-sm text-[#7A8780]">
+            <section className="rounded-panel border border-border-default bg-surface-card p-5 sm:p-6 shadow-xs">
+              <h2 className="text-base font-semibold text-text-primary">Pay and benefits</h2>
+              <p className="mt-1 text-sm text-text-muted">
                 Share compensation details and optional perks.
               </p>
 
               <div className="mt-5 space-y-5">
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="text-sm font-medium text-[#26372F]">
+                    <p className="text-sm font-medium text-text-primary">
                       Show salary on listing
                     </p>
-                    <p className="mt-1 text-xs leading-5 text-[#7A8780]">
+                    <p className="mt-1 text-xs leading-5 text-text-muted">
                       Display the salary range in the public preview.
                     </p>
                   </div>
@@ -450,7 +450,7 @@ export default function PostJobPage() {
                     aria-label="Show salary on listing"
                     onClick={() => setShowSalary((previous) => !previous)}
                     className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors ${
-                      showSalary ? "bg-[#0FA968]" : "bg-[#D7DED9]"
+                      showSalary ? "bg-brand-accent" : "bg-border-strong"
                     }`}
                   >
                     <span
@@ -517,7 +517,7 @@ export default function PostJobPage() {
 
                 <div>
                   <p className={labelClass}>Benefits</p>
-                  <p className="mt-1 text-xs text-[#7A8780]">
+                  <p className="mt-1 text-xs text-text-muted">
                     Optional — select all that apply.
                   </p>
 
@@ -533,8 +533,8 @@ export default function PostJobPage() {
                           onClick={() => toggleBenefit(benefit)}
                           className={`cursor-pointer rounded-control border px-3 py-2 text-xs font-medium transition-colors ${
                             selected
-                              ? "border-[#0FA968] bg-[#EDF8F1] text-[#087F50]"
-                              : "border-[#E2E8E3] text-[#53635A] hover:bg-[#F7FAF7]"
+                              ? "border-brand-accent bg-brand-soft text-brand shadow-xs"
+                              : "border-border-default text-text-secondary hover:bg-surface-subtle"
                           }`}
                         >
                           {benefit}
@@ -547,9 +547,9 @@ export default function PostJobPage() {
             </section>
 
             {/* 5. How to apply */}
-            <section className="rounded-panel border border-[#E6EBE7] bg-white p-5 sm:p-6">
-              <h2 className="text-base font-semibold">How to apply</h2>
-              <p className="mt-1 text-sm text-[#7A8780]">
+            <section className="rounded-panel border border-border-default bg-surface-card p-5 sm:p-6 shadow-xs">
+              <h2 className="text-base font-semibold text-text-primary">How to apply</h2>
+              <p className="mt-1 text-sm text-text-muted">
                 Candidates will apply directly by sending an email.
               </p>
 
@@ -574,9 +574,9 @@ export default function PostJobPage() {
             </section>
 
             {/* 6. Listing dates */}
-            <section className="rounded-panel border border-[#E6EBE7] bg-white p-5 sm:p-6">
-              <h2 className="text-base font-semibold">Listing dates</h2>
-              <p className="mt-1 text-sm text-[#7A8780]">
+            <section className="rounded-panel border border-border-default bg-surface-card p-5 sm:p-6 shadow-xs">
+              <h2 className="text-base font-semibold text-text-primary">Listing dates</h2>
+              <p className="mt-1 text-sm text-text-muted">
                 Choose how long the listing stays active.
               </p>
 
@@ -655,10 +655,10 @@ export default function PostJobPage() {
             </section>
 
             {/* Short checklist */}
-            <section className="rounded-panel border border-[#E6EBE7] bg-white p-4">
+            <section className="rounded-panel border border-border-default bg-surface-card p-4 shadow-xs">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="text-sm font-semibold">Required fields</h2>
-                <span className="text-xs tabular-nums text-[#718078]">
+                <h2 className="text-sm font-semibold text-text-primary">Required fields</h2>
+                <span className="text-xs tabular-nums text-text-muted">
                   {checklist.filter((item) => item.complete).length}/
                   {checklist.length}
                 </span>
@@ -672,12 +672,12 @@ export default function PostJobPage() {
                   >
                     <span
                       className={`h-2 w-2 shrink-0 rounded-full ${
-                        item.complete ? "bg-[#0FA968]" : "bg-[#D5DDD7]"
+                        item.complete ? "bg-brand-accent" : "bg-border-subtle"
                       }`}
                     />
                     <span
                       className={
-                        item.complete ? "text-[#53635A]" : "text-[#7A8780]"
+                        item.complete ? "text-text-secondary" : "text-text-muted"
                       }
                     >
                       {item.label}
@@ -689,6 +689,6 @@ export default function PostJobPage() {
           </aside>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

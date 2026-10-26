@@ -315,7 +315,7 @@ export default function SharePage() {
 
   return (
     <>
-      <main className="w-full bg-white text-slate-900 selection:bg-brand-soft">
+      <div className="w-full bg-surface-page text-text-primary selection:bg-brand-soft">
         <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10">
           <header className="relative isolate bg-white py-4 text-[#202820] sm:py-6 lg:py-7">
             <div className="grid items-center gap-8 lg:grid-cols-[1.22fr_0.78fr] lg:gap-12">
@@ -548,12 +548,12 @@ export default function SharePage() {
             </div>
           </section>
 
-          <footer className="mt-2 mb-8 flex flex-col items-center justify-between gap-3 border-t border-slate-200 pt-5 text-center sm:flex-row sm:text-left">
-            <p className="text-sm text-slate-500">More job communities and state groups are being added regularly.</p>
-            <span className="text-xs font-medium text-slate-400">Built for your next step</span>
+          <footer className="mt-2 mb-8 flex flex-col items-center justify-between gap-3 border-t border-border-default pt-5 text-center sm:flex-row sm:text-left">
+            <p className="text-sm text-text-muted">More job communities and state groups are being added regularly.</p>
+            <span className="text-xs font-medium text-text-muted">Built for your next step</span>
           </footer>
         </div>
-      </main>
+      </div>
 
       <Modal
         open={groupModalOpen}
@@ -720,7 +720,7 @@ export default function SharePage() {
           <button
             type="button"
             onClick={closeChannelModal}
-            className="mt-3 w-full cursor-pointer rounded-control px-3 py-2.5 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+            className="mt-3 w-full cursor-pointer rounded-control px-3 py-2.5 text-sm font-medium text-text-muted transition hover:bg-surface-subtle hover:text-text-primary"
           >
             Maybe later
           </button>

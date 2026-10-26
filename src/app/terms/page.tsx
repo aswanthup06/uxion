@@ -25,7 +25,7 @@ const sections = [
 
 export default function TermsPage() {
   return (
-    <main className="min-h-dvh bg-white text-slate-900">
+    <div className="min-h-dvh bg-surface-page text-text-primary">
       <div className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-16">
         {/* Breadcrumb */}
         <nav
@@ -114,6 +114,6 @@ export default function TermsPage() {
       </div>
 
       <SiteFooter />
-    </main>
+    </div>
   );
 }

@@ -16,6 +16,7 @@
   --color-surface-subtle: #f8faf8;
   --color-surface-muted: #f2f6f3;
   --color-surface-card: #ffffff;
+  --color-surface-page: #f8faf8;
   --color-surface-dark: #164e3b;
 
   /* Typography / Text Colors */
@@ -84,8 +85,7 @@
 
 html,
 body {
-  height: 100%;
-  overflow: hidden;
+  min-height: 100%;
   font-family: var(--font-manrope), Arial, sans-serif;
   color-scheme: light;
 }
@@ -95,13 +95,30 @@ body {
   color: var(--color-text-primary);
 }
 
-* {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+/* Subtle, unobtrusive scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-::-webkit-scrollbar {
-  display: none;
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-strong);
+}
+
+@supports (scrollbar-width: thin) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-default) transparent;
+  }
 }
 
 /* Reduced Motion Support */

@@ -32,9 +32,9 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
   }, [isModalOpen]);
 
   return (
-    <main className="fixed inset-0 h-[100dvh] w-full overflow-hidden bg-white text-[#17251E]">
+    <main className="fixed inset-0 h-[100dvh] w-full overflow-hidden bg-surface-page text-text-primary">
       <div className="grid h-full min-h-0 w-full grid-cols-1 overflow-hidden lg:grid-cols-[1fr_1fr]">
-        <aside className="relative hidden min-h-0 overflow-hidden bg-[#F6F8F6] px-10 py-9 text-[#164E3B] lg:flex lg:flex-col lg:justify-between xl:px-16 xl:py-12">
+        <aside className="relative hidden min-h-0 overflow-hidden bg-surface-subtle px-10 py-9 text-brand lg:flex lg:flex-col lg:justify-between xl:px-16 xl:py-12">
           <Link href="/" aria-label="Zenoway home" className="relative z-10 w-fit cursor-pointer">
             <Image
               src="/logo.png"
@@ -47,35 +47,35 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
           </Link>
 
           <div className="relative z-10 max-w-[460px] pb-8">
-            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#087F50]">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand">
               A better way forward
             </p>
-            <h2 className="text-4xl font-medium leading-[1.12] tracking-[-0.045em] text-[#1A2C22] xl:text-[52px]">
+            <h2 className="text-4xl font-medium leading-[1.12] tracking-[-0.045em] text-text-primary xl:text-[52px]">
               Your next move
               <br />
               starts here.
             </h2>
-            <p className="mt-5 max-w-[350px] text-[15px] leading-7 text-[#68766D]">
+            <p className="mt-5 max-w-[350px] text-[15px] leading-7 text-text-secondary">
               Discover opportunities that move your career forward.
             </p>
             <div
               aria-hidden="true"
               className="pointer-events-none relative mt-12 h-32 max-w-[330px] overflow-hidden"
             >
-              <div className="absolute left-0 top-5 h-20 w-20 rounded-full border border-[#DCE7DE]" />
-              <div className="absolute left-8 top-0 h-24 w-24 rounded-full border border-[#DCE7DE]" />
-              <div className="absolute left-20 top-9 h-16 w-16 rounded-full border border-[#DCE7DE]" />
-              <div className="absolute left-[7.25rem] top-0 h-28 w-28 rounded-full bg-[#EAF2EB]/70" />
-              <div className="absolute left-[8.25rem] top-4 h-20 w-20 rounded-full border border-[#D5E3D8]" />
+              <div className="absolute left-0 top-5 h-20 w-20 rounded-full border border-border-default" />
+              <div className="absolute left-8 top-0 h-24 w-24 rounded-full border border-border-default" />
+              <div className="absolute left-20 top-9 h-16 w-16 rounded-full border border-border-default" />
+              <div className="absolute left-[7.25rem] top-0 h-28 w-28 rounded-full bg-brand-soft/70" />
+              <div className="absolute left-[8.25rem] top-4 h-20 w-20 rounded-full border border-border-subtle" />
             </div>
           </div>
 
-          <p className="relative z-10 text-[11px] tracking-wide text-[#8A968E]">
-            ZENOWAY <span className="mx-2 text-[#C0CBC2]">/</span> CAREER OPPORTUNITIES
+          <p className="relative z-10 text-[11px] tracking-wide text-text-muted">
+            ZENOWAY <span className="mx-2 text-border-strong">/</span> CAREER OPPORTUNITIES
           </p>
 
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-40 -right-32 h-[430px] w-[430px] rounded-full border border-[#E1E9E2]" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 -right-16 h-[290px] w-[290px] rounded-full border border-[#E1E9E2]" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-40 -right-32 h-[430px] w-[430px] rounded-full border border-border-default" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 -right-16 h-[290px] w-[290px] rounded-full border border-border-default" />
         </aside>
 
         <section className="flex min-h-0 min-w-0 flex-col overflow-x-hidden overflow-y-auto overscroll-y-contain px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-10 lg:justify-center lg:px-12 lg:py-10 xl:px-20">
@@ -92,7 +92,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
             </Link>
             <Link
               href="/"
-              className="ml-auto inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-[#6F7C73] transition hover:text-[#164E3B]"
+              className="ml-auto inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-text-muted transition hover:text-brand"
             >
               Home <ArrowUpRight size={14} />
             </Link>
@@ -145,7 +145,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
             </p>
           </div>
 
-          <footer className="mx-auto w-full max-w-[390px] pb-1 text-center text-[10px] text-[#A0AAA3] lg:absolute lg:bottom-5 lg:left-1/2 lg:w-auto lg:-translate-x-1/2 lg:pb-0">
+          <footer className="mx-auto w-full max-w-[390px] pb-1 text-center text-[10px] text-text-muted lg:absolute lg:bottom-5 lg:left-1/2 lg:w-auto lg:-translate-x-1/2 lg:pb-0">
             © {new Date().getFullYear()} Zenoway
           </footer>
         </section>

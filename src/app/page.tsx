@@ -27,7 +27,7 @@ const organizationJsonLd = {
 
 export default function Home() {
   return (
-    <main className={` h-full overflow-y-auto text-ink`}>
+    <div className="text-text-primary">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -45,6 +45,6 @@ export default function Home() {
       <Faq />
 
       <SiteFooter />
-    </main>
+    </div>
   );
 }

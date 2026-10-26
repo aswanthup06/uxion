@@ -68,48 +68,48 @@ export default function Faq() {
       <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[0.8fr_1.2fr] md:gap-14">
         {/* Introduction */}
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.1em] text-[#0FA968]">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-accent">
             FAQ
           </p>
 
-          <h2 className="mt-3 text-2xl font-semibold leading-tight tracking-tight text-[#16251F] sm:text-[28px]">
+          <h2 className="mt-3 text-2xl font-semibold leading-tight tracking-tight text-text-primary sm:text-[28px]">
             Questions,
             <br />
             answered.
           </h2>
 
-          <p className="mt-3 max-w-sm text-sm leading-6 text-neutral-500">
+          <p className="mt-3 max-w-sm text-sm leading-6 text-text-secondary">
             Everything you need to know about finding your next creative
             role with Zenoway.
           </p>
 
           <Link
             href="/contact"
-            className="group mt-6 inline-flex cursor-pointer items-center gap-3 rounded-card border border-[#E5EAE6] bg-white p-3 transition-colors hover:border-[#0FA968]/40"
+            className="group mt-6 inline-flex cursor-pointer items-center gap-3 rounded-card border border-border-default bg-surface-card p-3 transition-colors hover:border-brand-accent/40 hover:shadow-subtle"
           >
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-control bg-[#EAF6EF] text-[#087F50]">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-control bg-brand-soft text-brand">
               <MessageCircle size={17} strokeWidth={1.8} />
             </span>
 
             <span className="flex-1">
-              <span className="block text-sm font-medium text-[#16251F]">
+              <span className="block text-sm font-medium text-text-primary">
                 Still have questions?
               </span>
-              <span className="mt-0.5 block text-xs text-neutral-500">
+              <span className="mt-0.5 block text-xs text-text-muted">
                 We’re happy to help.
               </span>
             </span>
 
             <ArrowRight
               size={15}
-              className="text-neutral-400 transition-transform group-hover:translate-x-0.5 group-hover:text-[#0FA968]"
+              className="text-text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand-accent"
             />
           </Link>
         </div>
 
         {/* FAQ accordion */}
         <div className="min-w-0">
-          <div className="divide-y divide-[#E8EDE9] border-y border-[#E8EDE9]">
+          <div className="divide-y divide-border-subtle border-y border-border-subtle">
             {ITEMS.map((item, index) => {
               const isOpen = open === index;
 
@@ -123,23 +123,22 @@ export default function Faq() {
                       onClick={() =>
                         setOpen(isOpen ? null : index)
                       }
-                      className="flex w-full cursor-pointer items-center justify-between gap-4 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0FA968]"
+                      className="flex w-full cursor-pointer items-center justify-between gap-4 py-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
                     >
                       <span className="flex min-w-0 items-start gap-3">
                         <span
-                          className="mt-0.5 hidden w-5 shrink-0 text-xs tabular-nums sm:block"
-                          style={{
-                            color: isOpen ? "#0FA968" : "#A0A8A3",
-                          }}
+                          className={`mt-0.5 hidden w-5 shrink-0 text-xs tabular-nums sm:block ${
+                            isOpen ? "text-brand-accent font-semibold" : "text-text-muted"
+                          }`}
                         >
                           {String(index + 1).padStart(2, "0")}
                         </span>
 
                         <span
-                          className={`text-sm leading-6 ${
+                          className={`text-sm leading-6 transition-colors ${
                             isOpen
-                              ? "font-semibold text-[#16251F]"
-                              : "font-medium text-neutral-700"
+                              ? "font-semibold text-text-primary"
+                              : "font-medium text-text-secondary hover:text-text-primary"
                           }`}
                         >
                           {item.q}
@@ -152,11 +151,11 @@ export default function Faq() {
                         transition={{
                           duration: reduceMotion ? 0 : 0.2,
                         }}
-                        className="grid h-7 w-7 shrink-0 place-items-center rounded-control"
-                        style={{
-                          color: isOpen ? "#087F50" : "#737D76",
-                          background: isOpen ? "#EAF6EF" : "#F5F7F5",
-                        }}
+                        className={`grid h-7 w-7 shrink-0 place-items-center rounded-control transition-colors ${
+                          isOpen
+                            ? "bg-brand-soft text-brand"
+                            : "bg-surface-subtle text-text-muted"
+                        }`}
                       >
                         <Plus size={15} strokeWidth={1.8} />
                       </motion.span>
@@ -185,7 +184,7 @@ export default function Faq() {
                         className="overflow-hidden"
                       >
                         <div className="pb-4 pl-0 sm:pl-8">
-                          <p className="max-w-xl text-sm leading-6 text-neutral-500">
+                          <p className="max-w-xl text-sm leading-6 text-text-secondary">
                             {item.a}
 
                             {item.link && (
@@ -193,7 +192,7 @@ export default function Faq() {
                                 {" "}
                                 <Link
                                   href={item.link.href}
-                                  className="inline-flex cursor-pointer items-center gap-1 font-medium text-[#087F50] underline decoration-[#0FA968]/40 underline-offset-4 transition-colors hover:text-[#0FA968]"
+                                  className="inline-flex cursor-pointer items-center gap-1 font-medium text-brand underline decoration-brand-accent/40 underline-offset-4 transition-colors hover:text-brand-accent"
                                 >
                                   {item.link.label}
                                   <span aria-hidden="true">↗</span>

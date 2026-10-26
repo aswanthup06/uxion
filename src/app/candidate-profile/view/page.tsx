@@ -114,14 +114,14 @@ function Detail({ label, value }: { label: string; value: string }) {
 
 export default function CandidatePublicProfilePage() {
   return (
-    <main className="min-h-screen bg-surface-page text-text-primary">
+    <div className="min-h-screen bg-surface-page text-text-primary">
       <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-5 sm:px-6 lg:px-8">
         {/* Breadcrumbs */}
         <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-text-muted">
-          <a href="/home" className="cursor-pointer transition-colors hover:text-brand">Home</a>
-          <span aria-hidden="true">/</span>
-          <a href="/candidates" className="cursor-pointer transition-colors hover:text-brand">Candidates</a>
-          <span aria-hidden="true">/</span>
+          <Link href="/" className="cursor-pointer transition-colors hover:text-brand">Home</Link>
+          <span aria-hidden="true" className="text-border-strong">/</span>
+          <Link href="/jobs" className="cursor-pointer transition-colors hover:text-brand">Jobs</Link>
+          <span aria-hidden="true" className="text-border-strong">/</span>
           <span aria-current="page" className="font-medium text-text-secondary">Candidate profile</span>
         </nav>
 
@@ -292,6 +292,6 @@ export default function CandidatePublicProfilePage() {
           <p className="inline-flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5" />A clear profile helps the right opportunities find you.</p>
         </footer>
       </div>
-    </main>
+    </div>
   );
 }

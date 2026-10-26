@@ -150,23 +150,23 @@ function Stat({
   loading: boolean;
 }) {
   return (
-    <div className="min-w-0 border-b border-[#e9ede9] py-5 sm:border-b-0 sm:border-r sm:px-5 sm:first:pl-0 sm:last:border-r-0 sm:last:pr-0">
+    <div className="min-w-0 border-b border-border-subtle py-5 sm:border-b-0 sm:border-r sm:border-border-subtle sm:px-5 sm:first:pl-0 sm:last:border-r-0 sm:last:pr-0">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[13px] font-medium text-[#737d75]">
+        <p className="text-[13px] font-medium text-text-muted">
           {label}
         </p>
-        <Icon size={17} strokeWidth={1.7} className="text-[#087F50]" />
+        <Icon size={17} strokeWidth={1.7} className="text-brand" />
       </div>
 
       {loading ? (
-        <div className="mt-3 h-9 w-16 animate-pulse rounded-control bg-[#edf1ed]" />
+        <div className="mt-3 h-9 w-16 animate-pulse rounded-control bg-surface-subtle" />
       ) : (
-        <p className="mt-2 text-3xl font-semibold tracking-[-0.045em] text-[#19231c]">
+        <p className="mt-2 text-3xl font-semibold tracking-[-0.045em] text-text-primary">
           {value.toLocaleString("en-IN")}
         </p>
       )}
 
-      <p className="mt-2 text-xs text-[#899189]">{description}</p>
+      <p className="mt-2 text-xs text-text-muted">{description}</p>
     </div>
   );
 }
@@ -256,22 +256,22 @@ export default function AdminDashboard() {
   const latestJob = jobs[0];
 
   return (
-    <main className="min-h-full bg-white text-[#19231c]">
+    <div className="min-h-full bg-surface-page text-text-primary">
       <div className="mx-auto w-full max-w-[1320px] px-5 py-8 sm:px-8 sm:py-10 lg:px-12">
         {/* Header */}
         <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
-            <div className="mb-3 flex items-center gap-2 text-xs text-[#8a938b]">
+            <div className="mb-3 flex items-center gap-2 text-xs text-text-muted">
               <span>Admin</span>
               <ChevronRight size={13} />
-              <span className="text-[#435047]">Overview</span>
+              <span className="text-text-secondary">Overview</span>
             </div>
 
-            <h1 className="text-[30px] font-semibold tracking-[-0.05em] sm:text-[36px]">
+            <h1 className="text-[30px] font-semibold tracking-[-0.05em] text-text-primary sm:text-[36px]">
               Dashboard
             </h1>
 
-            <p className="mt-2 text-sm leading-6 text-[#737d75]">
+            <p className="mt-2 text-sm leading-6 text-text-secondary">
               Manage your job listings in one place.
             </p>
           </div>
@@ -281,7 +281,7 @@ export default function AdminDashboard() {
               type="button"
               onClick={() => setRetryKey((key) => key + 1)}
               disabled={loading}
-              className="inline-flex h-10 items-center gap-2 rounded-control border border-[#e3e8e3] px-3.5 text-sm font-medium text-[#48544b] transition hover:bg-[#f7f9f7] disabled:opacity-50"
+              className="inline-flex h-10 items-center gap-2 rounded-control border border-border-default bg-surface-card px-3.5 text-sm font-medium text-text-secondary shadow-xs transition hover:bg-surface-subtle hover:text-text-primary disabled:opacity-50"
             >
               <RefreshCw
                 size={15}
@@ -292,7 +292,7 @@ export default function AdminDashboard() {
 
             <Link
               href="/admin/jobs/add"
-              className="inline-flex h-10 items-center gap-2 rounded-control bg-[#087F50] px-4 text-sm font-medium text-white transition hover:bg-[#066943]"
+              className="inline-flex h-10 items-center gap-2 rounded-control bg-brand px-4 text-sm font-medium text-text-inverse shadow-xs transition hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
             >
               <Plus size={16} />
               Add a job
@@ -304,7 +304,7 @@ export default function AdminDashboard() {
         {error && (
           <div
             role="alert"
-            className="mt-8 flex flex-col gap-3 border border-red-200 bg-red-50 p-4 sm:flex-row sm:items-center sm:justify-between"
+            className="mt-8 flex flex-col gap-3 rounded-panel border border-red-200 bg-red-50 p-4 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="flex items-start gap-3">
               <AlertCircle
@@ -330,15 +330,15 @@ export default function AdminDashboard() {
         )}
 
         {/* Overview statistics */}
-        <section className="mt-9 border-y border-[#e9ede9] sm:mt-11">
-          <div className="flex flex-col justify-between gap-1 border-b border-[#e9ede9] py-4 sm:flex-row sm:items-center">
-            <h2 className="text-sm font-semibold">Platform overview</h2>
-            <p className="text-xs text-[#899189]">
+        <section className="mt-9 border-y border-border-subtle sm:mt-11">
+          <div className="flex flex-col justify-between gap-1 border-b border-border-subtle py-4 sm:flex-row sm:items-center">
+            <h2 className="text-sm font-semibold text-text-primary">Platform overview</h2>
+            <p className="text-xs text-text-muted">
               Based on available job listings
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 sm:divide-x sm:divide-[#e9ede9]">
+          <div className="grid grid-cols-1 sm:grid-cols-3 sm:divide-x sm:divide-border-subtle">
             <Stat
               label="Total job listings"
               value={jobs.length}
@@ -365,21 +365,21 @@ export default function AdminDashboard() {
 
         {/* Latest job */}
         {!loading && !error && latestJob && (
-          <section className="mt-9 border-b border-[#e9ede9] pb-7">
+          <section className="mt-9 border-b border-border-subtle pb-7">
             <div className="mb-4 flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#087F50]" />
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#68756a]">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-text-muted">
                 Latest posting
               </p>
             </div>
 
             <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
               <div className="min-w-0">
-                <h2 className="break-words text-xl font-semibold tracking-[-0.035em] sm:text-2xl">
+                <h2 className="break-words text-xl font-semibold tracking-[-0.035em] text-text-primary sm:text-2xl">
                   {latestJob.title}
                 </h2>
 
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs text-[#737d75]">
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs text-text-secondary">
                   <span className="inline-flex items-center gap-1.5">
                     <Building2 size={14} />
                     {latestJob.company}
@@ -397,7 +397,7 @@ export default function AdminDashboard() {
 
               <Link
                 href={`/admin/jobs/${latestJob.id}`}
-                className="inline-flex shrink-0 items-center gap-2 self-start text-sm font-semibold text-[#087F50] transition hover:text-[#065e3c] sm:self-center"
+                className="inline-flex shrink-0 items-center gap-2 self-start text-sm font-semibold text-brand transition hover:text-brand-hover sm:self-center"
               >
                 Edit job
                 <ArrowUpRight size={16} />
@@ -410,10 +410,10 @@ export default function AdminDashboard() {
         <section className="mt-9">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <h2 className="text-lg font-semibold tracking-[-0.025em]">
+              <h2 className="text-lg font-semibold tracking-[-0.025em] text-text-primary">
                 Job listings
               </h2>
-              <p className="mt-1 text-sm text-[#7b857d]">
+              <p className="mt-1 text-sm text-text-muted">
                 Search and update your published jobs.
               </p>
             </div>
@@ -423,20 +423,20 @@ export default function AdminDashboard() {
                 <span className="sr-only">Search jobs</span>
                 <Search
                   size={16}
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#899189]"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
                 />
                 <input
                   type="search"
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search jobs..."
-                  className="h-10 w-full rounded-control border border-[#e3e8e3] bg-white pl-9 pr-3 text-sm outline-none transition placeholder:text-[#9aa29b] focus:border-[#087F50] focus:ring-2 focus:ring-[#087F50]/10"
+                  className="h-10 w-full rounded-control border border-border-default bg-surface-card pl-9 pr-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring"
                 />
               </label>
 
               <Link
                 href="/admin/jobs"
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-control border border-[#e3e8e3] px-3.5 text-sm font-medium text-[#48544b] transition hover:bg-[#f7f9f7]"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-3.5 text-sm font-medium text-text-secondary shadow-xs transition hover:bg-surface-subtle hover:text-text-primary"
               >
                 All jobs
                 <ArrowUpRight size={15} />
@@ -444,7 +444,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="mt-5 border-t border-[#e9ede9]">
+          <div className="mt-5 border-t border-border-subtle">
             {loading ? (
               <div className="space-y-5 py-6">
                 {Array.from({ length: 5 }).map((_, index) => (
@@ -452,29 +452,29 @@ export default function AdminDashboard() {
                     key={index}
                     className="flex animate-pulse items-center gap-4"
                   >
-                    <div className="h-10 w-10 rounded-control bg-[#edf1ed]" />
+                    <div className="h-10 w-10 rounded-control bg-surface-subtle" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-3.5 w-1/3 rounded-pill bg-[#edf1ed]" />
-                      <div className="h-3 w-1/2 rounded-pill bg-[#f2f4f2]" />
+                      <div className="h-3.5 w-1/3 rounded-pill bg-surface-subtle" />
+                      <div className="h-3 w-1/2 rounded-pill bg-surface-muted" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : error ? (
-              <div className="py-12 text-center text-sm text-[#7b857d]">
+              <div className="py-12 text-center text-sm text-text-muted">
                 Job listings are unavailable until the request succeeds.
               </div>
             ) : filteredJobs.length === 0 ? (
               <div className="py-16 text-center">
-                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-[#edf6f0] text-[#087F50]">
+                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand-soft text-brand">
                   {search ? <Search size={19} /> : <BriefcaseBusiness size={19} />}
                 </div>
 
-                <h3 className="mt-4 text-sm font-semibold">
+                <h3 className="mt-4 text-sm font-semibold text-text-primary">
                   {search ? "No matching jobs" : "No jobs posted yet"}
                 </h3>
 
-                <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#7b857d]">
+                <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-text-muted">
                   {search
                     ? "Try another title, company name, or location."
                     : "Your job listings will appear here when you add your first job."}
@@ -483,7 +483,7 @@ export default function AdminDashboard() {
                 {!search && (
                   <Link
                     href="/admin/jobs/add"
-                    className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#087F50]"
+                    className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-hover"
                   >
                     <Plus size={15} />
                     Add your first job
@@ -495,7 +495,7 @@ export default function AdminDashboard() {
                 {/* Desktop table */}
                 <div className="hidden overflow-x-auto md:block">
                   <table className="w-full text-left">
-                    <thead className="border-b border-[#e9ede9] text-[11px] font-semibold uppercase tracking-[0.1em] text-[#899189]">
+                    <thead className="border-b border-border-subtle text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted">
                       <tr>
                         <th className="py-4 pr-4">Job details</th>
                         <th className="px-4 py-4">Location</th>
@@ -504,33 +504,33 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
 
-                    <tbody className="divide-y divide-[#edf0ed]">
+                    <tbody className="divide-y divide-border-subtle">
                       {filteredJobs.slice(0, 8).map((job) => (
-                        <tr key={job.id} className="group hover:bg-[#fafcfa]">
+                        <tr key={job.id} className="group transition-colors hover:bg-surface-subtle">
                           <td className="py-4 pr-4">
                             <div className="flex min-w-0 items-center gap-3">
-                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-[#edf6f0] text-xs font-semibold text-[#087F50]">
+                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-brand-soft text-xs font-semibold text-brand">
                                 {getInitials(job.company)}
                               </div>
                               <div className="min-w-0">
-                                <p className="max-w-sm truncate text-sm font-medium text-[#253027]">
+                                <p className="max-w-sm truncate text-sm font-medium text-text-primary">
                                   {job.title}
                                 </p>
-                                <p className="mt-1 text-xs text-[#7b857d]">
+                                <p className="mt-1 text-xs text-text-muted">
                                   {job.company}
                                 </p>
                               </div>
                             </div>
                           </td>
 
-                          <td className="px-4 py-4 text-sm text-[#68736a]">
+                          <td className="px-4 py-4 text-sm text-text-secondary">
                             <span className="inline-flex items-center gap-1.5">
-                              <MapPin size={14} className="shrink-0 text-[#9aa29b]" />
+                              <MapPin size={14} className="shrink-0 text-text-muted" />
                               {job.location}
                             </span>
                           </td>
 
-                          <td className="px-4 py-4 text-sm text-[#68736a]">
+                          <td className="px-4 py-4 text-sm text-text-secondary">
                             {formatDate(job.postedDate)}
                           </td>
 
@@ -538,7 +538,7 @@ export default function AdminDashboard() {
                             <Link
                               href={`/admin/jobs/${job.id}`}
                               aria-label={`Edit ${job.title}`}
-                              className="inline-flex items-center gap-1.5 text-sm font-medium text-[#657168] transition hover:text-[#087F50]"
+                              className="inline-flex items-center gap-1.5 text-sm font-medium text-text-muted transition hover:text-brand"
                             >
                               <Pencil size={14} />
                               Edit
@@ -551,21 +551,21 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Mobile list */}
-                <div className="divide-y divide-[#edf0ed] md:hidden">
+                <div className="divide-y divide-border-subtle md:hidden">
                   {filteredJobs.slice(0, 8).map((job) => (
                     <div key={job.id} className="flex gap-3 py-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-[#edf6f0] text-xs font-semibold text-[#087F50]">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-brand-soft text-xs font-semibold text-brand">
                         {getInitials(job.company)}
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        <p className="break-words text-sm font-medium">
+                        <p className="break-words text-sm font-medium text-text-primary">
                           {job.title}
                         </p>
-                        <p className="mt-1 text-xs text-[#7b857d]">
+                        <p className="mt-1 text-xs text-text-muted">
                           {job.company}
                         </p>
-                        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-[#899189]">
+                        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-text-muted">
                           <span className="inline-flex items-center gap-1">
                             <MapPin size={12} />
                             {job.location}
@@ -575,7 +575,7 @@ export default function AdminDashboard() {
 
                         <Link
                           href={`/admin/jobs/${job.id}`}
-                          className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-[#087F50]"
+                          className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-brand hover:text-brand-hover"
                         >
                           <Pencil size={13} />
                           Edit job
@@ -585,14 +585,14 @@ export default function AdminDashboard() {
                   ))}
                 </div>
 
-                <div className="flex flex-col gap-2 border-t border-[#e9ede9] py-4 text-xs text-[#899189] sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-2 border-t border-border-subtle py-4 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
                   <span>
                     Showing {Math.min(filteredJobs.length, 8)} of{" "}
                     {filteredJobs.length} matching jobs
                   </span>
                   <Link
                     href="/admin/jobs"
-                    className="inline-flex items-center gap-1 self-start font-semibold text-[#087F50] hover:text-[#065e3c] sm:self-auto"
+                    className="inline-flex items-center gap-1 self-start font-semibold text-brand hover:text-brand-hover sm:self-auto"
                   >
                     Manage all jobs
                     <ChevronRight size={14} />
@@ -603,10 +603,10 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        <footer className="mt-12 border-t border-[#edf0ed] pt-5 text-xs text-[#9aa29b]">
+        <footer className="mt-12 border-t border-border-subtle pt-5 text-xs text-text-muted">
           Zenoway Admin
         </footer>
       </div>
-    </main>
+    </div>
   );
 }

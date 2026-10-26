@@ -33,7 +33,7 @@ const values = [
 export default function AboutPage() {
   return (
     <>
-      <main className="min-h-screen bg-white text-[#17231D]">
+      <div className="min-h-screen bg-surface-page text-text-primary">
         <div className="mx-auto w-full max-w-5xl px-5 pb-16 pt-8 sm:px-8 sm:pt-10 lg:px-10 lg:pb-24">
           {/* Breadcrumb */}
           <nav
@@ -42,16 +42,16 @@ export default function AboutPage() {
           >
             <Link
               href="/"
-              className="text-gray-500 transition-colors hover:text-[#087F50]"
+              className="text-text-muted transition-colors hover:text-brand"
             >
               Home
             </Link>
 
-            <span className="text-gray-300">/</span>
+            <span className="text-border-strong">/</span>
 
             <span
               aria-current="page"
-              className="font-medium text-[#087F50]"
+              className="font-medium text-brand"
             >
               About
             </span>
@@ -59,15 +59,15 @@ export default function AboutPage() {
 
           {/* Hero */}
           <section className="mb-16 max-w-3xl sm:mb-20">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#087F50]">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-brand">
               About Zenoway
             </p>
 
-            <h1 className="max-w-2xl text-3xl font-semibold leading-tight tracking-tight text-[#17231D] sm:text-4xl md:text-5xl">
+            <h1 className="max-w-2xl text-3xl font-semibold leading-tight tracking-tight text-text-primary sm:text-4xl md:text-5xl">
               A simpler way to find your next opportunity.
             </h1>
 
-            <p className="mt-6 max-w-2xl text-base leading-7 text-gray-500 sm:text-lg sm:leading-8">
+            <p className="mt-6 max-w-2xl text-base leading-7 text-text-secondary sm:text-lg sm:leading-8">
               Zenoway is a career platform built to bring job seekers and
               employers closer together. We want finding work and discovering
               the right people to feel clearer, more direct, and less
@@ -77,7 +77,7 @@ export default function AboutPage() {
             <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
               <Link
                 href="/jobs"
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-[#087F50] px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-[#066640]"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-brand px-5 py-3 text-sm font-medium text-text-inverse shadow-xs transition-colors hover:bg-brand-hover"
               >
                 Explore opportunities
                 <ArrowUpRight size={16} strokeWidth={1.8} />
@@ -85,7 +85,7 @@ export default function AboutPage() {
 
               <Link
                 href="/contact"
-                className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-[#087F50]"
+                className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-text-secondary transition-colors hover:text-brand"
               >
                 Get in touch
                 <ArrowUpRight size={16} strokeWidth={1.8} />
@@ -96,37 +96,37 @@ export default function AboutPage() {
           {/* Values */}
           <section aria-labelledby="about-values-heading">
             <div className="mb-8">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#087F50]">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand">
                 What drives us
               </p>
 
               <h2
                 id="about-values-heading"
-                className="text-2xl font-semibold tracking-tight text-[#17231D] sm:text-3xl"
+                className="text-2xl font-semibold tracking-tight text-text-primary sm:text-3xl"
               >
                 Built around people.
               </h2>
             </div>
 
-            <div className="border-y border-gray-100">
+            <div className="border-y border-border-subtle">
               {values.map((value) => {
                 const Icon = value.icon;
 
                 return (
                   <article
                     key={value.title}
-                    className="grid grid-cols-[40px_minmax(0,1fr)] items-start gap-4 border-b border-gray-100 py-7 last:border-b-0 sm:gap-5 sm:py-8"
+                    className="grid grid-cols-[40px_minmax(0,1fr)] items-start gap-4 border-b border-border-subtle py-7 last:border-b-0 sm:gap-5 sm:py-8"
                   >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-control bg-[#EAF6EF] text-[#087F50]">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-control bg-brand-soft text-brand">
                       <Icon size={19} strokeWidth={1.7} />
                     </span>
 
                     <div className="min-w-0">
-                      <h3 className="text-base font-semibold leading-6 text-[#17231D] sm:text-lg">
+                      <h3 className="text-base font-semibold leading-6 text-text-primary sm:text-lg">
                         {value.title}
                       </h3>
 
-                      <p className="mt-2 max-w-2xl text-sm leading-7 text-gray-500 sm:text-base">
+                      <p className="mt-2 max-w-2xl text-sm leading-7 text-text-secondary sm:text-base">
                         {value.body}
                       </p>
                     </div>
@@ -137,18 +137,18 @@ export default function AboutPage() {
           </section>
 
           {/* Social links */}
-          <section className="mt-16 border-t border-gray-100 pt-8 sm:mt-20 sm:pt-10">
+          <section className="mt-16 border-t border-border-subtle pt-8 sm:mt-20 sm:pt-10">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#087F50]">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand">
                   Stay connected
                 </p>
 
-                <h2 className="text-xl font-semibold tracking-tight text-[#17231D]">
+                <h2 className="text-xl font-semibold tracking-tight text-text-primary">
                   Follow our journey.
                 </h2>
 
-                <p className="mt-2 max-w-md text-sm leading-6 text-gray-500">
+                <p className="mt-2 max-w-md text-sm leading-6 text-text-secondary">
                   Follow Zenoway for career updates, new job postings, and
                   opportunities.
                 </p>
@@ -160,7 +160,7 @@ export default function AboutPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Follow Zenoway on LinkedIn"
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-[#087F50] px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-[#066640]"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-brand px-4 py-3 text-sm font-medium text-text-inverse shadow-xs transition-colors hover:bg-brand-hover"
                 >
                   <PiLinkedinLogoFill size={17} />
                   <span>LinkedIn</span>
@@ -172,7 +172,7 @@ export default function AboutPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Follow Zenoway on Instagram"
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:border-[#087F50] hover:text-[#087F50]"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-4 py-3 text-sm font-medium text-text-secondary shadow-xs transition-colors hover:border-brand hover:text-brand"
                 >
                   <Instagram size={17} strokeWidth={1.8} />
                   <span>Instagram</span>
@@ -182,7 +182,7 @@ export default function AboutPage() {
             </div>
           </section>
         </div>
-      </main>
+      </div>
 
       <SiteFooter />
     </>
