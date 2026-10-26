@@ -286,7 +286,7 @@ export default function AddJobPage() {
   };
 
   return (
-    <main className="min-h-full bg-white text-[#172820]">
+    <div className="min-h-full bg-surface-base text-text-primary">
       <div className="mx-auto max-w-5xl px-5 pb-32 pt-6 sm:px-8 sm:pt-9">
         {/* Breadcrumb navigation and page heading */}
         <div className="mb-7">
@@ -297,26 +297,26 @@ export default function AddJobPage() {
             <button
               type="button"
               onClick={() => router.push("/admin")}
-              className="text-slate-500 transition hover:text-[#087F50]"
+              className="text-text-muted transition hover:text-brand"
             >
               Dashboard
             </button>
 
-            <span className="text-slate-300">/</span>
+            <span className="text-border-strong">/</span>
 
             <button
               type="button"
               onClick={() => router.push("/admin/jobs")}
-              className="text-slate-500 transition hover:text-[#087F50]"
+              className="text-text-muted transition hover:text-brand"
             >
               Manage jobs
             </button>
 
-            <span className="text-slate-300">/</span>
+            <span className="text-border-strong">/</span>
 
             <span
               aria-current="page"
-              className="font-semibold text-[#172820]"
+              className="font-semibold text-text-primary"
             >
               Add listing
             </span>
@@ -324,23 +324,23 @@ export default function AddJobPage() {
 
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <div className="mb-3 inline-flex items-center gap-2 text-xs font-semibold text-[#087F50]">
+              <div className="mb-3 inline-flex items-center gap-2 text-xs font-semibold text-brand">
                 <Sparkles className="h-3.5 w-3.5" />
                 Job management
               </div>
 
-              <h1 className="text-2xl font-bold tracking-tight text-[#172820] sm:text-3xl">
+              <h1 className="text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
                 Add a new job
               </h1>
 
-              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">
+              <p className="mt-2 max-w-xl text-sm leading-6 text-text-secondary">
                 Create a job listing with the details candidates need to
                 discover and apply for the opportunity.
               </p>
             </div>
 
-            <div className="flex items-center gap-2 self-start border-l-2 border-[#087F50] pl-3 sm:self-auto">
-              <span className="text-xs font-medium text-slate-600">
+            <div className="flex items-center gap-2 self-start border-l-2 border-brand pl-3 sm:self-auto">
+              <span className="text-xs font-medium text-text-secondary">
                 New listing
               </span>
             </div>
@@ -349,7 +349,7 @@ export default function AddJobPage() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Section 1: Job information */}
-          <section className="border-b border-[#E2E9E3] pb-7">
+          <section className="border-b border-border-subtle pb-7">
             <SectionHeader
               number="01"
               title="Job information"
@@ -413,7 +413,7 @@ export default function AddJobPage() {
           </section>
 
           {/* Section 2: Experience */}
-          <section className="border-b border-[#E2E9E3] pb-7">
+          <section className="border-b border-border-subtle pb-7">
             <SectionHeader
               number="02"
               title="Experience requirements"
@@ -448,12 +448,12 @@ export default function AddJobPage() {
               />
             </div>
 
-            <div className="mt-4 flex items-start gap-2.5 bg-[#F7FAF7] px-4 py-3">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#087F50]" />
+            <div className="mt-4 flex items-start gap-2.5 rounded-control bg-surface-subtle px-4 py-3">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
 
-              <p className="text-xs leading-5 text-slate-500">
+              <p className="text-xs leading-5 text-text-muted">
                 Enter{" "}
-                <strong className="font-semibold text-[#34483B]">0</strong>{" "}
+                <strong className="font-semibold text-text-primary">0</strong>{" "}
                 for minimum experience to include entry-level candidates.
                 Leave maximum experience empty if there is no upper limit.
               </p>
@@ -461,7 +461,7 @@ export default function AddJobPage() {
           </section>
 
           {/* Section 3: Application details */}
-          <section className="border-b border-[#E2E9E3] pb-7">
+          <section className="border-b border-border-subtle pb-7">
             <SectionHeader
               number="03"
               title="Application details"
@@ -526,7 +526,7 @@ Benefits:
               className={`${inputClass} min-h-48 resize-y leading-6`}
             />
 
-            <p className="mt-2 text-xs text-slate-400">
+            <p className="mt-2 text-xs text-text-muted">
               Use clear paragraphs and bullet points to make your listing easy
               to read.
             </p>
@@ -583,6 +583,6 @@ Benefits:
           </div>
         </form>
       </div>
-    </main>
+    </div>
   );
 }

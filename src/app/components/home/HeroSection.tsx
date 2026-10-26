@@ -79,7 +79,7 @@ export default function HeroSection({
   const active = content[audience];
 
   return (
-    <section className="overflow-hidden bg-white text-[#202820]">
+    <section className="overflow-hidden bg-surface-base text-text-primary">
       <div className="mx-auto max-w-7xl px-6 pb-12 pt-4 sm:px-10 sm:pt-6 lg:px-12">
 
         <div className="grid items-center gap-8 lg:min-h-[510px] lg:grid-cols-[1.08fr_0.92fr] lg:gap-6">

@@ -145,49 +145,49 @@ export default function EmailGuidePage() {
           className="mb-16 sm:mb-20"
         >
           <div className="mb-7">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#087F50]">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">
               The process
             </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-text-primary sm:text-3xl">
               Make every email count.
             </h2>
           </div>
 
-          <div className="border-y border-gray-100">
+          <div className="border-y border-border-subtle">
             {steps.map((step, index) => (
               <article
                 key={step.number}
                 className={`grid grid-cols-[32px_minmax(0,1fr)] gap-4 py-7 sm:grid-cols-[48px_minmax(0,1fr)] sm:gap-6 sm:py-8 ${
-                  index !== 0 ? "border-t border-gray-100" : ""
+                  index !== 0 ? "border-t border-border-subtle" : ""
                 }`}
               >
-                <span className="pt-1 text-xs font-semibold tracking-wide text-[#087F50]">
+                <span className="pt-1 text-xs font-semibold tracking-wide text-brand">
                   {step.number}
                 </span>
 
                 <div className="min-w-0">
-                  <h3 className="text-lg font-semibold tracking-tight text-[#17231D] sm:text-xl">
+                  <h3 className="text-lg font-semibold tracking-tight text-text-primary sm:text-xl">
                     {step.title}
                   </h3>
 
-                  <p className="mt-3 max-w-2xl text-sm leading-7 text-gray-500 sm:text-base">
+                  <p className="mt-3 max-w-2xl text-sm leading-7 text-text-secondary sm:text-base">
                     {step.description}
                   </p>
 
                   {index === 0 && (
                     <div className="mt-5 space-y-3">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-text-muted">
                         Subject line examples
                       </p>
 
                       {subjectLines.map((subject) => (
                         <div
                           key={subject}
-                          className="flex items-start gap-3 text-sm leading-6 text-gray-700"
+                          className="flex items-start gap-3 text-sm leading-6 text-text-secondary"
                         >
                           <Check
                             size={16}
-                            className="mt-1 shrink-0 text-[#087F50]"
+                            className="mt-1 shrink-0 text-brand"
                           />
                           <span>{subject}</span>
                         </div>
@@ -196,8 +196,8 @@ export default function EmailGuidePage() {
                   )}
 
                   {index === 1 && (
-                    <p className="mt-5 border-l-2 border-[#087F50] pl-4 text-sm leading-7 text-gray-600">
-                      <span className="font-semibold text-[#17231D]">
+                    <p className="mt-5 border-l-2 border-brand pl-4 text-sm leading-7 text-text-secondary">
+                      <span className="font-semibold text-text-primary">
                         Tip:
                       </span>{" "}
                       Focus on what you can contribute to the company—not only
@@ -209,15 +209,15 @@ export default function EmailGuidePage() {
                     <div className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
                       {documents.map((document) => (
                         <div key={document.title} className="min-w-0">
-                          <div className="flex items-center gap-2 text-sm font-medium text-[#17231D]">
+                          <div className="flex items-center gap-2 text-sm font-medium text-text-primary">
                             <Check
                               size={16}
-                              className="shrink-0 text-[#087F50]"
+                              className="shrink-0 text-brand"
                             />
                             {document.title}
                           </div>
 
-                          <p className="mt-1 pl-6 text-sm leading-6 text-gray-500">
+                          <p className="mt-1 pl-6 text-sm leading-6 text-text-muted">
                             {document.note}
                           </p>
                         </div>
@@ -244,54 +244,54 @@ export default function EmailGuidePage() {
           className="mb-16 sm:mb-20"
         >
           <div className="mb-7 max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#087F50]">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">
               Ready-to-use example
             </p>
 
             <h2
               id="sample-heading"
-              className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl"
+              className="mt-2 text-2xl font-semibold tracking-tight text-text-primary sm:text-3xl"
             >
               Sample job application email
             </h2>
 
-            <p className="mt-3 text-sm leading-7 text-gray-500 sm:text-base">
+            <p className="mt-3 text-sm leading-7 text-text-secondary sm:text-base">
               Adapt this example to your experience and the role. Replace the
               placeholders before sending.
             </p>
           </div>
 
-          <div className="overflow-hidden rounded-panel border border-gray-200 bg-white">
+          <div className="overflow-hidden rounded-panel border border-border-default bg-surface-card">
             {/* Email header */}
-            <div className="flex items-center gap-3 border-b border-gray-100 bg-gray-50/70 px-5 py-4 sm:px-7">
+            <div className="flex items-center gap-3 border-b border-border-subtle bg-surface-subtle px-5 py-4 sm:px-7">
               <Mail
                 size={17}
                 strokeWidth={1.7}
-                className="text-[#087F50]"
+                className="text-brand"
               />
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-sm font-medium text-text-secondary">
                 New message
               </span>
             </div>
 
             <div className="p-5 sm:p-8 lg:p-9">
-              <div className="mb-7 space-y-4 border-b border-gray-100 pb-6 text-sm sm:flex sm:gap-8 sm:space-y-0">
+              <div className="mb-7 space-y-4 border-b border-border-subtle pb-6 text-sm sm:flex sm:gap-8 sm:space-y-0">
                 <div className="min-w-0 sm:flex-1">
-                  <p className="mb-1 text-xs text-gray-400">TO</p>
-                  <p className="break-words text-gray-700">
+                  <p className="mb-1 text-xs text-text-muted">TO</p>
+                  <p className="break-words text-text-secondary">
                     Hiring manager / recruiter
                   </p>
                 </div>
 
                 <div className="min-w-0 sm:flex-[2]">
-                  <p className="mb-1 text-xs text-gray-400">SUBJECT</p>
-                  <p className="break-words font-medium leading-6 text-[#17231D]">
+                  <p className="mb-1 text-xs text-text-muted">SUBJECT</p>
+                  <p className="break-words font-medium leading-6 text-text-primary">
                     Application for UI/UX Designer Position | [Your Name]
                   </p>
                 </div>
               </div>
 
-              <div className="max-w-2xl space-y-4 text-sm leading-7 text-gray-600 sm:text-base">
+              <div className="max-w-2xl space-y-4 text-sm leading-7 text-text-secondary sm:text-base">
                 <p>Dear Hiring Team,</p>
 
                 <p>I hope you are doing well.</p>
@@ -309,11 +309,11 @@ export default function EmailGuidePage() {
                   view selected projects in my portfolio:
                 </p>
 
-                <div className="rounded-card bg-[#F5FAF7] px-4 py-3 sm:px-5">
-                  <span className="font-medium text-[#17231D]">
+                <div className="rounded-card bg-brand-soft px-4 py-3 sm:px-5">
+                  <span className="font-medium text-text-primary">
                     Portfolio:{" "}
                   </span>
-                  <span className="break-all text-[#087F50]">
+                  <span className="break-all text-brand">
                     https://yourportfolio.com
                   </span>
                 </div>
@@ -327,7 +327,7 @@ export default function EmailGuidePage() {
                 <p className="pt-2">
                   Best regards,
                   <br />
-                  <span className="font-semibold text-[#17231D]">
+                  <span className="font-semibold text-text-primary">
                     [Your Name]
                   </span>
                   <br />
@@ -337,9 +337,9 @@ export default function EmailGuidePage() {
                 </p>
               </div>
 
-              <div className="mt-8 border-t border-gray-100 pt-5">
-                <p className="text-sm leading-6 text-gray-500">
-                  <span className="font-semibold text-[#087F50]">
+              <div className="mt-8 border-t border-border-subtle pt-5">
+                <p className="text-sm leading-6 text-text-muted">
+                  <span className="font-semibold text-brand">
                     Before sending:
                   </span>{" "}
                   Personalize the role title, experience, portfolio URL, and

@@ -30,8 +30,8 @@ type FieldProps = {
 
 const Field = ({ icon: Icon, label, children }: FieldProps) => (
   <div className="space-y-1.5">
-    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-      <Icon className="w-4 h-4 text-gray-500" />
+    <label className="flex items-center gap-2 text-sm font-medium text-text-secondary">
+      <Icon className="w-4 h-4 text-text-muted" />
       {label}
     </label>
     {children}
@@ -103,25 +103,25 @@ export default function AIJobPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 p-6">
+    <div className="min-h-screen bg-surface-page p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-panel shadow-lg">
-              <Sparkles className="w-8 h-8 text-white" />
+            <div className="p-3 bg-brand rounded-panel shadow-card">
+              <Sparkles className="w-8 h-8 text-text-inverse" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold text-text-primary">
                 AI Job Generator
               </h1>
-              <p className="text-gray-500 mt-1">
+              <p className="text-text-muted mt-1">
                 Generate structured job posts from raw descriptions
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <div className="flex items-center gap-2 text-sm text-text-muted">
+            <div className="w-2 h-2 bg-brand rounded-full animate-pulse"></div>
             AI Ready
           </div>
         </div>
@@ -129,19 +129,19 @@ export default function AIJobPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Panel - Input */}
           <div className="space-y-4">
-            <div className="bg-white rounded-panel shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-shadow duration-300">
+            <div className="bg-surface-card rounded-panel shadow-card border border-border-subtle p-6 hover:shadow-card-hover transition-shadow duration-300">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-blue-600" />
+                <h2 className="text-lg font-semibold text-text-primary flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-brand" />
                   Paste Job Description
                 </h2>
-                <span className="text-xs text-gray-400 bg-gray-50 px-3 py-1 rounded-full">
+                <span className="text-xs text-text-muted bg-surface-subtle px-3 py-1 rounded-full">
                   {rawJob.length} characters
                 </span>
               </div>
 
               <textarea
-                className="w-full h-[500px] border-0 bg-gray-50 rounded-control p-5 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200 resize-none text-gray-700 placeholder:text-gray-400"
+                className="w-full h-[500px] border-0 bg-surface-subtle rounded-control p-5 focus:ring-2 focus:ring-brand-soft focus:bg-surface-base transition-all duration-200 resize-none text-text-primary placeholder:text-text-muted"
                 placeholder="Paste the raw job description here... The AI will extract all relevant information and structure it for you."
                 value={rawJob}
                 onChange={(e) => setRawJob(e.target.value)}
@@ -150,7 +150,7 @@ export default function AIJobPage() {
               <button
                 onClick={generateJob}
                 disabled={loading || !rawJob.trim()}
-                className="w-full mt-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3.5 rounded-control shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full mt-5 bg-brand hover:bg-brand-hover text-text-inverse font-semibold py-3.5 rounded-control shadow-subtle hover:shadow-card-hover transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -169,13 +169,13 @@ export default function AIJobPage() {
 
           {/* Right Panel - Output */}
           <div className="space-y-4">
-            <div className="bg-white rounded-panel shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-shadow duration-300">
+            <div className="bg-surface-card rounded-panel shadow-card border border-border-subtle p-6 hover:shadow-card-hover transition-shadow duration-300">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                  <Briefcase className="w-5 h-5 text-indigo-600" />
+                <h2 className="text-lg font-semibold text-text-primary flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-brand" />
                   Structured Job Data
                 </h2>
-                <button className="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                <button className="text-xs text-brand hover:text-brand-hover font-medium">
                   Fill from AI
                 </button>
               </div>
@@ -183,7 +183,7 @@ export default function AIJobPage() {
               <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                 <Field icon={Briefcase} label="Job Title">
                   <input
-                    className="w-full border border-gray-200 rounded-control px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                    className="w-full border border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base outline-none"
                     placeholder="e.g. Senior Software Engineer"
                     value={job.title}
                     onChange={(e) => setJob({ ...job, title: e.target.value })}
@@ -193,7 +193,7 @@ export default function AIJobPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field icon={Building2} label="Company">
                     <input
-                      className="w-full border border-gray-200 rounded-control px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                      className="w-full border border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base outline-none"
                       placeholder="Company name"
                       value={job.company}
                       onChange={(e) =>
@@ -203,7 +203,7 @@ export default function AIJobPage() {
                   </Field>
                   <Field icon={Globe} label="Website">
                     <input
-                      className="w-full border border-gray-200 rounded-control px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                      className="w-full border border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base outline-none"
                       placeholder="https://..."
                       value={job.website}
                       onChange={(e) =>
@@ -215,7 +215,7 @@ export default function AIJobPage() {
 
                 <Field icon={MapPin} label="Location">
                   <input
-                    className="w-full border border-gray-200 rounded-control px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                    className="w-full border border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base outline-none"
                     placeholder="City, Country or Remote"
                     value={job.location}
                     onChange={(e) =>
@@ -227,7 +227,7 @@ export default function AIJobPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field icon={Clock} label="Employment Type">
                     <input
-                      className="w-full border border-gray-200 rounded-control px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                      className="w-full border border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base outline-none"
                       placeholder="Full-time, Part-time, etc."
                       value={job.employmentType}
                       onChange={(e) =>
@@ -237,7 +237,7 @@ export default function AIJobPage() {
                   </Field>
                   <Field icon={Award} label="Experience Level">
                     <input
-                      className="w-full border border-gray-200 rounded-control px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                      className="w-full border border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base outline-none"
                       placeholder="Senior, Junior, etc."
                       value={job.experience}
                       onChange={(e) =>
@@ -250,7 +250,7 @@ export default function AIJobPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field icon={DollarSign} label="Salary">
                     <input
-                      className="w-full border border-gray-200 rounded-control px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                      className="w-full border border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base outline-none"
                       placeholder="$80,000 - $100,000"
                       value={job.salary}
                       onChange={(e) =>
@@ -260,7 +260,7 @@ export default function AIJobPage() {
                   </Field>
                   <Field icon={Tag} label="Category">
                     <input
-                      className="w-full border border-gray-200 rounded-control px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                      className="w-full border border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base outline-none"
                       placeholder="Engineering, Design, etc."
                       value={job.category}
                       onChange={(e) =>
@@ -273,7 +273,7 @@ export default function AIJobPage() {
                 <Field icon={Mail} label="Application Email">
                   <input
                     type="email"
-                    className="w-full border border-gray-200 rounded-control px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                    className="w-full border border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base outline-none"
                     placeholder="careers@company.com"
                     value={job.email}
                     onChange={(e) =>
@@ -287,7 +287,7 @@ export default function AIJobPage() {
                     ref={(el) => {
                       if (el) autoResize(el);
                     }}
-                    className="w-full resize-none border border-gray-200 rounded-control px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                    className="w-full resize-none border border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base outline-none"
                     placeholder="Job description..."
                     value={job.description}
                     onChange={(e) =>
@@ -299,7 +299,7 @@ export default function AIJobPage() {
 
                 <Field icon={Wrench} label="Skills">
                   <textarea
-                    className="w-full border h-fit border-gray-200 rounded-control px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white resize-y"
+                    className="w-full border h-fit border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base resize-y outline-none"
                     placeholder="React, TypeScript, AWS, ..."
                     value={job.skills}
                     onChange={(e) => setJob({ ...job, skills: e.target.value })}
@@ -312,7 +312,7 @@ export default function AIJobPage() {
                    ref={(el) => {
                       if (el) autoResize(el);
                     }}
-                    className="w-full border resize-none border-gray-200 rounded-control px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                    className="w-full border resize-none border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base outline-none"
                     placeholder="• Build and maintain features&#10;• Write clean code"
                     value={job.responsibilities}
                     onChange={(e) =>
@@ -324,7 +324,7 @@ export default function AIJobPage() {
 
                 <Field icon={CheckSquare} label="Requirements">
                   <textarea
-                    className="w-full border h-fit border-gray-200 rounded-control px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white resize-y"
+                    className="w-full border h-fit border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base resize-y outline-none"
                     placeholder="• 5+ years experience&#10;• BS in Computer Science"
                     value={job.requirements}
                     onChange={(e) =>

@@ -176,19 +176,19 @@ export default function HRManagementPage() {
             <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
               <label className="relative block sm:min-w-64">
                 <span className="sr-only">Search candidates</span>
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
                 <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search name, role, email..." className={`${controlClass} w-full pl-9`} />
               </label>
               <label className="relative block">
                 <span className="sr-only">Filter by status</span>
-                <Filter className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Filter className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
                 <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className={`${controlClass} w-full cursor-pointer pl-9 sm:w-40`}>
                   <option>All statuses</option>{statuses.map((status) => <option key={status}>{status}</option>)}
                 </select>
               </label>
               <label className="relative block">
                 <span className="sr-only">Filter by role</span>
-                <SlidersHorizontal className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <SlidersHorizontal className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
                 <select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)} className={`${controlClass} w-full cursor-pointer pl-9 sm:w-48`}>
                   {roles.map((role) => <option key={role}>{role}</option>)}
                 </select>

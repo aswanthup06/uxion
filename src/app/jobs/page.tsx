@@ -411,9 +411,9 @@ function JobsViewContent() {
           </button>
         </nav>
 
-        <div className="space-y-6 border-t border-slate-100 pt-6">
+        <div className="space-y-6 border-t border-border-subtle pt-6">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
               Job type
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -430,7 +430,7 @@ function JobsViewContent() {
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
               Work mode
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -447,7 +447,7 @@ function JobsViewContent() {
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
               Department
             </p>
             <ul className="mt-2 space-y-0.5">
@@ -480,7 +480,7 @@ function JobsViewContent() {
             </ul>
           </div>
 
-          <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+          <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
             Experience
             <select
               value={experience}
@@ -493,7 +493,7 @@ function JobsViewContent() {
             </select>
           </label>
 
-          <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+          <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
             Min. monthly salary
             <select
               value={salaryFloor}
@@ -529,7 +529,7 @@ function JobsViewContent() {
       {/* Main content */}
       <div
         ref={mainRef}
-        className="min-w-0 px-5 py-5 sm:px-8 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:px-10 lg:py-6"
+        className="min-w-0 bg-surface-base px-5 py-5 sm:px-8 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:px-10 lg:py-6"
       >
         <header className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -1006,7 +1006,7 @@ export default function JobsPage() {
         <div className="flex h-screen w-full items-center justify-center bg-white">
           <div className="flex flex-col items-center gap-3">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand border-t-transparent" />
-            <p className="text-sm text-slate-500">Loading career opportunities...</p>
+            <p className="text-sm text-text-muted">Loading career opportunities...</p>
           </div>
         </div>
       }

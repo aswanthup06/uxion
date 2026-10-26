@@ -74,13 +74,13 @@ export default function JobTable({ jobs, onDelete }: Props) {
   }
 
   return (
-    <section className="overflow-hidden rounded-panel border border-gray-200 bg-white">
+    <section className="overflow-hidden rounded-panel border border-border-default bg-surface-card">
       {/* Search and result count */}
-      <div className="flex flex-col gap-3 border-b border-gray-100 p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-border-subtle p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-sm">
           <Search
             size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
           />
 
           <input
@@ -89,7 +89,7 @@ export default function JobTable({ jobs, onDelete }: Props) {
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search jobs, companies, locations..."
             aria-label="Search jobs"
-            className="h-10 w-full rounded-control border border-gray-200 bg-white pl-9 pr-9 text-sm text-gray-900 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand-soft"
+            className="h-10 w-full rounded-control border border-border-default bg-surface-base pl-9 pr-9 text-sm text-text-primary outline-none transition focus:border-brand focus:ring-2 focus:ring-brand-soft"
           />
 
           {search && (
@@ -97,15 +97,15 @@ export default function JobTable({ jobs, onDelete }: Props) {
               type="button"
               onClick={() => setSearch("")}
               aria-label="Clear search"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-control p-1 text-gray-400 hover:text-gray-700"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-control p-1 text-text-muted hover:text-text-primary"
             >
               <X size={15} />
             </button>
           )}
         </div>
 
-        <p className="text-sm text-gray-500">
-          <span className="font-medium text-gray-900">
+        <p className="text-sm text-text-muted">
+          <span className="font-medium text-text-primary">
             {filteredJobs.length}
           </span>{" "}
           {filteredJobs.length === 1 ? "job" : "jobs"}
@@ -115,16 +115,16 @@ export default function JobTable({ jobs, onDelete }: Props) {
       {/* Table */}
       {filteredJobs.length === 0 ? (
         <div className="px-6 py-16 text-center">
-          <p className="text-sm font-medium text-gray-900">
+          <p className="text-sm font-medium text-text-primary">
             No matching jobs
           </p>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-text-muted">
             Try another title, company, or location.
           </p>
           <button
             type="button"
             onClick={() => setSearch("")}
-            className="mt-4 text-sm font-medium text-[#087F50] hover:underline"
+            className="mt-4 text-sm font-medium text-brand hover:underline"
           >
             Clear search
           </button>
@@ -134,12 +134,12 @@ export default function JobTable({ jobs, onDelete }: Props) {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] border-collapse text-left">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50/70">
+                <tr className="border-b border-border-subtle bg-surface-subtle">
                   {["Job", "Company", "Location", "Views", "Actions"].map(
                     (heading) => (
                       <th
                         key={heading}
-                        className={`px-5 py-3 text-xs font-medium uppercase tracking-wide text-gray-500 ${
+                        className={`px-5 py-3 text-xs font-medium uppercase tracking-wide text-text-muted ${
                           heading === "Actions" ? "text-right" : ""
                         }`}
                       >
@@ -150,7 +150,7 @@ export default function JobTable({ jobs, onDelete }: Props) {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border-subtle">
                 {visibleJobs.map((job) => (
                   <JobRow
                     key={job.id}
@@ -163,14 +163,14 @@ export default function JobTable({ jobs, onDelete }: Props) {
           </div>
 
           {/* Pagination */}
-          <div className="flex flex-col gap-3 border-t border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs text-gray-500">
+          <div className="flex flex-col gap-3 border-t border-border-subtle px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-text-muted">
               Showing{" "}
-              <span className="font-medium text-gray-800">
+              <span className="font-medium text-text-primary">
                 {startIndex + 1}–{Math.min(startIndex + PAGE_SIZE, filteredJobs.length)}
               </span>{" "}
               of{" "}
-              <span className="font-medium text-gray-800">
+              <span className="font-medium text-text-primary">
                 {filteredJobs.length}
               </span>{" "}
               jobs
@@ -181,13 +181,13 @@ export default function JobTable({ jobs, onDelete }: Props) {
                 type="button"
                 disabled={page === 1}
                 onClick={() => setPage((current) => current - 1)}
-                className="inline-flex h-9 items-center gap-1 rounded-control border border-gray-200 px-3 text-sm text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                className="inline-flex h-9 items-center gap-1 rounded-control border border-border-default px-3 text-sm text-text-secondary transition hover:bg-surface-subtle disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ChevronLeft size={15} />
                 Previous
               </button>
 
-              <span className="min-w-16 text-center text-sm tabular-nums text-gray-600">
+              <span className="min-w-16 text-center text-sm tabular-nums text-text-secondary">
                 {page} / {totalPages}
               </span>
 
@@ -195,7 +195,7 @@ export default function JobTable({ jobs, onDelete }: Props) {
                 type="button"
                 disabled={page === totalPages}
                 onClick={() => setPage((current) => current + 1)}
-                className="inline-flex h-9 items-center gap-1 rounded-control border border-gray-200 px-3 text-sm text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                className="inline-flex h-9 items-center gap-1 rounded-control border border-border-default px-3 text-sm text-text-secondary transition hover:bg-surface-subtle disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Next
                 <ChevronRight size={15} />

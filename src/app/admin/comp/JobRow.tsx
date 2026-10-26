@@ -23,35 +23,35 @@ function formatDate(dateString: string) {
 
 export default function JobRow({ job, onDelete }: Props) {
   return (
-    <tr className="group transition-colors hover:bg-gray-50/70">
+    <tr className="group transition-colors hover:bg-surface-subtle">
       <td className="px-5 py-4">
         <div className="max-w-xs">
-          <p className="font-medium text-gray-900">{job.title}</p>
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="font-medium text-text-primary">{job.title}</p>
+          <p className="mt-1 text-xs text-text-muted">
             {job.experience || "Experience not specified"}
           </p>
         </div>
       </td>
 
       <td className="px-5 py-4">
-        <p className="text-sm font-medium text-gray-800">
+        <p className="text-sm font-medium text-text-primary">
           {job.company}
         </p>
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-text-muted">
           {formatDate(job.postedDate)}
         </p>
       </td>
 
       <td className="px-5 py-4">
-        <span className="inline-flex items-center gap-1.5 text-sm text-gray-600">
-          <span className="h-1.5 w-1.5 rounded-full bg-gray-300" />
+        <span className="inline-flex items-center gap-1.5 text-sm text-text-secondary">
+          <span className="h-1.5 w-1.5 rounded-full bg-border-strong" />
           {job.location || "—"}
         </span>
       </td>
 
       <td className="px-5 py-4">
-        <span className="inline-flex items-center gap-1.5 text-sm tabular-nums text-gray-600">
-          <Eye size={14} className="text-gray-400" />
+        <span className="inline-flex items-center gap-1.5 text-sm tabular-nums text-text-secondary">
+          <Eye size={14} className="text-text-muted" />
           {job.views ?? 0}
         </span>
       </td>
@@ -74,7 +74,7 @@ export default function JobRow({ job, onDelete }: Props) {
             onClick={() => onDelete(job.id)}
             aria-label={`Delete ${job.title}`}
             title="Delete job"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-control text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-control text-text-muted transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
           >
             <Trash2 size={15} />
           </button>

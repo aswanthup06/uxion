@@ -77,13 +77,13 @@ export default function JobListPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <main className="min-h-full bg-white text-[#172820]">
+    <main className="min-h-full bg-surface-page text-text-primary">
       <Toaster
         position="top-right"
         toastOptions={{
           duration: 3000,
           style: {
-            border: "1px solid #E1E8E2",
+            border: "1px solid var(--color-border-default)",
             borderRadius: "8px",
             fontSize: "13px",
           },
@@ -92,30 +92,30 @@ export default function JobListPage() {
 
       <div className="mx-auto max-w-7xl px-5 pb-10 pt-6 sm:px-8 sm:pt-9">
         {/* Breadcrumb */}
-        <nav className="mb-6 flex items-center gap-2 text-xs text-[#849087]">
+        <nav className="mb-6 flex items-center gap-2 text-xs text-text-muted">
           <Link
             href="/admin"
-            className="transition hover:text-[#087F50]"
+            className="transition hover:text-brand"
           >
             Dashboard
           </Link>
           <span>/</span>
-          <span className="font-medium text-[#35463A]">Job listings</span>
+          <span className="font-medium text-text-primary">Job listings</span>
         </nav>
 
         {/* Header */}
-        <header className="flex flex-col gap-5 border-b border-[#E7ECE8] pb-7 sm:flex-row sm:items-end sm:justify-between">
+        <header className="flex flex-col gap-5 border-b border-border-subtle pb-7 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#087F50]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#0FA968]" />
+            <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" />
               Job management
             </p>
 
-            <h1 className="mt-3 text-[26px] font-semibold tracking-[-0.04em] text-[#172820] sm:text-[32px]">
+            <h1 className="mt-3 text-[26px] font-semibold tracking-[-0.04em] text-text-primary sm:text-[32px]">
               Job listings
             </h1>
 
-            <p className="mt-2 text-sm leading-6 text-[#7B867E]">
+            <p className="mt-2 text-sm leading-6 text-text-muted">
               Manage, review and update your published job postings.
             </p>
           </div>
@@ -126,7 +126,7 @@ export default function JobListPage() {
               onClick={() => void loadJobs(true)}
               disabled={refreshing}
               aria-label="Refresh job listings"
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-[#E1E8E2] text-[#58665B] transition hover:bg-[#F5F8F5] disabled:opacity-50"
+              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-border-default text-text-secondary transition hover:bg-surface-subtle disabled:opacity-50"
             >
               <RefreshCw
                 size={15}
@@ -136,7 +136,7 @@ export default function JobListPage() {
 
             <Link
               href="/admin/jobs/add"
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-control bg-[#087F50] px-4 text-sm font-medium text-white transition hover:bg-[#066640]"
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-control bg-brand px-4 text-sm font-medium text-text-inverse transition hover:bg-brand-hover"
             >
               <Plus size={16} />
               Add new job
@@ -146,21 +146,21 @@ export default function JobListPage() {
         </header>
 
         {/* Summary */}
-        <section className="flex flex-wrap items-center justify-between gap-4 border-b border-[#E7ECE8] py-5">
+        <section className="flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle py-5">
           <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-control bg-[#EFF7F0] text-[#087F50]">
+            <span className="flex h-9 w-9 items-center justify-center rounded-control bg-brand-soft text-brand">
               <BriefcaseBusiness size={17} strokeWidth={1.7} />
             </span>
 
             <div>
-              <p className="text-xs text-[#849087]">Total job listings</p>
-              <p className="mt-0.5 text-xl font-semibold tracking-tight text-[#172820]">
+              <p className="text-xs text-text-muted">Total job listings</p>
+              <p className="mt-0.5 text-xl font-semibold tracking-tight text-text-primary">
                 {jobs.length}
               </p>
             </div>
           </div>
 
-          <span className="text-xs text-[#849087]">
+          <span className="text-xs text-text-muted">
             {jobs.length === 1 ? "1 listing" : `${jobs.length} listings`}
           </span>
         </section>
@@ -171,22 +171,22 @@ export default function JobListPage() {
             <JobTable jobs={jobs} onDelete={handleDelete} />
           ) : (
             <div className="py-16 text-center">
-              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-control bg-[#EFF7F0] text-[#087F50]">
+              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-control bg-brand-soft text-brand">
                 <BriefcaseBusiness size={20} strokeWidth={1.7} />
               </span>
 
-              <h2 className="mt-4 text-base font-semibold text-[#172820]">
+              <h2 className="mt-4 text-base font-semibold text-text-primary">
                 No job listings yet
               </h2>
 
-              <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#7B867E]">
+              <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-text-muted">
                 Your job postings will appear here once you add your first
                 listing.
               </p>
 
               <Link
                 href="/admin/jobs/add"
-                className="mt-5 inline-flex items-center gap-2 rounded-control bg-[#087F50] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#066640]"
+                className="mt-5 inline-flex items-center gap-2 rounded-control bg-brand px-4 py-2.5 text-sm font-medium text-text-inverse transition hover:bg-brand-hover"
               >
                 <Plus size={15} />
                 Add your first job

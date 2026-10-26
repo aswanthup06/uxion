@@ -8,11 +8,11 @@ export default function JobEmptyState() {
         <BriefcaseBusiness size={22} strokeWidth={1.5} />
       </div>
 
-      <h3 className="mt-5 text-base font-semibold tracking-tight text-gray-900">
+      <h3 className="mt-5 text-base font-semibold tracking-tight text-text-primary">
         No jobs posted yet
       </h3>
 
-      <p className="mt-2 max-w-xs text-sm leading-6 text-gray-500">
+      <p className="mt-2 max-w-xs text-sm leading-6 text-text-secondary">
         Your job listings will appear here once you publish your first opening.
       </p>
 

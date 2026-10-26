@@ -8,10 +8,10 @@ import { ChevronDown, ChevronRight, SearchIcon, SadIcon } from './icons';
 // ✅ JobCard component
 const JobCard = ({ job }) => {
   return (
-    <div className="bg-[#0B1F38] p-3 rounded-card border border-[#122B45] hover:border-orange-500/30 transition-all duration-200">
+    <div className="bg-surface-card p-3 rounded-card border border-border-default hover:border-brand-accent/40 transition-all duration-200">
       <div className="flex items-center">
-        <div className="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
-        <span className="text-sm text-white/90">{job}</span>
+        <div className="w-2 h-2 bg-brand rounded-full mr-3"></div>
+        <span className="text-sm text-text-primary">{job}</span>
       </div>
     </div>
   );
@@ -32,10 +32,10 @@ const Subcategory = ({ subcategory, defaultExpanded = false }) => {
         className="flex items-center cursor-pointer mb-3 group"
         onClick={() => setExpanded(!expanded)}
       >
-        <h3 className="text-lg font-semibold text-white/90 mr-2 group-hover:text-white transition-colors">
+        <h3 className="text-lg font-semibold text-text-primary mr-2 group-hover:text-brand transition-colors">
           {subcategory.name}
         </h3>
-        <span className="text-white/50 group-hover:text-white transition-colors">
+        <span className="text-text-muted group-hover:text-brand transition-colors">
           {expanded ? <ChevronDown /> : <ChevronRight />}
         </span>
       </div>
@@ -61,26 +61,26 @@ const Category = ({ category, defaultExpanded = false }) => {
   }, [defaultExpanded]);
 
   return (
-    <div className="bg-[#0B1F38] rounded-panel overflow-hidden mb-2 border border-[#122B45]">
+    <div className="bg-surface-card rounded-panel overflow-hidden mb-3 border border-border-default shadow-subtle">
       <div
         className="flex items-center justify-between p-4 cursor-pointer group"
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center">
-          <div className="w-10 h-10 rounded-full bg-[#122B45] flex items-center justify-center mr-3 group-hover:bg-[#1A365D] transition-colors">
+          <div className="w-10 h-10 rounded-full bg-brand-soft flex items-center justify-center mr-3 group-hover:bg-brand-soft-hover transition-colors">
             <span className="text-base">{category.icon}</span>
           </div>
-          <h2 className="text-sm md:text-base lg:text-lg font-base text-white/70 group-hover:text-white transition-colors">
+          <h2 className="text-sm md:text-base lg:text-lg font-medium text-text-primary group-hover:text-brand transition-colors">
             {category.name}
           </h2>
         </div>
-        <span className="text-white/50 group-hover:text-white transition-colors">
+        <span className="text-text-muted group-hover:text-brand transition-colors">
           {expanded ? <ChevronDown /> : <ChevronRight />}
         </span>
       </div>
 
       {expanded && (
-        <div className="p-4 border-t border-[#122B45]">
+        <div className="p-4 border-t border-border-subtle bg-surface-subtle/50">
           {category.subcategories.map((subcategory, index) => (
             <Subcategory
               key={index}
@@ -106,12 +106,12 @@ const SearchBar = ({ onSearch }) => {
 
   return (
     <div className="relative mb-8">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-text-muted">
         <SearchIcon />
       </div>
       <input
         type="text"
-        className="block rounded-control w-full pl-10 pr-3 py-4 border border-[#122B45] bg-[#0B1F38] text-white/90 placeholder-white/50 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+        className="block rounded-control w-full pl-10 pr-3 py-3.5 border border-border-default bg-surface-card text-text-primary placeholder:text-text-muted shadow-subtle focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand transition"
         placeholder="Search for IT jobs..."
         value={query}
         onChange={handleChange}
@@ -161,7 +161,7 @@ export default function List() {
   };
 
   return (
-    <div className="min-h-screen bg-[#031225] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-surface-page py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <SearchBar onSearch={handleSearch} />
 
@@ -177,11 +177,11 @@ export default function List() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <div className="inline-flex text-white items-center justify-center w-16 h-16 rounded-full bg-[#0B1F38] mb-4">
+            <div className="inline-flex text-brand items-center justify-center w-16 h-16 rounded-full bg-brand-soft mb-4">
               <SadIcon />
             </div>
-            <h3 className="text-xl font-medium text-white/90 mb-2">No jobs found</h3>
-            <p className="text-white/70">
+            <h3 className="text-xl font-medium text-text-primary mb-2">No jobs found</h3>
+            <p className="text-text-muted">
               No jobs match your search criteria. Try different keywords.
             </p>
           </div>

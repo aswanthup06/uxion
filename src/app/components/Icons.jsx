@@ -1,4 +1,4 @@
-export const LocationIcon = ({ className = "w-4 h-4 text-[#E1FF00]" }) => (
+export const LocationIcon = ({ className = "w-4 h-4 text-brand" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     className={className}
@@ -21,7 +21,7 @@ export const LocationIcon = ({ className = "w-4 h-4 text-[#E1FF00]" }) => (
   </svg>
 );
 
-export const ExperienceIcon = ({ className = "w-4 h-4 text-[#E1FF00]" }) => (
+export const ExperienceIcon = ({ className = "w-4 h-4 text-brand" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     className={className}
@@ -38,7 +38,7 @@ export const ExperienceIcon = ({ className = "w-4 h-4 text-[#E1FF00]" }) => (
   </svg>
 );
 
-export const SalaryIcon = ({ className = "w-4 h-4 text-[#E1FF00]" }) => (
+export const SalaryIcon = ({ className = "w-4 h-4 text-brand" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     className={className}
@@ -55,7 +55,7 @@ export const SalaryIcon = ({ className = "w-4 h-4 text-[#E1FF00]" }) => (
   </svg>
 );
 
-export const CalendarIcon = ({ className = "w-4 h-4 text-[#E1FF00]" }) => (
+export const CalendarIcon = ({ className = "w-4 h-4 text-brand" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     className={className}
@@ -75,7 +75,7 @@ export const CalendarIcon = ({ className = "w-4 h-4 text-[#E1FF00]" }) => (
 export const ShareIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="w-5 h-5 text-gray-500"
+    className="w-5 h-5 text-text-muted"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"

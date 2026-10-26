@@ -51,14 +51,14 @@ export default function CandidateProfilePage() {
     setSkills(""); setLanguages(""); setCertifications(""); setResume(""); setVisible(true); setNotice(false);
   };
 
-  return <main className="min-h-screen bg-[#f8faf9] text-slate-900">
+  return <div className="min-h-screen bg-surface-page text-text-primary">
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-5 sm:px-6 lg:px-8">
       <div className="mb-6 flex items-center justify-between gap-3">
-        <Link href="/jobs" className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-600 hover:text-brand"><ArrowLeft className="h-4 w-4" />Back to jobs</Link>
-        <span className="inline-flex items-center gap-2 text-xs text-slate-500"><span className="h-2 w-2 rounded-full bg-brand" />Candidate profile</span>
+        <Link href="/jobs" className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-text-secondary hover:text-brand"><ArrowLeft className="h-4 w-4" />Back to jobs</Link>
+        <span className="inline-flex items-center gap-2 text-xs text-text-muted"><span className="h-2 w-2 rounded-full bg-brand" />Candidate profile</span>
       </div>
-      <header className="mb-6 flex flex-col justify-between gap-5 border-b border-slate-200 pb-6 sm:flex-row sm:items-end">
-        <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">Your career, clearly presented</p><h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">Candidate profile</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Add your details, experience, skills and preferences so employers can understand what you bring to the role.</p></div>
+      <header className="mb-6 flex flex-col justify-between gap-5 border-b border-border-default pb-6 sm:flex-row sm:items-end">
+        <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">Your career, clearly presented</p><h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">Candidate profile</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-text-muted">Add your details, experience, skills and preferences so employers can understand what you bring to the role.</p></div>
         <div className="grid h-12 w-12 place-items-center self-start rounded-full border border-border-default bg-brand-soft text-brand sm:self-auto"><UserRound className="h-5 w-5" /></div>
       </header>
 
@@ -94,8 +94,8 @@ export default function CandidateProfilePage() {
         </section>
 
         <section className={sectionClass}><Heading n="03" title="Work experience" description="Add current and previous roles, starting with the most recent." />
-          <div className="space-y-4">{experiences.map((item, i) => <div key={i} className="rounded-card border border-slate-200 p-4">
-            <div className="mb-4 flex items-center justify-between"><p className="text-sm font-semibold">Experience {i + 1}</p>{experiences.length > 1 && <button type="button" onClick={() => setExperiences(a => a.filter((_, j) => i !== j))} className="inline-flex cursor-pointer items-center gap-1 text-xs text-slate-500 hover:text-rose-700"><X className="h-3.5 w-3.5" />Remove</button>}</div>
+          <div className="space-y-4">{experiences.map((item, i) => <div key={i} className="rounded-card border border-border-default p-4">
+            <div className="mb-4 flex items-center justify-between"><p className="text-sm font-semibold">Experience {i + 1}</p>{experiences.length > 1 && <button type="button" onClick={() => setExperiences(a => a.filter((_, j) => i !== j))} className="inline-flex cursor-pointer items-center gap-1 text-xs text-text-muted hover:text-status-error"><X className="h-3.5 w-3.5" />Remove</button>}</div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <Field label="Job title" value={item.role} onChange={v => setExperiences(a => a.map((x,j) => i===j?{...x,role:v}:x))} placeholder="Job title" />
               <Field label="Company" value={item.company} onChange={v => setExperiences(a => a.map((x,j) => i===j?{...x,company:v}:x))} placeholder="Company name" />
@@ -103,15 +103,15 @@ export default function CandidateProfilePage() {
               <Field label="Start date" value={item.start} onChange={v => setExperiences(a => a.map((x,j) => i===j?{...x,start:v}:x))} type="month" />
               {!item.current && <Field label="End date" value={item.end} onChange={v => setExperiences(a => a.map((x,j) => i===j?{...x,end:v}:x))} type="month" />}
             </div>
-            <label className="mt-4 flex cursor-pointer items-center gap-2 text-sm text-slate-600"><input type="checkbox" className="h-4 w-4 cursor-pointer accent-brand" checked={item.current} onChange={e => setExperiences(a => a.map((x,j) => i===j?{...x,current:e.target.checked,end:e.target.checked?"":x.end}:x))} />I currently work here</label>
+            <label className="mt-4 flex cursor-pointer items-center gap-2 text-sm text-text-secondary"><input type="checkbox" className="h-4 w-4 cursor-pointer accent-brand" checked={item.current} onChange={e => setExperiences(a => a.map((x,j) => i===j?{...x,current:e.target.checked,end:e.target.checked?"":x.end}:x))} />I currently work here</label>
             <div className="mt-4"><TextArea label="Responsibilities and achievements" value={item.description} onChange={v => setExperiences(a => a.map((x,j) => i===j?{...x,description:v}:x))} placeholder="Describe responsibilities, results, tools and achievements." rows={3} /></div>
           </div>)}</div>
           <button type="button" onClick={() => setExperiences(a => [...a,{...blankExperience}])} className="mt-4 inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-brand hover:text-brand-dark"><Plus className="h-4 w-4" />Add experience</button>
         </section>
 
         <section className={sectionClass}><Heading n="04" title="Education" description="Include degrees, courses and other relevant qualifications." />
-          <div className="space-y-4">{education.map((item,i) => <div key={i} className="rounded-card border border-slate-200 p-4">
-            <div className="mb-4 flex items-center justify-between"><p className="text-sm font-semibold">Education {i+1}</p>{education.length>1 && <button type="button" onClick={() => setEducation(a=>a.filter((_,j)=>i!==j))} className="inline-flex cursor-pointer items-center gap-1 text-xs text-slate-500 hover:text-rose-700"><X className="h-3.5 w-3.5"/>Remove</button>}</div>
+          <div className="space-y-4">{education.map((item,i) => <div key={i} className="rounded-card border border-border-default p-4">
+            <div className="mb-4 flex items-center justify-between"><p className="text-sm font-semibold">Education {i+1}</p>{education.length>1 && <button type="button" onClick={() => setEducation(a=>a.filter((_,j)=>i!==j))} className="inline-flex cursor-pointer items-center gap-1 text-xs text-text-muted hover:text-status-error"><X className="h-3.5 w-3.5"/>Remove</button>}</div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <Field label="Qualification / degree" value={item.degree} onChange={v=>setEducation(a=>a.map((x,j)=>i===j?{...x,degree:v}:x))} placeholder="e.g. B.Tech"/>
               <Field label="Institution" value={item.institution} onChange={v=>setEducation(a=>a.map((x,j)=>i===j?{...x,institution:v}:x))} placeholder="College or university"/>
@@ -129,8 +129,8 @@ export default function CandidateProfilePage() {
         </section>
 
         <section className={sectionClass}><Heading n="06" title="Projects and portfolio work" description="Show personal projects, client work, open-source contributions or case studies." />
-          <div className="space-y-4">{projects.map((item,i)=><div key={i} className="rounded-card border border-slate-200 p-4">
-            <div className="mb-4 flex items-center justify-between"><p className="text-sm font-semibold">Project {i+1}</p>{projects.length>1&&<button type="button" onClick={()=>setProjects(a=>a.filter((_,j)=>i!==j))} className="inline-flex cursor-pointer items-center gap-1 text-xs text-slate-500 hover:text-rose-700"><X className="h-3.5 w-3.5"/>Remove</button>}</div>
+          <div className="space-y-4">{projects.map((item,i)=><div key={i} className="rounded-card border border-border-default p-4">
+            <div className="mb-4 flex items-center justify-between"><p className="text-sm font-semibold">Project {i+1}</p>{projects.length>1&&<button type="button" onClick={()=>setProjects(a=>a.filter((_,j)=>i!==j))} className="inline-flex cursor-pointer items-center gap-1 text-xs text-text-muted hover:text-status-error"><X className="h-3.5 w-3.5"/>Remove</button>}</div>
             <div className="grid gap-4 sm:grid-cols-2"><Field label="Project name" value={item.name} onChange={v=>setProjects(a=>a.map((x,j)=>i===j?{...x,name:v}:x))} placeholder="Project title"/><Field label="Project link" value={item.link} onChange={v=>setProjects(a=>a.map((x,j)=>i===j?{...x,link:v}:x))} placeholder="https://..." type="url"/><div className="sm:col-span-2"><TextArea label="Project description and your contribution" value={item.description} onChange={v=>setProjects(a=>a.map((x,j)=>i===j?{...x,description:v}:x))} placeholder="What did you build? What tools did you use? What was the outcome?" rows={3}/></div></div>
           </div>)}</div>
           <button type="button" onClick={()=>setProjects(a=>[...a,{...blankProject}])} className="mt-4 inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-brand hover:text-brand-dark"><Plus className="h-4 w-4"/>Add project</button>
@@ -140,18 +140,18 @@ export default function CandidateProfilePage() {
 
         <section className={sectionClass}><Heading n="08" title="Resume and online profiles" description="Help recruiters review your resume and professional work."/>
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block cursor-pointer"><span className={labelClass}>Upload resume (PDF, DOC, DOCX)</span><span className="mt-1.5 flex min-h-24 items-center gap-3 rounded-control border border-dashed border-slate-300 px-4 py-4 hover:border-brand hover:bg-brand-soft/40"><span className="grid h-10 w-10 place-items-center rounded-control bg-brand-soft text-brand"><FileText className="h-5 w-5"/></span><span className="min-w-0"><span className="block text-sm font-medium text-slate-800">Choose a resume file</span><span className="mt-1 block break-all text-xs text-slate-500">{resume||"No file selected"}</span></span></span><input className="sr-only" type="file" accept=".pdf,.doc,.docx" onChange={e=>setResume(e.target.files?.[0]?.name||"")}/></label>
+            <label className="block cursor-pointer"><span className={labelClass}>Upload resume (PDF, DOC, DOCX)</span><span className="mt-1.5 flex min-h-24 items-center gap-3 rounded-control border border-dashed border-border-default px-4 py-4 hover:border-brand hover:bg-brand-soft/40"><span className="grid h-10 w-10 place-items-center rounded-control bg-brand-soft text-brand"><FileText className="h-5 w-5"/></span><span className="min-w-0"><span className="block text-sm font-medium text-text-primary">Choose a resume file</span><span className="mt-1 block break-all text-xs text-text-muted">{resume||"No file selected"}</span></span></span><input className="sr-only" type="file" accept=".pdf,.doc,.docx" onChange={e=>setResume(e.target.files?.[0]?.name||"")}/></label>
             <div className="grid gap-4"><Field label="LinkedIn profile" value={personal.linkedin} onChange={v=>setP("linkedin",v)} placeholder="https://linkedin.com/in/..." type="url"/><Field label="GitHub profile" value={personal.github} onChange={v=>setP("github",v)} placeholder="https://github.com/..." type="url"/><Field label="Portfolio / personal website" value={personal.portfolio} onChange={v=>setP("portfolio",v)} placeholder="https://..." type="url"/></div>
-          </div><p className="mt-3 text-xs leading-5 text-slate-400">This sample stores the selected filename only. Connect your secure file-upload endpoint to upload the resume.</p>
+          </div><p className="mt-3 text-xs leading-5 text-text-muted">This sample stores the selected filename only. Connect your secure file-upload endpoint to upload the resume.</p>
         </section>
 
         <section className={sectionClass}><Heading n="09" title="Privacy and visibility" description="Set your preference for profile visibility when account settings are connected."/>
-          <label className="flex cursor-pointer items-start gap-3 rounded-control bg-slate-50 p-4"><input type="checkbox" checked={visible} onChange={e=>setVisible(e.target.checked)} className="mt-0.5 h-4 w-4 cursor-pointer accent-brand"/><span><span className="block text-sm font-medium text-slate-800">Allow employers to view my profile</span><span className="mt-1 block text-sm leading-6 text-slate-500">This preference is UI-only until it is saved to your account. Avoid including sensitive personal details employers do not need.</span></span></label>
+          <label className="flex cursor-pointer items-start gap-3 rounded-control bg-surface-subtle p-4"><input type="checkbox" checked={visible} onChange={e=>setVisible(e.target.checked)} className="mt-0.5 h-4 w-4 cursor-pointer accent-brand"/><span><span className="block text-sm font-medium text-text-primary">Allow employers to view my profile</span><span className="mt-1 block text-sm leading-6 text-text-muted">This preference is UI-only until it is saved to your account. Avoid including sensitive personal details employers do not need.</span></span></label>
         </section>
 
         <div className="sticky bottom-0 z-20 -mx-4 border-t border-border-default bg-surface-base/95 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:pt-1"><div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between"><p className="text-xs text-text-muted">Fields marked <span className="text-status-error">*</span> are required.</p><div className="flex flex-col-reverse gap-2 sm:flex-row"><button type="button" onClick={reset} className="cursor-pointer rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-surface-subtle">Reset form</button><button type="submit" className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 py-2.5 text-sm font-semibold text-text-inverse hover:bg-brand-hover shadow-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"><Save className="h-4 w-4"/>Complete profile</button></div></div></div>
       </form>
       <footer className="mt-8 border-t border-border-default pt-5 text-xs text-text-muted"><div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><p>Keep your profile clear, accurate and up to date.</p><Link href="/jobs" className="inline-flex cursor-pointer items-center gap-1 font-medium text-brand hover:text-brand-hover">Explore jobs <ArrowUpRight className="h-3.5 w-3.5"/></Link></div></footer>
     </div>
-  </main>;
+  </div>;
 }

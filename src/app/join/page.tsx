@@ -86,15 +86,15 @@ function Modal({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: 0.22, ease: EASE }}
-            className="relative max-h-[92dvh] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-panel border border-slate-200 bg-white px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-2xl sm:max-h-[88dvh] sm:rounded-panel sm:p-6"
+            className="relative max-h-[92dvh] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-panel border border-border-default bg-surface-card px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-2xl sm:max-h-[88dvh] sm:rounded-panel sm:p-6"
           >
-            <div className="sticky top-0 z-10 -mx-1 mb-1 flex justify-end bg-white/95 pb-1 backdrop-blur-sm sm:mb-2">
+            <div className="sticky top-0 z-10 -mx-1 mb-1 flex justify-end bg-surface-card/95 pb-1 backdrop-blur-sm sm:mb-2">
               <button
                 ref={closeRef}
                 type="button"
                 onClick={onClose}
                 aria-label="Close dialog"
-                className="grid h-8 w-8 cursor-pointer place-items-center rounded-control text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="grid h-8 w-8 cursor-pointer place-items-center rounded-control text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <FiX className="h-[18px] w-[18px]" />
               </button>
@@ -124,7 +124,7 @@ function FieldSelect({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-semibold text-slate-700">
+      <span className="mb-1.5 block text-xs font-semibold text-text-secondary">
         {label}
       </span>
       <span className="relative block">
@@ -132,7 +132,7 @@ function FieldSelect({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           disabled={disabled}
-          className="w-full cursor-pointer appearance-none rounded-control border border-slate-300 bg-white px-3 py-3 pr-10 text-sm text-slate-800 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand-soft disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+          className="w-full cursor-pointer appearance-none rounded-control border border-border-default bg-surface-card px-3 py-3 pr-10 text-sm text-text-primary outline-none transition focus:border-brand focus:ring-2 focus:ring-brand-soft disabled:cursor-not-allowed disabled:bg-surface-subtle disabled:text-text-muted"
         >
           <option value="">{placeholder}</option>
           {options.map((option) => (
@@ -141,7 +141,7 @@ function FieldSelect({
             </option>
           ))}
         </select>
-        <FiChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <FiChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
       </span>
     </label>
   );
@@ -164,7 +164,7 @@ function GroupResult({
     <motion.article
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mt-4 border-t border-slate-200 pt-4"
+      className="mt-4 border-t border-border-default pt-4"
     >
       <div className="flex items-start gap-3">
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-control bg-brand-soft text-brand">
@@ -317,7 +317,7 @@ export default function SharePage() {
     <>
       <div className="w-full bg-surface-page text-text-primary selection:bg-brand-soft">
         <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10">
-          <header className="relative isolate bg-white py-4 text-[#202820] sm:py-6 lg:py-7">
+          <header className="relative isolate bg-surface-base py-4 text-text-primary sm:py-6 lg:py-7">
             <div className="grid items-center gap-8 lg:grid-cols-[1.22fr_0.78fr] lg:gap-12">
               {/* Animated visual inspired by the Zenoway home hero */}
               <motion.div

@@ -453,21 +453,21 @@ export default function EditJobPage() {
 
   if (loading) {
     return (
-      <main className="min-h-full bg-white px-5 py-8 sm:px-8">
+      <main className="min-h-full bg-surface-page px-5 py-8 sm:px-8">
         <div className="mx-auto max-w-5xl animate-pulse">
-          <div className="h-3 w-28 rounded-pill bg-[#E9EEE9]" />
-          <div className="mt-5 h-8 w-56 rounded-pill bg-[#E9EEE9]" />
-          <div className="mt-3 h-4 w-80 max-w-full rounded-pill bg-[#F0F3F0]" />
+          <div className="h-3 w-28 rounded-pill bg-border-subtle" />
+          <div className="mt-5 h-8 w-56 rounded-pill bg-border-subtle" />
+          <div className="mt-3 h-4 w-80 max-w-full rounded-pill bg-surface-subtle" />
 
           {[1, 2, 3, 4].map((item) => (
             <div
               key={item}
-              className="mt-8 border-b border-[#E7ECE8] py-8"
+              className="mt-8 border-b border-border-subtle py-8"
             >
-              <div className="h-4 w-40 rounded-pill bg-[#E9EEE9]" />
+              <div className="h-4 w-40 rounded-pill bg-border-subtle" />
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
-                <div className="h-11 rounded-control bg-[#F0F3F0]" />
-                <div className="h-11 rounded-control bg-[#F0F3F0]" />
+                <div className="h-11 rounded-control bg-surface-subtle" />
+                <div className="h-11 rounded-control bg-surface-subtle" />
               </div>
             </div>
           ))}
@@ -478,16 +478,16 @@ export default function EditJobPage() {
 
   if (loadError || !form) {
     return (
-      <main className="flex min-h-[60vh] items-center justify-center bg-white px-5 py-12">
+      <main className="flex min-h-[60vh] items-center justify-center bg-surface-page px-5 py-12">
         <div className="w-full max-w-md text-center">
           <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-control bg-red-50 text-red-600">
             <AlertCircle size={21} />
           </span>
 
-          <h1 className="mt-4 text-lg font-semibold text-[#172820]">
+          <h1 className="mt-4 text-lg font-semibold text-text-primary">
             Unable to open this job
           </h1>
-          <p className="mt-2 text-sm leading-6 text-[#7B867E]">
+          <p className="mt-2 text-sm leading-6 text-text-muted">
             {loadError || "The requested job is unavailable."}
           </p>
 
@@ -498,14 +498,14 @@ export default function EditJobPage() {
                 const controller = new AbortController();
                 void loadJob(controller.signal);
               }}
-              className="rounded-control border border-[#DDE5DE] px-4 py-2.5 text-sm font-medium text-[#34463A] transition hover:bg-[#F7F9F7]"
+              className="rounded-control border border-border-default px-4 py-2.5 text-sm font-medium text-text-secondary transition hover:bg-surface-subtle"
             >
               Try again
             </button>
 
             <Link
               href="/admin/jobs"
-              className="rounded-control bg-[#087F50] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#066640]"
+              className="rounded-control bg-brand px-4 py-2.5 text-sm font-medium text-text-inverse transition hover:bg-brand-hover"
             >
               Back to jobs
             </Link>
@@ -516,58 +516,58 @@ export default function EditJobPage() {
   }
 
   return (
-    <main className="min-h-full bg-white text-[#172820]">
+    <main className="min-h-full bg-surface-page text-text-primary">
       <div className="mx-auto max-w-5xl px-5 pb-32 pt-6 sm:px-8 sm:pt-9">
-        <nav className="mb-6 flex flex-wrap items-center gap-2 text-xs text-[#849087]">
-          <Link href="/admin" className="transition hover:text-[#087F50]">
+        <nav className="mb-6 flex flex-wrap items-center gap-2 text-xs text-text-muted">
+          <Link href="/admin" className="transition hover:text-brand">
             Dashboard
           </Link>
           <ChevronRight size={13} />
           <Link
             href="/admin/jobs"
-            className="transition hover:text-[#087F50]"
+            className="transition hover:text-brand"
           >
             Manage jobs
           </Link>
           <ChevronRight size={13} />
-          <span className="font-medium text-[#35463A]">Edit listing</span>
+          <span className="font-medium text-text-primary">Edit listing</span>
         </nav>
 
-        <header className="flex flex-col gap-5 border-b border-[#E7ECE8] pb-7 sm:flex-row sm:items-end sm:justify-between">
+        <header className="flex flex-col gap-5 border-b border-border-subtle pb-7 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#087F50]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#0FA968]" />
+            <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" />
               Job management
             </p>
 
-            <h1 className="mt-3 text-[26px] font-semibold tracking-[-0.04em] text-[#172820] sm:text-[32px]">
+            <h1 className="mt-3 text-[26px] font-semibold tracking-[-0.04em] text-text-primary sm:text-[32px]">
               Edit job listing
             </h1>
 
-            <p className="mt-2 max-w-xl text-sm leading-6 text-[#7B867E]">
+            <p className="mt-2 max-w-xl text-sm leading-6 text-text-muted">
               Make changes to the listing and save when everything looks right.
             </p>
           </div>
 
           <Link
             href="/admin/jobs"
-            className="inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-control border border-[#E1E8E2] px-3.5 text-sm font-medium text-[#45554A] transition hover:border-[#C8D7CC] hover:bg-[#F8FAF8] sm:self-auto"
+            className="inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-control border border-border-default px-3.5 text-sm font-medium text-text-secondary transition hover:border-border-strong hover:bg-surface-subtle sm:self-auto"
           >
             <ArrowLeft size={15} />
             Back to jobs
           </Link>
         </header>
 
-        <div className="flex items-start gap-3 border-b border-[#E7ECE8] py-5">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-[#EFF7F0] text-[#087F50]">
+        <div className="flex items-start gap-3 border-b border-border-subtle py-5">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-brand-soft text-brand">
             <BriefcaseBusiness size={19} strokeWidth={1.7} />
           </span>
 
           <div className="min-w-0 flex-1">
-            <p className="break-words text-sm font-semibold text-[#172820]">
+            <p className="break-words text-sm font-semibold text-text-primary">
               {form.title || "Untitled job"}
             </p>
-            <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#849087]">
+            <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-muted">
               <span className="inline-flex items-center gap-1.5">
                 <Building2 size={13} />
                 {form.company || "Company not set"}
@@ -579,7 +579,7 @@ export default function EditJobPage() {
             </p>
           </div>
 
-          <span className="hidden items-center gap-1.5 pt-1 text-xs font-medium text-[#087F50] sm:inline-flex">
+          <span className="hidden items-center gap-1.5 pt-1 text-xs font-medium text-brand sm:inline-flex">
             <Check size={14} />
             Editing
           </span>
@@ -727,7 +727,7 @@ export default function EditJobPage() {
                 className={`${inputClass} min-h-48 resize-y leading-7`}
               />
 
-              <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-[#849087]">
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-text-muted">
                 <span>Keep the description clear and easy to scan.</span>
                 <span className="tabular-nums">
                   {form.description.length} characters

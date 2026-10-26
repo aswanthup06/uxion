@@ -31,25 +31,25 @@ function FilterSection({
   const [open, setOpen] = useState(true);
   const id = useId();
   return (
-    <section className="border-b border-[#EEF1EE] py-5">
+    <section className="border-b border-border-subtle py-5">
       <button
         type="button"
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between rounded-control text-left outline-none focus-visible:ring-2 focus-visible:ring-[#0FA968]/60"
+        className="flex w-full items-center justify-between rounded-control text-left outline-none focus-visible:ring-2 focus-visible:ring-brand-soft"
       >
-        <span className="flex items-center gap-2 text-sm font-semibold text-[#111815]">
+        <span className="flex items-center gap-2 text-sm font-semibold text-text-primary">
           {title}
           {!!badge && (
-            <span className="grid h-5 min-w-5 place-items-center rounded-full bg-[#0FA968] px-1.5 text-[11px] font-semibold text-white">
+            <span className="grid h-5 min-w-5 place-items-center rounded-full bg-brand px-1.5 text-[11px] font-semibold text-text-inverse">
               {badge}
             </span>
           )}
         </span>
         <ChevronDown
           aria-hidden
-          className={`h-4 w-4 text-[#8A958E] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 text-text-muted transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         />
       </button>
       <div
@@ -80,23 +80,23 @@ function ChoiceOption({
   count?: number;
 }) {
   return (
-    <label className="group flex cursor-pointer items-center gap-3 rounded-control px-1.5 py-1.5 text-sm text-[#3A4640] transition-colors hover:bg-[#F6F7F5] hover:text-[#111815]">
+    <label className="group flex cursor-pointer items-center gap-3 rounded-control px-1.5 py-1.5 text-sm text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary">
       <input type={type} name={name} checked={checked} onChange={onChange} className="peer sr-only" />
       <span
         aria-hidden
-        className={`grid h-4 w-4 shrink-0 place-items-center border transition-colors peer-focus-visible:ring-4 peer-focus-visible:ring-[#0FA968]/30 ${
+        className={`grid h-4 w-4 shrink-0 place-items-center border transition-colors peer-focus-visible:ring-4 peer-focus-visible:ring-brand-soft ${
           type === "radio" ? "rounded-full" : "rounded-control"
-        } ${checked ? "border-[#0FA968] bg-[#0FA968]" : "border-[#C9D1CB] group-hover:border-[#B5C0B8]"}`}
+        } ${checked ? "border-brand bg-brand" : "border-border-default group-hover:border-border-strong"}`}
       >
         {checked &&
           (type === "radio" ? (
-            <span className="h-1.5 w-1.5 rounded-full bg-white" />
+            <span className="h-1.5 w-1.5 rounded-full bg-surface-base" />
           ) : (
-            <Check className="h-3 w-3 text-white" strokeWidth={3.5} />
+            <Check className="h-3 w-3 text-text-inverse" strokeWidth={3.5} />
           ))}
       </span>
       <span className="min-w-0 flex-1 truncate">{label}</span>
-      {count !== undefined && <span className="text-xs tabular-nums text-[#8A958E]">{count}</span>}
+      {count !== undefined && <span className="text-xs tabular-nums text-text-muted">{count}</span>}
     </label>
   );
 }
@@ -138,8 +138,8 @@ function TitleSearch({
 
   return (
     <div ref={wrap} className="relative">
-      <div className="flex items-center gap-2 rounded-control border border-[#E3E8E4] bg-[#F6F7F5] px-3 transition-colors focus-within:border-[#0FA968] focus-within:ring-4 focus-within:ring-[#0FA968]/20">
-        <Search aria-hidden className="h-4 w-4 shrink-0 text-[#8A958E]" />
+      <div className="flex items-center gap-2 rounded-control border border-border-default bg-surface-subtle px-3 transition-colors focus-within:border-brand focus-within:ring-4 focus-within:ring-brand-soft">
+        <Search aria-hidden className="h-4 w-4 shrink-0 text-text-muted" />
         <input
           type="text"
           role="combobox"
@@ -168,14 +168,14 @@ function TitleSearch({
               pick(matches[hi]);
             } else if (e.key === "Escape") setOpen(false);
           }}
-          className="min-w-0 flex-1 bg-transparent py-2.5 text-sm text-[#111815] outline-none placeholder:text-[#8A958E]"
+          className="min-w-0 flex-1 bg-transparent py-2.5 text-sm text-text-primary outline-none placeholder:text-text-muted"
         />
         {value && (
           <button
             type="button"
             aria-label="Clear job title"
             onClick={() => pick("")}
-            className="grid h-5 w-5 place-items-center rounded-full text-[#8A958E] hover:bg-[#EEF1EE] hover:text-[#111815]"
+            className="grid h-5 w-5 place-items-center rounded-full text-text-muted hover:bg-surface-subtle hover:text-text-primary"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -186,7 +186,7 @@ function TitleSearch({
         <ul
           id={`${id}-list`}
           role="listbox"
-          className="absolute inset-x-0 top-full z-30 mt-1.5 max-h-60 overflow-auto rounded-card border border-[#EEF1EE] bg-white p-1 shadow-xl shadow-black/10"
+          className="absolute inset-x-0 top-full z-30 mt-1.5 max-h-60 overflow-auto rounded-card border border-border-subtle bg-surface-card p-1 shadow-card"
         >
           {matches.map((m, i) => (
             <li
@@ -196,7 +196,7 @@ function TitleSearch({
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => pick(m)}
               onMouseEnter={() => setHi(i)}
-              className={`cursor-pointer rounded-control px-3 py-2 text-sm text-[#3A4640] ${i === hi ? "bg-[#F1F4F1]" : ""}`}
+              className={`cursor-pointer rounded-control px-3 py-2 text-sm text-text-secondary ${i === hi ? "bg-surface-subtle" : ""}`}
             >
               {m}
             </li>
@@ -220,7 +220,7 @@ function Histogram({ bins, range }: { bins: number[]; range: Range }) {
             key={i}
             title={`${i}${i === EXP_MAX ? "+" : ""} yrs: ${count} ${count === 1 ? "job" : "jobs"}`}
             className={`absolute bottom-0 rounded-t-[3px] transition-colors duration-150 ${
-              inside ? "bg-[#0FA968]" : "bg-[#E3E8E4]"
+              inside ? "bg-brand" : "bg-border-default"
             }`}
             style={{
               left: `${(i / n) * 100}%`,
@@ -277,13 +277,13 @@ export function FilterPanel({
   return (
     <div className="px-6 pb-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold tracking-tight text-[#111815]">Filters</h2>
+        <h2 className="text-lg font-semibold tracking-tight text-text-primary">Filters</h2>
         <div className="flex items-center gap-1">
           {activeCount > 0 && (
             <button
               type="button"
               onClick={onClear}
-              className="rounded-control px-2 py-1 text-sm font-medium text-[#0B7A4B] hover:bg-[#F6F7F5]"
+              className="rounded-control px-2 py-1 text-sm font-medium text-brand hover:bg-surface-subtle"
             >
               Clear all
             </button>
@@ -293,7 +293,7 @@ export function FilterPanel({
               type="button"
               aria-label="Close filters"
               onClick={onClose}
-              className="grid h-8 w-8 place-items-center rounded-control text-[#8A958E] hover:bg-[#EEF1EE] hover:text-[#111815]"
+              className="grid h-8 w-8 place-items-center rounded-control text-text-muted hover:bg-surface-subtle hover:text-text-primary"
             >
               <X className="h-4 w-4" />
             </button>
@@ -309,9 +309,9 @@ export function FilterPanel({
         <FilterSection title="Experience" badge={lo === 0 && hi === EXP_MAX ? 0 : 1}>
           <Histogram bins={histogram} range={filters.experience} />
           <RangeSlider min={0} max={EXP_MAX} value={filters.experience} onChange={(r) => onChange({ experience: r })} />
-          <div className="mt-2.5 flex items-baseline justify-between text-xs tabular-nums text-[#8A958E]">
+          <div className="mt-2.5 flex items-baseline justify-between text-xs tabular-nums text-text-muted">
             <span>0</span>
-            <span className="text-sm font-semibold text-[#111815]">{rangeLabel(filters.experience)}</span>
+            <span className="text-sm font-semibold text-text-primary">{rangeLabel(filters.experience)}</span>
             <span>{EXP_MAX}+</span>
           </div>
           <div className="mt-4 flex flex-wrap gap-1.5">
@@ -325,8 +325,8 @@ export function FilterPanel({
                   onClick={() => onChange({ experience: p.range })}
                   className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
                     on
-                      ? "border-[#0FA968] bg-[#0FA968] text-white"
-                      : "border-[#E3E8E4] text-[#3A4640] hover:border-[#B5C0B8] hover:text-[#111815]"
+                      ? "border-brand bg-brand text-text-inverse"
+                      : "border-border-default text-text-secondary hover:border-border-strong hover:text-text-primary"
                   }`}
                 >
                   {p.label}
@@ -344,7 +344,7 @@ export function FilterPanel({
               placeholder="Search locations"
               value={locQuery}
               onChange={(e) => setLocQuery(e.target.value)}
-              className="mb-2 w-full rounded-control border border-[#E3E8E4] bg-[#F6F7F5] px-3 py-2 text-sm text-[#111815] outline-none placeholder:text-[#8A958E] focus:border-[#0FA968]"
+              className="mb-2 w-full rounded-control border border-border-default bg-surface-subtle px-3 py-2 text-sm text-text-primary outline-none placeholder:text-text-muted focus:border-brand"
             />
           )}
           <div className="flex flex-col">
@@ -358,13 +358,13 @@ export function FilterPanel({
                 count={l.count}
               />
             ))}
-            {visibleLocs.length === 0 && <p className="px-1.5 py-1.5 text-sm text-[#8A958E]">No locations found</p>}
+            {visibleLocs.length === 0 && <p className="px-1.5 py-1.5 text-sm text-text-muted">No locations found</p>}
           </div>
           {!locQuery && locations.length > 6 && (
             <button
               type="button"
               onClick={() => setShowAllLoc((s) => !s)}
-              className="mt-1.5 px-1.5 text-sm font-medium text-[#0B7A4B] hover:underline"
+              className="mt-1.5 px-1.5 text-sm font-medium text-brand hover:underline"
             >
               {showAllLoc ? "Show less" : `Show all ${locations.length}`}
             </button>

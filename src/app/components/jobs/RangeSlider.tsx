@@ -7,11 +7,11 @@ const thumb =
   "[&::-webkit-slider-runnable-track]:appearance-none [&::-webkit-slider-runnable-track]:bg-transparent " +
   "[&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 " +
   "[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:rounded-full " +
-  "[&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#0FA968] [&::-webkit-slider-thumb]:bg-white " +
-  "focus-visible:[&::-webkit-slider-thumb]:ring-4 focus-visible:[&::-webkit-slider-thumb]:ring-[#0FA968]/25 " +
+  "[&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-brand [&::-webkit-slider-thumb]:bg-surface-base " +
+  "focus-visible:[&::-webkit-slider-thumb]:ring-4 focus-visible:[&::-webkit-slider-thumb]:ring-brand-soft " +
   "[&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-grab " +
   "[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-solid " +
-  "[&::-moz-range-thumb]:border-[#0FA968] [&::-moz-range-thumb]:bg-white";
+  "[&::-moz-range-thumb]:border-brand [&::-moz-range-thumb]:bg-surface-base";
 
 /** Dual-handle slider. The track is inset 8px so it lines up with thumb centers (thumbs are 16px wide). */
 export function RangeSlider({
@@ -30,9 +30,9 @@ export function RangeSlider({
 
   return (
     <div className="relative h-5">
-      <div className="absolute inset-x-2 top-1/2 h-1 -translate-y-1/2 rounded-full bg-[#E3E8E4]">
+      <div className="absolute inset-x-2 top-1/2 h-1 -translate-y-1/2 rounded-full bg-border-default">
         <div
-          className="absolute inset-y-0 bg-[#0FA968]"
+          className="absolute inset-y-0 bg-brand"
           style={{ left: `${pct(lo)}%`, width: `${pct(hi) - pct(lo)}%` }}
         />
       </div>
