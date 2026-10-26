@@ -648,7 +648,7 @@ function JobsViewContent() {
                       <div className="h-6 w-16 rounded-control bg-slate-100" />
                     </div>
                   </div>
-                  <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+                  <div className="mt-4 flex items-center justify-between pt-3">
                     <div className="h-4 w-28 rounded-control bg-slate-100" />
                     <div className="h-4 w-4 rounded-control bg-slate-100" />
                   </div>
@@ -782,7 +782,7 @@ function JobsViewContent() {
                         )}
                       </div>
 
-                      <div className="mt-auto flex items-end justify-between gap-3 border-t border-slate-100 pt-3">
+                      <div className="mt-auto flex items-end justify-between gap-3 pt-3">
                         <div className="min-w-0">
                           <p className="text-sm font-semibold tracking-tight text-slate-900">
                             {job.salary || "Not Disclosed"}
