@@ -1,8 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import {
+    animate,
+    AnimatePresence,
+    motion,
+    useMotionValue,
+    useReducedMotion,
+    useTransform,
+} from "framer-motion";
 import {
     ArrowRight,
     ArrowUpRight,
@@ -22,7 +29,9 @@ const WHATSAPP_GROUP_URL =
 const ZENOWAY_URL = "https://www.zenoway.com";
 
 const REWARD = 2;
-const PRESETS = [25, 50, 100, 250, 500];
+const PRESETS = [50, 100, 250, 500];
+const MIN_APPS = 10;
+const MAX_APPS = 500;
 const DAYS = 30;
 
 const STEPS = [
@@ -65,15 +74,45 @@ function LinkedInIcon({ size = 17 }: { size?: number }) {
 
 const fmt = (n: number) => n.toLocaleString("en-IN");
 
+function SliderStyles() {
+    return (
+        <style>{`
+      .zw-range { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 9999px; cursor: pointer;
+        background: linear-gradient(to right, #087f50 var(--p), #e6ebe7 var(--p)); outline: none; }
+      .zw-range::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+        background: #fff; border: 2px solid #087f50; box-shadow: 0 1px 4px rgba(24,35,30,.25); cursor: grab; }
+      .zw-range::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%;
+        background: #fff; border: 2px solid #087f50; box-shadow: 0 1px 4px rgba(24,35,30,.25); cursor: grab; }
+      .zw-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px rgba(8,127,80,.25); }
+      .zw-range[data-hint="true"]::-webkit-slider-thumb { animation: zw-thumb 1.6s ease-out infinite; }
+      .zw-range[data-hint="true"]::-moz-range-thumb { animation: zw-thumb 1.6s ease-out infinite; }
+      @keyframes zw-thumb { 0% { box-shadow: 0 0 0 0 rgba(15,169,104,.55); } 100% { box-shadow: 0 0 0 14px rgba(15,169,104,0); } }
+    `}</style>
+    );
+}
+
 export default function ZenowayReferralPage() {
     const [apps, setApps] = useState(100);
+    const [touched, setTouched] = useState(false);
+    const countValue = useMotionValue(0);
+    const countText = useTransform(countValue, (v) => `₹${fmt(Math.round(v))}`);
     const reduceMotion = useReducedMotion();
 
     const daily = apps * REWARD;
     const monthly = daily * DAYS;
 
+    // count the monthly figure up on load and on every change
+    useEffect(() => {
+        const controls = animate(countValue, monthly, {
+            duration: reduceMotion ? 0 : 0.8,
+            ease: [0.22, 1, 0.36, 1],
+        });
+        return () => controls.stop();
+    }, [monthly, reduceMotion, countValue]);
+
     return (
         <main className="bg-surface-base text-text-primary">
+            <SliderStyles />
             {/* ================= HERO ================= */}
             <section className="overflow-hidden">
                 <div className="mx-auto max-w-7xl px-6 pb-12 pt-4 sm:px-10 sm:pt-6 lg:px-12">
@@ -212,23 +251,47 @@ export default function ZenowayReferralPage() {
                                 </div>
 
                                 {/* input */}
-                                <p className="mt-5 text-xs font-medium text-text-primary">
-                                    Applications you get per day
-                                </p>
-                                <div
-                                    role="group"
-                                    aria-label="Applications per day"
-                                    className="mt-2 flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle p-1"
-                                >
+                                <div className="mt-5 flex items-baseline justify-between">
+                                    <label htmlFor="apps-per-day" className="text-xs font-medium text-text-primary">
+                                        Applications you get per day
+                                    </label>
+                                    <span className="text-lg font-medium tracking-tight text-brand">{fmt(apps)}</span>
+                                </div>
+
+                                <input
+                                    id="apps-per-day"
+                                    type="range"
+                                    min={MIN_APPS}
+                                    max={MAX_APPS}
+                                    step={10}
+                                    value={apps}
+                                    data-hint={!touched}
+                                    onChange={(e) => {
+                                        setApps(Number(e.target.value));
+                                        setTouched(true);
+                                    }}
+                                    className="zw-range mt-3"
+                                    style={{ "--p": `${((apps - MIN_APPS) / (MAX_APPS - MIN_APPS)) * 100}%` } as React.CSSProperties}
+                                />
+                                <div className="mt-2 flex items-center justify-between text-[10px] text-text-muted">
+                                    <span>{MIN_APPS}</span>
+                                    {!touched && <span className="animate-pulse font-medium text-brand">← Drag to try →</span>}
+                                    <span>{MAX_APPS}</span>
+                                </div>
+
+                                <div className="mt-3 flex gap-2">
                                     {PRESETS.map((p) => (
                                         <button
                                             key={p}
                                             type="button"
-                                            onClick={() => setApps(p)}
+                                            onClick={() => {
+                                                setApps(p);
+                                                setTouched(true);
+                                            }}
                                             aria-pressed={apps === p}
-                                            className={`flex-1 cursor-pointer rounded-control px-1 py-2 text-xs font-medium transition-colors ${apps === p
-                                                    ? "bg-surface-card text-brand shadow-subtle ring-1 ring-border-default"
-                                                    : "text-text-muted hover:text-text-primary"
+                                            className={`flex-1 cursor-pointer rounded-pill border px-2 py-1.5 text-xs font-medium transition-colors ${apps === p
+                                                    ? "border-brand bg-brand-soft text-brand"
+                                                    : "border-border-default text-text-muted hover:border-border-strong hover:text-text-primary"
                                                 }`}
                                         >
                                             {fmt(p)}
@@ -240,22 +303,10 @@ export default function ZenowayReferralPage() {
 
                                 {/* result */}
                                 <p className="text-xs font-medium text-text-muted">You earn per month</p>
-                                <div className="mt-1 overflow-hidden">
-                                    <AnimatePresence mode="wait" initial={false}>
-                                        <motion.p
-                                            key={monthly}
-                                            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
-                                            transition={{ duration: 0.2 }}
-                                            className="text-[44px] font-medium leading-none tracking-[-0.04em] text-brand"
-                                        >
-                                            ₹{fmt(monthly)}
-                                        </motion.p>
-                                    </AnimatePresence>
-                                </div>
+                                <motion.p className="mt-1 text-[44px] font-medium leading-none tracking-[-0.04em] text-brand tabular-nums">
+                                    {countText}
+                                </motion.p>
 
-                                {/* how it adds up */}
                                 <dl className="mt-5 space-y-2 rounded-control bg-surface-subtle px-3.5 py-3 text-xs">
                                     <div className="flex items-center justify-between">
                                         <dt className="text-text-secondary">{fmt(apps)} applications × ₹{REWARD}</dt>
