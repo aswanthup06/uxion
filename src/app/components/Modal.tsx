@@ -143,10 +143,10 @@ export default function Modal({
         <div
           role="presentation"
           className={`fixed inset-0 z-50 flex overflow-y-auto ${isSheet
-              ? "items-end justify-center p-0"
-              : isAuto
-                ? "items-end justify-center p-0 sm:items-center sm:p-4"
-                : "items-center justify-center p-4"
+            ? "items-end justify-center p-0"
+            : isAuto
+              ? "items-end justify-center p-0 sm:items-center sm:p-4"
+              : "items-center justify-center p-4"
             }`}
         >
           {/* Backdrop */}
@@ -157,7 +157,8 @@ export default function Modal({
             exit="exit"
             onClick={closeOnBackdropClick ? onClose : undefined}
             aria-hidden="true"
-            className="fixed inset-0 bg-text-primary/45 backdrop-blur-md"
+            className="fixed inset-0 bg-text-primary/20 backdrop-blur-[6px]"
+
           />
 
           {/* Dialog Card */}
