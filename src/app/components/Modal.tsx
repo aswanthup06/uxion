@@ -103,12 +103,12 @@ export default function Modal({
 
   const modalVariants: Variants = shouldReduceMotion
     ? {
-        hidden: { opacity: 0 },
-        visible: { opacity: 1, transition: { duration: 0.1 } },
-        exit: { opacity: 0, transition: { duration: 0.08 } },
-      }
+      hidden: { opacity: 0 },
+      visible: { opacity: 1, transition: { duration: 0.1 } },
+      exit: { opacity: 0, transition: { duration: 0.08 } },
+    }
     : isSheet
-    ? {
+      ? {
         hidden: { y: "100%", opacity: 0.6 },
         visible: {
           y: 0,
@@ -121,7 +121,7 @@ export default function Modal({
           transition: { duration: 0.2, ease: [0.32, 0.72, 0, 1] },
         },
       }
-    : {
+      : {
         hidden: { opacity: 0, scale: 0.96, y: isAuto ? 16 : 8 },
         visible: {
           opacity: 1,
@@ -142,13 +142,12 @@ export default function Modal({
       {isOpen && (
         <div
           role="presentation"
-          className={`fixed inset-0 z-50 flex overflow-y-auto ${
-            isSheet
+          className={`fixed inset-0 z-50 flex overflow-y-auto ${isSheet
               ? "items-end justify-center p-0"
               : isAuto
-              ? "items-end justify-center p-0 sm:items-center sm:p-4"
-              : "items-center justify-center p-4"
-          }`}
+                ? "items-end justify-center p-0 sm:items-center sm:p-4"
+                : "items-center justify-center p-4"
+            }`}
         >
           {/* Backdrop */}
           <motion.div
@@ -172,15 +171,13 @@ export default function Modal({
             aria-labelledby={title ? titleId : labelledBy}
             aria-describedby={description ? descId : describedBy}
             onClick={(e) => e.stopPropagation()}
-            className={`relative z-10 flex w-full flex-col overflow-hidden border border-border-default bg-surface-card shadow-modal focus:outline-none ${
-              maxWidthMap[maxWidth]
-            } ${
-              isSheet
+            className={`relative z-10 flex w-full flex-col overflow-hidden border border-border-default bg-surface-card shadow-modal focus:outline-none ${maxWidthMap[maxWidth]
+              } ${isSheet
                 ? "max-h-[90dvh] rounded-t-2xl"
                 : isAuto
-                ? "max-h-[calc(100dvh-1.5rem)] rounded-t-2xl sm:max-h-[calc(100dvh-3rem)] sm:rounded-modal"
-                : "max-h-[calc(100dvh-3rem)] rounded-modal"
-            } ${className}`}
+                  ? "max-h-[calc(100dvh-1.5rem)] rounded-t-2xl sm:max-h-[calc(100dvh-3rem)] sm:rounded-modal"
+                  : "max-h-[calc(100dvh-3rem)] rounded-modal"
+              } ${className}`}
           >
             {/* Header (when title is provided) */}
             {title ? (
@@ -230,9 +227,8 @@ export default function Modal({
 
             {/* Modal Body */}
             <div
-              className={`min-h-0 flex-1 ${
-                bodyClassName.includes("overflow-") ? "" : "overflow-y-auto"
-              } ${bodyClassName}`}
+              className={`min-h-0 flex-1 ${bodyClassName.includes("overflow-") ? "" : "overflow-y-auto"
+                } ${bodyClassName}`}
             >
               {children}
             </div>
