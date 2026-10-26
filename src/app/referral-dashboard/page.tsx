@@ -44,7 +44,7 @@ type DashboardData = {
 
 const MOCK: DashboardData = {
     partnerName: "Partner",
-    referralLink: "https://www.zenoway.com/?ref=your-code", // placeholder format
+    referralLink: "https://www.zenoway.online/?ref=your-code", // placeholder format
     eligibleApplications: 8640,
     underReviewApplications: 480,
     totalPaidOut: 6000,
@@ -64,7 +64,7 @@ const MOCK: DashboardData = {
 
 const WHATSAPP_GROUP_URL =
     "https://chat.whatsapp.com/G3KSb5pZE01BHFmxKwA9oa?s=cl&p=a&mlu=4&ilr=4";
-const ZENOWAY_URL = "https://www.zenoway.com";
+const ZENOWAY_URL = "https://www.zenoway.online";
 const REWARD = 2;
 const MIN_PAYOUT = 200;
 

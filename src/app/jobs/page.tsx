@@ -9,17 +9,14 @@ import {
   Bookmark,
   BriefcaseBusiness,
   Check,
-  Clock3,
   Copy,
   ExternalLink,
-  Globe,
   Mail,
   MapPin,
   RotateCcw,
   Search,
   Share2,
   SlidersHorizontal,
-  Wallet,
   WifiOff,
   X,
 } from "lucide-react";
@@ -407,7 +404,7 @@ function JobsViewContent() {
             aria-label="Close filters"
             className="rounded-control p-1.5 text-text-muted hover:bg-surface-subtle"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4" strokeWidth={1.75} />
           </button>
         </div>
 
@@ -420,7 +417,7 @@ function JobsViewContent() {
             }}
             className={navCls(!savedOnly)}
           >
-            <BriefcaseBusiness className="h-4 w-4" /> All jobs{" "}
+            <BriefcaseBusiness className="h-4 w-4" strokeWidth={1.75} /> All jobs{" "}
             <span className="ml-auto text-xs opacity-60">{jobs.length}</span>
           </button>
           <button
@@ -431,7 +428,7 @@ function JobsViewContent() {
             }}
             className={navCls(savedOnly)}
           >
-            <Bookmark className="h-4 w-4" fill={savedOnly ? "currentColor" : "none"} /> Saved{" "}
+            <Bookmark className="h-4 w-4" strokeWidth={1.75} fill={savedOnly ? "currentColor" : "none"} /> Saved{" "}
             <span className="ml-auto text-xs opacity-60">{saved.length}</span>
           </button>
         </nav>
@@ -541,7 +538,7 @@ function JobsViewContent() {
           disabled={!hasActiveCriteria}
           className="mt-2 inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-5 text-sm font-medium text-text-secondary transition-colors duration-200 hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary disabled:cursor-not-allowed disabled:border-border-subtle disabled:bg-surface-muted disabled:text-text-muted"
         >
-          <RotateCcw className="h-3.5 w-3.5 shrink-0" />
+          <RotateCcw className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
           <span>Reset filters</span>
           {activeFilters > 0 && (
             <span className="grid h-5 min-w-5 place-items-center rounded-full bg-surface-muted px-1.5 text-[11px] font-semibold tabular-nums text-text-secondary">
@@ -584,7 +581,7 @@ function JobsViewContent() {
                   : "border-border-default text-text-secondary hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
               }`}
             >
-              <SlidersHorizontal className="h-4 w-4" /> Filters{" "}
+              <SlidersHorizontal className="h-4 w-4" strokeWidth={1.75} /> Filters{" "}
               {activeFilters > 0 && (
                 <span className="grid h-5 min-w-5 place-items-center rounded-full bg-brand-dark px-1 text-[11px] text-white">
                   {activeFilters}
@@ -592,7 +589,7 @@ function JobsViewContent() {
               )}
             </button>
             <label className="inline-flex h-10 items-center gap-2 rounded-control border border-border-default bg-surface-card px-3.5 text-sm text-text-muted">
-              <ArrowDownUp className="h-4 w-4" />
+              <ArrowDownUp className="h-4 w-4" strokeWidth={1.75} />
               <select
                 aria-label="Sort jobs"
                 value={sortBy}
@@ -611,7 +608,7 @@ function JobsViewContent() {
         {/* Search Bar */}
         <div className="mt-5 grid grid-cols-1 rounded-control border border-border-default bg-surface-card transition-colors focus-within:border-brand focus-within:ring-4 focus-within:ring-focus-ring sm:grid-cols-2">
           <label className="flex items-center gap-3 px-4 py-3.5">
-            <Search className="h-[18px] w-[18px] shrink-0 text-brand" />
+            <Search className="h-[18px] w-[18px] shrink-0 text-brand" strokeWidth={1.75} />
             <span className="sr-only">Search job title, skill or company</span>
             <input
               value={search}
@@ -626,12 +623,12 @@ function JobsViewContent() {
                 aria-label="Clear search"
                 className="cursor-pointer rounded-full p-1 text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary"
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-3.5 w-3.5" strokeWidth={1.75} />
               </button>
             )}
           </label>
           <label className="flex items-center gap-3 border-t border-border-default px-4 py-3.5 sm:border-l sm:border-t-0">
-            <MapPin className="h-[18px] w-[18px] shrink-0 text-brand" />
+            <MapPin className="h-[18px] w-[18px] shrink-0 text-brand" strokeWidth={1.75} />
             <span className="sr-only">Location</span>
             <input
               value={location}
@@ -646,7 +643,7 @@ function JobsViewContent() {
                 aria-label="Clear location"
                 className="cursor-pointer rounded-full p-1 text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary"
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-3.5 w-3.5" strokeWidth={1.75} />
               </button>
             )}
           </label>
@@ -683,7 +680,7 @@ function JobsViewContent() {
           ) : error ? (
             <div className="rounded-panel border border-dashed border-status-error/40 bg-surface-card px-5 py-16 text-center">
               <div className="mx-auto grid h-12 w-12 place-items-center rounded-pill bg-status-error-bg text-status-error">
-                <WifiOff className="h-5 w-5" />
+                <WifiOff className="h-5 w-5" strokeWidth={1.75} />
               </div>
               <h3 className="mt-4 text-base font-semibold text-text-primary">
                 Failed to load jobs
@@ -696,13 +693,13 @@ function JobsViewContent() {
                 onClick={loadJobs}
                 className="mt-5 inline-flex cursor-pointer items-center gap-2 rounded-control bg-brand px-4 py-2.5 text-sm font-semibold text-text-inverse shadow-subtle transition-colors duration-200 hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               >
-                <RotateCcw className="h-3.5 w-3.5" /> Try again
+                <RotateCcw className="h-3.5 w-3.5" strokeWidth={1.75} /> Try again
               </button>
             </div>
           ) : filteredJobs.length === 0 ? (
             <div className="rounded-panel border border-dashed border-border-default bg-surface-card px-5 py-16 text-center">
               <div className="mx-auto grid h-12 w-12 place-items-center rounded-pill bg-surface-muted text-text-muted">
-                {noSavedYet ? <Bookmark className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+                {noSavedYet ? <Bookmark className="h-5 w-5" strokeWidth={1.75} /> : <Search className="h-5 w-5" strokeWidth={1.75} />}
               </div>
               <h3 className="mt-4 text-base font-semibold text-text-primary">
                 {noSavedYet ? "No saved roles yet" : "No matching jobs found"}
@@ -717,7 +714,7 @@ function JobsViewContent() {
                 onClick={noSavedYet ? () => setSavedOnly(false) : clearFilters}
                 className="mt-5 inline-flex cursor-pointer items-center gap-2 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-sm font-semibold text-text-secondary transition-colors duration-200 hover:bg-surface-subtle hover:text-text-primary"
               >
-                <RotateCcw className="h-3.5 w-3.5" />
+                <RotateCcw className="h-3.5 w-3.5" strokeWidth={1.75} />
                 {noSavedYet ? "Browse all jobs" : "Reset search and filters"}
               </button>
             </div>
@@ -748,7 +745,7 @@ function JobsViewContent() {
                     >
                       <div className="flex items-center justify-between gap-3">
                         <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand">
-                          <BriefcaseBusiness className="h-3.5 w-3.5" />
+                          <BriefcaseBusiness className="h-3.5 w-3.5" strokeWidth={1.75} />
                           {cat}
                         </span>
                         <div className="flex items-center gap-2">
@@ -771,6 +768,7 @@ function JobsViewContent() {
                           >
                             <Bookmark
                               className="h-4 w-4"
+                              strokeWidth={1.75}
                               fill={isSaved ? "currentColor" : "none"}
                             />
                           </button>
@@ -813,12 +811,13 @@ function JobsViewContent() {
                             {job.salary || "Not Disclosed"}
                           </p>
                           <p className="mt-1.5 flex items-center gap-1.5 text-xs text-text-muted">
-                            <MapPin className="h-3.5 w-3.5 shrink-0" />
+                            <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
                             <span className="truncate">{job.location}</span>
                           </p>
                         </div>
                         <ArrowUpRight
                           aria-hidden="true"
+                          strokeWidth={1.75}
                           className="h-4 w-4 shrink-0 text-text-muted transition-all duration-300 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand motion-reduce:transition-none motion-reduce:group-hover:translate-x-0 motion-reduce:group-hover:translate-y-0"
                         />
                       </div>
@@ -884,7 +883,7 @@ function JobsViewContent() {
                   onClick={() => setActiveJob(null)}
                   className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand active:scale-95"
                 >
-                  <X className="h-4 w-4" strokeWidth={2} />
+                  <X className="h-4 w-4" strokeWidth={1.75} />
                 </button>
               </div>
 
@@ -909,7 +908,7 @@ function JobsViewContent() {
                       className="inline-flex items-center gap-1 text-xs font-semibold text-brand transition-colors hover:underline"
                     >
                       <span>Website</span>
-                      <ExternalLink className="h-3 w-3" />
+                      <ExternalLink className="h-3 w-3" strokeWidth={1.75} />
                     </a>
                   </>
                 )}
@@ -960,7 +959,7 @@ function JobsViewContent() {
               {activeJob.mail && (
                 <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border-default bg-surface-subtle/70 p-3.5 text-xs">
                   <div className="flex items-center gap-2 text-text-secondary">
-                    <Mail className="h-4 w-4 text-brand shrink-0" />
+                    <Mail className="h-4 w-4 text-brand shrink-0" strokeWidth={1.75} />
                     <span>Direct application email: <strong className="font-semibold text-text-primary select-all">{activeJob.mail}</strong></span>
                   </div>
                   <button
@@ -968,7 +967,7 @@ function JobsViewContent() {
                     onClick={() => copyEmailAddress(activeJob.mail)}
                     className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-default bg-surface-card px-2.5 py-1.5 font-medium text-text-secondary shadow-subtle transition-all hover:bg-surface-subtle hover:text-text-primary active:scale-95"
                   >
-                    {emailCopied ? <Check className="h-3.5 w-3.5 text-brand" /> : <Copy className="h-3.5 w-3.5" />}
+                    {emailCopied ? <Check className="h-3.5 w-3.5 text-brand" strokeWidth={1.75} /> : <Copy className="h-3.5 w-3.5" strokeWidth={1.75} />}
                     <span>{emailCopied ? "Copied" : "Copy"}</span>
                   </button>
                 </div>
@@ -990,6 +989,7 @@ function JobsViewContent() {
                   >
                     <Bookmark
                       className="h-4 w-4"
+                      strokeWidth={1.75}
                       fill={saved.includes(activeJob.id) ? "currentColor" : "none"}
                     />
                     <span>{saved.includes(activeJob.id) ? "Saved" : "Save Job"}</span>
@@ -1000,7 +1000,7 @@ function JobsViewContent() {
                     onClick={() => shareJob(activeJob)}
                     className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-border-default bg-surface-card px-3.5 py-2.5 text-xs font-semibold text-text-secondary hover:bg-surface-subtle hover:text-text-primary transition-all"
                   >
-                    {shareCopied ? <Check className="h-4 w-4 text-brand" /> : <Share2 className="h-4 w-4" />}
+                    {shareCopied ? <Check className="h-4 w-4 text-brand" strokeWidth={1.75} /> : <Share2 className="h-4 w-4" strokeWidth={1.75} />}
                     <span>{shareCopied ? "Link Copied" : "Share"}</span>
                   </button>
 
@@ -1009,7 +1009,7 @@ function JobsViewContent() {
                     className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-border-default bg-surface-card px-3.5 py-2.5 text-xs font-semibold text-text-secondary hover:bg-surface-subtle hover:text-text-primary transition-all"
                   >
                     <span>Full Page</span>
-                    <ArrowUpRight className="h-3.5 w-3.5 text-text-muted" />
+                    <ArrowUpRight className="h-3.5 w-3.5 text-text-muted" strokeWidth={1.75} />
                   </Link>
                 </div>
 
@@ -1022,9 +1022,9 @@ function JobsViewContent() {
                     )}`}
                     className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white shadow-subtle transition-all hover:bg-brand-hover active:scale-[0.99]"
                   >
-                    <Mail className="h-4 w-4" />
+                    <Mail className="h-4 w-4" strokeWidth={1.75} />
                     <span>Apply via Email</span>
-                    <ArrowUpRight className="h-4 w-4" />
+                    <ArrowUpRight className="h-4 w-4" strokeWidth={1.75} />
                   </a>
                 ) : (
                   <button

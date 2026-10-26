@@ -453,7 +453,7 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
 
             <div className="flex shrink-0 flex-wrap items-center gap-2">
               <ActionButton onClick={shareJob}>
-                <Share2 size={16} />
+                <Share2 size={16} strokeWidth={1.75} />
                 Share
               </ActionButton>
 
@@ -463,7 +463,7 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
                   onClick={() => setApplyOpen(true)}
                 >
                   Apply now
-                  <ArrowUpRight size={16} />
+                  <ArrowUpRight size={16} strokeWidth={1.75} />
                 </ActionButton>
               ) : (
                 <ActionButton primary disabled>
@@ -499,9 +499,9 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
               {companyUrl && (
                 <div className="mt-5">
                   <ActionButton href={companyUrl} external>
-                    <Globe size={16} />
+                    <Globe size={16} strokeWidth={1.75} />
                     Company website
-                    <ArrowUpRight size={15} />
+                    <ArrowUpRight size={15} strokeWidth={1.75} />
                   </ActionButton>
                 </div>
               )}

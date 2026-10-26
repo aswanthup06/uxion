@@ -26,7 +26,7 @@ import {
 
 const WHATSAPP_GROUP_URL =
     "https://chat.whatsapp.com/G3KSb5pZE01BHFmxKwA9oa?s=cl&p=a&mlu=4&ilr=4";
-const ZENOWAY_URL = "https://www.zenoway.com";
+const ZENOWAY_URL = "https://www.zenoway.online";
 
 const REWARD = 2;
 const PRESETS = [50, 100, 250, 500];
@@ -290,8 +290,8 @@ export default function ZenowayReferralPage() {
                                             }}
                                             aria-pressed={apps === p}
                                             className={`flex-1 cursor-pointer rounded-pill border px-2 py-1.5 text-xs font-medium transition-colors ${apps === p
-                                                    ? "border-brand bg-brand-soft text-brand"
-                                                    : "border-border-default text-text-muted hover:border-border-strong hover:text-text-primary"
+                                                ? "border-brand bg-brand-soft text-brand"
+                                                : "border-border-default text-text-muted hover:border-border-strong hover:text-text-primary"
                                                 }`}
                                         >
                                             {fmt(p)}
