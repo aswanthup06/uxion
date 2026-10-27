@@ -1195,23 +1195,38 @@ function JobsViewContent() {
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="flex min-h-[190px] animate-pulse flex-col justify-between rounded-card border border-border-default bg-surface-card p-5"
+                  className="flex animate-pulse flex-col justify-between rounded-card border border-border-default bg-surface-card p-5"
                 >
                   <div>
-                    <div className="flex items-center justify-between">
-                      <div className="h-3.5 w-24 rounded-control bg-surface-muted" />
-                      <div className="h-3.5 w-16 rounded-control bg-surface-muted" />
+                    {/* Top: Title + Bookmark */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="h-5 w-3/5 rounded-control bg-surface-muted" />
+                      <div className="h-4 w-4 shrink-0 rounded-control bg-surface-subtle" />
                     </div>
-                    <div className="mt-4 h-5 w-3/4 rounded-control bg-border-subtle" />
-                    <div className="mt-2 h-4 w-1/3 rounded-control bg-surface-muted" />
-                    <div className="mt-3 flex gap-1.5">
-                      <div className="h-6 w-16 rounded-control bg-surface-muted" />
-                      <div className="h-6 w-16 rounded-control bg-surface-muted" />
+
+                    {/* Company · Category · Posted Time */}
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="h-3.5 w-24 rounded-control bg-surface-subtle" />
+                      <div className="h-1 w-1 rounded-full bg-border-strong" />
+                      <div className="h-3.5 w-16 rounded-control bg-surface-subtle" />
+                      <div className="h-1 w-1 rounded-full bg-border-strong" />
+                      <div className="h-3.5 w-12 rounded-control bg-surface-subtle" />
+                    </div>
+
+                    {/* Editorial Specs: Work Mode · Experience · Job Type */}
+                    <div className="mt-3 flex items-center gap-2">
+                      <div className="h-3.5 w-14 rounded-control bg-surface-subtle" />
+                      <div className="h-1 w-1 rounded-full bg-border-strong" />
+                      <div className="h-3.5 w-20 rounded-control bg-surface-subtle" />
+                      <div className="h-1 w-1 rounded-full bg-border-strong" />
+                      <div className="h-3.5 w-16 rounded-control bg-surface-subtle" />
                     </div>
                   </div>
-                  <div className="mt-4 flex items-center justify-between pt-3">
+
+                  {/* Bottom Row: Salary on left, Location on right */}
+                  <div className="mt-5 flex items-center justify-between gap-3 pt-1">
                     <div className="h-4 w-28 rounded-control bg-surface-muted" />
-                    <div className="h-4 w-4 rounded-control bg-surface-muted" />
+                    <div className="h-3.5 w-24 rounded-control bg-surface-subtle" />
                   </div>
                 </div>
               ))}
