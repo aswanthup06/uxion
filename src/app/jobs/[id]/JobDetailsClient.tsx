@@ -201,6 +201,8 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
       officeCities = job.physicalLocations
         .map((pl) => pl.city)
         .filter((c): c is string => Boolean(c));
+    } else if (job.primaryCity) {
+      officeCities = [job.primaryCity];
     } else if (workMode !== "Remote" && officeText) {
       officeCities = officeText
         .split(",")
@@ -210,17 +212,25 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
 
     let cleanLocationText = "";
     if (workMode === "Remote") {
+      const elType = job.remoteEligibilityType?.toUpperCase();
       const geo = officeText.replace(/^remote\s*[·-]?\s*/i, "").trim();
-      if (geo && !geo.toLowerCase().includes("remote")) {
-        cleanLocationText = `Remote · ${geo}`;
-      } else if (job.remoteEligibilityType === "WORLDWIDE") {
+
+      if (elType === "WORLDWIDE" || geo.toLowerCase().includes("worldwide")) {
         cleanLocationText = "Remote · Worldwide";
-      } else if (job.primaryState) {
-        cleanLocationText = `Remote · ${job.primaryState}`;
-      } else if (job.primaryCountry) {
-        cleanLocationText = `Remote · ${job.primaryCountry}`;
+      } else if (
+        elType === "COUNTRIES" ||
+        geo.toLowerCase().includes("pan-india") ||
+        geo.toLowerCase() === "india"
+      ) {
+        cleanLocationText = "Remote · Pan-India";
+      } else if (elType === "REGIONS" && job.remoteEligibilityRegions && job.remoteEligibilityRegions.length > 0) {
+        cleanLocationText = `Remote · ${job.remoteEligibilityRegions.map((r) => r.region).join(", ")}`;
+      } else if (elType === "CITIES" && job.remoteEligibilityCities && job.remoteEligibilityCities.length > 0) {
+        cleanLocationText = `Remote · ${job.remoteEligibilityCities.map((c) => c.city).join(", ")}`;
+      } else if (geo && !geo.toLowerCase().includes("remote")) {
+        cleanLocationText = `Remote · ${geo.replace(/india/i, "Pan-India")}`;
       } else {
-        cleanLocationText = "Remote";
+        cleanLocationText = "Remote · Pan-India";
       }
     } else if (workMode === "Hybrid") {
       const geo = officeText.replace(/^hybrid\s*[·-]?\s*/i, "").trim();
@@ -229,20 +239,34 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
       cleanLocationText = officeText || "On-site";
     }
 
-    // Deduplicate candidate preference note (e.g. remove redundant "candidates preferred")
+    // Deduplicate candidate preference note (e.g. remove redundant "candidates preferred" or "(no relocation)")
     let formattedPreference: { label: string; text: string } | null = null;
     if (preferenceNote) {
-      const trimmed = preferenceNote.trim();
+      let trimmed = preferenceNote
+        .trim()
+        .replace(/\s*[-–—]?\s*\(no relocation\)/gi, "")
+        .replace(/\s*\(no relocation\)/gi, "")
+        .replace(/\s*no relocation/gi, "")
+        .trim();
+
       const cleaned = trimmed
         .replace(/\s*candidates\s+preferred\.?$/i, "")
         .replace(/\s*candidates\s+only\.?$/i, "")
         .replace(/\s*preferred\.?$/i, "")
         .trim();
 
-      formattedPreference = {
-        label: "Location preference",
-        text: cleaned && cleaned.toLowerCase() !== trimmed.toLowerCase() ? cleaned : trimmed,
-      };
+      const displayText = trimmed.toLowerCase().startsWith("local candidates")
+        ? trimmed
+        : cleaned && cleaned.toLowerCase() !== trimmed.toLowerCase()
+        ? cleaned
+        : trimmed;
+
+      if (displayText) {
+        formattedPreference = {
+          label: "Location preference",
+          text: displayText,
+        };
+      }
     }
 
     return {
@@ -673,20 +697,31 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
             </div>
           )}
 
-          {/* Multiple Office Branches if present */}
-          {locDetails.officeCities.length > 1 && (
+          {/* Company Office / HQ Locations */}
+          {((isRemote && (job.primaryCity || locDetails.officeCities.length > 0)) || locDetails.officeCities.length > 1) && (
             <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-text-muted">
-              <span className="font-medium text-text-secondary">Offices:</span>
-              {locDetails.officeCities.map((city, idx) => (
-                <span
-                  key={idx}
-                  className="inline-flex items-center gap-1 text-text-secondary"
-                >
-                  <MapPin size={11} className="shrink-0 text-brand" />
-                  {city}
-                  {idx < locDetails.officeCities.length - 1 && <span className="text-border-strong ml-1">·</span>}
+              <span className="font-medium text-text-secondary">
+                {isRemote ? (locDetails.officeCities.length > 1 ? "Company Offices:" : "Company HQ:") : "Offices:"}
+              </span>
+              {locDetails.officeCities.length > 0 ? (
+                locDetails.officeCities.map((city, idx) => (
+                  <span
+                    key={idx}
+                    className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle px-2 py-0.5 font-medium text-text-secondary"
+                  >
+                    <Building2 size={11} className="shrink-0 text-brand" />
+                    {city}
+                    {job.primaryState && locDetails.officeCities.length === 1 ? `, ${job.primaryState}` : ""}
+                    {idx < locDetails.officeCities.length - 1 && <span className="text-border-strong ml-1">·</span>}
+                  </span>
+                ))
+              ) : job.primaryCity ? (
+                <span className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle px-2 py-0.5 font-medium text-text-secondary">
+                  <Building2 size={11} className="shrink-0 text-brand" />
+                  {job.primaryCity}
+                  {job.primaryState ? `, ${job.primaryState}` : ""}
                 </span>
-              ))}
+              ) : null}
             </div>
           )}
         </motion.header>

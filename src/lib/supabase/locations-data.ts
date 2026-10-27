@@ -220,11 +220,27 @@ export function resolveLocationAliases(query: string): string[] {
 
   const terms = new Set<string>([q]);
 
-  // Check city & alias dictionary
-  const matchedCity = ALIAS_MAP.get(q);
+  // Support Pan-India aliases
+  if (
+    q === "india" ||
+    q === "pan-india" ||
+    q === "pan india" ||
+    q === "all-india" ||
+    q === "all india"
+  ) {
+    terms.add("india");
+    terms.add("pan-india");
+    terms.add("in");
+  }
+
+  // Check if query is compound like "Kochi, Kerala"
+  const commaIdx = q.indexOf(",");
+  const cityQuery = commaIdx !== -1 ? q.slice(0, commaIdx).trim() : q;
+
+  // Check city & alias dictionary (Note: do not add matchedCity.state so searching a city does not match all other cities in the state)
+  const matchedCity = ALIAS_MAP.get(cityQuery);
   if (matchedCity) {
     terms.add(matchedCity.name.toLowerCase());
-    terms.add(matchedCity.state.toLowerCase());
     for (const a of matchedCity.aliases) terms.add(a.toLowerCase());
   }
 
@@ -291,18 +307,39 @@ export function formatLocationLabel(job: {
       const state = job.primaryState;
       return state ? `Remote · ${state}` : "Remote · State restricted";
     }
+    if (elType === "CITIES") {
+      const cities = (job as { remoteEligibilityCities?: Array<{ city: string }> }).remoteEligibilityCities;
+      if (Array.isArray(cities) && cities.length > 0) {
+        return `Remote · ${cities.map((c) => c.city).join(", ")}`;
+      }
+      if (job.primaryCity) {
+        return `Remote · ${job.primaryCity}`;
+      }
+      return "Remote · City restricted";
+    }
     if (elType === "COUNTRIES" && job.remoteEligibilityCountries && job.remoteEligibilityCountries.length > 0) {
       if (job.remoteEligibilityCountries.length === 1) {
-        const countryName = COUNTRY_BY_CODE.get(job.remoteEligibilityCountries[0]) || job.remoteEligibilityCountries[0];
+        const countryCode = job.remoteEligibilityCountries[0];
+        if (countryCode === "IN") {
+          return "Remote · Pan-India";
+        }
+        const countryName = COUNTRY_BY_CODE.get(countryCode) || countryCode;
         return `Remote · ${countryName}`;
       }
       return `Remote · ${job.remoteEligibilityCountries.length} countries`;
     }
     // Fallback for legacy or regional
-    if (job.location && job.location !== "Remote" && job.location !== "remote") {
+    if (job.location) {
+      const locLower = job.location.toLowerCase();
+      if (locLower === "remote" || locLower === "remote · india" || locLower === "remote - india") {
+        return "Remote · Pan-India";
+      }
+      if (locLower === "remote · worldwide" || locLower === "remote - worldwide") {
+        return "Remote · Worldwide";
+      }
       return job.location;
     }
-    return "Remote";
+    return "Remote · Pan-India";
   }
 
   // Physical on-site or hybrid
@@ -417,10 +454,30 @@ export function jobMatchesLocation(
         ? regions.map((r) => r.region.toLowerCase())
         : [((job.primaryState || "")).toLowerCase()].filter(Boolean);
 
+      const commaIdx = q.indexOf(",");
+      const cityQuery = commaIdx !== -1 ? q.slice(0, commaIdx).trim() : q;
+      const matchedCity = ALIAS_MAP.get(cityQuery);
+
       for (const st of stateNames) {
         if (st.includes(q)) return true;
         for (const term of aliasTerms) {
           if (st.includes(term)) return true;
+        }
+        if (matchedCity && st === matchedCity.state.toLowerCase()) {
+          return true;
+        }
+      }
+    }
+    if (job.remoteEligibilityType === "CITIES") {
+      const cities = (job as { remoteEligibilityCities?: Array<{ city: string }> }).remoteEligibilityCities;
+      const cityNames = Array.isArray(cities) && cities.length > 0
+        ? cities.map((c) => c.city.toLowerCase())
+        : [((job.primaryCity || "")).toLowerCase()].filter(Boolean);
+
+      for (const ct of cityNames) {
+        if (ct.includes(q)) return true;
+        for (const term of aliasTerms) {
+          if (ct.includes(term)) return true;
         }
       }
     }
@@ -428,6 +485,12 @@ export function jobMatchesLocation(
       for (const countryCode of job.remoteEligibilityCountries) {
         const countryName = COUNTRY_BY_CODE.get(countryCode)?.toLowerCase() || "";
         if (countryCode.toLowerCase() === q || countryName.includes(q)) {
+          return true;
+        }
+        if (
+          countryCode === "IN" &&
+          (q === "pan-india" || q === "pan india" || q === "all india" || q === "all-india" || q === "india")
+        ) {
           return true;
         }
         for (const term of aliasTerms) {

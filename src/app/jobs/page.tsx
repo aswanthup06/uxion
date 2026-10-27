@@ -30,6 +30,8 @@ import {
   formatLocationLabel,
   jobMatchesLocation,
   resolveLocationAliases,
+  CANONICAL_CITIES,
+  INDIAN_STATES,
 } from "@/lib/supabase/locations-data";
 import Modal from "@/app/components/Modal";
 
@@ -63,8 +65,7 @@ const experiences = [
 const PAGE_SIZE = 12;
 
 const POPULAR_LOCATIONS = [
-  "Kerala",
-  "Karnataka",
+  "Pan-India",
   "Bengaluru",
   "Kochi",
   "Mumbai",
@@ -72,6 +73,8 @@ const POPULAR_LOCATIONS = [
   "Pune",
   "Chennai",
   "Delhi NCR",
+  "Kerala",
+  "Karnataka",
 ];
 
 function parseCardLocation(job: Job): {
@@ -97,24 +100,14 @@ function parseCardLocation(job: Job): {
     }
   }
 
-  // For Remote jobs: Country-wide (All-India) or Worldwide jobs do not have regional state preferences
-  if (
-    workMode === "Remote" &&
-    (job.remoteEligibilityType === "COUNTRIES" ||
-      job.remoteEligibilityType === "WORLDWIDE" ||
-      officeText.toLowerCase().includes("remote · india") ||
-      officeText.toLowerCase().includes("remote · worldwide") ||
-      officeText.toLowerCase() === "remote")
-  ) {
-    preferenceNote = null;
-  }
-
   // Count office cities
   let officeCities: string[] = [];
   if (job.physicalLocations && job.physicalLocations.length > 0) {
     officeCities = job.physicalLocations
       .map((pl) => pl.city)
       .filter((c): c is string => Boolean(c));
+  } else if (job.primaryCity) {
+    officeCities = [job.primaryCity];
   } else if (workMode !== "Remote" && officeText) {
     officeCities = officeText
       .split(",")
@@ -124,28 +117,59 @@ function parseCardLocation(job: Job): {
 
   let officeLabel = "";
   if (workMode === "Remote") {
-    if (job.remoteEligibilityType === "WORLDWIDE") {
+    const elType = job.remoteEligibilityType?.toUpperCase();
+    if (elType === "WORLDWIDE" || officeText.toLowerCase().includes("worldwide")) {
       officeLabel = "Remote · Worldwide";
-    } else if (job.primaryState) {
-      officeLabel = `Remote · ${job.primaryState}`;
-    } else if (job.primaryCountry) {
-      officeLabel = `Remote · ${job.primaryCountry}`;
-    } else if (officeText && !officeText.toLowerCase().includes("remote")) {
+    } else if (
+      elType === "COUNTRIES" ||
+      officeText.toLowerCase().includes("pan-india") ||
+      officeText.toLowerCase().includes("remote · india") ||
+      officeText.toLowerCase() === "remote"
+    ) {
+      officeLabel = "Remote · Pan-India";
+    } else if (elType === "REGIONS" && job.remoteEligibilityRegions && job.remoteEligibilityRegions.length > 0) {
+      officeLabel = `Remote · ${job.remoteEligibilityRegions.map((r) => r.region).join(", ")}`;
+    } else if (elType === "CITIES" && job.remoteEligibilityCities && job.remoteEligibilityCities.length > 0) {
+      officeLabel = `Remote · ${job.remoteEligibilityCities.map((c) => c.city).join(", ")}`;
+    } else if (officeText.toLowerCase().startsWith("remote · ")) {
+      officeLabel = officeText.replace(/remote · india/i, "Remote · Pan-India");
+    } else if (officeText.toLowerCase() === "remote") {
+      officeLabel = "Remote · Pan-India";
+    } else if (officeText) {
       officeLabel = `Remote · ${officeText}`;
     } else {
-      officeLabel = "Remote";
+      officeLabel = "Remote · Pan-India";
+    }
+
+    // Pan-India or Worldwide jobs do not need redundant regional state preference notes
+    if (
+      officeLabel === "Remote · Pan-India" ||
+      officeLabel === "Remote · Worldwide"
+    ) {
+      preferenceNote = null;
     }
   } else {
     // Physical or Hybrid office
-    if (officeCities.length > 1) {
-      officeLabel = `${officeCities[0]} +${officeCities.length - 1} branches`;
+    const prefix = workMode === "Hybrid" ? "Hybrid · " : "";
+    let cleanPlace = "";
+
+    if (officeCities.length > 2) {
+      cleanPlace = `${officeCities[0]} +${officeCities.length - 1} branches`;
+    } else if (officeCities.length === 2) {
+      cleanPlace = `${officeCities[0]}, ${officeCities[1]}`;
     } else if (job.primaryCity && job.primaryState) {
-      officeLabel = `${job.primaryCity}, ${job.primaryState}`;
+      cleanPlace = `${job.primaryCity}, ${job.primaryState}`;
+    } else if (job.primaryCity) {
+      cleanPlace = job.primaryCity;
     } else if (officeText) {
-      officeLabel = officeText;
+      cleanPlace = officeText.replace(/^hybrid\s*[·-]?\s*/i, "").trim();
     } else {
-      officeLabel = "Location on request";
+      cleanPlace = "Location on request";
     }
+
+    officeLabel = workMode === "Hybrid"
+      ? (cleanPlace.startsWith("Hybrid") ? cleanPlace : `${prefix}${cleanPlace}`)
+      : cleanPlace;
   }
 
   return {
@@ -341,16 +365,38 @@ function JobsViewContent() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Locations with live job counts (purely geographic cities & states)
+  // Locations with live job counts, backed by CANONICAL_CITIES, INDIAN_STATES, and published jobs
   const availableLocations = useMemo(() => {
-    const locMap = new Map<string, { name: string }>();
+    const locMap = new Map<string, { name: string; state?: string }>();
+
+    // 1. Pan-India
+    locMap.set("pan-india", { name: "Pan-India" });
+
+    // 2. Popular hubs
     for (const loc of POPULAR_LOCATIONS) {
-      locMap.set(loc.toLowerCase(), {
-        name: loc,
-      });
+      locMap.set(loc.toLowerCase(), { name: loc });
     }
 
-    // Discover cities from loaded jobs (exclude "remote" from physical locations)
+    // 3. Authoritative Canonical Cities from location dataset
+    for (const city of CANONICAL_CITIES) {
+      if (!locMap.has(city.name.toLowerCase())) {
+        locMap.set(city.name.toLowerCase(), {
+          name: city.name,
+          state: city.state,
+        });
+      }
+    }
+
+    // 4. All Indian States from location dataset
+    for (const state of INDIAN_STATES) {
+      if (!locMap.has(state.name.toLowerCase())) {
+        locMap.set(state.name.toLowerCase(), {
+          name: state.name,
+        });
+      }
+    }
+
+    // 5. Discover cities from loaded jobs (exclude "remote" from physical locations)
     for (const job of jobs) {
       if (
         job.primaryCity &&
@@ -406,18 +452,24 @@ function JobsViewContent() {
         availableLocations.find((a) => a.name.toLowerCase() === p.toLowerCase())
       ).filter((x): x is (typeof availableLocations)[0] => Boolean(x));
 
-      const othersWithJobs = availableLocations.filter(
-        (a) => !popularSet.has(a.name.toLowerCase()) && a.count > 0
-      );
+      const othersWithJobs = availableLocations
+        .filter((a) => !popularSet.has(a.name.toLowerCase()) && a.count > 0)
+        .sort((a, b) => b.count - a.count);
 
       return [...populars, ...othersWithJobs];
     }
 
     const aliases = resolveLocationAliases(q);
-    return availableLocations.filter((item) => {
+    const matches = availableLocations.filter((item) => {
       const nameLower = item.name.toLowerCase();
       if (nameLower.includes(q)) return true;
+      if (item.state && item.state.toLowerCase().includes(q)) return true;
       return aliases.some((a) => nameLower.includes(a));
+    });
+
+    return matches.sort((a, b) => {
+      if (b.count !== a.count) return b.count - a.count;
+      return a.name.localeCompare(b.name);
     });
   }, [availableLocations, location]);
 
@@ -698,54 +750,7 @@ function JobsViewContent() {
             </div>
           </div>
 
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
-              Work mode
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {modes.map((m) => (
-                <Chip
-                  key={m}
-                  active={mode === m}
-                  onClick={() => setMode(mode === m ? "All work modes" : m)}
-                >
-                  {m}
-                </Chip>
-              ))}
-            </div>
-          </div>
 
-          <div>
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
-                Location
-              </p>
-              {location && (
-                <button
-                  type="button"
-                  onClick={() => setLocation("")}
-                  className="cursor-pointer text-[11px] font-semibold text-brand hover:underline"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {["All", "Kerala", "Karnataka", "Bengaluru", "Kochi", "Mumbai", "Hyderabad"].map((loc) => {
-                const isAll = loc === "All";
-                const active = isAll ? !location.trim() : location.toLowerCase() === loc.toLowerCase();
-                return (
-                  <Chip
-                    key={loc}
-                    active={active}
-                    onClick={() => setLocation(isAll || active ? "" : loc)}
-                  >
-                    {loc}
-                  </Chip>
-                );
-              })}
-            </div>
-          </div>
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
@@ -884,9 +889,9 @@ function JobsViewContent() {
           </div>
         </header>
 
-        {/* Work Mode Switcher (1-Click Mode Filter) */}
+        {/* Work Mode Switcher (1-Click Mode Filter) with small corner tokens */}
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <div className="inline-flex items-center gap-1 rounded-full border border-border-default bg-surface-card p-1 shadow-xs">
+          <div className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-card p-1 shadow-xs">
             {[
               { id: "All work modes", label: "All modes", count: jobs.length },
               { id: "Remote", label: "Remote", icon: Globe, count: modeCounts["Remote"] },
@@ -899,7 +904,7 @@ function JobsViewContent() {
                   key={id}
                   type="button"
                   onClick={() => setMode(id)}
-                  className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 ${
+                  className={`inline-flex cursor-pointer items-center gap-1.5 rounded-control px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 ${
                     isActive
                       ? "bg-brand text-text-inverse shadow-subtle"
                       : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
@@ -915,7 +920,7 @@ function JobsViewContent() {
                   )}
                   <span>{label}</span>
                   <span
-                    className={`rounded-full px-1.5 py-0.2 text-[10px] tabular-nums font-semibold ${
+                    className={`rounded-control px-1.5 py-0.2 text-[10px] tabular-nums font-semibold ${
                       isActive
                         ? "bg-white/20 text-text-inverse"
                         : "bg-surface-muted text-text-muted"
@@ -936,7 +941,7 @@ function JobsViewContent() {
                 <button
                   type="button"
                   onClick={() => setMode("All work modes")}
-                  className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-brand-soft px-2.5 py-0.5 font-medium text-brand hover:bg-brand-soft-hover"
+                  className="inline-flex cursor-pointer items-center gap-1 rounded-control bg-brand-soft px-2.5 py-0.5 font-medium text-brand hover:bg-brand-soft-hover"
                 >
                   <span>{mode}</span>
                   <X size={11} />
@@ -946,7 +951,7 @@ function JobsViewContent() {
                 <button
                   type="button"
                   onClick={() => setLocation("")}
-                  className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-brand-soft px-2.5 py-0.5 font-medium text-brand hover:bg-brand-soft-hover"
+                  className="inline-flex cursor-pointer items-center gap-1 rounded-control bg-brand-soft px-2.5 py-0.5 font-medium text-brand hover:bg-brand-soft-hover"
                 >
                   <span>{location}</span>
                   <X size={11} />
@@ -1025,10 +1030,10 @@ function JobsViewContent() {
               )}
             </div>
 
-            {/* Custom Popover Dropdown */}
+            {/* Custom Popover Dropdown with Small Corners (rounded-control: 4px) */}
             {locDropdownOpen && (
               <div
-                className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 overflow-hidden rounded-2xl border border-border-default bg-surface-card shadow-xl ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95 duration-100"
+                className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 overflow-hidden rounded-control border border-border-default bg-surface-card shadow-modal ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95 duration-100"
                 role="listbox"
               >
                 <div className="flex items-center justify-between border-b border-border-subtle bg-surface-subtle/50 px-3.5 py-2 text-[11px] font-semibold uppercase tracking-wider text-text-muted">
@@ -1049,7 +1054,7 @@ function JobsViewContent() {
                         onClick={() => {
                           setLocDropdownOpen(false);
                         }}
-                        className="flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-brand transition-colors hover:bg-brand-soft/70"
+                        className="flex w-full cursor-pointer items-center justify-between rounded-control px-3 py-2 text-left text-sm text-brand transition-colors hover:bg-brand-soft/70"
                       >
                         <div className="flex items-center gap-2.5">
                           <Search className="h-4 w-4 shrink-0" strokeWidth={1.75} />
@@ -1079,7 +1084,7 @@ function JobsViewContent() {
                           setLocation(item.name);
                           setLocDropdownOpen(false);
                         }}
-                        className={`flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition-colors duration-150 ${
+                        className={`flex w-full cursor-pointer items-center justify-between rounded-control px-3 py-2 text-left text-sm transition-colors duration-150 ${
                           isSelected
                             ? "bg-brand-soft font-semibold text-brand"
                             : isHighlighted
@@ -1104,7 +1109,7 @@ function JobsViewContent() {
                             <Check className="h-3.5 w-3.5 text-brand" strokeWidth={2.2} />
                           )}
                           <span
-                            className={`rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ${
+                            className={`rounded-control px-2 py-0.5 text-xs font-semibold tabular-nums ${
                               item.count > 0
                                 ? isSelected
                                   ? "bg-brand/15 text-brand"
@@ -1129,10 +1134,10 @@ function JobsViewContent() {
                         setLocDropdownOpen(false);
                         locInputRef.current?.focus();
                       }}
-                      className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg py-1 text-xs font-medium text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary"
+                      className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-control py-1 text-xs font-medium text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary"
                     >
                       <RotateCcw className="h-3 w-3" strokeWidth={1.75} />
-                      <span>Clear location selection</span>
+                      <span>Clear location</span>
                     </button>
                   </div>
                 )}
@@ -1152,7 +1157,7 @@ function JobsViewContent() {
                 key={loc}
                 type="button"
                 onClick={() => setLocation(isActive ? "" : loc)}
-                className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-pill px-3 py-1 text-xs font-medium transition-colors ${
+                className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-control px-3 py-1 text-xs font-medium transition-colors ${
                   isActive
                     ? "bg-brand text-text-inverse font-semibold shadow-subtle"
                     : "border border-border-default bg-surface-card text-text-secondary hover:border-brand/40 hover:bg-surface-subtle hover:text-text-primary"
@@ -1161,7 +1166,7 @@ function JobsViewContent() {
                 <span>{loc}</span>
                 {count > 0 && (
                   <span
-                    className={`rounded-full px-1 text-[10px] font-semibold tabular-nums leading-tight ${
+                    className={`rounded-control px-1 text-[10px] font-semibold tabular-nums leading-tight ${
                       isActive ? "bg-white/20 text-white" : "bg-surface-muted text-text-muted"
                     }`}
                   >
@@ -1259,7 +1264,6 @@ function JobsViewContent() {
                   const isSaved = saved.includes(job.id);
                   const cat = getJobCategory(job);
                   const typeTag = getJobType(job);
-                  const recent = isRecent(job.postedDate);
                   const locInfo = parseCardLocation(job);
 
                   return (
@@ -1275,17 +1279,20 @@ function JobsViewContent() {
                       tabIndex={0}
                       role="button"
                       aria-label={`View ${job.title} at ${job.company}`}
-                      className="group flex min-h-[195px] cursor-pointer flex-col rounded-card border border-border-default bg-surface-card p-4 text-left shadow-subtle transition-all duration-normal ease-standard hover:border-brand-accent/50 hover:shadow-card-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 sm:p-5"
+                      className="group relative flex cursor-pointer flex-col justify-between rounded-card border border-border-default bg-surface-card p-5 text-left transition-all duration-200 hover:border-brand-accent/50 hover:shadow-card-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                     >
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-brand">
-                          <BriefcaseBusiness className="h-3.5 w-3.5" strokeWidth={1.75} />
-                          {cat}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-text-muted">
-                            {timeAgo(job.postedDate)}
-                          </span>
+                      <div>
+                        {/* Top: Job Title + Bookmark */}
+                        <div className="flex items-start justify-between gap-3">
+                          <h2 className="line-clamp-2 text-[16px] font-semibold leading-snug tracking-[-0.015em] text-text-primary transition-colors group-hover:text-brand">
+                            <Link
+                              href={`/jobs/${job.id}`}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {job.title}
+                            </Link>
+                          </h2>
+
                           <button
                             type="button"
                             onClick={(e) => {
@@ -1294,10 +1301,10 @@ function JobsViewContent() {
                             }}
                             aria-label={isSaved ? `Unsave ${job.title}` : `Save ${job.title}`}
                             aria-pressed={isSaved}
-                            className={`grid h-8 w-8 cursor-pointer place-items-center rounded-full transition-colors duration-200 ${
+                            className={`shrink-0 cursor-pointer p-1 transition-colors ${
                               isSaved
-                                ? "bg-brand-soft text-brand-dark"
-                                : "text-text-muted hover:bg-surface-subtle hover:text-brand"
+                                ? "text-brand"
+                                : "text-text-muted hover:text-text-primary"
                             }`}
                           >
                             <Bookmark
@@ -1307,78 +1314,49 @@ function JobsViewContent() {
                             />
                           </button>
                         </div>
-                      </div>
 
-                      <h2 className="mt-2.5 line-clamp-2 text-[16px] font-semibold leading-snug tracking-[-0.02em] text-text-primary">
-                        <Link
-                          href={`/jobs/${job.id}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="transition-colors hover:text-brand"
-                        >
-                          {job.title}
-                        </Link>
-                      </h2>
+                        {/* Company · Category · Posted Date */}
+                        <p className="mt-1 flex flex-wrap items-center text-sm font-medium text-text-secondary">
+                          <span className="text-text-primary">{job.company}</span>
+                          <span className="mx-1.5 text-border-strong select-none">·</span>
+                          <span className="text-text-muted font-normal">{cat}</span>
+                          <span className="mx-1.5 text-border-strong select-none">·</span>
+                          <span className="text-xs text-text-muted font-normal">{timeAgo(job.postedDate)}</span>
+                        </p>
 
-                      <p className="mt-1 text-sm font-medium text-text-secondary">
-                        {job.company}
-                      </p>
-
-                      {/* Badges: Work Mode, Experience, Job Type, Candidate Preference, New */}
-                      <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                        <span className="rounded-pill bg-brand-soft px-2.5 py-0.5 text-[11px] font-semibold text-brand">
-                          {locInfo.workMode}
-                        </span>
-
-                        {job.experience?.trim() && (
-                          <span className="rounded-pill bg-surface-muted px-2.5 py-0.5 text-[11px] font-medium text-text-secondary">
-                            {job.experience.trim()}
+                        {/* Clean Editorial Metadata: Work Mode · Experience · Job Type (no backgrounds) */}
+                        <div className="mt-3 flex flex-wrap items-center gap-x-2 text-xs text-text-secondary">
+                          <span className="font-semibold text-brand">
+                            {locInfo.workMode}
                           </span>
-                        )}
 
-                        <span className="rounded-pill bg-surface-muted px-2.5 py-0.5 text-[11px] font-medium text-text-secondary">
-                          {typeTag}
-                        </span>
+                          {job.experience?.trim() && (
+                            <>
+                              <span className="text-border-strong select-none">·</span>
+                              <span>{job.experience.trim()}</span>
+                            </>
+                          )}
 
-                        {locInfo.preferenceNote && (() => {
-                          const cleanNote = locInfo.preferenceNote
-                            .replace(/\s*candidates\s+preferred\.?$/i, "")
-                            .replace(/\s*candidates\s+only\.?$/i, "")
-                            .replace(/\s*preferred\.?$/i, "")
-                            .trim() || locInfo.preferenceNote;
-                          return (
-                            <span
-                              className="inline-flex max-w-[210px] items-center gap-1 truncate rounded-control border border-border-default bg-surface-subtle px-2 py-0.5 text-[11px] font-medium text-text-secondary"
-                              title={`Location preference: ${locInfo.preferenceNote}`}
-                            >
-                              <Compass size={11} className="shrink-0 text-brand" />
-                              <span className="truncate">{cleanNote}</span>
-                            </span>
-                          );
-                        })()}
-
-                        {recent && (
-                          <span className="rounded-pill bg-brand px-2 py-0.5 text-[10px] font-bold text-text-inverse">
-                            New
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Bottom Row: Salary & Clean Office Location */}
-                      <div className="mt-auto flex items-end justify-between gap-3 pt-3.5">
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-bold tracking-tight text-brand">
-                            {job.salary || "Not Disclosed"}
-                          </p>
-                          <p className="mt-1 flex items-center gap-1.5 text-xs text-text-muted" title={locInfo.officeLabel}>
-                            <MapPin className="h-3.5 w-3.5 shrink-0 text-brand" strokeWidth={1.75} />
-                            <span className="truncate font-medium text-text-secondary">{locInfo.officeLabel}</span>
-                          </p>
+                          <span className="text-border-strong select-none">·</span>
+                          <span className="text-text-muted">{typeTag}</span>
                         </div>
-                        <ArrowUpRight
-                          aria-hidden="true"
-                          strokeWidth={1.75}
-                          className="h-4 w-4 shrink-0 text-text-muted transition-all duration-300 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand"
-                        />
+                      </div>
+
+                      {/* Bottom Row: Salary on left, Location on right */}
+                      <div className="mt-5 flex items-center justify-between gap-3 pt-1 text-xs">
+                        <span className="font-semibold text-text-primary text-[13.5px] tracking-tight">
+                          {job.salary || "Not Disclosed"}
+                        </span>
+
+                        <span
+                          className="flex items-center gap-1 text-text-muted truncate max-w-[55%]"
+                          title={locInfo.officeLabel}
+                        >
+                          <MapPin className="h-3.5 w-3.5 shrink-0 text-brand" strokeWidth={1.75} />
+                          <span className="truncate font-medium text-text-secondary">
+                            {locInfo.officeLabel.replace(/^(Remote|Hybrid)\s*[·-]\s*/i, "")}
+                          </span>
+                        </span>
                       </div>
                     </article>
                   );
@@ -1488,7 +1466,7 @@ function JobsViewContent() {
                 return (
                   <>
                     {/* Minimal Key Details Grid */}
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-xl border border-border-default/70 bg-surface-subtle/50 p-4">
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-card border border-border-default/70 bg-surface-subtle/50 p-4">
                       <div>
                         <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted">Salary</p>
                         <p className="mt-1 text-sm font-semibold text-brand truncate">
@@ -1517,11 +1495,21 @@ function JobsViewContent() {
 
                     {/* Location Preference Callout */}
                     {modalLocInfo.preferenceNote && (() => {
-                      const cleanNote = modalLocInfo.preferenceNote
+                      let trimmed = modalLocInfo.preferenceNote
+                        .trim()
+                        .replace(/\s*[-–—]?\s*\(no relocation\)/gi, "")
+                        .replace(/\s*\(no relocation\)/gi, "")
+                        .replace(/\s*no relocation/gi, "")
+                        .trim();
+                      const cleaned = trimmed
                         .replace(/\s*candidates\s+preferred\.?$/i, "")
                         .replace(/\s*candidates\s+only\.?$/i, "")
                         .replace(/\s*preferred\.?$/i, "")
-                        .trim() || modalLocInfo.preferenceNote;
+                        .trim();
+                      const cleanNote = trimmed.toLowerCase().startsWith("local candidates")
+                        ? trimmed
+                        : (cleaned && cleaned.toLowerCase() !== trimmed.toLowerCase() ? cleaned : trimmed);
+                      if (!cleanNote) return null;
                       return (
                         <div className="rounded-control border border-border-default bg-surface-subtle p-3 text-xs">
                           <div className="flex items-start gap-2.5">
@@ -1535,18 +1523,41 @@ function JobsViewContent() {
                       );
                     })()}
 
-                    {/* Multiple Office Branches if present */}
-                    {modalLocInfo.officeCities.length > 1 && (
+                    {/* Company Office / HQ or Multiple Branches */}
+                    {modalLocInfo.workMode === "Remote" && (activeJob.primaryCity || modalLocInfo.officeCities.length > 0) ? (
+                      <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                        <span className="font-medium text-text-muted">
+                          {modalLocInfo.officeCities.length > 1 ? "Company Offices:" : "Company HQ:"}
+                        </span>
+                        {modalLocInfo.officeCities.length > 0 ? (
+                          modalLocInfo.officeCities.map((city, idx) => (
+                            <span
+                              key={idx}
+                              className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle px-2 py-0.5 text-xs text-text-primary"
+                            >
+                              <Building2 size={11} className="text-brand shrink-0" />
+                              {city}
+                              {activeJob.primaryState && modalLocInfo.officeCities.length === 1 ? `, ${activeJob.primaryState}` : ""}
+                            </span>
+                          ))
+                        ) : activeJob.primaryCity ? (
+                          <span className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle px-2 py-0.5 text-xs text-text-primary">
+                            <Building2 size={11} className="text-brand shrink-0" />
+                            {activeJob.primaryCity}{activeJob.primaryState ? `, ${activeJob.primaryState}` : ""}
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : modalLocInfo.officeCities.length > 1 ? (
                       <div className="flex flex-wrap items-center gap-1.5 text-xs">
                         <span className="font-medium text-text-muted">Office Branches:</span>
                         {modalLocInfo.officeCities.map((city, idx) => (
-                          <span key={idx} className="inline-flex items-center gap-1 rounded-md border border-border-default bg-surface-subtle px-2 py-0.5 text-xs text-text-primary">
-                            <MapPin size={11} className="text-brand shrink-0" />
+                          <span key={idx} className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle px-2 py-0.5 text-xs text-text-primary">
+                            <Building2 size={11} className="text-brand shrink-0" />
                             {city}
                           </span>
                         ))}
                       </div>
-                    )}
+                    ) : null}
                   </>
                 );
               })()}
@@ -1563,7 +1574,7 @@ function JobsViewContent() {
 
               {/* Direct email contact if available */}
               {activeJob.mail && (
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border-default bg-surface-subtle/70 p-3.5 text-xs">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-border-default bg-surface-subtle/70 p-3.5 text-xs">
                   <div className="flex items-center gap-2 text-text-secondary">
                     <Mail className="h-4 w-4 text-brand shrink-0" strokeWidth={1.75} />
                     <span>Direct application email: <strong className="font-semibold text-text-primary select-all">{activeJob.mail}</strong></span>

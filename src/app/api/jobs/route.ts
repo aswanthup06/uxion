@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   getAllJobs,
+  getJobById,
   createJob,
   updateJob,
   deleteJob,
@@ -31,10 +32,20 @@ function isAuthorizedAdmin(req: NextRequest): boolean {
   return false;
 }
 
-// ✅ GET → Fetch all published jobs (sorted by postedDate descending, with optional page & limit pagination)
+// ✅ GET → Fetch published jobs (supports ?id=JOB_ID for single job, or pagination)
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
+    const idParam = searchParams.get("id");
+
+    if (idParam) {
+      const job = await getJobById(idParam);
+      if (!job) {
+        return NextResponse.json({ error: "Job not found" }, { status: 404 });
+      }
+      return NextResponse.json(job, { status: 200 });
+    }
+
     const pageParam = searchParams.get("page");
     const limitParam = searchParams.get("limit");
 
@@ -135,6 +146,8 @@ export async function POST(req: NextRequest) {
       locality: body.locality?.trim() || undefined,
       postalCode: body.postalCode?.trim() || undefined,
       isMultiLocation: Boolean(body.isMultiLocation),
+      physicalLocations: body.physicalLocations,
+      workModeNotes: body.workModeNotes,
       remoteEligibilityType: body.remoteEligibilityType || (isRemote ? "UNSPECIFIED" : undefined),
       remoteEligibilityCountries: body.remoteEligibilityCountries || undefined,
       remoteEligibilityRegions: body.remoteEligibilityRegions || undefined,
