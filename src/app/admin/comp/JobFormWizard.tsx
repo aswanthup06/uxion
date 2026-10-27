@@ -1220,10 +1220,10 @@ export default function JobFormWizard({
                   Recruiter & Hiring Portal
                 </span>
                 <h1 className="mt-1 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
-                  Post a UX & Design Job
+                  Post an IT Job
                 </h1>
                 <p className="mt-1.5 text-xs text-text-muted">
-                  Reach verified product designers, UX researchers, and creative leaders across India and worldwide.
+                  Reach skilled software engineers, developers, designers, and IT professionals across India and worldwide.
                 </p>
               </>
             ) : (
