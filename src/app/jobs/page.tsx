@@ -891,21 +891,21 @@ function JobsViewContent() {
 
         {/* Work Mode Switcher (1-Click Mode Filter) with small corner tokens */}
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <div className="w-full max-w-full overflow-x-auto no-scrollbar sm:w-auto">
-            <div className="inline-flex min-w-full sm:min-w-0 items-center gap-1 rounded-control border border-border-default bg-surface-card p-1 shadow-xs">
+          <div className="w-full sm:w-auto">
+            <div className="grid grid-cols-4 sm:inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-card p-1 shadow-xs">
               {[
-                { id: "All work modes", label: "All modes", count: jobs.length },
-                { id: "Remote", label: "Remote", icon: Globe, count: modeCounts["Remote"] },
-                { id: "Hybrid", label: "Hybrid", icon: Building2, count: modeCounts["Hybrid"] },
-                { id: "On-site", label: "On-site", icon: MapPin, count: modeCounts["On-site"] },
-              ].map(({ id, label, icon: Icon, count }) => {
+                { id: "All work modes", shortLabel: "All", fullLabel: "All modes", count: jobs.length },
+                { id: "Remote", shortLabel: "Remote", fullLabel: "Remote", icon: Globe, count: modeCounts["Remote"] },
+                { id: "Hybrid", shortLabel: "Hybrid", fullLabel: "Hybrid", icon: Building2, count: modeCounts["Hybrid"] },
+                { id: "On-site", shortLabel: "On-site", fullLabel: "On-site", icon: MapPin, count: modeCounts["On-site"] },
+              ].map(({ id, shortLabel, fullLabel, icon: Icon, count }) => {
                 const isActive = mode === id;
                 return (
                   <button
                     key={id}
                     type="button"
                     onClick={() => setMode(id)}
-                    className={`inline-flex shrink-0 flex-1 sm:flex-initial justify-center cursor-pointer items-center gap-1.5 rounded-control px-2.5 py-1.5 sm:px-3.5 text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
+                    className={`inline-flex justify-center cursor-pointer items-center gap-1 sm:gap-1.5 rounded-control px-1.5 py-1.5 sm:px-3.5 text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
                       isActive
                         ? "bg-brand text-text-inverse shadow-subtle"
                         : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
@@ -913,15 +913,16 @@ function JobsViewContent() {
                   >
                     {Icon && (
                       <Icon
-                        className={`h-3.5 w-3.5 shrink-0 ${
+                        className={`hidden min-[400px]:inline-block h-3.5 w-3.5 shrink-0 ${
                           isActive ? "text-text-inverse" : "text-text-muted"
                         }`}
                         strokeWidth={1.8}
                       />
                     )}
-                    <span>{label}</span>
+                    <span className="sm:hidden">{shortLabel}</span>
+                    <span className="hidden sm:inline">{fullLabel}</span>
                     <span
-                      className={`rounded-control px-1.5 py-0.2 text-[10px] tabular-nums font-semibold ${
+                      className={`rounded-control px-1 sm:px-1.5 py-0.2 text-[10px] tabular-nums font-semibold ${
                         isActive
                           ? "bg-white/20 text-text-inverse"
                           : "bg-surface-muted text-text-muted"
@@ -1149,7 +1150,7 @@ function JobsViewContent() {
         </div>
 
         {/* Quick Location Filter Pills */}
-        <div className="mt-3 flex items-center gap-1.5 overflow-x-auto pb-1 text-xs [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mt-3 hidden sm:flex items-center gap-1.5 overflow-x-auto pb-1 text-xs [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <span className="mr-1 shrink-0 font-medium text-text-muted">Quick location:</span>
           {POPULAR_LOCATIONS.map((loc) => {
             const isActive = location.toLowerCase() === loc.toLowerCase();
