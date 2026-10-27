@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import JobFormWizard from "@/app/admin/comp/JobFormWizard";
-import Footer from "@/app/components/Footer";
+import SiteFooter from "@/app/components/home/SiteFooter";
 
 export const metadata: Metadata = {
   title: "Post a UX/Design Job | Zenoway",
@@ -12,7 +12,7 @@ export default function PostJobPage() {
   return (
     <div className="flex min-h-full flex-col justify-between">
       <JobFormWizard mode="public" />
-      <Footer />
+      <SiteFooter />
     </div>
   );
 }
