@@ -1,4 +1,5 @@
 import type { Job } from "@/app/types/job";
+import { jobMatchesLocation } from "@/lib/supabase/locations-data";
 
 export type Range = [number, number];
 export type Posted = "any" | "1" | "7" | "30";
@@ -75,8 +76,16 @@ export function applyFilters(jobs: Job[], f: Filters, skip?: "locations" | "expe
   const anyExp = skip === "experience" || isAnyExp(f.experience);
 
   return jobs.filter((job) => {
-    if (q && !job.title.toLowerCase().includes(q)) return false;
-    if (skip !== "locations" && f.locations.length && !f.locations.includes(job.location)) return false;
+    if (q) {
+      const titleMatches = job.title.toLowerCase().includes(q);
+      const companyMatches = job.company?.toLowerCase().includes(q);
+      const locationMatches = jobMatchesLocation(job, q);
+      if (!titleMatches && !companyMatches && !locationMatches) return false;
+    }
+    if (skip !== "locations" && f.locations.length) {
+      const matchesAnyLocation = f.locations.some((loc) => jobMatchesLocation(job, loc));
+      if (!matchesAnyLocation) return false;
+    }
     if (!anyExp) {
       const r = parseExperience(job.experience);
       if (r && !(r[0] <= hi && r[1] >= f.experience[0])) return false; // ranges overlap

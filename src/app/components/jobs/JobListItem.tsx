@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Briefcase, Clock, MapPin } from "lucide-react";
 import type { Job } from "@/app/types/job";
 import { isRecent, timeAgo } from "./jobs-utils";
+import { formatLocationLabel } from "@/lib/supabase/locations-data";
 
 const COLS = "md:grid md:grid-cols-[minmax(0,1fr)_10rem_7rem_6.5rem] md:items-center md:gap-5";
 
@@ -28,6 +29,8 @@ export function JobTable({ children }: { children: React.ReactNode }) {
 
 export function JobListItem({ job }: { job: Job }) {
   const h = hue(job.company ?? "");
+  const locationText = formatLocationLabel(job);
+
   return (
     <li>
       <Link
@@ -58,14 +61,14 @@ export function JobListItem({ job }: { job: Job }) {
         </div>
 
         {/* desktop columns */}
-        <span className="hidden truncate text-sm text-text-primary md:block">{job.location}</span>
+        <span className="hidden truncate text-sm text-text-primary md:block">{locationText}</span>
         <span className="hidden truncate text-sm tabular-nums text-text-primary md:block">{job.experience}</span>
         <span className="hidden text-right text-sm text-text-muted md:block">{timeAgo(job.postedDate)}</span>
 
         {/* mobile meta */}
         <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 pl-[54px] text-[13px] text-text-secondary md:hidden">
           <li className="flex items-center gap-1.5">
-            <MapPin className="h-3.5 w-3.5 text-text-muted" aria-hidden /> {job.location}
+            <MapPin className="h-3.5 w-3.5 text-text-muted" aria-hidden /> {locationText}
           </li>
           <li className="flex items-center gap-1.5">
             <Briefcase className="h-3.5 w-3.5 text-text-muted" aria-hidden /> {job.experience}

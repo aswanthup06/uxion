@@ -1,8 +1,7 @@
-"use client";
-
 import Link from "next/link";
 import { MapPin, Briefcase } from "lucide-react";
 import { Job } from "../types/job";
+import { formatLocationLabel, normalizeWorkMode } from "@/lib/supabase/locations-data";
 
 interface JobCardProps {
   job: Job;
@@ -43,6 +42,9 @@ function timeAgo(dateString: string): string {
 }
 
 export default function JobCard({ job }: JobCardProps) {
+  const workMode = normalizeWorkMode(job.workMode, job.location);
+  const locationText = formatLocationLabel(job);
+
   return (
     <Link
       href={`/jobs/${job.id}`}
@@ -63,7 +65,8 @@ export default function JobCard({ job }: JobCardProps) {
       </div>
 
       <div className="flex items-center gap-2 px-4 pb-4 pt-2 text-xs text-text-secondary">
-        {job.location}
+        <MapPin className="h-3.5 w-3.5 shrink-0 text-text-muted" aria-hidden />
+        <span className="truncate">{locationText}</span>
       </div>
 
       <div className="grid grid-cols-3 text-xs border-t border-border-subtle text-text-secondary">
@@ -76,7 +79,7 @@ export default function JobCard({ job }: JobCardProps) {
         </div>
 
         <div className="flex justify-center items-center gap-2 py-4 min-w-0">
-          <span className="truncate">Onsite</span>
+          <span className="truncate">{workMode}</span>
         </div>
       </div>
     </Link>

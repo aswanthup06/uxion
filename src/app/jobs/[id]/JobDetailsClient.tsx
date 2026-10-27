@@ -6,10 +6,11 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
-  CalendarDays,
+  Building2,
   Clock3,
+  Compass,
+  ExternalLink,
   Globe,
-  Mail,
   MapPin,
   Share2,
   Wallet,
@@ -17,22 +18,14 @@ import {
 
 import ApplyModal from "./ApplyModal";
 import { getJobCategory } from "@/app/components/jobs/jobs-utils";
+import type { Job } from "@/app/types/job";
+import {
+  normalizeWorkMode,
+  formatLocationLabel,
+  COUNTRY_BY_CODE,
+} from "@/lib/supabase/locations-data";
 
-export type Job = {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  experience: string;
-  postedDate: string;
-  salary: string;
-  mail: string;
-  companyLink: string;
-  description: string;
-  applicantCountry?: string;
-  validThrough?: string;
-  employmentType?: string;
-};
+export type { Job };
 
 type JobDetailsClientProps = {
   job: Job;
@@ -69,6 +62,7 @@ function formatDate(dateString?: string) {
     timeZone: "Asia/Kolkata",
   }).format(date);
 }
+
 
 async function copyText(value: string): Promise<boolean> {
   try {
@@ -121,7 +115,7 @@ function ActionButton({
   className?: string;
 }) {
   const classes = [
-    "inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-control px-4 py-2",
+    "inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control px-4 py-2",
     "text-xs font-semibold transition-colors duration-normal ease-standard",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
     "disabled:cursor-not-allowed disabled:opacity-50",
@@ -151,25 +145,6 @@ function ActionButton({
   );
 }
 
-function DetailItem({
-  icon: Icon,
-  value,
-}: {
-  icon: React.ElementType;
-  value: string;
-}) {
-  return (
-    <div className="inline-flex min-w-0 items-center gap-2 py-1 text-sm text-text-secondary">
-      <Icon
-        size={17}
-        strokeWidth={1.7}
-        className="shrink-0 text-brand"
-        aria-hidden="true"
-      />
-      <span className="break-words">{value}</span>
-    </div>
-  );
-}
 
 export default function JobDetailsClient({ job }: JobDetailsClientProps) {
   const reduceMotion = useReducedMotion();
@@ -190,9 +165,103 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
     [job.postedDate],
   );
 
-  const isFullyRemote = /^(fully\s+)?remote$/i.test(
-    (job.location || "").trim(),
-  );
+  const workMode = normalizeWorkMode(job.workMode, job.location);
+  const isRemote = workMode === "Remote";
+  const isHybrid = workMode === "Hybrid";
+  const locationLabel = formatLocationLabel(job);
+
+  const locDetails = useMemo(() => {
+    const raw = (job.location || "").trim();
+    let officeText = raw;
+    let preferenceNote = job.workModeNotes?.trim() || null;
+
+    // Check parenthetical if not already in workModeNotes
+    const parenMatch = raw.match(/^(.*?)\s*\((.*?)\)$/);
+    if (parenMatch) {
+      officeText = parenMatch[1].trim();
+      if (!preferenceNote) {
+        preferenceNote = parenMatch[2].trim();
+      }
+    }
+
+    // For Remote jobs: Country-wide (All-India) or Worldwide jobs do not have regional state preferences
+    if (
+      workMode === "Remote" &&
+      (job.remoteEligibilityType === "COUNTRIES" ||
+        job.remoteEligibilityType === "WORLDWIDE" ||
+        officeText.toLowerCase().includes("remote · india") ||
+        officeText.toLowerCase().includes("remote · worldwide") ||
+        officeText.toLowerCase() === "remote")
+    ) {
+      preferenceNote = null;
+    }
+
+    let officeCities: string[] = [];
+    if (job.physicalLocations && job.physicalLocations.length > 0) {
+      officeCities = job.physicalLocations
+        .map((pl) => pl.city)
+        .filter((c): c is string => Boolean(c));
+    } else if (workMode !== "Remote" && officeText) {
+      officeCities = officeText
+        .split(",")
+        .map((c) => c.trim())
+        .filter(Boolean);
+    }
+
+    let cleanLocationText = "";
+    if (workMode === "Remote") {
+      const geo = officeText.replace(/^remote\s*[·-]?\s*/i, "").trim();
+      if (geo && !geo.toLowerCase().includes("remote")) {
+        cleanLocationText = `Remote · ${geo}`;
+      } else if (job.remoteEligibilityType === "WORLDWIDE") {
+        cleanLocationText = "Remote · Worldwide";
+      } else if (job.primaryState) {
+        cleanLocationText = `Remote · ${job.primaryState}`;
+      } else if (job.primaryCountry) {
+        cleanLocationText = `Remote · ${job.primaryCountry}`;
+      } else {
+        cleanLocationText = "Remote";
+      }
+    } else if (workMode === "Hybrid") {
+      const geo = officeText.replace(/^hybrid\s*[·-]?\s*/i, "").trim();
+      cleanLocationText = geo ? `Hybrid · ${geo}` : "Hybrid";
+    } else {
+      cleanLocationText = officeText || "On-site";
+    }
+
+    // Deduplicate candidate preference note (e.g. remove redundant "candidates preferred")
+    let formattedPreference: { label: string; text: string } | null = null;
+    if (preferenceNote) {
+      const trimmed = preferenceNote.trim();
+      const cleaned = trimmed
+        .replace(/\s*candidates\s+preferred\.?$/i, "")
+        .replace(/\s*candidates\s+only\.?$/i, "")
+        .replace(/\s*preferred\.?$/i, "")
+        .trim();
+
+      formattedPreference = {
+        label: "Location preference",
+        text: cleaned && cleaned.toLowerCase() !== trimmed.toLowerCase() ? cleaned : trimmed,
+      };
+    }
+
+    return {
+      officeCities,
+      preferenceNote,
+      formattedPreference,
+      cleanLocationText,
+      displayLocation: officeText || locationLabel,
+    };
+  }, [
+    job.location,
+    job.workModeNotes,
+    job.physicalLocations,
+    job.remoteEligibilityType,
+    job.primaryState,
+    job.primaryCountry,
+    workMode,
+    locationLabel,
+  ]);
 
   const showToast = (message: string) => {
     setToast(message);
@@ -213,7 +282,7 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
     const shareText = [
       job.title,
       `Company: ${job.company}`,
-      `Location: ${job.location || "Not specified"}`,
+      `Location: ${locationLabel}`,
       `Experience: ${job.experience || "Not specified"}`,
       "",
       description.slice(0, 180),
@@ -245,10 +314,10 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
     reduceMotion
       ? {}
       : {
-          initial: { opacity: 0, y: 10 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.4, ease: EASE, delay },
-        };
+        initial: { opacity: 0, y: 10 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.4, ease: EASE, delay },
+      };
 
   const schema = useMemo(() => {
     if (
@@ -306,32 +375,106 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
       },
     };
 
-    if (isFullyRemote) {
-      if (!job.applicantCountry?.trim()) return null;
+    if (isRemote) {
+      const eligibilityType = job.remoteEligibilityType?.toUpperCase();
+      const countries =
+        job.remoteEligibilityCountries && job.remoteEligibilityCountries.length > 0
+          ? job.remoteEligibilityCountries
+          : job.applicantCountry
+            ? [job.applicantCountry]
+            : ["IN"];
+
+      if (eligibilityType === "WORLDWIDE") {
+        return {
+          ...baseSchema,
+          jobLocationType: "TELECOMMUTE",
+        };
+      }
+
+      if (eligibilityType === "REGIONS") {
+        const regions = job.remoteEligibilityRegions;
+        if (Array.isArray(regions) && regions.length > 1) {
+          return {
+            ...baseSchema,
+            jobLocationType: "TELECOMMUTE",
+            applicantLocationRequirements: regions.map((r) => ({
+              "@type": "AdministrativeArea",
+              name: r.region,
+            })),
+          };
+        }
+        const stateName =
+          job.primaryState ||
+          job.remoteEligibilityRegions?.[0]?.region;
+        return {
+          ...baseSchema,
+          jobLocationType: "TELECOMMUTE",
+          applicantLocationRequirements: {
+            "@type": "AdministrativeArea",
+            name: stateName || "India",
+          },
+        };
+      }
+
+      const applicantRequirements =
+        countries.length === 1
+          ? {
+            "@type": "Country",
+            name: COUNTRY_BY_CODE.get(countries[0]) || countries[0],
+          }
+          : countries.map((c) => ({
+            "@type": "Country",
+            name: COUNTRY_BY_CODE.get(c) || c,
+          }));
 
       return {
         ...baseSchema,
         jobLocationType: "TELECOMMUTE",
-        applicantLocationRequirements: {
-          "@type": "Country",
-          name: job.applicantCountry.trim(),
-        },
+        applicantLocationRequirements: applicantRequirements,
       };
     }
 
-    if (!locationParts.length) return null;
+    // Physical work location (On-site or Hybrid)
+    const city = job.primaryCity || locationParts[0];
+    const state =
+      job.primaryState ||
+      (locationParts.length > 1 ? locationParts[1] : undefined);
+    const country = job.primaryCountryCode || "IN";
 
-    return {
-      ...baseSchema,
-      jobLocation: {
+    if (!city && !locationParts.length && !job.physicalLocations?.length) {
+      return null;
+    }
+
+    const primaryPlace: Record<string, unknown> = {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        ...(job.locality ? { streetAddress: job.locality } : {}),
+        ...(city ? { addressLocality: city } : {}),
+        ...(state ? { addressRegion: state } : {}),
+        ...(job.postalCode ? { postalCode: job.postalCode } : {}),
+        addressCountry: country,
+      },
+    };
+
+    let jobLocationValue: unknown = primaryPlace;
+    if (job.physicalLocations && job.physicalLocations.length > 1) {
+      jobLocationValue = job.physicalLocations.map((pl) => ({
         "@type": "Place",
         address: {
           "@type": "PostalAddress",
-          addressLocality: locationParts[0],
-          ...(locationParts[1] ? { addressRegion: locationParts[1] } : {}),
-          addressCountry: "IN",
+          ...(pl.locality ? { streetAddress: pl.locality } : {}),
+          ...(pl.city ? { addressLocality: pl.city } : {}),
+          ...(pl.state ? { addressRegion: pl.state } : {}),
+          ...(pl.postalCode ? { postalCode: pl.postalCode } : {}),
+          addressCountry: pl.countryCode || "IN",
         },
-      },
+      }));
+    }
+
+    return {
+      ...baseSchema,
+      jobLocation: jobLocationValue,
     };
   }, [
     job.title,
@@ -341,10 +484,18 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
     job.validThrough,
     job.employmentType,
     job.applicantCountry,
+    job.remoteEligibilityType,
+    job.remoteEligibilityCountries,
+    job.primaryCity,
+    job.primaryState,
+    job.primaryCountryCode,
+    job.locality,
+    job.postalCode,
+    job.physicalLocations,
     job.mail,
     description,
     companyUrl,
-    isFullyRemote,
+    isRemote,
   ]);
 
   const category = useMemo(() => getJobCategory(job), [job]);
@@ -374,7 +525,7 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
         )}
       </AnimatePresence>
 
-      <div className="mx-auto w-full max-w-[var(--container-max)] px-5 pb-16 pt-8 sm:px-8 sm:pt-12 lg:pt-14">
+      <div className="mx-auto w-full max-w-4xl px-5 pb-20 pt-8 sm:px-8 sm:pt-12">
         <motion.nav
           {...rise()}
           aria-label="Breadcrumb"
@@ -413,57 +564,51 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
 
         <motion.header
           {...rise(0.04)}
-          className="border-b border-border-subtle pb-6"
+          className="border-b border-border-subtle pb-7"
         >
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+          {/* Title & Primary Action Row */}
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1">
-              <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-[-0.035em] text-text-primary sm:text-4xl lg:text-[42px]">
+              <h1 className="text-3xl font-semibold leading-tight tracking-[-0.035em] text-text-primary sm:text-4xl">
                 {job.title}
               </h1>
 
-              <p className=" text-base font-medium text-text-secondary">
-                {job.company}
-              </p>
-
-              <section aria-label="Job information" className="mb-6 mt-6">
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-                  <DetailItem
-                    icon={BriefcaseBusiness}
-                    value={job.experience?.trim() || "Not specified"}
-                  />
-                  <DetailItem
-                    icon={Wallet}
-                    value={job.salary?.trim() || "Not disclosed"}
-                  />
-                  <DetailItem
-                    icon={MapPin}
-                    value={job.location?.trim() || "Not specified"}
-                  />
-                  <DetailItem
-                    icon={CalendarDays}
-                    value={postedDate || "Not specified"}
-                  />
-                  <DetailItem
-                    icon={Clock3}
-                    value={isFullyRemote ? "Remote" : "See location details"}
-                  />
-                </div>
-              </section>
+              <div className="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-text-secondary">
+                <span className="font-semibold text-text-primary">{job.company}</span>
+                {companyUrl && (
+                  <>
+                    <span className="text-border-strong">·</span>
+                    <a
+                      href={companyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-brand transition-colors hover:underline"
+                    >
+                      <span>Website</span>
+                      <ExternalLink size={12} strokeWidth={2} />
+                    </a>
+                  </>
+                )}
+                {postedDate && (
+                  <>
+                    <span className="text-border-strong">·</span>
+                    <span className="text-xs text-text-muted">{postedDate}</span>
+                  </>
+                )}
+              </div>
             </div>
 
-            <div className="flex shrink-0 flex-wrap items-center gap-2">
+            {/* Single Action Cluster: Share + Apply Now */}
+            <div className="flex shrink-0 items-center gap-2.5">
               <ActionButton onClick={shareJob}>
-                <Share2 size={16} strokeWidth={1.75} />
+                <Share2 size={15} strokeWidth={1.75} />
                 Share
               </ActionButton>
 
               {job.mail?.trim() ? (
-                <ActionButton
-                  primary
-                  onClick={() => setApplyOpen(true)}
-                >
+                <ActionButton primary onClick={() => setApplyOpen(true)}>
                   Apply now
-                  <ArrowUpRight size={16} strokeWidth={1.75} />
+                  <ArrowUpRight size={16} strokeWidth={2} />
                 </ActionButton>
               ) : (
                 <ActionButton primary disabled>
@@ -472,40 +617,111 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
               )}
             </div>
           </div>
+
+          {/* Approach A: Clean Editorial Metadata Row */}
+          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-text-secondary">
+            {/* Salary */}
+            {job.salary?.trim() && (
+              <span className="font-semibold text-text-primary">
+                {job.salary.trim()}
+              </span>
+            )}
+
+            {job.salary?.trim() && <span className="text-border-strong select-none">·</span>}
+
+            {/* Experience */}
+            {job.experience?.trim() && (
+              <span>
+                {job.experience.trim()}
+              </span>
+            )}
+
+            {job.experience?.trim() && <span className="text-border-strong select-none">·</span>}
+
+            {/* Employment Type */}
+            {job.employmentType && (
+              <span className="capitalize">
+                {job.employmentType.toLowerCase().replace(/_/g, " ")}
+              </span>
+            )}
+
+            {job.employmentType && <span className="text-border-strong select-none">·</span>}
+
+            {/* Unified Work Mode & Location */}
+            <span className="inline-flex items-center gap-1.5 font-medium text-text-primary">
+              {isRemote ? (
+                <Globe size={14} className="text-brand shrink-0" strokeWidth={1.8} />
+              ) : isHybrid ? (
+                <Building2 size={14} className="text-brand shrink-0" strokeWidth={1.8} />
+              ) : (
+                <MapPin size={14} className="text-brand shrink-0" strokeWidth={1.8} />
+              )}
+              <span>{locDetails.cleanLocationText}</span>
+            </span>
+          </div>
+
+          {/* Candidate Residency Requirement / Preference Note */}
+          {locDetails.formattedPreference && (
+            <div className="mt-4 inline-flex flex-wrap items-center gap-2 rounded-control border border-border-default bg-surface-subtle px-3 py-1.5 text-xs">
+              <span className="inline-flex items-center gap-1.5 font-semibold text-text-primary">
+                <Compass size={13} className="shrink-0 text-brand" strokeWidth={2} />
+                {locDetails.formattedPreference.label}:
+              </span>
+              <span className="font-medium text-text-secondary">
+                {locDetails.formattedPreference.text}
+              </span>
+            </div>
+          )}
+
+          {/* Multiple Office Branches if present */}
+          {locDetails.officeCities.length > 1 && (
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-text-muted">
+              <span className="font-medium text-text-secondary">Offices:</span>
+              {locDetails.officeCities.map((city, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center gap-1 text-text-secondary"
+                >
+                  <MapPin size={11} className="shrink-0 text-brand" />
+                  {city}
+                  {idx < locDetails.officeCities.length - 1 && <span className="text-border-strong ml-1">·</span>}
+                </span>
+              ))}
+            </div>
+          )}
         </motion.header>
 
-        <div className="">
-          <motion.section {...rise(0.08)} className="min-w-0 max-w-4xl">
-            <section aria-labelledby="about-role-heading">
-              <h2
-                id="about-role-heading"
-                className="text-xl font-semibold tracking-tight text-text-primary"
-              >
-                About this role
-              </h2>
+        {/* Main Content Area */}
+        <div className="mt-8">
+          <motion.section {...rise(0.08)} className="max-w-3xl">
+            <h2
+              id="about-role-heading"
+              className="text-base font-semibold tracking-tight text-text-primary"
+            >
+              About this role
+            </h2>
 
-              <div className="mt-4">
-                {description ? (
-                  <div className="whitespace-pre-wrap break-words text-[15px] leading-7 text-text-secondary">
-                    {description}
-                  </div>
-                ) : (
-                  <p className="text-sm leading-6 text-text-muted">
-                    A detailed description for this position has not been
-                    provided yet.
-                  </p>
-                )}
-              </div>
-              {companyUrl && (
-                <div className="mt-5">
-                  <ActionButton href={companyUrl} external>
-                    <Globe size={16} strokeWidth={1.75} />
-                    Company website
-                    <ArrowUpRight size={15} strokeWidth={1.75} />
-                  </ActionButton>
+            <div className="mt-4">
+              {description ? (
+                <div className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-text-secondary">
+                  {description}
                 </div>
+              ) : (
+                <p className="text-sm leading-6 text-text-muted">
+                  A detailed description for this position has not been provided yet.
+                </p>
               )}
-            </section>
+            </div>
+
+            {companyUrl && (
+              <div className="mt-8 border-t border-border-subtle pt-6">
+                <ActionButton href={companyUrl} external>
+                  <Globe size={15} strokeWidth={1.75} />
+                  Company website
+                  <ArrowUpRight size={14} strokeWidth={1.75} />
+                </ActionButton>
+              </div>
+            )}
           </motion.section>
         </div>
 

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -11,19 +10,47 @@ import {
   Banknote,
   Mail,
   Globe,
-  ExternalLink,
   Clock3,
   FileText,
   CheckCircle2,
   AlertCircle,
   LoaderCircle,
   Sparkles,
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  X,
+  Check,
 } from "lucide-react";
+import {
+  COUNTRIES,
+  INDIAN_STATES,
+  CANONICAL_CITIES,
+  type RemoteEligibilityType,
+} from "@/lib/supabase/locations-data";
+
+interface SelectedCity {
+  city: string;
+  state: string;
+}
 
 interface JobForm {
   title: string;
   company: string;
+  workMode: "Onsite" | "Hybrid" | "Remote";
   location: string;
+  city: string;
+  state: string;
+  country: string;
+  countryCode: string;
+  selectedCities: SelectedCity[];
+  candidatePreference: "ALL_INDIA" | "STATE_SPECIFIC" | "LOCAL_ONLY" | "WORLDWIDE" | "COUNTRIES";
+  preferredStates: string[];
+  locality: string;
+  postalCode: string;
+  remoteEligibilityType: RemoteEligibilityType;
+  remoteEligibilityCountries: string[];
+  hqLocation: string;
   experienceMin: string;
   experienceMax: string;
   postedDate: string;
@@ -32,6 +59,17 @@ interface JobForm {
   companyLink: string;
   description: string;
 }
+
+const POPULAR_HUBS = [
+  { city: "Bengaluru", state: "Karnataka" },
+  { city: "Kochi", state: "Kerala" },
+  { city: "Mumbai", state: "Maharashtra" },
+  { city: "Hyderabad", state: "Telangana" },
+  { city: "Pune", state: "Maharashtra" },
+  { city: "Gurugram", state: "Haryana" },
+  { city: "Noida", state: "Uttar Pradesh" },
+  { city: "Chennai", state: "Tamil Nadu" },
+];
 
 const inputClass =
   "w-full rounded-control border border-border-default bg-surface-card px-4 py-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring disabled:cursor-not-allowed disabled:bg-surface-subtle";
@@ -51,6 +89,7 @@ function Field({
   min,
   max,
   step,
+  hint,
 }: {
   label: string;
   name: string;
@@ -59,12 +98,13 @@ function Field({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
   placeholder: string;
-  icon: React.ElementType;
+  icon?: React.ElementType;
   type?: string;
   required?: boolean;
   min?: string;
   max?: string;
   step?: string;
+  hint?: string;
 }) {
   return (
     <div className="min-w-0">
@@ -74,10 +114,12 @@ function Field({
       </label>
 
       <div className="group relative">
-        <Icon
-          className="pointer-events-none absolute left-3.5 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand"
-          strokeWidth={1.8}
-        />
+        {Icon && (
+          <Icon
+            className="pointer-events-none absolute left-3.5 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand"
+            strokeWidth={1.8}
+          />
+        )}
 
         <input
           id={name}
@@ -90,9 +132,11 @@ function Field({
           min={min}
           max={max}
           step={step}
-          className={`${inputClass} pl-10`}
+          className={`${inputClass} ${Icon ? "pl-10" : ""}`}
         />
       </div>
+
+      {hint && <p className="mt-1.5 text-xs text-text-muted">{hint}</p>}
     </div>
   );
 }
@@ -151,7 +195,20 @@ export default function AddJobPage() {
   const [form, setForm] = useState<JobForm>({
     title: "",
     company: "",
+    workMode: "Onsite",
     location: "",
+    city: "",
+    state: "",
+    country: "India",
+    countryCode: "IN",
+    selectedCities: [],
+    candidatePreference: "ALL_INDIA",
+    preferredStates: [],
+    locality: "",
+    postalCode: "",
+    remoteEligibilityType: "COUNTRIES",
+    remoteEligibilityCountries: ["IN"],
+    hqLocation: "",
     experienceMin: "",
     experienceMax: "",
     postedDate: getToday(),
@@ -161,6 +218,9 @@ export default function AddJobPage() {
     description: "",
   });
 
+  const [customCityInput, setCustomCityInput] = useState("");
+  const [showAddressDetails, setShowAddressDetails] = useState(false);
+  const [showCustomCountries, setShowCustomCountries] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -175,6 +235,57 @@ export default function AddJobPage() {
     }));
 
     if (error) setError("");
+  };
+
+  const toggleCity = (cityName: string, defaultState?: string) => {
+    setForm((prev) => {
+      const exists = prev.selectedCities.some(
+        (c) => c.city.toLowerCase() === cityName.toLowerCase()
+      );
+      let updatedCities: SelectedCity[];
+      if (exists) {
+        updatedCities = prev.selectedCities.filter(
+          (c) => c.city.toLowerCase() !== cityName.toLowerCase()
+        );
+      } else {
+        const matched = CANONICAL_CITIES.find(
+          (c) => c.name.toLowerCase() === cityName.toLowerCase()
+        );
+        const stateName = defaultState || (matched ? matched.state : prev.state) || "";
+        updatedCities = [...prev.selectedCities, { city: cityName, state: stateName }];
+      }
+
+      const first = updatedCities[0];
+      return {
+        ...prev,
+        selectedCities: updatedCities,
+        city: first ? first.city : "",
+        state: first ? first.state : prev.state,
+      };
+    });
+  };
+
+  const handleAddCustomCity = () => {
+    const trimmed = customCityInput.trim();
+    if (!trimmed) return;
+    const matched = CANONICAL_CITIES.find(
+      (c) => c.name.toLowerCase() === trimmed.toLowerCase()
+    );
+    toggleCity(matched ? matched.name : trimmed, matched ? matched.state : form.state);
+    setCustomCityInput("");
+  };
+
+  const togglePreferredState = (stateName: string) => {
+    setForm((prev) => {
+      const exists = prev.preferredStates.includes(stateName);
+      const updated = exists
+        ? prev.preferredStates.filter((s) => s !== stateName)
+        : [...prev.preferredStates, stateName];
+      return {
+        ...prev,
+        preferredStates: updated,
+      };
+    });
   };
 
   const formatDateForStorage = (dateString: string) => {
@@ -232,11 +343,108 @@ export default function AddJobPage() {
         experience = `${minExperience}+ years`;
       }
 
+      const isRemote = form.workMode === "Remote";
+      const isHybrid = form.workMode === "Hybrid";
+
+      let computedLocation = form.location.trim();
+      let primaryCity = form.city.trim();
+      let primaryState = form.state.trim();
+      let isMultiLocation = false;
+      let physicalLocations: Array<{ city: string; state: string; countryCode: string }> | undefined;
+      let workModeNotes: string | undefined;
+
+      if (isRemote) {
+        if (form.candidatePreference === "STATE_SPECIFIC" && form.preferredStates.length > 0) {
+          computedLocation = `Remote · ${form.preferredStates.join(", ")}`;
+        } else if (form.candidatePreference === "WORLDWIDE") {
+          computedLocation = "Remote · Worldwide";
+        } else if (form.candidatePreference === "COUNTRIES" && form.remoteEligibilityCountries.length > 0) {
+          computedLocation = `Remote · ${form.remoteEligibilityCountries.length} countries`;
+        } else {
+          computedLocation = "Remote · India";
+        }
+      } else {
+        // On-site or Hybrid
+        const cityList = form.selectedCities.length > 0
+          ? form.selectedCities
+          : form.city.trim()
+          ? [{ city: form.city.trim(), state: form.state.trim() }]
+          : [];
+
+        if (cityList.length > 1) {
+          isMultiLocation = true;
+          primaryCity = cityList[0].city;
+          primaryState = cityList[0].state;
+          physicalLocations = cityList.map((c) => ({
+            city: c.city,
+            state: c.state,
+            countryCode: form.countryCode || "IN",
+          }));
+        } else if (cityList.length === 1) {
+          primaryCity = cityList[0].city;
+          primaryState = cityList[0].state;
+        }
+
+        const cityBaseNames = cityList.map((c) => c.city);
+        const cityStr = cityBaseNames.length > 0
+          ? cityBaseNames.join(", ")
+          : primaryState
+          ? `${primaryState}, ${form.country}`
+          : "Location not specified";
+
+        if (form.candidatePreference === "STATE_SPECIFIC" && form.preferredStates.length > 0) {
+          workModeNotes = `${form.preferredStates.join(", ")} candidates preferred`;
+          computedLocation = cityBaseNames.length > 0
+            ? `${cityStr} (${form.preferredStates.join(", ")} preferred)`
+            : `${form.preferredStates.join(", ")}, India`;
+        } else if (form.candidatePreference === "LOCAL_ONLY") {
+          workModeNotes = "Local candidates only (no relocation)";
+          computedLocation = `${cityStr} (Local only)`;
+        } else {
+          computedLocation = cityList.length === 1 && primaryCity && primaryState
+            ? `${primaryCity}, ${primaryState}`
+            : cityStr;
+        }
+
+        if (isHybrid && !computedLocation.startsWith("Hybrid")) {
+          computedLocation = `Hybrid · ${computedLocation}`;
+        }
+      }
+
+      if (!computedLocation) {
+        computedLocation = isRemote ? "Remote · India" : "Location not specified";
+      }
+
       const payload = {
-        ...form,
         title: form.title.trim(),
         company: form.company.trim(),
-        location: form.location.trim(),
+        location: computedLocation,
+        workMode: form.workMode,
+        primaryCity: primaryCity || undefined,
+        primaryState: primaryState || undefined,
+        primaryCountry: form.country.trim() || "India",
+        primaryCountryCode: form.countryCode || "IN",
+        locality: form.locality.trim() || undefined,
+        postalCode: form.postalCode.trim() || undefined,
+        isMultiLocation,
+        physicalLocations,
+        workModeNotes,
+        remoteEligibilityType: isRemote
+          ? form.candidatePreference === "STATE_SPECIFIC"
+            ? "REGIONS"
+            : form.candidatePreference === "WORLDWIDE"
+            ? "WORLDWIDE"
+            : "COUNTRIES"
+          : undefined,
+        remoteEligibilityCountries:
+          isRemote && (form.candidatePreference === "ALL_INDIA" || form.candidatePreference === "COUNTRIES")
+            ? form.remoteEligibilityCountries
+            : undefined,
+        remoteEligibilityRegions:
+          isRemote && form.candidatePreference === "STATE_SPECIFIC" && form.preferredStates.length > 0
+            ? form.preferredStates.map((s) => ({ countryCode: "IN", region: s }))
+            : undefined,
+        hqLocationId: form.hqLocation.trim() || undefined,
         id: `JOB${Date.now()}`,
         postedDate: formatDateForStorage(form.postedDate),
         salary: form.salary.trim() || "Not Disclosed",
@@ -287,7 +495,7 @@ export default function AddJobPage() {
 
   return (
     <div className="min-h-full bg-surface-base text-text-primary">
-      <div className="mx-auto max-w-5xl px-5 pb-32 pt-6 sm:px-8 sm:pt-9">
+      <div className="mx-auto max-w-4xl px-5 pb-32 pt-6 sm:px-8 sm:pt-9">
         {/* Breadcrumb navigation and page heading */}
         <div className="mb-7">
           <nav
@@ -334,8 +542,7 @@ export default function AddJobPage() {
               </h1>
 
               <p className="mt-2 max-w-xl text-sm leading-6 text-text-secondary">
-                Create a job listing with the details candidates need to
-                discover and apply for the opportunity.
+                Create a clean, discoverable job listing for candidates on Zenoway.
               </p>
             </div>
 
@@ -347,18 +554,18 @@ export default function AddJobPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Section 1: Job information */}
-          <section className="border-b border-border-subtle pb-7">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Section 1: Role & Company */}
+          <section className="rounded-panel border border-border-default bg-surface-card p-6 shadow-subtle sm:p-7">
             <SectionHeader
               number="01"
-              title="Job information"
-              description="Start with the essential details of this position."
+              title="Role & Company"
+              description="Basic information about the role and hiring organization."
               icon={BriefcaseBusiness}
             />
 
-            <div className="grid grid-cols-1 gap-x-5 gap-y-5 md:grid-cols-2">
-              <div className="md:col-span-2">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <div className="sm:col-span-2">
                 <Field
                   label="Job title"
                   name="title"
@@ -381,24 +588,402 @@ export default function AddJobPage() {
               />
 
               <Field
-                label="Job location"
-                name="location"
-                value={form.location}
+                label="Company website"
+                name="companyLink"
+                type="url"
+                value={form.companyLink}
                 onChange={handleChange}
-                placeholder="e.g. Remote, Bengaluru"
-                icon={MapPin}
+                placeholder="https://acme.com (optional)"
+                icon={Globe}
+              />
+
+              {/* Work Arrangement Selector */}
+              <div className="sm:col-span-2 pt-2">
+                <label className={labelClass}>
+                  Work arrangement <span className="text-status-error">*</span>
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { mode: "Onsite" as const, label: "On-site", desc: "Work from office" },
+                    { mode: "Hybrid" as const, label: "Hybrid", desc: "Office & remote" },
+                    { mode: "Remote" as const, label: "Remote", desc: "Work from anywhere" },
+                  ].map((item) => {
+                    const active = form.workMode === item.mode;
+                    return (
+                      <button
+                        key={item.mode}
+                        type="button"
+                        onClick={() => setForm((prev) => ({ ...prev, workMode: item.mode }))}
+                        className={`cursor-pointer rounded-control border p-3 text-left transition-all duration-normal ${
+                          active
+                            ? "border-brand bg-brand-soft ring-2 ring-brand/30"
+                            : "border-border-default bg-surface-card hover:border-border-strong hover:bg-surface-subtle"
+                        }`}
+                      >
+                        <p className={`text-sm font-semibold ${active ? "text-brand-dark" : "text-text-primary"}`}>
+                          {item.label}
+                        </p>
+                        <p className="mt-0.5 text-xs text-text-muted">{item.desc}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 2: Work Location & Candidate Preference */}
+          <section className="rounded-panel border border-border-default bg-surface-card p-6 shadow-subtle sm:p-7">
+            <SectionHeader
+              number="02"
+              title="Work & Candidate Location"
+              description="Specify physical office branches and candidate residency preferences."
+              icon={MapPin}
+            />
+
+            <div className="space-y-6">
+              {/* Part A: Office Location (when On-site or Hybrid) */}
+              {form.workMode !== "Remote" && (
+                <div className="rounded-control border border-border-default bg-surface-base p-4.5 space-y-4">
+                  <div>
+                    <label className={labelClass}>
+                      Office Branch / Work Location(s) <span className="text-status-error">*</span>
+                    </label>
+                    <p className="text-xs text-text-muted mb-2.5">
+                      Select 1 or more office branches where candidates can work:
+                    </p>
+
+                    {/* Quick popular tech hub pills */}
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {POPULAR_HUBS.map((hub) => {
+                        const isSelected = form.selectedCities.some(
+                          (c) => c.city.toLowerCase() === hub.city.toLowerCase()
+                        );
+                        return (
+                          <button
+                            key={hub.city}
+                            type="button"
+                            onClick={() => toggleCity(hub.city, hub.state)}
+                            className={`cursor-pointer rounded-pill border px-3 py-1 text-xs font-medium transition-all ${
+                              isSelected
+                                ? "border-brand bg-brand text-text-inverse font-semibold shadow-xs"
+                                : "border-border-default bg-surface-card text-text-secondary hover:border-border-strong hover:text-text-primary"
+                            }`}
+                          >
+                            {hub.city} {isSelected ? "✓" : "+"}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Active Selected Cities Tags */}
+                    {form.selectedCities.length > 0 && (
+                      <div className="mb-3 flex flex-wrap gap-2 rounded-control bg-brand-soft/40 border border-brand/20 p-2.5">
+                        <span className="text-[11px] font-semibold text-brand-dark self-center mr-1">
+                          Selected Offices ({form.selectedCities.length}):
+                        </span>
+                        {form.selectedCities.map((sc) => (
+                          <span
+                            key={sc.city}
+                            className="inline-flex items-center gap-1.5 rounded-pill bg-surface-card border border-brand/40 px-2.5 py-1 text-xs font-semibold text-text-primary"
+                          >
+                            📍 {sc.city}
+                            {sc.state ? <span className="text-text-muted font-normal">({sc.state})</span> : null}
+                            <button
+                              type="button"
+                              onClick={() => toggleCity(sc.city)}
+                              className="text-text-muted hover:text-status-error cursor-pointer ml-0.5"
+                              title="Remove city"
+                            >
+                              <X size={13} />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Add Custom City row */}
+                    <div className="flex items-center gap-2 pt-1">
+                      <div className="relative flex-1">
+                        <input
+                          id="custom-city-input"
+                          value={customCityInput}
+                          onChange={(e) => setCustomCityInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              handleAddCustomCity();
+                            }
+                          }}
+                          placeholder="Type another city and press Add (e.g. Kozhikode, Mysore, Chandigarh)"
+                          list="add-canonical-city-options"
+                          className={`${inputClass} text-xs py-2`}
+                        />
+                        <datalist id="add-canonical-city-options">
+                          {CANONICAL_CITIES.map((c) => (
+                            <option key={c.name} value={c.name}>
+                              {c.state}, {c.countryCode}
+                            </option>
+                          ))}
+                        </datalist>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleAddCustomCity}
+                        className="cursor-pointer rounded-control border border-border-strong bg-surface-card px-3.5 py-2 text-xs font-semibold text-text-primary hover:bg-surface-subtle"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Locality & PIN collapsible (only relevant when 1 office) */}
+                  {form.selectedCities.length <= 1 && (
+                    <div className="border-t border-border-subtle pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowAddressDetails((prev) => !prev)}
+                        className="flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-brand hover:underline"
+                      >
+                        {showAddressDetails ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                        {showAddressDetails ? "Hide specific building / PIN" : "+ Add specific building, tech park or PIN code"}
+                      </button>
+
+                      {showAddressDetails && (
+                        <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          <Field
+                            label="Specific locality / Tech Park"
+                            name="locality"
+                            value={form.locality}
+                            onChange={handleChange}
+                            placeholder="e.g. Infopark Phase 2, Koramangala"
+                            icon={MapPin}
+                          />
+                          <Field
+                            label="Postal code (PIN)"
+                            name="postalCode"
+                            value={form.postalCode}
+                            onChange={handleChange}
+                            placeholder="e.g. 682042"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Part B: Preferred Candidate Location / Hiring Scope */}
+              <div>
+                <label className={labelClass}>
+                  Preferred candidate location (Who can apply?) <span className="text-status-error">*</span>
+                </label>
+                <p className="text-xs text-text-muted mb-2.5">
+                  Set candidate residency or relocation preference:
+                </p>
+
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForm((prev) => ({
+                        ...prev,
+                        candidatePreference: "ALL_INDIA",
+                        remoteEligibilityType: "COUNTRIES",
+                        remoteEligibilityCountries: ["IN"],
+                      }));
+                      setShowCustomCountries(false);
+                    }}
+                    className={`cursor-pointer rounded-control border p-3.5 text-left transition-all ${
+                      form.candidatePreference === "ALL_INDIA"
+                        ? "border-brand bg-brand-soft ring-2 ring-brand/30"
+                        : "border-border-default bg-surface-card hover:border-border-strong"
+                    }`}
+                  >
+                    <p className="text-sm font-semibold text-text-primary">🇮🇳 All India</p>
+                    <p className="mt-1 text-xs text-text-muted">
+                      {form.workMode === "Remote"
+                        ? "Remote from anywhere in India"
+                        : "Open to candidates anywhere in India (relocation welcome)"}
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForm((prev) => ({
+                        ...prev,
+                        candidatePreference: "STATE_SPECIFIC",
+                        remoteEligibilityType: "REGIONS",
+                        preferredStates:
+                          prev.preferredStates.length > 0
+                            ? prev.preferredStates
+                            : prev.state
+                            ? [prev.state]
+                            : ["Kerala"],
+                      }));
+                      setShowCustomCountries(false);
+                    }}
+                    className={`cursor-pointer rounded-control border p-3.5 text-left transition-all ${
+                      form.candidatePreference === "STATE_SPECIFIC"
+                        ? "border-brand bg-brand-soft ring-2 ring-brand/30"
+                        : "border-border-default bg-surface-card hover:border-border-strong"
+                    }`}
+                  >
+                    <p className="text-sm font-semibold text-text-primary">📍 Specific State(s)</p>
+                    <p className="mt-1 text-xs text-text-muted">
+                      {form.workMode === "Remote"
+                        ? "Must reside in selected state(s)"
+                        : "Preference for candidates currently in state(s)"}
+                    </p>
+                  </button>
+
+                  {form.workMode === "Remote" ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForm((prev) => ({
+                          ...prev,
+                          candidatePreference: "WORLDWIDE",
+                          remoteEligibilityType: "WORLDWIDE",
+                        }));
+                        setShowCustomCountries(false);
+                      }}
+                      className={`cursor-pointer rounded-control border p-3.5 text-left transition-all ${
+                        form.candidatePreference === "WORLDWIDE"
+                          ? "border-brand bg-brand-soft ring-2 ring-brand/30"
+                          : "border-border-default bg-surface-card hover:border-border-strong"
+                      }`}
+                    >
+                      <p className="text-sm font-semibold text-text-primary">🌍 Worldwide</p>
+                      <p className="mt-1 text-xs text-text-muted">Open to global applicants</p>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForm((prev) => ({
+                          ...prev,
+                          candidatePreference: "LOCAL_ONLY",
+                        }));
+                      }}
+                      className={`cursor-pointer rounded-control border p-3.5 text-left transition-all ${
+                        form.candidatePreference === "LOCAL_ONLY"
+                          ? "border-brand bg-brand-soft ring-2 ring-brand/30"
+                          : "border-border-default bg-surface-card hover:border-border-strong"
+                      }`}
+                    >
+                      <p className="text-sm font-semibold text-text-primary">🏢 Local City Only</p>
+                      <p className="mt-1 text-xs text-text-muted">
+                        Must already live locally (immediate joiners, no relocation)
+                      </p>
+                    </button>
+                  )}
+                </div>
+
+                {/* State selector pills when State-Specific is chosen */}
+                {form.candidatePreference === "STATE_SPECIFIC" && (
+                  <div className="mt-3.5 rounded-control border border-brand/30 bg-brand-soft/40 p-4">
+                    <p className="text-xs font-semibold text-brand-dark mb-2">
+                      Select 1 or more states:
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 mb-2.5">
+                      {["Kerala", "Karnataka", "Tamil Nadu", "Maharashtra", "Telangana", "Delhi", "Andhra Pradesh", "Gujarat"].map((st) => {
+                        const isSelected = form.preferredStates.includes(st);
+                        return (
+                          <button
+                            key={st}
+                            type="button"
+                            onClick={() => togglePreferredState(st)}
+                            className={`cursor-pointer rounded-pill border px-3 py-1 text-xs font-medium transition-all ${
+                              isSelected
+                                ? "border-brand bg-brand text-text-inverse font-semibold"
+                                : "border-border-default bg-surface-card text-text-secondary hover:border-border-strong"
+                            }`}
+                          >
+                            {st} {isSelected ? "✓" : "+"}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <select
+                        id="add-state-select"
+                        value=""
+                        onChange={(e) => {
+                          if (e.target.value) togglePreferredState(e.target.value);
+                        }}
+                        className={`${inputClass} text-xs py-1.5 cursor-pointer max-w-xs`}
+                      >
+                        <option value="">+ Add any other Indian state...</option>
+                        {INDIAN_STATES.map((s) => (
+                          <option key={s.code} value={s.name}>
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
+
+                      {form.preferredStates.length > 0 && (
+                        <span className="text-xs text-text-muted">
+                          Selected: <strong className="text-text-primary">{form.preferredStates.join(", ")}</strong>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* HQ context when Remote */}
+                {form.workMode === "Remote" && (
+                  <div className="pt-3">
+                    <Field
+                      label="Company headquarters (optional)"
+                      name="hqLocation"
+                      value={form.hqLocation}
+                      onChange={handleChange}
+                      placeholder="e.g. Bengaluru, India (for candidate reference only)"
+                      icon={Building2}
+                      hint="Gives candidates context on company headquarters."
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* Section 3: Experience & Compensation */}
+          <section className="rounded-panel border border-border-default bg-surface-card p-6 shadow-subtle sm:p-7">
+            <SectionHeader
+              number="03"
+              title="Experience & Compensation"
+              description="Candidate qualifications and salary range."
+              icon={Clock3}
+            />
+
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+              <Field
+                label="Min experience (years)"
+                name="experienceMin"
+                type="number"
+                value={form.experienceMin}
+                onChange={handleChange}
+                placeholder="0 for Fresher"
+                icon={Clock3}
+                min="0"
+                step="any"
                 required
               />
 
               <Field
-                label="Posted date"
-                name="postedDate"
-                type="date"
-                value={form.postedDate}
+                label="Max experience (years)"
+                name="experienceMax"
+                type="number"
+                value={form.experienceMax}
                 onChange={handleChange}
-                placeholder="Select posting date"
-                icon={CalendarDays}
-                required
+                placeholder="Leave blank for no max"
+                icon={Clock3}
+                min="0"
+                step="any"
               />
 
               <Field
@@ -409,101 +994,33 @@ export default function AddJobPage() {
                 placeholder="e.g. ₹8–12 LPA or Not Disclosed"
                 icon={Banknote}
               />
+
+              <div className="sm:col-span-3">
+                <Field
+                  label="Posting date"
+                  name="postedDate"
+                  type="date"
+                  value={form.postedDate}
+                  onChange={handleChange}
+                  placeholder="Posting date"
+                  icon={CalendarDays}
+                  required
+                />
+              </div>
             </div>
           </section>
 
-          {/* Section 2: Experience */}
-          <section className="border-b border-border-subtle pb-7">
-            <SectionHeader
-              number="02"
-              title="Experience requirements"
-              description="Specify the experience level candidates should have."
-              icon={Clock3}
-            />
-
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              <Field
-                label="Minimum experience (years)"
-                name="experienceMin"
-                type="number"
-                value={form.experienceMin}
-                onChange={handleChange}
-                placeholder="e.g. 0"
-                icon={Clock3}
-                min="0"
-                step="any"
-                required
-              />
-
-              <Field
-                label="Maximum experience (years)"
-                name="experienceMax"
-                type="number"
-                value={form.experienceMax}
-                onChange={handleChange}
-                placeholder="e.g. 5 (optional)"
-                icon={Clock3}
-                min="0"
-                step="any"
-              />
-            </div>
-
-            <div className="mt-4 flex items-start gap-2.5 rounded-control bg-surface-subtle px-4 py-3">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-
-              <p className="text-xs leading-5 text-text-muted">
-                Enter{" "}
-                <strong className="font-semibold text-text-primary">0</strong>{" "}
-                for minimum experience to include entry-level candidates.
-                Leave maximum experience empty if there is no upper limit.
-              </p>
-            </div>
-          </section>
-
-          {/* Section 3: Application details */}
-          <section className="border-b border-border-subtle pb-7">
-            <SectionHeader
-              number="03"
-              title="Application details"
-              description="Help candidates learn more about your company and apply."
-              icon={ExternalLink}
-            />
-
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-              <Field
-                label="Application email"
-                name="mail"
-                type="email"
-                value={form.mail}
-                onChange={handleChange}
-                placeholder="careers@company.com"
-                icon={Mail}
-                required
-              />
-
-              <Field
-                label="Company website"
-                name="companyLink"
-                type="url"
-                value={form.companyLink}
-                onChange={handleChange}
-                placeholder="https://company.com"
-                icon={Globe}
-              />
-            </div>
-          </section>
-
-          {/* Section 4: Description */}
-          <section className="pb-2">
+          {/* Section 4: Job Description */}
+          <section className="rounded-panel border border-border-default bg-surface-card p-6 shadow-subtle sm:p-7">
             <SectionHeader
               number="04"
-              title="Job description"
-              description="Describe the responsibilities, qualifications, and benefits."
+              title="Job Description"
+              description="Detailed requirements, responsibilities, and perks."
               icon={FileText}
             />
 
             <label htmlFor="description" className={labelClass}>
-              Description <span className="ml-1 text-rose-500">*</span>
+              Description <span className="text-status-error">*</span>
             </label>
 
             <textarea
@@ -512,27 +1029,42 @@ export default function AddJobPage() {
               value={form.description}
               onChange={handleChange}
               rows={8}
-              placeholder={`About the role
-
-Responsibilities:
-• Describe the key responsibilities
+              placeholder={`About the role:
+• Detail key responsibilities
 
 Requirements:
-• List the essential skills and qualifications
+• Essential skills and experience
 
 Benefits:
-• Add relevant perks and benefits`}
+• Perks, healthcare, flexibility`}
               required
               className={`${inputClass} min-h-48 resize-y leading-6`}
             />
-
-            <p className="mt-2 text-xs text-text-muted">
-              Use clear paragraphs and bullet points to make your listing easy
-              to read.
-            </p>
           </section>
 
-          {/* Error message */}
+          {/* Section 5: Application Details */}
+          <section className="rounded-panel border border-border-default bg-surface-card p-6 shadow-subtle sm:p-7">
+            <SectionHeader
+              number="05"
+              title="Application Details"
+              description="Where applications and resumes should be sent."
+              icon={Mail}
+            />
+
+            <Field
+              label="Application email"
+              name="mail"
+              type="email"
+              value={form.mail}
+              onChange={handleChange}
+              placeholder="careers@company.com"
+              icon={Mail}
+              required
+              hint="Candidates will apply directly to this email address."
+            />
+          </section>
+
+          {/* Error Banner */}
           {error && (
             <div
               role="alert"
@@ -546,7 +1078,7 @@ Benefits:
 
           {/* Fixed bottom action bar */}
           <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border-default bg-surface-base/95 px-4 py-3 backdrop-blur-md sm:px-8">
-            <div className="mx-auto flex max-w-5xl flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mx-auto flex max-w-4xl flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="hidden text-xs text-text-muted sm:block">
                 <span className="text-status-error">*</span> Required fields
               </p>
@@ -556,7 +1088,7 @@ Benefits:
                   type="button"
                   onClick={() => router.push("/admin/jobs")}
                   disabled={isSubmitting}
-                  className="inline-flex items-center justify-center rounded-control border border-border-default bg-surface-card px-5 py-2.5 text-sm font-semibold text-text-secondary transition hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-5 py-2.5 text-sm font-semibold text-text-secondary transition hover:bg-surface-subtle disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -564,7 +1096,7 @@ Benefits:
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center justify-center gap-2 rounded-control bg-brand px-6 py-2.5 text-sm font-semibold text-text-inverse transition hover:bg-brand-hover shadow-subtle focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus-ring disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-6 py-2.5 text-sm font-semibold text-text-inverse transition hover:bg-brand-hover shadow-subtle disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isSubmitting ? (
                     <>

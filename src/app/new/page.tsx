@@ -1,9 +1,16 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { FiMapPin, FiChevronDown } from "react-icons/fi";
+import {
+  COUNTRIES,
+  getStatesForCountry,
+  getCitiesForState,
+  formatLocationLabel,
+  type RemoteEligibilityType,
+} from "@/lib/supabase/locations-data";
 
 
 const inputClass =
@@ -73,9 +80,19 @@ export default function PostJobPage() {
   const [employment, setEmployment] = useState("Full-time");
   const [arrangement, setArrangement] = useState("Remote");
 
-  const [city, setCity] = useState("");
+  const [countryCode, setCountryCode] = useState("IN");
+  const [countryName, setCountryName] = useState("India");
   const [state, setState] = useState("");
-  const [country, setCountry] = useState("India");
+  const [city, setCity] = useState("");
+  const [locality, setLocality] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+
+  // Remote applicant eligibility state
+  const [remoteEligibilityType, setRemoteEligibilityType] = useState<RemoteEligibilityType>("COUNTRIES");
+  const [eligibleCountries, setEligibleCountries] = useState<string[]>(["IN"]);
+  const [eligibleRegion, setEligibleRegion] = useState("");
+  const [eligibleCity, setEligibleCity] = useState("");
+  const [hqLocation, setHqLocation] = useState("");
 
   const [minSalary, setMinSalary] = useState("");
   const [maxSalary, setMaxSalary] = useState("");
@@ -91,11 +108,26 @@ export default function PostJobPage() {
   const [skillInput, setSkillInput] = useState("");
 
   const isRemote = arrangement === "Remote";
+  const isHybrid = arrangement === "Hybrid";
 
+  // Dynamic available states & cities
+  const availableStates = useMemo(() => getStatesForCountry(countryCode), [countryCode]);
+  const availableCities = useMemo(() => getCitiesForState(countryCode, state), [countryCode, state]);
+
+  // Formatted location display
   const location = isRemote
-    ? "Remote"
-    : [city.trim(), state.trim(), country.trim()].filter(Boolean).join(", ") ||
-      "Job location";
+    ? formatLocationLabel({
+        workMode: "Remote",
+        remoteEligibilityType,
+        remoteEligibilityCountries: eligibleCountries,
+        location: hqLocation ? `Remote (HQ: ${hqLocation})` : "Remote",
+      })
+    : formatLocationLabel({
+        workMode: isHybrid ? "Hybrid" : "Onsite",
+        primaryCity: city.trim(),
+        primaryState: state.trim(),
+        primaryCountry: countryName.trim(),
+      });
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const applicationComplete = validEmail;
@@ -149,10 +181,13 @@ export default function PostJobPage() {
     { label: "Description", complete: description.trim().length > 0 },
     { label: "Company name", complete: company.trim().length > 0 },
     {
-      label: "Location",
-      complete:
-        isRemote ||
-        Boolean(city.trim() && state.trim() && country.trim()),
+      label: "Location & Eligibility",
+      complete: isRemote
+        ? remoteEligibilityType === "WORLDWIDE" ||
+          (remoteEligibilityType === "COUNTRIES" && eligibleCountries.length > 0) ||
+          (remoteEligibilityType === "REGIONS" && eligibleRegion.trim().length > 0) ||
+          (remoteEligibilityType === "CITIES" && eligibleCity.trim().length > 0)
+        : Boolean(city.trim() && state.trim() && countryName.trim()),
     },
     { label: "Application details", complete: applicationComplete },
   ];
@@ -386,42 +421,256 @@ export default function PostJobPage() {
                   </div>
                 </Field>
 
+                {/* 3A. Non-Remote (On-site & Hybrid) Location Fields */}
                 {!isRemote && (
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <Field label="City" htmlFor="city" required>
-                      <input
-                        id="city"
-                        required={!isRemote}
-                        value={city}
-                        onChange={(event) => setCity(event.target.value)}
-                        placeholder="e.g. Bengaluru"
-                        className={inputClass}
-                      />
-                    </Field>
+                  <div className="space-y-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <Field label="Country" htmlFor="country" required>
+                        <div className="relative">
+                          <select
+                            id="country"
+                            required
+                            value={countryCode}
+                            onChange={(e) => {
+                              const code = e.target.value;
+                              const found = COUNTRIES.find((c) => c.code === code);
+                              setCountryCode(code);
+                              setCountryName(found?.name || "India");
+                              setState("");
+                              setCity("");
+                            }}
+                            className={`${inputClass} cursor-pointer appearance-none pr-9`}
+                          >
+                            {COUNTRIES.map((c) => (
+                              <option key={c.code} value={c.code}>
+                                {c.name}
+                              </option>
+                            ))}
+                          </select>
+                          <SelectChevron />
+                        </div>
+                      </Field>
 
-                    <Field label="State" htmlFor="state" required>
-                      <input
-                        id="state"
-                        required={!isRemote}
-                        value={state}
-                        onChange={(event) => setState(event.target.value)}
-                        placeholder="e.g. Karnataka"
-                        className={inputClass}
-                      />
-                    </Field>
+                      <Field label="State / Region" htmlFor="state" required>
+                        {availableStates.length > 0 ? (
+                          <div className="relative">
+                            <select
+                              id="state"
+                              required
+                              value={state}
+                              onChange={(e) => {
+                                setState(e.target.value);
+                                setCity("");
+                              }}
+                              className={`${inputClass} cursor-pointer appearance-none pr-9`}
+                            >
+                              <option value="">Select state or region</option>
+                              {availableStates.map((s) => (
+                                <option key={s.code} value={s.name}>
+                                  {s.name}
+                                </option>
+                              ))}
+                            </select>
+                            <SelectChevron />
+                          </div>
+                        ) : (
+                          <input
+                            id="state"
+                            required
+                            value={state}
+                            onChange={(e) => setState(e.target.value)}
+                            placeholder="e.g. State or Province"
+                            className={inputClass}
+                          />
+                        )}
+                      </Field>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <Field label="City" htmlFor="city" required>
+                        {availableCities.length > 0 ? (
+                          <div className="relative">
+                            <input
+                              id="city"
+                              required
+                              list="city-options"
+                              value={city}
+                              onChange={(e) => setCity(e.target.value)}
+                              placeholder="e.g. Bengaluru"
+                              className={inputClass}
+                            />
+                            <datalist id="city-options">
+                              {availableCities.map((c) => (
+                                <option key={c.name} value={c.name}>
+                                  {c.name} {c.aliases.length > 0 ? `(${c.aliases.join(", ")})` : ""}
+                                </option>
+                              ))}
+                            </datalist>
+                          </div>
+                        ) : (
+                          <input
+                            id="city"
+                            required
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                            placeholder="e.g. Kochi"
+                            className={inputClass}
+                          />
+                        )}
+                      </Field>
+
+                      <Field label="Locality / Area" htmlFor="locality" hint="Optional (e.g. Sector-58, Infopark)">
+                        <input
+                          id="locality"
+                          value={locality}
+                          onChange={(e) => setLocality(e.target.value)}
+                          placeholder="e.g. Indiranagar, Infopark"
+                          className={inputClass}
+                        />
+                      </Field>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <Field label="PIN / Postal code" htmlFor="postal-code" hint="Optional">
+                        <input
+                          id="postal-code"
+                          value={postalCode}
+                          onChange={(e) => setPostalCode(e.target.value)}
+                          placeholder="e.g. 560038"
+                          className={inputClass}
+                        />
+                      </Field>
+                    </div>
                   </div>
                 )}
 
-                <Field label="Country" htmlFor="country" required>
-                  <input
-                    id="country"
-                    required
-                    value={country}
-                    onChange={(event) => setCountry(event.target.value)}
-                    placeholder="e.g. India"
-                    className={inputClass}
-                  />
-                </Field>
+                {/* 3B. Remote Applicant Eligibility (Decoupled from physical office) */}
+                {isRemote && (
+                  <div className="space-y-4 rounded-control border border-border-subtle bg-surface-subtle p-4">
+                    <div>
+                      <label className="text-xs font-semibold uppercase tracking-wider text-brand">
+                        Remote Applicant Eligibility
+                      </label>
+                      <p className="mt-1 text-xs text-text-muted">
+                        Specify geographic boundaries where candidates are legally and operationally permitted to work.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                      {[
+                        { type: "WORLDWIDE" as RemoteEligibilityType, label: "Worldwide", hint: "Any country" },
+                        { type: "COUNTRIES" as RemoteEligibilityType, label: "Countries", hint: "Selected nations" },
+                        { type: "REGIONS" as RemoteEligibilityType, label: "State / Region", hint: "Specific state" },
+                        { type: "CITIES" as RemoteEligibilityType, label: "City", hint: "Specific city" },
+                      ].map((item) => {
+                        const active = remoteEligibilityType === item.type;
+                        return (
+                          <button
+                            key={item.type}
+                            type="button"
+                            onClick={() => setRemoteEligibilityType(item.type)}
+                            className={`cursor-pointer rounded-control border p-2.5 text-left transition-colors ${
+                              active
+                                ? "border-brand bg-surface-card text-brand shadow-xs"
+                                : "border-border-default bg-surface-card text-text-secondary hover:border-border-strong"
+                            }`}
+                          >
+                            <p className="text-xs font-semibold">{item.label}</p>
+                            <p className="text-[11px] text-text-muted">{item.hint}</p>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {remoteEligibilityType === "COUNTRIES" && (
+                      <div className="space-y-2 pt-1">
+                        <label className={labelClass}>Permitted candidate countries</label>
+                        <div className="flex flex-wrap gap-1.5">
+                          {["IN", "AE", "SG", "GB", "US"].map((cCode) => {
+                            const isSelected = eligibleCountries.includes(cCode);
+                            const cName = COUNTRIES.find((c) => c.code === cCode)?.name || cCode;
+                            return (
+                              <button
+                                key={cCode}
+                                type="button"
+                                onClick={() => {
+                                  setEligibleCountries((prev) =>
+                                    isSelected
+                                      ? prev.length > 1
+                                        ? prev.filter((c) => c !== cCode)
+                                        : prev
+                                      : [...prev, cCode]
+                                  );
+                                }}
+                                className={`cursor-pointer rounded-pill border px-2.5 py-1 text-xs font-medium transition-colors ${
+                                  isSelected
+                                    ? "border-brand bg-brand text-text-inverse"
+                                    : "border-border-default bg-surface-card text-text-secondary hover:border-border-strong"
+                                }`}
+                              >
+                                {cName} {isSelected && "✓"}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {remoteEligibilityType === "REGIONS" && (
+                      <div className="grid gap-3 sm:grid-cols-2 pt-1">
+                        <Field label="Country" required>
+                          <select
+                            value={countryCode}
+                            onChange={(e) => setCountryCode(e.target.value)}
+                            className={`${inputClass} cursor-pointer`}
+                          >
+                            {COUNTRIES.map((c) => (
+                              <option key={c.code} value={c.code}>
+                                {c.name}
+                              </option>
+                            ))}
+                          </select>
+                        </Field>
+                        <Field label="Permitted State / Region" required>
+                          <input
+                            value={eligibleRegion}
+                            onChange={(e) => setEligibleRegion(e.target.value)}
+                            placeholder="e.g. Kerala"
+                            className={inputClass}
+                          />
+                        </Field>
+                      </div>
+                    )}
+
+                    {remoteEligibilityType === "CITIES" && (
+                      <div className="grid gap-3 sm:grid-cols-2 pt-1">
+                        <Field label="Permitted City" required>
+                          <input
+                            value={eligibleCity}
+                            onChange={(e) => setEligibleCity(e.target.value)}
+                            placeholder="e.g. Kochi"
+                            className={inputClass}
+                          />
+                        </Field>
+                      </div>
+                    )}
+
+                    {/* Optional HQ for remote roles */}
+                    <div className="border-t border-border-subtle pt-3">
+                      <Field
+                        label="Office Headquarters (Optional)"
+                        hint="Display the team's primary headquarters without restricting applicant location."
+                      >
+                        <input
+                          value={hqLocation}
+                          onChange={(e) => setHqLocation(e.target.value)}
+                          placeholder="e.g. Bengaluru, India"
+                          className={inputClass}
+                        />
+                      </Field>
+                    </div>
+                  </div>
+                )}
               </div>
             </section>
 

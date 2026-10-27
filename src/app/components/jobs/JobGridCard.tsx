@@ -2,8 +2,11 @@ import Link from "next/link";
 import { Briefcase, MapPin } from "lucide-react";
 import type { Job } from "@/app/types/job";
 import { isRecent, timeAgo } from "./jobs-utils";
+import { formatLocationLabel } from "@/lib/supabase/locations-data";
 
 export function JobGridCard({ job }: { job: Job }) {
+  const locationText = formatLocationLabel(job);
+
   return (
     <Link
       href={`/jobs/${job.id}`}
@@ -28,7 +31,7 @@ export function JobGridCard({ job }: { job: Job }) {
       <div className="mt-5 flex flex-wrap gap-2">
         <span className="inline-flex max-w-full items-center gap-1.5 rounded-pill bg-surface-muted px-3 py-1 text-xs font-medium text-text-secondary">
           <MapPin className="h-3.5 w-3.5 shrink-0 text-text-muted" aria-hidden />
-          <span className="truncate">{job.location}</span>
+          <span className="truncate">{locationText}</span>
         </span>
         <span className="inline-flex items-center gap-1.5 rounded-pill bg-surface-muted px-3 py-1 text-xs font-medium text-text-secondary">
           <Briefcase className="h-3.5 w-3.5 shrink-0 text-text-muted" aria-hidden />

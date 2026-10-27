@@ -72,24 +72,75 @@ export async function POST(req: NextRequest) {
 
     const body: Partial<Job> = await req.json();
 
-    if (!body.title?.trim() || !body.company?.trim() || !body.location?.trim() || !body.description?.trim()) {
+    if (!body.title?.trim() || !body.company?.trim() || !body.description?.trim()) {
       return NextResponse.json(
-        { error: "Missing required fields (title, company, location, description)" },
+        { error: "Missing required fields (title, company, description)" },
         { status: 400 }
       );
+    }
+
+    const workMode = (body.workMode || "Onsite").trim();
+    const isRemote = workMode.toLowerCase() === "remote";
+    const isHybrid = workMode.toLowerCase() === "hybrid";
+
+    // Validate location for on-site/hybrid
+    if (!isRemote && !body.location?.trim() && !body.primaryCity?.trim() && !body.primaryState?.trim()) {
+      return NextResponse.json(
+        { error: "Physical work location (City or State) is required for on-site and hybrid jobs" },
+        { status: 400 }
+      );
+    }
+
+    // Validate remote eligibility
+    if (isRemote && body.remoteEligibilityType === "COUNTRIES") {
+      if (!body.remoteEligibilityCountries || body.remoteEligibilityCountries.length === 0) {
+        return NextResponse.json(
+          { error: "Please select at least one eligible country for country-restricted remote jobs" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Canonical location string fallback
+    let canonicalLocation = body.location?.trim() || "";
+    if (!canonicalLocation) {
+      if (isRemote) {
+        canonicalLocation = body.remoteEligibilityType === "WORLDWIDE" ? "Remote · Worldwide" : "Remote";
+      } else if (body.primaryCity && body.primaryState) {
+        canonicalLocation = `${body.primaryCity}, ${body.primaryState}`;
+      } else if (body.primaryState) {
+        canonicalLocation = `${body.primaryState}, ${body.primaryCountry || "India"}`;
+      } else {
+        canonicalLocation = "Job location";
+      }
     }
 
     const newJob = await createJob({
       ...body,
       title: body.title.trim(),
       company: body.company.trim(),
-      location: body.location.trim(),
+      location: canonicalLocation,
       description: body.description.trim(),
       salary: body.salary?.trim() || "Not Disclosed",
       mail: body.mail?.trim() || "",
       companyLink: body.companyLink?.trim() || "",
       apply: "",
       experience: body.experience?.trim() || "Fresher",
+      workMode: isRemote ? "Remote" : isHybrid ? "Hybrid" : "Onsite",
+      primaryCity: body.primaryCity?.trim() || undefined,
+      primaryState: body.primaryState?.trim() || undefined,
+      primaryStateCode: body.primaryStateCode?.trim() || undefined,
+      primaryCountry: body.primaryCountry?.trim() || "India",
+      primaryCountryCode: body.primaryCountryCode?.trim() || "IN",
+      locality: body.locality?.trim() || undefined,
+      postalCode: body.postalCode?.trim() || undefined,
+      isMultiLocation: Boolean(body.isMultiLocation),
+      remoteEligibilityType: body.remoteEligibilityType || (isRemote ? "UNSPECIFIED" : undefined),
+      remoteEligibilityCountries: body.remoteEligibilityCountries || undefined,
+      remoteEligibilityRegions: body.remoteEligibilityRegions || undefined,
+      remoteEligibilityCities: body.remoteEligibilityCities || undefined,
+      hqLocationId: body.hqLocationId || undefined,
+      rawLocation: body.rawLocation || canonicalLocation,
     });
 
     return NextResponse.json(
@@ -136,6 +187,21 @@ export async function PUT(req: NextRequest) {
       companyLink: body.companyLink?.trim(),
       apply: "",
       experience: body.experience?.trim(),
+      primaryCity: body.primaryCity?.trim(),
+      primaryState: body.primaryState?.trim(),
+      primaryStateCode: body.primaryStateCode?.trim(),
+      primaryCountry: body.primaryCountry?.trim(),
+      primaryCountryCode: body.primaryCountryCode?.trim(),
+      locality: body.locality?.trim(),
+      postalCode: body.postalCode?.trim(),
+      isMultiLocation: body.isMultiLocation,
+      remoteEligibilityType: body.remoteEligibilityType,
+      remoteEligibilityCountries: body.remoteEligibilityCountries,
+      remoteEligibilityRegions: body.remoteEligibilityRegions,
+      remoteEligibilityCities: body.remoteEligibilityCities,
+      hqLocationId: body.hqLocationId,
+      workModeNotes: body.workModeNotes,
+      requiresReview: body.requiresReview,
     });
 
     return NextResponse.json(

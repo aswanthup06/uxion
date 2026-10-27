@@ -27,6 +27,24 @@ export function mapDbJobToJob(row: DbJob): Job {
     employmentType: row.employment_type || "FULL_TIME",
     workMode: row.work_mode || "Onsite",
     isTestData: Boolean(row.is_test_data),
+
+    // Global structured location fields
+    primaryCity: row.primary_city || undefined,
+    primaryState: row.primary_state || undefined,
+    primaryStateCode: row.primary_state_code || undefined,
+    primaryCountry: row.primary_country || undefined,
+    primaryCountryCode: row.primary_country_code || undefined,
+    locality: row.locality || undefined,
+    postalCode: row.postal_code || undefined,
+    isMultiLocation: Boolean(row.is_multi_location),
+    remoteEligibilityType: (row.remote_eligibility_type as Job["remoteEligibilityType"]) || undefined,
+    remoteEligibilityCountries: row.remote_eligibility_countries || undefined,
+    remoteEligibilityRegions: row.remote_eligibility_regions || undefined,
+    remoteEligibilityCities: row.remote_eligibility_cities || undefined,
+    hqLocationId: row.hq_location_id || undefined,
+    rawLocation: row.raw_location || undefined,
+    workModeNotes: row.work_mode_notes || undefined,
+    requiresReview: Boolean(row.requires_review),
   };
 }
 
@@ -70,6 +88,24 @@ export function mapJobToDbInsert(job: Partial<Job>): DbJobInsert {
   if (job.applicantCountry) insert.applicant_country = job.applicantCountry;
   if (job.validThrough) insert.valid_through = normalizeToIso(job.validThrough);
   if (job.isTestData !== undefined) insert.is_test_data = job.isTestData;
+
+  // Global structured location fields
+  if (job.primaryCity !== undefined) insert.primary_city = job.primaryCity;
+  if (job.primaryState !== undefined) insert.primary_state = job.primaryState;
+  if (job.primaryStateCode !== undefined) insert.primary_state_code = job.primaryStateCode;
+  if (job.primaryCountry !== undefined) insert.primary_country = job.primaryCountry;
+  if (job.primaryCountryCode !== undefined) insert.primary_country_code = job.primaryCountryCode;
+  if (job.locality !== undefined) insert.locality = job.locality;
+  if (job.postalCode !== undefined) insert.postal_code = job.postalCode;
+  if (job.isMultiLocation !== undefined) insert.is_multi_location = job.isMultiLocation;
+  if (job.remoteEligibilityType !== undefined) insert.remote_eligibility_type = job.remoteEligibilityType;
+  if (job.remoteEligibilityCountries !== undefined) insert.remote_eligibility_countries = job.remoteEligibilityCountries;
+  if (job.remoteEligibilityRegions !== undefined) insert.remote_eligibility_regions = job.remoteEligibilityRegions;
+  if (job.remoteEligibilityCities !== undefined) insert.remote_eligibility_cities = job.remoteEligibilityCities;
+  if (job.hqLocationId !== undefined) insert.hq_location_id = job.hqLocationId;
+  if (job.rawLocation !== undefined) insert.raw_location = job.rawLocation;
+  if (job.workModeNotes !== undefined) insert.work_mode_notes = job.workModeNotes;
+  if (job.requiresReview !== undefined) insert.requires_review = job.requiresReview;
 
   return insert;
 }
@@ -173,6 +209,7 @@ export async function getJobById(id: string): Promise<Job | null> {
 
 /**
  * Insert a new job record using privileged server credentials.
+ * Gracefully falls back to core columns if newer structured columns haven't been migrated yet in Supabase.
  */
 export async function createJob(jobData: Partial<Job>): Promise<Job> {
   const supabase = getServiceSupabase();
@@ -183,11 +220,42 @@ export async function createJob(jobData: Partial<Job>): Promise<Job> {
   // Email-only applications
   dbPayload.apply = "";
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("jobs")
     .insert(dbPayload)
     .select("*")
     .single();
+
+  // If a column is missing from Supabase schema cache (migration not run yet), retry with core legacy columns
+  if (error && (error.message.includes("schema cache") || error.message.includes("does not exist"))) {
+    console.warn(`createJob: database schema cache warning (${error.message}). Retrying with core columns...`);
+
+    const corePayload: Record<string, unknown> = {
+      title: dbPayload.title,
+      company: dbPayload.company,
+      location: dbPayload.location,
+      description: dbPayload.description,
+      salary: dbPayload.salary || "Not Disclosed",
+      mail: dbPayload.mail || "",
+      company_link: dbPayload.company_link || "",
+      apply: "",
+      posted_date: dbPayload.posted_date,
+      experience: dbPayload.experience || "Fresher",
+      work_mode: dbPayload.work_mode,
+      employment_type: dbPayload.employment_type,
+    };
+    if (dbPayload.id) corePayload.id = dbPayload.id;
+    if (dbPayload.is_test_data !== undefined) corePayload.is_test_data = dbPayload.is_test_data;
+
+    const retry = await supabase
+      .from("jobs")
+      .insert(corePayload)
+      .select("*")
+      .single();
+
+    data = retry.data;
+    error = retry.error;
+  }
 
   if (error) {
     throw new Error(`Failed to create job in Supabase: ${error.message}`);
@@ -198,6 +266,7 @@ export async function createJob(jobData: Partial<Job>): Promise<Job> {
 
 /**
  * Update an existing job record using privileged server credentials.
+ * Gracefully falls back to core columns if newer structured columns haven't been migrated yet in Supabase.
  */
 export async function updateJob(id: string, jobData: Partial<Job>): Promise<Job> {
   const supabase = getServiceSupabase();
@@ -219,12 +288,62 @@ export async function updateJob(id: string, jobData: Partial<Job>): Promise<Job>
   if (jobData.validThrough !== undefined) dbPayload.valid_through = normalizeToIso(jobData.validThrough);
   if (jobData.isTestData !== undefined) dbPayload.is_test_data = jobData.isTestData;
 
-  const { data, error } = await supabase
+  // Structured location fields
+  if (jobData.primaryCity !== undefined) dbPayload.primary_city = jobData.primaryCity;
+  if (jobData.primaryState !== undefined) dbPayload.primary_state = jobData.primaryState;
+  if (jobData.primaryStateCode !== undefined) dbPayload.primary_state_code = jobData.primaryStateCode;
+  if (jobData.primaryCountry !== undefined) dbPayload.primary_country = jobData.primaryCountry;
+  if (jobData.primaryCountryCode !== undefined) dbPayload.primary_country_code = jobData.primaryCountryCode;
+  if (jobData.locality !== undefined) dbPayload.locality = jobData.locality;
+  if (jobData.postalCode !== undefined) dbPayload.postal_code = jobData.postalCode;
+  if (jobData.isMultiLocation !== undefined) dbPayload.is_multi_location = jobData.isMultiLocation;
+  if (jobData.remoteEligibilityType !== undefined) dbPayload.remote_eligibility_type = jobData.remoteEligibilityType;
+  if (jobData.remoteEligibilityCountries !== undefined) dbPayload.remote_eligibility_countries = jobData.remoteEligibilityCountries;
+  if (jobData.remoteEligibilityRegions !== undefined) {
+    dbPayload.remote_eligibility_regions = Array.isArray(jobData.remoteEligibilityRegions)
+      ? jobData.remoteEligibilityRegions
+      : [];
+  }
+  if (jobData.remoteEligibilityCities !== undefined) dbPayload.remote_eligibility_cities = jobData.remoteEligibilityCities;
+  if (jobData.hqLocationId !== undefined) dbPayload.hq_location_id = jobData.hqLocationId;
+  if (jobData.rawLocation !== undefined) dbPayload.raw_location = jobData.rawLocation;
+  if (jobData.workModeNotes !== undefined) dbPayload.work_mode_notes = jobData.workModeNotes;
+  if (jobData.requiresReview !== undefined) dbPayload.requires_review = jobData.requiresReview;
+
+  let { data, error } = await supabase
     .from("jobs")
     .update(dbPayload)
     .eq("id", id)
     .select("*")
     .single();
+
+  // If a column is missing from Supabase schema cache (migration not run yet), retry with core legacy columns
+  if (error && (error.message.includes("schema cache") || error.message.includes("does not exist"))) {
+    console.warn(`updateJob: database schema cache warning (${error.message}). Retrying with core columns...`);
+
+    const coreUpdate: Record<string, unknown> = {};
+    if (dbPayload.title !== undefined) coreUpdate.title = dbPayload.title;
+    if (dbPayload.company !== undefined) coreUpdate.company = dbPayload.company;
+    if (dbPayload.location !== undefined) coreUpdate.location = dbPayload.location;
+    if (dbPayload.experience !== undefined) coreUpdate.experience = dbPayload.experience;
+    if (dbPayload.posted_date !== undefined) coreUpdate.posted_date = dbPayload.posted_date;
+    if (dbPayload.salary !== undefined) coreUpdate.salary = dbPayload.salary;
+    if (dbPayload.mail !== undefined) coreUpdate.mail = dbPayload.mail;
+    if (dbPayload.company_link !== undefined) coreUpdate.company_link = dbPayload.company_link;
+    if (dbPayload.description !== undefined) coreUpdate.description = dbPayload.description;
+    if (dbPayload.work_mode !== undefined) coreUpdate.work_mode = dbPayload.work_mode;
+    if (dbPayload.employment_type !== undefined) coreUpdate.employment_type = dbPayload.employment_type;
+
+    const retry = await supabase
+      .from("jobs")
+      .update(coreUpdate)
+      .eq("id", id)
+      .select("*")
+      .single();
+
+    data = retry.data;
+    error = retry.error;
+  }
 
   if (error) {
     throw new Error(`Failed to update job ${id} in Supabase: ${error.message}`);

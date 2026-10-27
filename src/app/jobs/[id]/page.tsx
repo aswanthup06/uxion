@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import JobDetailsClient from "./JobDetailsClient";
 import { getJobById } from "@/lib/supabase/jobs";
+import { formatLocationLabel } from "@/lib/supabase/locations-data";
 
 interface JobDetailsPageProps {
   params: Promise<{ id: string }>;
@@ -21,9 +22,10 @@ export async function generateMetadata({
     };
   }
 
+  const locationText = formatLocationLabel(job);
   const excerpt = job.description
     ? job.description.replace(/[#*`_]/g, "").slice(0, 155).trim() + "..."
-    : `Apply for ${job.title} at ${job.company} in ${job.location} on Zenoway.`;
+    : `Apply for ${job.title} at ${job.company} in ${locationText} on Zenoway.`;
 
   return {
     title: `${job.title} at ${job.company} | Zenoway`,
