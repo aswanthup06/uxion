@@ -227,11 +227,10 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`cursor-pointer rounded-pill border px-3 py-1.5 text-xs font-medium transition-colors duration-normal ease-standard ${
-        active
-          ? "border-brand bg-brand text-text-inverse hover:bg-brand-hover shadow-subtle"
-          : "border-border-default bg-surface-card text-text-secondary hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
-      }`}
+      className={`cursor-pointer rounded-pill border px-3 py-1.5 text-xs font-medium transition-colors duration-normal ease-standard ${active
+        ? "border-brand bg-brand text-text-inverse hover:bg-brand-hover shadow-subtle"
+        : "border-border-default bg-surface-card text-text-secondary hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
+        }`}
     >
       {children}
     </button>
@@ -239,10 +238,9 @@ function Chip({
 }
 
 const navCls = (active: boolean) =>
-  `flex w-full cursor-pointer items-center gap-2.5 rounded-control px-3 py-2.5 text-sm font-medium transition-colors duration-normal ${
-    active
-      ? "bg-brand-soft text-brand font-semibold"
-      : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
+  `flex w-full cursor-pointer items-center gap-2.5 rounded-control px-3 py-2.5 text-sm font-medium transition-colors duration-normal ${active
+    ? "bg-brand-soft text-brand font-semibold"
+    : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
   }`;
 
 const selectCls =
@@ -621,10 +619,10 @@ function JobsViewContent() {
 
   const hasActiveCriteria = Boolean(
     search.trim() ||
-      location.trim() ||
-      activeFilters > 0 ||
-      savedOnly ||
-      sortBy !== "recent"
+    location.trim() ||
+    activeFilters > 0 ||
+    savedOnly ||
+    sortBy !== "recent"
   );
 
   const visibleJobs = useMemo(
@@ -675,7 +673,7 @@ function JobsViewContent() {
           text: `${job.title} at ${job.company} on Zenoway`,
           url,
         })
-        .catch(() => {});
+        .catch(() => { });
       return;
     }
     if (navigator.clipboard) {
@@ -691,9 +689,8 @@ function JobsViewContent() {
     <div className="min-h-full bg-surface-page text-text-primary lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[272px_minmax(0,1fr)] lg:overflow-hidden">
       {/* Sidebar */}
       <aside
-        className={`${
-          filtersOpen ? "flex" : "hidden"
-        } flex-col gap-7 border-b border-border-default bg-surface-card p-5 lg:sticky lg:top-0 lg:flex lg:h-full lg:min-h-0 lg:self-stretch lg:overflow-y-auto lg:overscroll-contain lg:border-b-0 lg:border-r lg:p-6 lg:pb-8 [&>*]:shrink-0`}
+        className={`${filtersOpen ? "flex" : "hidden"
+          } flex-col gap-7 border-b border-border-default bg-surface-card p-5 lg:sticky lg:top-0 lg:flex lg:h-full lg:min-h-0 lg:self-stretch lg:overflow-y-auto lg:overscroll-contain lg:border-b-0 lg:border-r lg:p-6 lg:pb-8 [&>*]:shrink-0`}
       >
         <div className="flex items-center justify-between lg:hidden">
           <span className="text-sm font-semibold text-text-primary">Filters</span>
@@ -765,17 +762,15 @@ function JobsViewContent() {
                     <button
                       type="button"
                       onClick={() => setCategory(active ? "All categories" : c)}
-                      className={`flex w-full cursor-pointer items-center justify-between rounded-control px-2.5 py-1.5 text-sm transition-colors duration-normal ${
-                        active
-                          ? "bg-brand-soft font-semibold text-brand hover:bg-brand-soft-hover"
-                          : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
-                      }`}
+                      className={`flex w-full cursor-pointer items-center justify-between rounded-control px-2.5 py-1.5 text-sm transition-colors duration-normal ${active
+                        ? "bg-brand-soft font-semibold text-brand hover:bg-brand-soft-hover"
+                        : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
+                        }`}
                     >
                       {c}
                       <span
-                        className={`text-xs ${
-                          active ? "text-brand" : "text-text-muted"
-                        }`}
+                        className={`text-xs ${active ? "text-brand" : "text-text-muted"
+                          }`}
                       >
                         {count}
                       </span>
@@ -859,11 +854,10 @@ function JobsViewContent() {
             <button
               type="button"
               onClick={() => setFiltersOpen((v) => !v)}
-              className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-control border px-3.5 text-sm font-medium transition-colors duration-200 lg:hidden ${
-                filtersOpen
-                  ? "border-brand bg-brand-soft text-brand-dark"
-                  : "border-border-default text-text-secondary hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
-              }`}
+              className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-control border px-3.5 text-sm font-medium transition-colors duration-200 lg:hidden ${filtersOpen
+                ? "border-brand bg-brand-soft text-brand-dark"
+                : "border-border-default text-text-secondary hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
+                }`}
             >
               <SlidersHorizontal className="h-4 w-4" strokeWidth={1.75} /> Filters{" "}
               {activeFilters > 0 && (
@@ -905,28 +899,25 @@ function JobsViewContent() {
                     key={id}
                     type="button"
                     onClick={() => setMode(id)}
-                    className={`inline-flex justify-center cursor-pointer items-center gap-1 sm:gap-1.5 rounded-control px-1.5 py-1.5 sm:px-3.5 text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
-                      isActive
-                        ? "bg-brand text-text-inverse shadow-subtle"
-                        : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
-                    }`}
+                    className={`inline-flex justify-center cursor-pointer items-center gap-1 sm:gap-1.5 rounded-control px-1.5 py-1.5 sm:px-3.5 text-xs font-semibold whitespace-nowrap transition-all duration-150 ${isActive
+                      ? "bg-brand text-text-inverse shadow-subtle"
+                      : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
+                      }`}
                   >
                     {Icon && (
                       <Icon
-                        className={`hidden min-[400px]:inline-block h-3.5 w-3.5 shrink-0 ${
-                          isActive ? "text-text-inverse" : "text-text-muted"
-                        }`}
+                        className={`hidden min-[400px]:inline-block h-3.5 w-3.5 shrink-0 ${isActive ? "text-text-inverse" : "text-text-muted"
+                          }`}
                         strokeWidth={1.8}
                       />
                     )}
                     <span className="sm:hidden">{shortLabel}</span>
                     <span className="hidden sm:inline">{fullLabel}</span>
                     <span
-                      className={`rounded-control px-1 sm:px-1.5 py-0.2 text-[10px] tabular-nums font-semibold ${
-                        isActive
-                          ? "bg-white/20 text-text-inverse"
-                          : "bg-surface-muted text-text-muted"
-                      }`}
+                      className={`  text-[10px] tabular-nums font-semibold ${isActive
+                        ? " text-text-inverse"
+                        : " text-text-muted"
+                        }`}
                     >
                       {count}
                     </span>
@@ -1087,21 +1078,19 @@ function JobsViewContent() {
                           setLocation(item.name);
                           setLocDropdownOpen(false);
                         }}
-                        className={`flex w-full cursor-pointer items-center justify-between rounded-control px-3 py-2 text-left text-sm transition-colors duration-150 ${
-                          isSelected
-                            ? "bg-brand-soft font-semibold text-brand"
-                            : isHighlighted
+                        className={`flex w-full cursor-pointer items-center justify-between rounded-control px-3 py-2 text-left text-sm transition-colors duration-150 ${isSelected
+                          ? "bg-brand-soft font-semibold text-brand"
+                          : isHighlighted
                             ? "bg-surface-subtle text-text-primary"
                             : "text-text-primary hover:bg-surface-subtle"
-                        }`}
+                          }`}
                         role="option"
                         aria-selected={isSelected}
                       >
                         <div className="flex items-center gap-2.5">
                           <MapPin
-                            className={`h-4 w-4 shrink-0 ${
-                              isSelected ? "text-brand" : "text-text-muted"
-                            }`}
+                            className={`h-4 w-4 shrink-0 ${isSelected ? "text-brand" : "text-text-muted"
+                              }`}
                             strokeWidth={1.75}
                           />
                           <span>{item.name}</span>
@@ -1112,13 +1101,12 @@ function JobsViewContent() {
                             <Check className="h-3.5 w-3.5 text-brand" strokeWidth={2.2} />
                           )}
                           <span
-                            className={`rounded-control px-2 py-0.5 text-xs font-semibold tabular-nums ${
-                              item.count > 0
-                                ? isSelected
-                                  ? "bg-brand/15 text-brand"
-                                  : "bg-surface-muted text-text-secondary"
-                                : "text-text-muted font-normal"
-                            }`}
+                            className={`rounded-control px-2 py-0.5 text-xs font-semibold tabular-nums ${item.count > 0
+                              ? isSelected
+                                ? "bg-brand/15 text-brand"
+                                : "bg-surface-muted text-text-secondary"
+                              : "text-text-muted font-normal"
+                              }`}
                           >
                             {item.count} {item.count === 1 ? "role" : "roles"}
                           </span>
@@ -1160,18 +1148,16 @@ function JobsViewContent() {
                 key={loc}
                 type="button"
                 onClick={() => setLocation(isActive ? "" : loc)}
-                className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-control px-3 py-1 text-xs font-medium transition-colors ${
-                  isActive
-                    ? "bg-brand text-text-inverse font-semibold shadow-subtle"
-                    : "border border-border-default bg-surface-card text-text-secondary hover:border-brand/40 hover:bg-surface-subtle hover:text-text-primary"
-                }`}
+                className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-control px-3 py-1 text-xs font-medium transition-colors ${isActive
+                  ? "bg-brand text-text-inverse font-semibold shadow-subtle"
+                  : "border border-border-default bg-surface-card text-text-secondary hover:border-brand/40 hover:bg-surface-subtle hover:text-text-primary"
+                  }`}
               >
                 <span>{loc}</span>
                 {count > 0 && (
                   <span
-                    className={`rounded-control px-1 text-[10px] font-semibold tabular-nums leading-tight ${
-                      isActive ? "bg-white/20 text-white" : "bg-surface-muted text-text-muted"
-                    }`}
+                    className={`rounded-control px-1 text-[10px] font-semibold tabular-nums leading-tight ${isActive ? "bg-white/20 text-white" : "bg-surface-muted text-text-muted"
+                      }`}
                   >
                     {count}
                   </span>
@@ -1319,11 +1305,10 @@ function JobsViewContent() {
                             }}
                             aria-label={isSaved ? `Unsave ${job.title}` : `Save ${job.title}`}
                             aria-pressed={isSaved}
-                            className={`shrink-0 cursor-pointer p-1 transition-colors ${
-                              isSaved
-                                ? "text-brand"
-                                : "text-text-muted hover:text-text-primary"
-                            }`}
+                            className={`shrink-0 cursor-pointer p-1 transition-colors ${isSaved
+                              ? "text-brand"
+                              : "text-text-muted hover:text-text-primary"
+                              }`}
                           >
                             <Bookmark
                               className="h-4 w-4"
@@ -1616,11 +1601,10 @@ function JobsViewContent() {
                   <button
                     type="button"
                     onClick={() => toggleSaved(activeJob.id)}
-                    className={`inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-3.5 py-2.5 text-xs font-semibold transition-all ${
-                      saved.includes(activeJob.id)
-                        ? "border-brand bg-brand-soft text-brand"
-                        : "border-border-default bg-surface-card text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
-                    }`}
+                    className={`inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-3.5 py-2.5 text-xs font-semibold transition-all ${saved.includes(activeJob.id)
+                      ? "border-brand bg-brand-soft text-brand"
+                      : "border-border-default bg-surface-card text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
+                      }`}
                   >
                     <Bookmark
                       className="h-4 w-4"

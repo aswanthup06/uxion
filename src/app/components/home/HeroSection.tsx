@@ -71,7 +71,7 @@ export default function HeroSection({
       description:
         "Connect with designers and developers who can make a difference to your team. Share your opening and find the right fit.",
       button: "Post a job",
-      href: "/new",
+      href: "/post-job",
       secondary: "Meet your next great hire",
     },
   } as const;
@@ -110,11 +110,10 @@ export default function HeroSection({
                 type="button"
                 onClick={() => setAudience("employee")}
                 aria-pressed={!isEmployer}
-                className={`flex items-center cursor-pointer gap-2 rounded-control px-3 py-2 text-xs font-medium transition-colors ${
-                  !isEmployer
+                className={`flex items-center cursor-pointer gap-2 rounded-control px-3 py-2 text-xs font-medium transition-colors ${!isEmployer
                     ? "bg-surface-card text-brand shadow-subtle ring-1 ring-border-default"
                     : "text-text-muted hover:text-text-primary"
-                }`}
+                  }`}
               >
                 <Users size={14} />
                 I'm looking for work
@@ -124,11 +123,10 @@ export default function HeroSection({
                 type="button"
                 onClick={() => setAudience("employer")}
                 aria-pressed={isEmployer}
-                className={`flex items-center cursor-pointer gap-2 rounded-control px-3 py-2 text-xs font-medium transition-colors ${
-                  isEmployer
+                className={`flex items-center cursor-pointer gap-2 rounded-control px-3 py-2 text-xs font-medium transition-colors ${isEmployer
                     ? "bg-surface-card text-brand shadow-subtle ring-1 ring-border-default"
                     : "text-text-muted hover:text-text-primary"
-                }`}
+                  }`}
               >
                 <BriefcaseBusiness size={14} />
                 I'm hiring

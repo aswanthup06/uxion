@@ -6,6 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   getAllJobs,
   getJobById,
+  getPendingJobs,
+  approveJob,
   createJob,
   updateJob,
   deleteJob,
@@ -32,7 +34,7 @@ function isAuthorizedAdmin(req: NextRequest): boolean {
   return false;
 }
 
-// ✅ GET → Fetch published jobs (supports ?id=JOB_ID for single job, or pagination)
+// ✅ GET → Fetch jobs (public gets published jobs; admin can pass ?status=pending or ?status=all)
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -46,15 +48,50 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(job, { status: 200 });
     }
 
+    const statusParam = searchParams.get("status");
+
+    // Pending review queue: restricted to authorized admins
+    if (statusParam === "pending") {
+      if (!isAuthorizedAdmin(req)) {
+        return NextResponse.json(
+          { error: "Unauthorized: Admin authentication required" },
+          { status: 401 }
+        );
+      }
+      const pendingJobs = await getPendingJobs();
+      return NextResponse.json(pendingJobs, {
+        status: 200,
+        headers: { "Cache-Control": "no-store, max-age=0" },
+      });
+    }
+
+    // All jobs including drafts: restricted to authorized admins
+    if (statusParam === "all") {
+      if (!isAuthorizedAdmin(req)) {
+        return NextResponse.json(
+          { error: "Unauthorized: Admin authentication required" },
+          { status: 401 }
+        );
+      }
+      const allJobs = await getAllJobs({ status: "all" });
+      return NextResponse.json(allJobs, {
+        status: 200,
+        headers: { "Cache-Control": "no-store, max-age=0" },
+      });
+    }
+
     const pageParam = searchParams.get("page");
     const limitParam = searchParams.get("limit");
 
     const page = pageParam ? Math.max(1, parseInt(pageParam, 10)) : undefined;
     const limit = limitParam ? Math.max(1, parseInt(limitParam, 10)) : undefined;
 
-    const jobs = await getAllJobs(
-      page && limit ? { page, limit } : undefined
-    );
+    // Public request: only returns published jobs
+    const jobs = await getAllJobs({
+      page,
+      limit,
+      status: "published",
+    });
 
     return NextResponse.json(jobs, {
       status: 200,
@@ -71,21 +108,25 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// ✅ POST → Add new job (auto-generated ID + timestamp via Supabase sequence)
+// ✅ POST → Add new job
+// - Public submissions from /post-job are accepted into "draft" status with requires_review = true
+// - Authenticated admin submissions default to "published" status
 export async function POST(req: NextRequest) {
   try {
-    if (!isAuthorizedAdmin(req)) {
-      return NextResponse.json(
-        { error: "Unauthorized: Admin authentication required" },
-        { status: 401 }
-      );
-    }
-
+    const isAdmin = isAuthorizedAdmin(req);
     const body: Partial<Job> = await req.json();
 
     if (!body.title?.trim() || !body.company?.trim() || !body.description?.trim()) {
       return NextResponse.json(
         { error: "Missing required fields (title, company, description)" },
+        { status: 400 }
+      );
+    }
+
+    // Public submissions require contact email for verification
+    if (!isAdmin && !body.mail?.trim()) {
+      return NextResponse.json(
+        { error: "Contact email is required for public submissions" },
         { status: 400 }
       );
     }
@@ -126,6 +167,12 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Moderation enforcement:
+    // If admin is creating the job, status defaults to 'published' unless explicitly specified.
+    // If public user is posting, strictly force status = 'draft' and requiresReview = true.
+    const status = isAdmin ? (body.status || "published") : "draft";
+    const requiresReview = isAdmin ? Boolean(body.requiresReview) : true;
+
     const newJob = await createJob({
       ...body,
       title: body.title.trim(),
@@ -154,7 +201,20 @@ export async function POST(req: NextRequest) {
       remoteEligibilityCities: body.remoteEligibilityCities || undefined,
       hqLocationId: body.hqLocationId || undefined,
       rawLocation: body.rawLocation || canonicalLocation,
+      status,
+      requiresReview,
     });
+
+    if (!isAdmin) {
+      return NextResponse.json(
+        {
+          message: "Job submitted successfully! It is pending review and will be published once approved.",
+          job: newJob,
+          pendingReview: true,
+        },
+        { status: 201 }
+      );
+    }
 
     return NextResponse.json(
       { message: "Job added successfully", job: newJob },
@@ -170,7 +230,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// ✅ PUT → Update existing job
+// ✅ PUT → Update existing job (admin only)
 export async function PUT(req: NextRequest) {
   try {
     if (!isAuthorizedAdmin(req)) {
@@ -215,6 +275,7 @@ export async function PUT(req: NextRequest) {
       hqLocationId: body.hqLocationId,
       workModeNotes: body.workModeNotes,
       requiresReview: body.requiresReview,
+      status: body.status,
     });
 
     return NextResponse.json(
@@ -231,7 +292,59 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-// ✅ DELETE → Remove a job
+// ✅ PATCH → Quick 1-click admin actions (approve, reject, status toggle)
+export async function PATCH(req: NextRequest) {
+  try {
+    if (!isAuthorizedAdmin(req)) {
+      return NextResponse.json(
+        { error: "Unauthorized: Admin authentication required" },
+        { status: 401 }
+      );
+    }
+
+    const body = await req.json();
+    const { id, action } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Job ID is required" },
+        { status: 400 }
+      );
+    }
+
+    if (action === "approve") {
+      const approvedJob = await approveJob(id);
+      return NextResponse.json(
+        { message: "Job approved and published successfully", job: approvedJob },
+        { status: 200 }
+      );
+    }
+
+    if (action === "reject") {
+      await deleteJob(id);
+      return NextResponse.json(
+        { message: "Submission rejected and deleted" },
+        { status: 200 }
+      );
+    }
+
+    // Generic partial update
+    const updatedJob = await updateJob(id, body);
+    return NextResponse.json(
+      { message: "Job updated successfully", job: updatedJob },
+      { status: 200 }
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Error in PATCH /api/jobs:", message);
+    return NextResponse.json(
+      { error: `Server error: ${message}` },
+      { status: 500 }
+    );
+  }
+}
+
+// ✅ DELETE → Remove a job (admin only)
 export async function DELETE(req: NextRequest) {
   try {
     if (!isAuthorizedAdmin(req)) {

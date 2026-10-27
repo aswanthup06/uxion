@@ -16,6 +16,7 @@ import {
 
 export default function JobListPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [pendingCount, setPendingCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -24,14 +25,20 @@ export default function JobListPage() {
     else setLoading(true);
 
     try {
-      const res = await fetch("/api/jobs", {
-        cache: "no-store",
-      });
+      const [jobsRes, pendingRes] = await Promise.all([
+        fetch("/api/jobs", { cache: "no-store" }),
+        fetch("/api/jobs?status=pending", { cache: "no-store" }),
+      ]);
 
-      if (!res.ok) throw new Error("Failed to fetch jobs");
+      if (!jobsRes.ok) throw new Error("Failed to fetch jobs");
 
-      const data: Job[] = await res.json();
+      const data: Job[] = await jobsRes.json();
       setJobs(data);
+
+      if (pendingRes.ok) {
+        const pendingData: Job[] = await pendingRes.json();
+        setPendingCount(pendingData.length);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to load jobs.");
@@ -144,6 +151,27 @@ export default function JobListPage() {
             </Link>
           </div>
         </header>
+
+        {/* Navigation Tabs */}
+        <div className="flex items-center gap-4 border-b border-border-subtle pt-4 text-sm font-medium">
+          <span className="flex items-center gap-2 border-b-2 border-brand pb-3 text-brand font-semibold">
+            <span>Published Listings</span>
+            <span className="rounded-control bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand">
+              {jobs.length}
+            </span>
+          </span>
+          <Link
+            href="/admin/submissions"
+            className="flex items-center gap-2 border-b-2 border-transparent pb-3 text-text-muted transition hover:text-text-primary"
+          >
+            <span>Submissions for Review</span>
+            {pendingCount > 0 && (
+              <span className="rounded-control bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                {pendingCount}
+              </span>
+            )}
+          </Link>
+        </div>
 
         {/* Summary */}
         <section className="flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle py-5">

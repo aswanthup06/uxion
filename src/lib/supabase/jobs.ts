@@ -45,6 +45,7 @@ export function mapDbJobToJob(row: DbJob): Job {
     rawLocation: row.raw_location || undefined,
     workModeNotes: row.work_mode_notes || undefined,
     requiresReview: Boolean(row.requires_review),
+    status: row.status || "published",
   };
 }
 
@@ -88,6 +89,7 @@ export function mapJobToDbInsert(job: Partial<Job>): DbJobInsert {
   if (job.applicantCountry) insert.applicant_country = job.applicantCountry;
   if (job.validThrough) insert.valid_through = normalizeToIso(job.validThrough);
   if (job.isTestData !== undefined) insert.is_test_data = job.isTestData;
+  if (job.status !== undefined) insert.status = job.status;
 
   // Global structured location fields
   if (job.primaryCity !== undefined) insert.primary_city = job.primaryCity;
@@ -111,11 +113,16 @@ export function mapJobToDbInsert(job: Partial<Job>): DbJobInsert {
 }
 
 /**
- * Fetch all published jobs sorted by posted_date descending.
- * Supports optional pagination (page, limit) while safely retrieving all rows in chunks
- * to avoid any server-side PostgREST row limits.
+ * Fetch jobs sorted by posted_date descending.
+ * Defaults to fetching only "published" jobs for public views.
+ * Supports optional pagination (page, limit) while safely retrieving rows in chunks
+ * to avoid server-side PostgREST row limits.
  */
-export async function getAllJobs(options?: { page?: number; limit?: number }): Promise<Job[]> {
+export async function getAllJobs(options?: {
+  page?: number;
+  limit?: number;
+  status?: "published" | "draft" | "archived" | "all";
+}): Promise<Job[]> {
   if (!isSupabaseConfigured()) {
     console.warn("getAllJobs: Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL in .env.local.");
     return [];
@@ -123,16 +130,26 @@ export async function getAllJobs(options?: { page?: number; limit?: number }): P
 
   try {
     const supabase = getServerSupabase();
+    const targetStatus = options?.status ?? "published";
 
     // If explicit pagination requested (e.g. ?page=1&limit=20)
     if (options?.page && options?.limit) {
       const from = (options.page - 1) * options.limit;
       const to = from + options.limit - 1;
-      const { data, error } = await supabase
+      let query = supabase
         .from("jobs")
         .select("*")
-        .order("posted_date", { ascending: false })
-        .range(from, to);
+        .order("posted_date", { ascending: false });
+
+      if (targetStatus !== "all") {
+        if (targetStatus === "published") {
+          query = query.or("status.eq.published,status.is.null");
+        } else {
+          query = query.eq("status", targetStatus);
+        }
+      }
+
+      const { data, error } = await query.range(from, to);
 
       if (error) {
         console.error("Error querying Supabase jobs:", error.message);
@@ -149,11 +166,20 @@ export async function getAllJobs(options?: { page?: number; limit?: number }): P
     let hasMore = true;
 
     while (hasMore) {
-      const { data, error } = await supabase
+      let query = supabase
         .from("jobs")
         .select("*")
-        .order("posted_date", { ascending: false })
-        .range(from, from + CHUNK_SIZE - 1);
+        .order("posted_date", { ascending: false });
+
+      if (targetStatus !== "all") {
+        if (targetStatus === "published") {
+          query = query.or("status.eq.published,status.is.null");
+        } else {
+          query = query.eq("status", targetStatus);
+        }
+      }
+
+      const { data, error } = await query.range(from, from + CHUNK_SIZE - 1);
 
       if (error) {
         console.error("Error querying Supabase jobs:", error.message);
@@ -177,6 +203,60 @@ export async function getAllJobs(options?: { page?: number; limit?: number }): P
     console.error("Failed to fetch jobs from Supabase:", error);
     return [];
   }
+}
+
+/**
+ * Fetch all pending submissions that require admin review or are in draft status.
+ * Uses service client to access moderation queue.
+ */
+export async function getPendingJobs(): Promise<Job[]> {
+  if (!isSupabaseConfigured()) {
+    console.warn("getPendingJobs: Supabase is not configured.");
+    return [];
+  }
+
+  try {
+    const supabase = getServiceSupabase();
+    const { data, error } = await supabase
+      .from("jobs")
+      .select("*")
+      .or("status.eq.draft,requires_review.eq.true")
+      .order("posted_date", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching pending jobs:", error.message);
+      return [];
+    }
+
+    return (data as DbJob[]).map(mapDbJobToJob);
+  } catch (error) {
+    console.error("Failed to fetch pending jobs:", error);
+    return [];
+  }
+}
+
+/**
+ * Approve a pending job submission:
+ * Marks status as 'published', requires_review as false, and refreshes posted_date to now.
+ */
+export async function approveJob(id: string): Promise<Job> {
+  const supabase = getServiceSupabase();
+  const { data, error } = await supabase
+    .from("jobs")
+    .update({
+      status: "published",
+      requires_review: false,
+      posted_date: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select("*")
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to approve job ${id}: ${error.message}`);
+  }
+
+  return mapDbJobToJob(data as DbJob);
 }
 
 /**
@@ -215,10 +295,34 @@ export async function createJob(jobData: Partial<Job>): Promise<Job> {
   const supabase = getServiceSupabase();
   const dbPayload = mapJobToDbInsert(jobData);
 
-  // Newly published jobs receive today's date automatically on the server
-  dbPayload.posted_date = new Date().toISOString();
+  // Ensure unique sequential JOB{number} identifier if not provided
+  if (!dbPayload.id) {
+    const { data: allIds } = await supabase.from("jobs").select("id");
+    let maxNum = 1000;
+    for (const item of allIds || []) {
+      const match = item.id?.match(/^JOB(\d+)$/i);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxNum && num < 1000000) {
+          maxNum = num;
+        }
+      }
+    }
+    dbPayload.id = `JOB${maxNum + 1}`;
+  }
+
+  // Default posted_date if not specified
+  if (!dbPayload.posted_date) {
+    dbPayload.posted_date = new Date().toISOString();
+  }
   // Email-only applications
   dbPayload.apply = "";
+
+  if (jobData.status !== undefined) {
+    dbPayload.status = jobData.status;
+  } else if (!dbPayload.status) {
+    dbPayload.status = "published";
+  }
 
   let { data, error } = await supabase
     .from("jobs")
@@ -246,6 +350,8 @@ export async function createJob(jobData: Partial<Job>): Promise<Job> {
     };
     if (dbPayload.id) corePayload.id = dbPayload.id;
     if (dbPayload.is_test_data !== undefined) corePayload.is_test_data = dbPayload.is_test_data;
+    if (dbPayload.status) corePayload.status = dbPayload.status;
+    if (dbPayload.requires_review !== undefined) corePayload.requires_review = dbPayload.requires_review;
 
     const retry = await supabase
       .from("jobs")
@@ -287,6 +393,7 @@ export async function updateJob(id: string, jobData: Partial<Job>): Promise<Job>
   if (jobData.workMode !== undefined) dbPayload.work_mode = jobData.workMode;
   if (jobData.validThrough !== undefined) dbPayload.valid_through = normalizeToIso(jobData.validThrough);
   if (jobData.isTestData !== undefined) dbPayload.is_test_data = jobData.isTestData;
+  if (jobData.status !== undefined) dbPayload.status = jobData.status;
 
   // Structured location fields
   if (jobData.primaryCity !== undefined) dbPayload.primary_city = jobData.primaryCity;
@@ -333,6 +440,8 @@ export async function updateJob(id: string, jobData: Partial<Job>): Promise<Job>
     if (dbPayload.description !== undefined) coreUpdate.description = dbPayload.description;
     if (dbPayload.work_mode !== undefined) coreUpdate.work_mode = dbPayload.work_mode;
     if (dbPayload.employment_type !== undefined) coreUpdate.employment_type = dbPayload.employment_type;
+    if (dbPayload.status !== undefined) coreUpdate.status = dbPayload.status;
+    if (dbPayload.requires_review !== undefined) coreUpdate.requires_review = dbPayload.requires_review;
 
     const retry = await supabase
       .from("jobs")

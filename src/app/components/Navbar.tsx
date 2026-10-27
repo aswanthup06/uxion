@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 const JOBS = "/jobs";
-const POST_JOB = "/new";
+const POST_JOB = "/post-job";
 const MY_JOBS = "/jobs/manage";
 const LOGIN = "/login";
 const ADMIN_LOGIN = "/admin/login";
@@ -113,25 +113,24 @@ export default function Navbar() {
   };
 
   const linkClass = (href: string) =>
-    `cursor-pointer text-sm font-medium transition-colors duration-200 ${
-      pathname === href
-        ? "text-brand"
-        : "text-text-secondary hover:text-brand"
+    `cursor-pointer text-sm font-medium transition-colors duration-200 ${pathname === href
+      ? "text-brand"
+      : "text-text-secondary hover:text-brand"
     }`;
 
   const motionProps = reduceMotion
     ? {
-        initial: false as const,
-        animate: { opacity: 1 },
-        exit: { opacity: 0 },
-        transition: { duration: 0.01 },
-      }
+      initial: false as const,
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+      transition: { duration: 0.01 },
+    }
     : {
-        variants: menuVariants,
-        initial: "hidden" as const,
-        animate: "visible" as const,
-        exit: "exit" as const,
-      };
+      variants: menuVariants,
+      initial: "hidden" as const,
+      animate: "visible" as const,
+      exit: "exit" as const,
+    };
 
   const handleAdminLogout = async () => {
     if (loggingOut) return;
@@ -230,19 +229,17 @@ export default function Navbar() {
                   aria-haspopup="true"
                   onMouseEnter={() => setDropdown("jobs")}
                   onClick={() => toggleDropdown("jobs")}
-                  className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors ${
-                    dropdown === "jobs"
+                  className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors ${dropdown === "jobs"
                       ? "text-brand"
                       : "text-text-secondary hover:text-brand"
-                  }`}
+                    }`}
                 >
                   For Job Seekers
                   <ChevronDown
                     size={15}
                     strokeWidth={1.8}
-                    className={`${iconClass} transition-transform duration-200 ${
-                      dropdown === "jobs" ? "rotate-180" : ""
-                    }`}
+                    className={`${iconClass} transition-transform duration-200 ${dropdown === "jobs" ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
 
@@ -324,19 +321,17 @@ export default function Navbar() {
                   aria-haspopup="true"
                   onMouseEnter={() => setDropdown("employers")}
                   onClick={() => toggleDropdown("employers")}
-                  className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors ${
-                    dropdown === "employers"
+                  className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors ${dropdown === "employers"
                       ? "text-brand"
                       : "text-text-secondary hover:text-brand"
-                  }`}
+                    }`}
                 >
                   For Employers
                   <ChevronDown
                     size={15}
                     strokeWidth={1.8}
-                    className={`${iconClass} transition-transform duration-200 ${
-                      dropdown === "employers" ? "rotate-180" : ""
-                    }`}
+                    className={`${iconClass} transition-transform duration-200 ${dropdown === "employers" ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
 
@@ -405,9 +400,8 @@ export default function Navbar() {
                 Admin
                 <ChevronDown
                   size={15}
-                  className={`${iconClass} transition-transform ${
-                    dropdown === "admin" ? "rotate-180" : ""
-                  }`}
+                  className={`${iconClass} transition-transform ${dropdown === "admin" ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
@@ -573,9 +567,8 @@ export default function Navbar() {
                   <Link
                     href="/"
                     onClick={closeMenus}
-                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${
-                      pathname === "/" ? "text-brand" : "text-text-primary"
-                    }`}
+                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${pathname === "/" ? "text-brand" : "text-text-primary"
+                      }`}
                   >
                     Home
                   </Link>
@@ -583,9 +576,8 @@ export default function Navbar() {
                   <Link
                     href="/jobs"
                     onClick={closeMenus}
-                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${
-                      pathname === "/jobs" ? "text-brand" : "text-text-primary"
-                    }`}
+                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${pathname === "/jobs" ? "text-brand" : "text-text-primary"
+                      }`}
                   >
                     Explore Jobs
                   </Link>
@@ -593,9 +585,8 @@ export default function Navbar() {
                   <Link
                     href="/join"
                     onClick={closeMenus}
-                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${
-                      pathname === "/join" ? "text-brand" : "text-text-primary"
-                    }`}
+                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${pathname === "/join" ? "text-brand" : "text-text-primary"
+                      }`}
                   >
                     Community
                   </Link>
@@ -611,9 +602,8 @@ export default function Navbar() {
                     <ChevronDown
                       size={17}
                       strokeWidth={1.8}
-                      className={`${iconClass} transition-transform duration-200 ${
-                        dropdown === "jobs" ? "rotate-180" : ""
-                      }`}
+                      className={`${iconClass} transition-transform duration-200 ${dropdown === "jobs" ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
 
@@ -688,9 +678,8 @@ export default function Navbar() {
                     <ChevronDown
                       size={17}
                       strokeWidth={1.8}
-                      className={`${iconClass} transition-transform duration-200 ${
-                        dropdown === "employers" ? "rotate-180" : ""
-                      }`}
+                      className={`${iconClass} transition-transform duration-200 ${dropdown === "employers" ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
 

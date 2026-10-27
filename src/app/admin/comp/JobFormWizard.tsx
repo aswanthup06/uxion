@@ -82,7 +82,7 @@ export interface JobFormState {
 }
 
 interface JobFormWizardProps {
-  mode: "create" | "edit";
+  mode: "create" | "edit" | "public";
   jobId?: string;
   initialJob?: Job | null;
 }
@@ -493,6 +493,8 @@ export default function JobFormWizard({
   const [loadingInitial, setLoadingInitial] = useState(mode === "edit" && !initialJob);
   const [loadError, setLoadError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmittedSuccess, setIsSubmittedSuccess] = useState(false);
+  const [submittedJobData, setSubmittedJobData] = useState<Partial<Job> | null>(null);
   const [error, setError] = useState("");
   const [currentStep, setCurrentStep] = useState<number>(1);
 
@@ -976,6 +978,27 @@ export default function JobFormWizard({
         toast.success("Job updated successfully!");
         router.push("/admin/jobs");
         router.refresh();
+      } else if (mode === "public") {
+        payload.status = "draft";
+        payload.requiresReview = true;
+
+        const res = await fetch("/api/jobs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => null);
+          throw new Error(errData?.error || errData?.message || "Failed to submit job listing.");
+        }
+
+        const data = await res.json().catch(() => null);
+        setSubmittedJobData(data?.job || payload);
+        setIsSubmittedSuccess(true);
+        setIsSubmitting(false);
+        toast.success("Job submitted for review!");
+        return;
       } else {
         const res = await fetch("/api/jobs", {
           method: "POST",
@@ -1053,40 +1076,173 @@ export default function JobFormWizard({
     );
   }
 
+  if (mode === "public" && isSubmittedSuccess) {
+    return (
+      <main className="min-h-full bg-surface-base text-text-primary">
+        <div className="mx-auto max-w-2xl px-5 py-16 sm:px-8">
+          <div className="rounded-card border border-border-default bg-surface-card p-6 sm:p-10 text-center shadow-subtle">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-soft text-brand">
+              <CheckCircle2 size={32} strokeWidth={2} />
+            </div>
+
+            <div className="mt-4 flex justify-center">
+              <span className="inline-flex items-center gap-1.5 rounded-control bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                Submitted · Pending Review
+              </span>
+            </div>
+
+            <h1 className="mt-3 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
+              Job Submitted for Review!
+            </h1>
+
+            <p className="mt-2 text-sm leading-6 text-text-muted">
+              Thank you for posting on Zenoway. To maintain high listing quality and ensure compensation transparency, all public submissions undergo a quick editorial review. Your listing will go live once approved by our moderation team.
+            </p>
+
+            {/* Submitted Job Overview Card */}
+            <div className="mt-6 rounded-card border border-border-default bg-surface-subtle/50 p-5 text-left">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-text-primary">
+                    {submittedJobData?.title || form.title}
+                  </h3>
+                  <p className="text-xs font-medium text-text-secondary">
+                    {submittedJobData?.company || form.company}
+                  </p>
+                </div>
+                <span className="rounded-control bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand">
+                  {submittedJobData?.workMode || form.workMode}
+                </span>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border-default/40 pt-3 text-xs sm:grid-cols-3">
+                <div>
+                  <span className="text-[10px] font-semibold uppercase text-text-muted">Location</span>
+                  <p className="mt-0.5 truncate font-medium text-text-primary">{previewLocation}</p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-semibold uppercase text-text-muted">Salary</span>
+                  <p className="mt-0.5 font-semibold text-brand">{form.salary || "Not Disclosed"}</p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-semibold uppercase text-text-muted">Contact Email</span>
+                  <p className="mt-0.5 truncate font-medium text-text-primary">{form.mail || "—"}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
+              <Link
+                href="/jobs"
+                className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-control bg-brand px-6 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover shadow-subtle"
+              >
+                <span>Browse Job Listings</span>
+                <ArrowUpRight size={14} />
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setForm({
+                    title: "",
+                    company: "",
+                    employmentType: "FULL_TIME",
+                    workMode: "Onsite",
+                    location: "",
+                    selectedOffices: [],
+                    candidatePreference: "ALL_INDIA",
+                    preferredTargets: [],
+                    remoteEligibilityType: "COUNTRIES",
+                    remoteEligibilityCountries: ["IN"],
+                    hqLocation: "",
+                    experienceMin: "",
+                    experienceMax: "",
+                    postedDate: getToday(),
+                    salary: "",
+                    mail: "",
+                    companyLink: "",
+                    description: "",
+                  });
+                  setCurrentStep(1);
+                  setIsSubmittedSuccess(false);
+                  setSubmittedJobData(null);
+                }}
+                className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-5 text-xs font-semibold text-text-secondary transition hover:bg-surface-subtle hover:text-text-primary"
+              >
+                <span>Post Another Job</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-full bg-surface-base text-text-primary">
       <div className="mx-auto max-w-4xl px-5 pb-16 pt-6 sm:px-8 sm:pt-8">
         {/* Breadcrumb */}
-        <nav className="mb-6 flex items-center gap-2 text-xs text-text-muted">
-          <Link href="/admin" className="transition hover:text-brand">
-            Dashboard
-          </Link>
-          <span>/</span>
-          <Link href="/admin/jobs" className="transition hover:text-brand">
-            Job listings
-          </Link>
-          <span>/</span>
-          <span className="font-medium text-text-primary">
-            {mode === "edit" ? "Edit job" : "Add job"}
-          </span>
-        </nav>
+        {mode === "public" ? (
+          <nav className="mb-6 flex items-center gap-2 text-xs text-text-muted">
+            <Link href="/" className="transition hover:text-brand">
+              Zenoway
+            </Link>
+            <span>/</span>
+            <Link href="/jobs" className="transition hover:text-brand">
+              Jobs
+            </Link>
+            <span>/</span>
+            <span className="font-medium text-text-primary">Post a Job</span>
+          </nav>
+        ) : (
+          <nav className="mb-6 flex items-center gap-2 text-xs text-text-muted">
+            <Link href="/admin" className="transition hover:text-brand">
+              Dashboard
+            </Link>
+            <span>/</span>
+            <Link href="/admin/jobs" className="transition hover:text-brand">
+              Job listings
+            </Link>
+            <span>/</span>
+            <span className="font-medium text-text-primary">
+              {mode === "edit" ? "Edit job" : "Add job"}
+            </span>
+          </nav>
+        )}
 
         {/* Header */}
         <header className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
-              {mode === "edit" ? "Edit Job Listing" : "Add New Job"}
-            </h1>
-            {mode === "edit" && jobId && (
-              <p className="mt-1 font-mono text-[11px] text-text-muted">ID: {jobId}</p>
+            {mode === "public" ? (
+              <>
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand">
+                  <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+                  Recruiter & Hiring Portal
+                </span>
+                <h1 className="mt-1 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
+                  Post a UX & Design Job
+                </h1>
+                <p className="mt-1.5 text-xs text-text-muted">
+                  Reach verified product designers, UX researchers, and creative leaders across India and worldwide.
+                </p>
+              </>
+            ) : (
+              <>
+                <h1 className="text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
+                  {mode === "edit" ? "Edit Job Listing" : "Add New Job"}
+                </h1>
+                {mode === "edit" && jobId && (
+                  <p className="mt-1 font-mono text-[11px] text-text-muted">ID: {jobId}</p>
+                )}
+              </>
             )}
           </div>
           <Link
-            href="/admin/jobs"
+            href={mode === "public" ? "/jobs" : "/admin/jobs"}
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-text-secondary transition hover:text-text-primary"
           >
             <ArrowLeft size={14} />
-            <span>Cancel</span>
+            <span>{mode === "public" ? "Back to Jobs" : "Cancel"}</span>
           </Link>
         </header>
 
@@ -1629,12 +1785,24 @@ export default function JobFormWizard({
                   {isSubmitting ? (
                     <>
                       <LoaderCircle size={15} className="animate-spin" />
-                      <span>{mode === "edit" ? "Saving..." : "Publishing..."}</span>
+                      <span>
+                        {mode === "edit"
+                          ? "Saving..."
+                          : mode === "public"
+                            ? "Submitting..."
+                            : "Publishing..."}
+                      </span>
                     </>
                   ) : (
                     <>
                       <CheckCircle2 size={16} />
-                      <span>{mode === "edit" ? "Save Changes" : "Publish Job Listing"}</span>
+                      <span>
+                        {mode === "edit"
+                          ? "Save Changes"
+                          : mode === "public"
+                            ? "Submit for Review"
+                            : "Publish Job Listing"}
+                      </span>
                     </>
                   )}
                 </button>

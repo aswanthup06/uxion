@@ -173,6 +173,7 @@ function Stat({
 
 export default function AdminDashboard() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [pendingCount, setPendingCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
@@ -183,10 +184,10 @@ export default function AdminDashboard() {
     setError("");
 
     try {
-      const response = await fetch("/api/jobs", {
-        cache: "no-store",
-        signal,
-      });
+      const [response, pendingResponse] = await Promise.all([
+        fetch("/api/jobs", { cache: "no-store", signal }),
+        fetch("/api/jobs?status=pending", { cache: "no-store", signal }).catch(() => null),
+      ]);
 
       if (!response.ok) {
         throw new Error("Unable to load jobs. Please try again.");
@@ -196,6 +197,11 @@ export default function AdminDashboard() {
 
       if (!Array.isArray(data)) {
         throw new Error("The jobs API returned an unexpected response.");
+      }
+
+      if (pendingResponse && pendingResponse.ok) {
+        const pendingData = await pendingResponse.json().catch(() => []);
+        setPendingCount(Array.isArray(pendingData) ? pendingData.length : 0);
       }
 
       const validJobs = data.filter(isJob);
@@ -326,6 +332,34 @@ export default function AdminDashboard() {
             >
               Try again
             </button>
+          </div>
+        )}
+
+        {/* Pending Submissions Alert Banner */}
+        {pendingCount > 0 && (
+          <div className="mt-8 flex flex-col items-start justify-between gap-3 rounded-card border border-amber-500/30 bg-amber-500/10 p-4 sm:flex-row sm:items-center">
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-500 animate-pulse" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-text-primary">
+                  {pendingCount === 1
+                    ? "1 public job submission awaits review"
+                    : `${pendingCount} public job submissions await review`}
+                </p>
+                <p className="text-xs text-text-muted">
+                  New listings posted via /post-job need admin approval before appearing live.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/admin/submissions"
+              className="inline-flex h-9 items-center gap-1.5 rounded-control bg-amber-500 px-4 text-xs font-semibold text-white shadow-subtle hover:bg-amber-600 transition"
+            >
+              <span>Review Submissions</span>
+              <ArrowUpRight size={14} />
+            </Link>
           </div>
         )}
 
