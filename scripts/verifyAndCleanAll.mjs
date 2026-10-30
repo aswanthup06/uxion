@@ -114,12 +114,12 @@ export function cleanAndEnhanceJob(raw, title, company, id) {
 
   const parts = [];
 
-  // About the role
+  // Overview paragraph (no redundant "About the Role:" prefix since UI container has its own header)
   let aboutText = aboutLines.join("\n\n").trim();
   if (!aboutText || aboutText.length < 50) {
     aboutText = `${company} is looking for a talented ${title} to join our team. In this role, you will collaborate with cross-functional partners to build intuitive, high-impact digital experiences and products that delight users.`;
   }
-  parts.push(`About the Role:\n${aboutText}`);
+  parts.push(aboutText);
 
   // Key Responsibilities
   if (respLines.length > 0) {

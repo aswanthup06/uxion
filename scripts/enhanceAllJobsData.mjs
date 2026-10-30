@@ -4,8 +4,7 @@
 import fs from "fs";
 
 export const CUSTOM_JOB_DESCRIPTIONS = {
-  JOB1000: `About the Role:
-SWEET DESIGN HUB is looking for a creative and passionate Fresher UI/UX Designer to join our design studio. You will collaborate with senior designers to kickstart your career and craft engaging, intuitive digital experiences across web and mobile platforms.
+  JOB1000: `SWEET DESIGN HUB is looking for a creative and passionate Fresher UI/UX Designer to join our design studio. You will collaborate with senior designers to kickstart your career and craft engaging, intuitive digital experiences across web and mobile platforms.
 
 Key Responsibilities:
 • Collaborate with design leads to conceptualize and craft user-friendly interfaces.
@@ -24,8 +23,7 @@ Perks & Benefits:
 • Hands-on exposure to real-world client design challenges.
 • Supportive, creative, and collaborative team culture.`,
 
-  JOB1001: `About the Role:
-OFB Tech is looking for an experienced UI/UX Designer to craft powerful, practical, and intuitive digital interfaces for our fintech platforms. You will tackle complex workflows, design admin platforms and B2B dashboards, and translate data into elegant design solutions that scale.
+  JOB1001: `OFB Tech is looking for an experienced UI/UX Designer to craft powerful, practical, and intuitive digital interfaces for our fintech platforms. You will tackle complex workflows, design admin platforms and B2B dashboards, and translate data into elegant design solutions that scale.
 
 Key Responsibilities:
 • Design end-to-end admin platforms, B2B dashboards, and internal tools with complex workflows.
@@ -46,8 +44,7 @@ Perks & Benefits:
 • Ownership and autonomy to drive design solutions end-to-end.
 • Celebrations, offsites, and a collaborative, high-energy culture.`,
 
-  JOB1002: `About the Role:
-Blurbpoint Media is looking for an enthusiastic Web Designer to join our digital agency team. You will work on real client projects converting design concepts into clean, responsive, and high-performing websites.
+  JOB1002: `Blurbpoint Media is looking for an enthusiastic Web Designer to join our digital agency team. You will work on real client projects converting design concepts into clean, responsive, and high-performing websites.
 
 Key Responsibilities:
 • Convert PSD, Figma, and design mockups into responsive HTML/CSS web pages.
@@ -62,8 +59,7 @@ Requirements:
 • Strong eye for typography, alignment, and visual aesthetics.
 • Eagerness to learn new web technologies and take on creative challenges.`,
 
-  JOB1003: `About the Role:
-Pocketful is seeking a creative and user-focused UI/UX Designer to join our fast-growing fintech team. You will play a key role in shaping modern, intuitive financial products that empower users to manage, invest, and grow their wealth effortlessly.
+  JOB1003: `Pocketful is seeking a creative and user-focused UI/UX Designer to join our fast-growing fintech team. You will play a key role in shaping modern, intuitive financial products that empower users to manage, invest, and grow their wealth effortlessly.
 
 Key Responsibilities:
 • Design intuitive user flows, wireframes, and high-fidelity mockups for web and mobile fintech products.
@@ -77,8 +73,7 @@ Requirements:
 • Strong understanding of information architecture, user journeys, and interaction design.
 • Passion for financial technology, problem-solving, and creating delightful user experiences.`,
 
-  JOB1004: `About the Role:
-Yellowchalk is looking for a passionate UI/UX Designer to join our design studio team. You will craft intuitive, pixel-perfect interfaces that delight users and deliver transformative digital products for diverse clients.
+  JOB1004: `Yellowchalk is looking for a passionate UI/UX Designer to join our design studio team. You will craft intuitive, pixel-perfect interfaces that delight users and deliver transformative digital products for diverse clients.
 
 Key Responsibilities:
 • Craft intuitive, pixel-perfect interfaces and seamless design systems across web and mobile platforms.
@@ -97,8 +92,7 @@ Perks & Benefits:
 • Hands-on work with diverse clients on cutting-edge products.
 • Clear growth paths and ongoing learning opportunities.`,
 
-  JOB1006: `About the Role:
-Hyeon Infotech is looking for a creative UI/UX & Graphic Designer to join our product team. In this dual-focus creative role, you will design engaging user interfaces for digital products while also creating impactful visual assets for marketing and brand identity.
+  JOB1006: `Hyeon Infotech is looking for a creative UI/UX & Graphic Designer to join our product team. In this dual-focus creative role, you will design engaging user interfaces for digital products while also creating impactful visual assets for marketing and brand identity.
 
 Key Responsibilities:
 • Design intuitive UI layouts, wireframes, and prototypes for mobile and web applications.
@@ -116,8 +110,7 @@ Perks & Benefits:
 • Creative, growth-driven, and collaborative culture.
 • Opportunities to work on diverse product-based applications.`,
 
-  JOB1007: `About the Role:
-Tridizi is looking for a creative and detail-oriented UI/UX Designer to join our team. You will take ownership of interface design, crafting intuitive and engaging digital experiences across web and mobile products.
+  JOB1007: `Tridizi is looking for a creative and detail-oriented UI/UX Designer to join our team. You will take ownership of interface design, crafting intuitive and engaging digital experiences across web and mobile products.
 
 Key Responsibilities:
 • Design user-friendly web and mobile interfaces that align with user needs and product goals.
@@ -133,8 +126,7 @@ Requirements:
 • Strong understanding of user-centered design, responsive layouts, and information architecture.
 • Ability to communicate design decisions clearly and work in an agile team.`,
 
-  JOB1008: `About the Role:
-Dexio Designs is looking for a motivated UI/UX Design Intern skilled in Figma to join our startup team. You will gain hands-on experience designing real-world digital products in a flexible, collaborative environment.
+  JOB1008: `Dexio Designs is looking for a motivated UI/UX Design Intern skilled in Figma to join our startup team. You will gain hands-on experience designing real-world digital products in a flexible, collaborative environment.
 
 Key Responsibilities:
 • Design user-friendly interfaces for web and mobile applications.
@@ -153,8 +145,7 @@ Perks & Benefits:
 • Direct mentorship and career growth opportunities.
 • Flexible, collaborative, and supportive team culture.`,
 
-  JOB1010: `About the Role:
-Nykaa is looking for an experienced Senior UX Researcher to lead research initiatives across our beauty and fashion e-commerce platforms. You will uncover deep user insights, guide product decisions, and shape intuitive shopping experiences for millions of consumers.
+  JOB1010: `Nykaa is looking for an experienced Senior UX Researcher to lead research initiatives across our beauty and fashion e-commerce platforms. You will uncover deep user insights, guide product decisions, and shape intuitive shopping experiences for millions of consumers.
 
 Key Responsibilities:
 • Plan, design, and conduct qualitative and quantitative user research studies, usability tests, and field studies.
@@ -168,8 +159,7 @@ Requirements:
 • Strong ability to present insights persuasively to cross-functional stakeholders and leadership.
 • Passion for understanding consumer psychology and driving user-centric innovation.`,
 
-  JOB1015: `About the Role:
-Ksolves India Limited is looking for a Senior UI/UX Designer to join our creative team. You will lead the design of cutting-edge digital experiences, working alongside product managers and engineers to craft seamless user journeys and scalable design systems.
+  JOB1015: `Ksolves India Limited is looking for a Senior UI/UX Designer to join our creative team. You will lead the design of cutting-edge digital experiences, working alongside product managers and engineers to craft seamless user journeys and scalable design systems.
 
 Key Responsibilities:
 • Design stunning interfaces and seamless user journeys for enterprise and consumer applications.
@@ -184,8 +174,7 @@ Requirements:
 • Thorough understanding of design systems, WCAG accessibility standards, and responsive design.
 • Bonus experience with Motion UI, micro-interactions, and AI-powered design tools.`,
 
-  JOB1020: `About the Role:
-MindzMap Digital Solutions is looking for a talented UI Designer to craft stunning, intuitive user interfaces across web and mobile applications. You will translate wireframes and user flows into modern visual designs that inspire and delight users.
+  JOB1020: `MindzMap Digital Solutions is looking for a talented UI Designer to craft stunning, intuitive user interfaces across web and mobile applications. You will translate wireframes and user flows into modern visual designs that inspire and delight users.
 
 Key Responsibilities:
 • Create high-fidelity mockups, visual components, and interactive prototypes for web and mobile.
@@ -199,8 +188,7 @@ Requirements:
 • Solid grasp of visual hierarchy, typography, color palettes, and responsive grid layouts.
 • Excellent attention to detail and strong team communication skills.`,
 
-  JOB1022: `About the Role:
-Rapidsoft Technologies is looking for a skilled React Developer to build scalable, high-performance web applications. You will work on cutting-edge digital products, collaborating with UI/UX designers and backend engineers to deliver exceptional user experiences.
+  JOB1022: `Rapidsoft Technologies is looking for a skilled React Developer to build scalable, high-performance web applications. You will work on cutting-edge digital products, collaborating with UI/UX designers and backend engineers to deliver exceptional user experiences.
 
 Key Responsibilities:
 • Develop modular, reusable front-end components using React.js and modern JavaScript (ES6+).
@@ -216,8 +204,7 @@ Requirements:
 • Familiarity with Git, component-driven development, and agile methodologies.
 • Strong problem-solving mindset and dedication to clean, maintainable code.`,
 
-  JOB1024: `About the Role:
-Asymmetri is looking for a creative and detail-oriented UI/UX Designer to join our team. You will take full ownership of the end-to-end design process, transforming complex product requirements into intuitive user journeys and polished interfaces.
+  JOB1024: `Asymmetri is looking for a creative and detail-oriented UI/UX Designer to join our team. You will take full ownership of the end-to-end design process, transforming complex product requirements into intuitive user journeys and polished interfaces.
 
 Key Responsibilities:
 • Take end-to-end ownership of product design from discovery and user flows to wireframes and final UI.
@@ -232,8 +219,7 @@ Requirements:
 • Strong understanding of user research, interaction design, and design token architecture.
 • Excellent communication skills and ability to articulate design rationale clearly.`,
 
-  JOB1025: `About the Role:
-Yoeki Soft Private Limited is looking for a passionate UI Developer to join our engineering team. You will bridge the gap between design and technology, translating creative mockups into clean, performant, and responsive front-end code.
+  JOB1025: `Yoeki Soft Private Limited is looking for a passionate UI Developer to join our engineering team. You will bridge the gap between design and technology, translating creative mockups into clean, performant, and responsive front-end code.
 
 Key Responsibilities:
 • Develop responsive, accessible, and high-performance user interfaces using modern web technologies.
@@ -248,8 +234,7 @@ Requirements:
 • Strong understanding of CSS preprocessors, flexbox, grid, and CSS animations.
 • Passion for clean code, pixel-perfect implementation, and modern web standards.`,
 
-  JOB1030: `About the Role:
-Infopine is looking for an enthusiastic Frontend Development Intern to join our development team. This internship offers students and fresh graduates an opportunity to gain hands-on experience working on real-world projects, building responsive interfaces, and collaborating with experienced engineers.
+  JOB1030: `Infopine is looking for an enthusiastic Frontend Development Intern to join our development team. This internship offers students and fresh graduates an opportunity to gain hands-on experience working on real-world projects, building responsive interfaces, and collaborating with experienced engineers.
 
 Key Responsibilities:
 • Build responsive, mobile-friendly web pages using modern HTML, CSS, and JavaScript.
@@ -268,8 +253,7 @@ Perks & Benefits:
 • Direct mentorship and guidance from senior engineers.
 • Opportunity for full-time employment based on performance.`,
 
-  JOB1047: `About the Role:
-Flight Mode Studio is looking for a talented Graphic Designer to join our creative team. You will turn ideas into compelling visual stories, working on branding projects, digital marketing campaigns, and presentation assets that help modern brands stand out.
+  JOB1047: `Flight Mode Studio is looking for a talented Graphic Designer to join our creative team. You will turn ideas into compelling visual stories, working on branding projects, digital marketing campaigns, and presentation assets that help modern brands stand out.
 
 Key Responsibilities:
 • Design brand identities, social media creatives, digital marketing assets, and presentation decks.
@@ -284,8 +268,7 @@ Requirements:
 • A diverse portfolio demonstrating creative storytelling and high-quality visual craft.
 • Strong attention to detail and ability to work in a collaborative studio environment.`,
 
-  JOB1048: `About the Role:
-Flight Mode Studio is looking for an experienced UI/UX Designer to join our creative team. You will craft intuitive, visually appealing, and user-centric digital experiences, collaborating closely with developers and stakeholders to transform product ideas into polished digital applications.
+  JOB1048: `Flight Mode Studio is looking for an experienced UI/UX Designer to join our creative team. You will craft intuitive, visually appealing, and user-centric digital experiences, collaborating closely with developers and stakeholders to transform product ideas into polished digital applications.
 
 Key Responsibilities:
 • Craft seamless user journeys, information architectures, and wireframes for web and mobile products.
@@ -299,8 +282,7 @@ Requirements:
 • Strong portfolio demonstrating end-to-end design thinking and pixel-perfect execution.
 • Excellent communication skills and ability to present design rationale convincingly.`,
 
-  JOB1049: `About the Role:
-Flight Mode Studio is looking for an analytical and results-driven SEO Executive to join our marketing team. You will drive organic search growth, optimize website architectures, and implement data-backed search strategies that deliver measurable visibility and rankings.
+  JOB1049: `Flight Mode Studio is looking for an analytical and results-driven SEO Executive to join our marketing team. You will drive organic search growth, optimize website architectures, and implement data-backed search strategies that deliver measurable visibility and rankings.
 
 Key Responsibilities:
 • Conduct in-depth keyword research, competitive analysis, and content gap assessments.
@@ -315,8 +297,7 @@ Requirements:
 • Working knowledge of technical SEO principles, schema markup, and Core Web Vitals.
 • Strong analytical mindset with the ability to turn data into actionable search optimizations.`,
 
-  JOB1050: `About the Role:
-Flight Mode Studio is looking for a data-driven Performance Marketing Executive to join our growth team. You will manage paid media campaigns, optimize customer acquisition channels, and drive measurable business ROI across digital advertising platforms.
+  JOB1050: `Flight Mode Studio is looking for a data-driven Performance Marketing Executive to join our growth team. You will manage paid media campaigns, optimize customer acquisition channels, and drive measurable business ROI across digital advertising platforms.
 
 Key Responsibilities:
 • Plan, launch, and optimize paid campaigns across Google Ads, Meta Ads, and LinkedIn Ads.
@@ -331,8 +312,7 @@ Requirements:
 • Strong grasp of CAC, ROAS, CTR, LTV, and performance marketing metrics.
 • Analytical mindset with proficiency in Excel/Google Sheets for campaign data analysis.`,
 
-  JOB1054: `About the Role:
-Yourdevs is looking for an experienced UI/UX Designer to craft intuitive, user-centered digital experiences for real-world products. You will work closely with cross-functional teams to design seamless user journeys, modern interfaces, and scalable component systems.
+  JOB1054: `Yourdevs is looking for an experienced UI/UX Designer to craft intuitive, user-centered digital experiences for real-world products. You will work closely with cross-functional teams to design seamless user journeys, modern interfaces, and scalable component systems.
 
 Key Responsibilities:
 • Design end-to-end user journeys, wireframes, and high-fidelity interfaces for web and mobile products.
@@ -351,8 +331,7 @@ Perks & Benefits:
 • Opportunity to work on meaningful products with high ownership.
 • Creative freedom and professional growth opportunities.`,
 
-  JOB1041: `About the Role:
-Stimuler is looking for a Creative Strategy Intern to join our global growth team in building virally engaging content for over 15 million users across 180+ countries. If you are obsessed with viral content, algorithm psychology, and the art of shareable storytelling, this is your playground.
+  JOB1041: `Stimuler is looking for a Creative Strategy Intern to join our global growth team in building virally engaging content for over 15 million users across 180+ countries. If you are obsessed with viral content, algorithm psychology, and the art of shareable storytelling, this is your playground.
 
 Key Responsibilities:
 • Script high-retention short-form videos (Reels, TikToks, Shorts) designed to maximize conversion and user acquisition.
@@ -371,8 +350,7 @@ Perks & Benefits:
 • High-speed, high-ownership, and deeply creative startup environment.
 • Direct collaboration with founders and growth leadership.`,
 
-  JOB1009: `About the Role:
-Obrimo Technologies is looking for a passionate UI/UX Designer who can craft intuitive, user-centered, and visually engaging digital experiences. You will lead design strategies, conduct research, create prototypes, and collaborate on front-end component implementations.
+  JOB1009: `Obrimo Technologies is looking for a passionate UI/UX Designer who can craft intuitive, user-centered, and visually engaging digital experiences. You will lead design strategies, conduct research, create prototypes, and collaborate on front-end component implementations.
 
 Key Responsibilities:
 • Conduct UX research, audits, and usability testing to drive continuous design improvements.
@@ -388,8 +366,7 @@ Requirements:
 • Strong understanding of user research, information architecture, and accessibility standards (WCAG).
 • Excellent communication skills and ability to present design rationale to cross-functional teams.`,
 
-  JOB1055: `About the Role:
-Yourdevs is looking for a motivated UI/UX Design Intern to join our growing design team. You will collaborate with experienced designers and developers, contribute to user-centered digital products, and gain hands-on exposure to real client and product challenges.
+  JOB1055: `Yourdevs is looking for a motivated UI/UX Design Intern to join our growing design team. You will collaborate with experienced designers and developers, contribute to user-centered digital products, and gain hands-on exposure to real client and product challenges.
 
 Key Responsibilities:
 • Assist in creating wireframes, mockups, and interactive prototypes for web and mobile apps.

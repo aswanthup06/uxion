@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 interface FormattedDescriptionProps {
   content?: string | null;
   className?: string;
+  hideInitialHeading?: boolean;
 }
 
 /**
@@ -13,10 +14,12 @@ interface FormattedDescriptionProps {
  * - Bold headings for sections (e.g. Responsibilities, Requirements)
  * - Option 3 ChevronRight bullet icons in Zenoway emerald green
  * - Relaxed paragraph spacing for regular text
+ * - Automatically suppresses duplicate initial "About the Role" heading
  */
 export default function FormattedDescription({
   content,
   className = "",
+  hideInitialHeading = true,
 }: FormattedDescriptionProps) {
   if (!content || !content.trim()) {
     return (
@@ -29,6 +32,7 @@ export default function FormattedDescription({
   const lines = content.split(/\r?\n/);
   const elements: React.ReactNode[] = [];
   let currentList: string[] = [];
+  let headingCount = 0;
 
   const flushList = (keyPrefix: number) => {
     if (currentList.length > 0) {
@@ -86,6 +90,21 @@ export default function FormattedDescription({
         .replace(/^#{1,4}\s+/, "")
         .replace(/:$/, "")
         .trim();
+
+      // Suppress redundant initial "About the Role" / "About this role" heading if
+      // the parent container (Job Details page or Modal) already renders its own section heading
+      if (
+        hideInitialHeading &&
+        headingCount === 0 &&
+        /^about\s+(the\s+|this\s+)?(role|job|position)|role\s+overview|job\s+overview$/i.test(
+          cleanTitle
+        )
+      ) {
+        headingCount++;
+        return;
+      }
+
+      headingCount++;
 
       elements.push(
         <h4
