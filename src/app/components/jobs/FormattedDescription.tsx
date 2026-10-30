@@ -91,12 +91,12 @@ export default function FormattedDescription({
         .replace(/:$/, "")
         .trim();
 
-      // Suppress redundant initial "About the Role" / "About this role" heading if
-      // the parent container (Job Details page or Modal) already renders its own section heading
+      // Suppress redundant initial introductory heading (e.g. "About the Role", "About the Job",
+      // "Job Description", "Overview", etc.) because the host page or modal already renders "About the role".
       if (
         hideInitialHeading &&
         headingCount === 0 &&
-        /^about\s+(the\s+|this\s+)?(role|job|position)|role\s+overview|job\s+overview$/i.test(
+        /^about\s+(the\s+|this\s+)?(role|job|position|company|us)|(role|job|position)\s+(overview|description|summary)|overview|summary$/i.test(
           cleanTitle
         )
       ) {

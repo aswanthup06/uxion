@@ -732,12 +732,12 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
           <motion.section {...rise(0.08)} className="max-w-3xl">
             <h2
               id="about-role-heading"
-              className="text-base font-semibold tracking-tight text-text-primary"
+              className="mb-2 text-[15px] font-bold text-text-primary"
             >
-              About this role
+              About the role
             </h2>
 
-            <div className="mt-4">
+            <div>
               <FormattedDescription content={description} />
             </div>
 

@@ -1568,8 +1568,8 @@ function JobsViewContent() {
               })()}
 
               {/* Description */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+              <div className="space-y-1">
+                <h3 className="text-[15px] font-bold text-text-primary">
                   About the role
                 </h3>
                 <FormattedDescription content={activeJob.description} />
