@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import ApplyModal from "./ApplyModal";
+import FormattedDescription from "@/app/components/jobs/FormattedDescription";
 import { getJobCategory } from "@/app/components/jobs/jobs-utils";
 import type { Job } from "@/app/types/job";
 import {
@@ -737,15 +738,7 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
             </h2>
 
             <div className="mt-4">
-              {description ? (
-                <div className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-text-secondary">
-                  {description}
-                </div>
-              ) : (
-                <p className="text-sm leading-6 text-text-muted">
-                  A detailed description for this position has not been provided yet.
-                </p>
-              )}
+              <FormattedDescription content={description} />
             </div>
 
             {companyUrl && (

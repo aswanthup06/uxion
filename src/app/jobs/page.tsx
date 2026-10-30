@@ -35,6 +35,7 @@ import {
 } from "@/lib/supabase/locations-data";
 import Modal from "@/app/components/Modal";
 import { JOB_CATEGORIES } from "@/data/categories";
+import FormattedDescription from "@/app/components/jobs/FormattedDescription";
 
 type JobType = "Full-time" | "Part-time" | "Contract" | "Internship";
 type WorkMode = "On-site" | "Hybrid" | "Remote";
@@ -1571,9 +1572,7 @@ function JobsViewContent() {
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-text-muted">
                   About the role
                 </h3>
-                <div className="whitespace-pre-wrap text-sm leading-relaxed text-text-secondary font-normal">
-                  {activeJob.description}
-                </div>
+                <FormattedDescription content={activeJob.description} />
               </div>
 
               {/* Direct email contact if available */}
