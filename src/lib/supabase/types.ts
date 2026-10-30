@@ -50,6 +50,7 @@ export interface DbJob {
   views: number;
   employment_type: string | null;
   work_mode: string | null;
+  category: string | null;
   applicant_country: string | null;
   valid_through: string | null;
   is_test_data: boolean;
@@ -91,4 +92,3 @@ export type DbJobInsert = Partial<Omit<DbJob, "created_at" | "updated_at">> & {
 };
 
 export type DbJobUpdate = Partial<Omit<DbJob, "id" | "created_at" | "updated_at">>;
-

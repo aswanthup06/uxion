@@ -26,6 +26,7 @@ export function mapDbJobToJob(row: DbJob): Job {
     validThrough: row.valid_through || undefined,
     employmentType: row.employment_type || "FULL_TIME",
     workMode: row.work_mode || "Onsite",
+    category: row.category || undefined,
     isTestData: Boolean(row.is_test_data),
 
     // Global structured location fields
@@ -86,6 +87,7 @@ export function mapJobToDbInsert(job: Partial<Job>): DbJobInsert {
   if (job.views !== undefined) insert.views = job.views;
   if (job.employmentType) insert.employment_type = job.employmentType;
   if (job.workMode) insert.work_mode = job.workMode;
+  if (job.category !== undefined) insert.category = job.category;
   if (job.applicantCountry) insert.applicant_country = job.applicantCountry;
   if (job.validThrough) insert.valid_through = normalizeToIso(job.validThrough);
   if (job.isTestData !== undefined) insert.is_test_data = job.isTestData;
@@ -391,6 +393,7 @@ export async function updateJob(id: string, jobData: Partial<Job>): Promise<Job>
   if (jobData.views !== undefined) dbPayload.views = jobData.views;
   if (jobData.employmentType !== undefined) dbPayload.employment_type = jobData.employmentType;
   if (jobData.workMode !== undefined) dbPayload.work_mode = jobData.workMode;
+  if (jobData.category !== undefined) dbPayload.category = jobData.category;
   if (jobData.validThrough !== undefined) dbPayload.valid_through = normalizeToIso(jobData.validThrough);
   if (jobData.isTestData !== undefined) dbPayload.is_test_data = jobData.isTestData;
   if (jobData.status !== undefined) dbPayload.status = jobData.status;

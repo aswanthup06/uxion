@@ -35,6 +35,7 @@ export type Job = {
   validThrough?: string;
   employmentType?: string;
   workMode?: string;
+  category?: string;
   isTestData?: boolean;
 
   // Global structured location fields
@@ -63,4 +64,3 @@ export type Job = {
   requiresReview?: boolean;
   status?: "published" | "draft" | "archived";
 };
-

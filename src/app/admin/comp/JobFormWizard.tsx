@@ -11,7 +11,6 @@ import {
   Banknote,
   Mail,
   Globe,
-  Clock3,
   FileText,
   CheckCircle2,
   AlertCircle,
@@ -22,8 +21,11 @@ import {
   Compass,
   ArrowLeft,
   ArrowUpRight,
+  Sparkles,
+  Wand2,
 } from "lucide-react";
 import { State, City } from "country-state-city";
+import { JOB_CATEGORIES, matchJobCategory } from "@/data/categories";
 import {
   CANONICAL_CITIES,
   INDIAN_STATES,
@@ -63,6 +65,7 @@ export interface PreferredTarget {
 export interface JobFormState {
   title: string;
   company: string;
+  category?: string;
   employmentType: "FULL_TIME" | "PART_TIME" | "CONTRACTOR" | "INTERN";
   workMode: "Onsite" | "Hybrid" | "Remote";
   location: string;
@@ -472,6 +475,7 @@ export default function JobFormWizard({
   const [form, setForm] = useState<JobFormState>({
     title: "",
     company: "",
+    category: "UI/UX & Product Design",
     employmentType: "FULL_TIME",
     workMode: "Onsite",
     location: "",
@@ -497,6 +501,139 @@ export default function JobFormWizard({
   const [submittedJobData, setSubmittedJobData] = useState<Partial<Job> | null>(null);
   const [error, setError] = useState("");
   const [currentStep, setCurrentStep] = useState<number>(1);
+
+  // AI Tools State
+  const [showAiModal, setShowAiModal] = useState(false);
+  const [rawAiText, setRawAiText] = useState("");
+  const [isParsingAi, setIsParsingAi] = useState(false);
+  const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
+  const [isEnhancingDesc, setIsEnhancingDesc] = useState(false);
+
+  const handleParseWithAi = async () => {
+    if (!rawAiText.trim()) {
+      toast.error("Please paste the job description first.");
+      return;
+    }
+    setIsParsingAi(true);
+    try {
+      const res = await fetch("/api/ai-job", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ job: rawAiText }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to extract job details");
+      }
+      const parsed = typeof data.data === "string" ? JSON.parse(data.data) : data.data;
+
+      const cat = parsed.category || matchJobCategory(parsed.title || "");
+
+      let expMin = "";
+      let expMax = "";
+      if (parsed.experience) {
+        const digits = (String(parsed.experience).match(/\d+/g) || []).map(Number);
+        if (digits.length >= 2) {
+          expMin = String(digits[0]);
+          expMax = String(digits[1]);
+        } else if (digits.length === 1) {
+          expMin = String(digits[0]);
+        }
+      }
+
+      const empUpper = String(parsed.employmentType || "").toUpperCase();
+      let empType: JobFormState["employmentType"] = "FULL_TIME";
+      if (empUpper.includes("PART")) empType = "PART_TIME";
+      else if (empUpper.includes("INTERN")) empType = "INTERN";
+      else if (empUpper.includes("CONTRACT")) empType = "CONTRACTOR";
+
+      const rawLoc = parsed.location || "";
+      const wm = normalizeWorkMode("", rawLoc);
+
+      setForm((prev) => ({
+        ...prev,
+        title: parsed.title || prev.title,
+        company: parsed.company || prev.company,
+        category: cat || prev.category,
+        salary: parsed.salary || prev.salary,
+        mail: parsed.email || parsed.mail || prev.mail,
+        workMode: wm,
+        experienceMin: expMin || prev.experienceMin,
+        experienceMax: expMax || prev.experienceMax,
+        description: parsed.description || rawAiText,
+        employmentType: empType,
+      }));
+
+      toast.success("Job details extracted and auto-filled!");
+      setShowAiModal(false);
+      setRawAiText("");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "AI extraction failed");
+    } finally {
+      setIsParsingAi(false);
+    }
+  };
+
+  const handleGenerateDescription = async () => {
+    if (!form.title.trim()) {
+      toast.error("Please enter a Job Title in Step 1 first.");
+      return;
+    }
+    setIsGeneratingDesc(true);
+    try {
+      const res = await fetch("/api/ai-job", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "generate-description",
+          title: form.title,
+          company: form.company,
+          category: form.category,
+          experience: form.experienceMin
+            ? `${form.experienceMin}-${form.experienceMax || form.experienceMin} years`
+            : undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to generate description");
+      }
+      setForm((prev) => ({ ...prev, description: data.description }));
+      toast.success("Professional description generated!");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to generate description");
+    } finally {
+      setIsGeneratingDesc(false);
+    }
+  };
+
+  const handleEnhanceDescription = async () => {
+    if (!form.description.trim()) {
+      toast.error("Please write or paste a description first to enhance it.");
+      return;
+    }
+    setIsEnhancingDesc(true);
+    try {
+      const res = await fetch("/api/ai-job", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "enhance-description",
+          currentDescription: form.description,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to enhance description");
+      }
+      setForm((prev) => ({ ...prev, description: data.description }));
+      toast.success("Description enhanced and polished!");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to enhance description");
+    } finally {
+      setIsEnhancingDesc(false);
+    }
+  };
 
   const populateFromJob = useCallback((job: Job) => {
     const rawLoc = job.location || "";
@@ -588,6 +725,7 @@ export default function JobFormWizard({
     setForm({
       title: job.title || "",
       company: job.company || "",
+      category: job.category || matchJobCategory(job.title || ""),
       employmentType: validEmpType,
       workMode: wm,
       location: rawLoc,
@@ -741,7 +879,16 @@ export default function JobFormWizard({
     >
   ) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => {
+      const updated = { ...prev, [name]: value };
+      if (name === "title" && value.trim()) {
+        const detected = matchJobCategory(value);
+        if (detected) {
+          updated.category = detected;
+        }
+      }
+      return updated;
+    });
     if (error) setError("");
   };
 
@@ -936,6 +1083,7 @@ export default function JobFormWizard({
       const payload: Partial<Job> = {
         title: form.title.trim(),
         company: form.company.trim(),
+        category: form.category || "UI/UX & Product Design",
         location: computedLocation,
         workMode: form.workMode,
         employmentType: form.employmentType,
@@ -1146,6 +1294,7 @@ export default function JobFormWizard({
                   setForm({
                     title: "",
                     company: "",
+                    category: "UI/UX & Product Design",
                     employmentType: "FULL_TIME",
                     workMode: "Onsite",
                     location: "",
@@ -1310,6 +1459,81 @@ export default function JobFormWizard({
           {/* STEP 1: ROLE */}
           {currentStep === 1 && (
             <div className="space-y-6">
+              {/* AI Auto-Fill Banner / Modal */}
+              <div className="rounded-card border border-brand/20 bg-brand-soft/30 p-4 transition">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-brand text-text-inverse">
+                      <Sparkles size={16} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-text-primary">
+                        Have a raw job description or draft?
+                      </p>
+                      <p className="text-[11px] text-text-muted">
+                        Paste it and let Gemini AI automatically extract and fill all form steps.
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowAiModal((prev) => !prev)}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-control bg-brand px-3 py-1.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover shrink-0"
+                  >
+                    <Wand2 size={13} />
+                    <span>{showAiModal ? "Close AI Importer" : "Paste with AI"}</span>
+                  </button>
+                </div>
+
+                {showAiModal && (
+                  <div className="mt-4 border-t border-brand/15 pt-3.5 space-y-3">
+                    <textarea
+                      rows={5}
+                      value={rawAiText}
+                      onChange={(e) => setRawAiText(e.target.value)}
+                      placeholder="Paste job title, requirements, company info, or raw job text here..."
+                      className={`${inputClass} text-xs leading-relaxed`}
+                    />
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] text-text-muted">
+                        {rawAiText.length} characters
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowAiModal(false);
+                            setRawAiText("");
+                          }}
+                          className="rounded-control px-3 py-1.5 text-xs font-medium text-text-muted hover:text-text-primary"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          disabled={isParsingAi || !rawAiText.trim()}
+                          onClick={handleParseWithAi}
+                          className="inline-flex items-center gap-1.5 rounded-control bg-brand px-4 py-1.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover disabled:opacity-50"
+                        >
+                          {isParsingAi ? (
+                            <>
+                              <LoaderCircle size={13} className="animate-spin" />
+                              <span>Extracting...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles size={13} />
+                              <span>Auto-Fill All Steps</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <SectionHeader title="Role Overview" icon={BriefcaseBusiness} />
 
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -1336,6 +1560,27 @@ export default function JobFormWizard({
 
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <div>
+                  <label htmlFor="category" className={labelClass}>
+                    Job Category
+                    <span className="ml-1 text-status-error">*</span>
+                  </label>
+                  <select
+                    id="category"
+                    name="category"
+                    value={form.category}
+                    onChange={handleChange}
+                    className={inputClass}
+                    required
+                  >
+                    {JOB_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
                   <label htmlFor="employmentType" className={labelClass}>
                     Employment Type
                   </label>
@@ -1352,17 +1597,17 @@ export default function JobFormWizard({
                     <option value="INTERN">Internship</option>
                   </select>
                 </div>
-
-                <Field
-                  label="Company Website (Optional)"
-                  name="companyLink"
-                  value={form.companyLink}
-                  onChange={handleChange}
-                  placeholder="https://company.com"
-                  icon={Globe}
-                  type="url"
-                />
               </div>
+
+              <Field
+                label="Company Website (Optional)"
+                name="companyLink"
+                value={form.companyLink}
+                onChange={handleChange}
+                placeholder="https://company.com"
+                icon={Globe}
+                type="url"
+              />
 
               <div className="flex items-center justify-end pt-4">
                 <button
@@ -1690,10 +1935,55 @@ export default function JobFormWizard({
 
               {/* Description */}
               <div>
-                <label htmlFor="description" className={labelClass}>
-                  Job Description & Requirements
-                  <span className="ml-1 text-status-error">*</span>
-                </label>
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                  <label htmlFor="description" className={`${labelClass} mb-0`}>
+                    Job Description & Requirements
+                    <span className="ml-1 text-status-error">*</span>
+                  </label>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      disabled={isGeneratingDesc}
+                      onClick={handleGenerateDescription}
+                      title="Generate a structured job description from role details"
+                      className="inline-flex items-center gap-1.5 rounded-control border border-brand/30 bg-brand-soft/50 px-2.5 py-1 text-xs font-semibold text-brand transition hover:bg-brand-soft disabled:opacity-50"
+                    >
+                      {isGeneratingDesc ? (
+                        <>
+                          <LoaderCircle size={12} className="animate-spin" />
+                          <span>Generating...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={12} />
+                          <span>Generate Description</span>
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={isEnhancingDesc || !form.description.trim()}
+                      onClick={handleEnhanceDescription}
+                      title="Polish, format and add bullet points to existing text"
+                      className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-subtle px-2.5 py-1 text-xs font-medium text-text-secondary transition hover:bg-surface-base hover:text-text-primary disabled:opacity-40"
+                    >
+                      {isEnhancingDesc ? (
+                        <>
+                          <LoaderCircle size={12} className="animate-spin" />
+                          <span>Polishing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Wand2 size={12} />
+                          <span>Enhance & Polish</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
                 <textarea
                   id="description"
                   name="description"
@@ -1712,9 +2002,14 @@ export default function JobFormWizard({
                   <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
                     Listing Preview
                   </span>
-                  <span className="rounded-control bg-brand-soft px-2 py-0.5 text-[11px] font-semibold text-brand">
-                    {form.workMode}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="rounded-control bg-surface-subtle px-2 py-0.5 text-[11px] font-medium text-text-secondary border border-border-default/40">
+                      {form.category || "UI/UX & Product Design"}
+                    </span>
+                    <span className="rounded-control bg-brand-soft px-2 py-0.5 text-[11px] font-semibold text-brand">
+                      {form.workMode}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="mt-3">

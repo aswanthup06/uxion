@@ -34,21 +34,12 @@ import {
   INDIAN_STATES,
 } from "@/lib/supabase/locations-data";
 import Modal from "@/app/components/Modal";
+import { JOB_CATEGORIES } from "@/data/categories";
 
 type JobType = "Full-time" | "Part-time" | "Contract" | "Internship";
 type WorkMode = "On-site" | "Hybrid" | "Remote";
 
-const categories = [
-  "Engineering",
-  "Design",
-  "Product",
-  "Data",
-  "Marketing",
-  "Human Resources",
-  "Customer Support",
-  "Finance",
-  "Sales",
-];
+const categories = JOB_CATEGORIES;
 
 const types: JobType[] = ["Full-time", "Part-time", "Contract", "Internship"];
 const modes: WorkMode[] = ["On-site", "Hybrid", "Remote"];
@@ -751,26 +742,55 @@ function JobsViewContent() {
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
-              Department
+              Category
             </p>
-            <ul className="mt-2 space-y-0.5">
+            <ul className="mt-2 space-y-1">
+              {/* Pre-selected "All" option */}
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setCategory("All categories")}
+                  className={`flex w-full cursor-pointer items-center justify-between py-1 text-left text-sm transition-colors ${
+                    category === "All categories"
+                      ? "font-semibold text-brand"
+                      : "text-text-secondary hover:text-text-primary"
+                  }`}
+                >
+                  <span>All</span>
+                  <span
+                    className={`text-xs ${
+                      category === "All categories"
+                        ? "font-semibold text-brand"
+                        : "text-text-muted"
+                    }`}
+                  >
+                    {jobs.length}
+                  </span>
+                </button>
+              </li>
+
+              {/* Only show categories with > 0 jobs */}
               {categories.map((c) => {
-                const active = category === c;
                 const count = categoryCounts[c] ?? 0;
+                if (count === 0) return null;
+                const active = category === c;
+
                 return (
                   <li key={c}>
                     <button
                       type="button"
                       onClick={() => setCategory(active ? "All categories" : c)}
-                      className={`flex w-full cursor-pointer items-center justify-between rounded-control px-2.5 py-1.5 text-sm transition-colors duration-normal ${active
-                        ? "bg-brand-soft font-semibold text-brand hover:bg-brand-soft-hover"
-                        : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
-                        }`}
+                      className={`flex w-full cursor-pointer items-center justify-between py-1 text-left text-sm transition-colors ${
+                        active
+                          ? "font-semibold text-brand"
+                          : "text-text-secondary hover:text-text-primary"
+                      }`}
                     >
-                      {c}
+                      <span className="truncate pr-2">{c}</span>
                       <span
-                        className={`text-xs ${active ? "text-brand" : "text-text-muted"
-                          }`}
+                        className={`text-xs shrink-0 ${
+                          active ? "font-semibold text-brand" : "text-text-muted"
+                        }`}
                       >
                         {count}
                       </span>
@@ -834,17 +854,8 @@ function JobsViewContent() {
       >
         <header className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="flex items-baseline gap-2.5 text-2xl font-semibold tracking-[-0.04em] text-text-primary sm:text-[1.75rem]">
+            <h1 className="text-2xl font-semibold tracking-[-0.04em] text-text-primary sm:text-[1.75rem]">
               Explore open roles
-              {!loading && !error && (
-                <span
-                  className="rounded-full bg-brand-soft px-2.5 py-0.5 text-sm font-semibold tabular-nums tracking-normal text-brand-dark"
-                  aria-live="polite"
-                >
-                  {filteredJobs.length}
-                  <span className="sr-only"> matching roles</span>
-                </span>
-              )}
             </h1>
             <p className="mt-1.5 text-sm text-text-secondary">
               Roles that match your skills, your goals, and the way you want to work.
@@ -883,41 +894,41 @@ function JobsViewContent() {
           </div>
         </header>
 
-        {/* Work Mode Switcher (1-Click Mode Filter) with small corner tokens */}
+        {/* Work Mode Switcher (1-Click Mode Filter) */}
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <div className="w-full sm:w-auto">
-            <div className="grid grid-cols-4 sm:inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-card p-1 shadow-xs">
+          <div className="w-full sm:w-auto overflow-x-auto no-scrollbar">
+            <div className="inline-flex min-w-full sm:min-w-0 items-center gap-1 rounded-control border border-border-default bg-surface-card p-1 shadow-xs">
               {[
-                { id: "All work modes", shortLabel: "All", fullLabel: "All modes", count: jobs.length },
-                { id: "Remote", shortLabel: "Remote", fullLabel: "Remote", icon: Globe, count: modeCounts["Remote"] },
-                { id: "Hybrid", shortLabel: "Hybrid", fullLabel: "Hybrid", icon: Building2, count: modeCounts["Hybrid"] },
-                { id: "On-site", shortLabel: "On-site", fullLabel: "On-site", icon: MapPin, count: modeCounts["On-site"] },
-              ].map(({ id, shortLabel, fullLabel, icon: Icon, count }) => {
+                { id: "All work modes", label: "All modes", count: jobs.length },
+                { id: "Remote", label: "Remote", icon: Globe, count: modeCounts["Remote"] },
+                { id: "Hybrid", label: "Hybrid", icon: Building2, count: modeCounts["Hybrid"] },
+                { id: "On-site", label: "On-site", icon: MapPin, count: modeCounts["On-site"] },
+              ].map(({ id, label, icon: Icon, count }) => {
                 const isActive = mode === id;
                 return (
                   <button
                     key={id}
                     type="button"
                     onClick={() => setMode(id)}
-                    className={`inline-flex justify-center cursor-pointer items-center gap-1 sm:gap-1.5 rounded-control px-1.5 py-1.5 sm:px-3.5 text-xs font-semibold whitespace-nowrap transition-all duration-150 ${isActive
-                      ? "bg-brand text-text-inverse shadow-subtle"
-                      : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
-                      }`}
+                    className={`inline-flex flex-1 sm:flex-initial cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-control px-3 py-1.5 text-xs transition-all duration-150 ${
+                      isActive
+                        ? "bg-brand text-text-inverse font-semibold shadow-subtle"
+                        : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary font-medium"
+                    }`}
                   >
                     {Icon && (
                       <Icon
-                        className={`hidden min-[400px]:inline-block h-3.5 w-3.5 shrink-0 ${isActive ? "text-text-inverse" : "text-text-muted"
-                          }`}
+                        className={`h-3.5 w-3.5 shrink-0 ${
+                          isActive ? "text-text-inverse" : "text-text-muted"
+                        }`}
                         strokeWidth={1.8}
                       />
                     )}
-                    <span className="sm:hidden">{shortLabel}</span>
-                    <span className="hidden sm:inline">{fullLabel}</span>
+                    <span>{label}</span>
                     <span
-                      className={`  text-[10px] tabular-nums font-semibold ${isActive
-                        ? " text-text-inverse"
-                        : " text-text-muted"
-                        }`}
+                      className={`text-xs tabular-nums ${
+                        isActive ? "text-text-inverse/80" : "text-text-muted"
+                      }`}
                     >
                       {count}
                     </span>
@@ -1148,20 +1159,12 @@ function JobsViewContent() {
                 key={loc}
                 type="button"
                 onClick={() => setLocation(isActive ? "" : loc)}
-                className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-control px-3 py-1 text-xs font-medium transition-colors ${isActive
+                className={`inline-flex shrink-0 cursor-pointer items-center rounded-control px-3 py-1 text-xs font-medium transition-colors ${isActive
                   ? "bg-brand text-text-inverse font-semibold shadow-subtle"
                   : "border border-border-default bg-surface-card text-text-secondary hover:border-brand/40 hover:bg-surface-subtle hover:text-text-primary"
                   }`}
               >
                 <span>{loc}</span>
-                {count > 0 && (
-                  <span
-                    className={`rounded-control px-1 text-[10px] font-semibold tabular-nums leading-tight ${isActive ? "bg-white/20 text-white" : "bg-surface-muted text-text-muted"
-                      }`}
-                  >
-                    {count}
-                  </span>
-                )}
               </button>
             );
           })}
@@ -1318,11 +1321,9 @@ function JobsViewContent() {
                           </button>
                         </div>
 
-                        {/* Company · Category · Posted Date */}
+                        {/* Company · Posted Date */}
                         <p className="mt-1 flex flex-wrap items-center text-sm font-medium text-text-secondary">
                           <span className="text-text-primary">{job.company}</span>
-                          <span className="mx-1.5 text-border-strong select-none">·</span>
-                          <span className="text-text-muted font-normal">{cat}</span>
                           <span className="mx-1.5 text-border-strong select-none">·</span>
                           <span className="text-xs text-text-muted font-normal">{timeAgo(job.postedDate)}</span>
                         </p>
