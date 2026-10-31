@@ -485,7 +485,7 @@ export default function Navbar() {
                   type="button"
                   onClick={() => toggleDropdown("user")}
                   aria-label="User account menu"
-                  className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border-default bg-surface-card p-0.5 transition-all hover:border-brand hover:ring-2 hover:ring-brand-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                  className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full overflow-hidden transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                 >
                   {profile?.avatar_url || user.user_metadata?.avatar_url ? (
                     <img
