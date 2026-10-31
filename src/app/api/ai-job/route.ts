@@ -13,16 +13,21 @@ function getAiClient(): GoogleGenAI | null {
   }
 }
 
-async function generateWithGemini(prompt: string): Promise<string | null> {
+async function generateWithGemini(prompt: string, responseJson = false): Promise<string | null> {
   const ai = getAiClient();
   if (!ai) return null;
 
   const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-flash-latest"];
   for (const model of models) {
     try {
+      const config: Record<string, unknown> = {};
+      if (responseJson) {
+        config.responseMimeType = "application/json";
+      }
       const response = await ai.models.generateContent({
         model,
         contents: prompt,
+        config: Object.keys(config).length > 0 ? config : undefined,
       });
       const text = (response.text ?? "").trim();
       if (text) return text;
@@ -79,29 +84,87 @@ function buildFallbackParsed(jobText: string) {
   const emailMatch = jobText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
   const email = emailMatch ? emailMatch[0] : "";
 
-  // Extract title from first line or common patterns
+  // Extract experience
+  let expMin = "";
+  let expMax = "";
+  const expRangeMatch = jobText.match(/(\d+)\s*(?:[-–to]|\+)?\s*(\d+)?\s*(?:years?|yrs?)/i);
+  if (expRangeMatch) {
+    expMin = expRangeMatch[1] || "";
+    expMax = expRangeMatch[2] || "";
+  }
+  if (/\bfresher\b/i.test(jobText)) {
+    expMin = "0";
+    expMax = "1";
+  }
+
+  // Extract company
+  let company = "";
+  const companyMatch =
+    jobText.match(/(?:at|company[:\s]+|hiring for|join|welcome to)\s+([A-Z][A-Za-z0-9&.,\s]{2,30}?)(?:[\n,.]|\s+is|\s+in)/i) ||
+    jobText.match(/Company:\s*([^\n]+)/i);
+  if (companyMatch) {
+    company = companyMatch[1].trim();
+  }
+
+  // Extract Indian cities
+  const popularCities = [
+    "Bengaluru", "Bangalore", "Kochi", "Cochin", "Mumbai", "Delhi", "New Delhi",
+    "Gurugram", "Gurgaon", "Noida", "Hyderabad", "Pune", "Chennai", "Kolkata",
+    "Ahmedabad", "Thiruvananthapuram", "Trivandrum", "Calicut", "Kozhikode", "Coimbatore"
+  ];
+  let foundCity = "";
+  for (const city of popularCities) {
+    const reg = new RegExp(`\\b${city}\\b`, "i");
+    if (reg.test(jobText)) {
+      foundCity = city === "Bangalore" ? "Bengaluru" : city === "Cochin" ? "Kochi" : city === "Gurgaon" ? "Gurugram" : city;
+      break;
+    }
+  }
+
+  // Extract salary
+  let salary = "";
+  const salaryMatch =
+    jobText.match(/(?:₹|INR|Rs\.?|\$)\s*[0-9]+(?:\.[0-9]+)?\s*(?:[-–to]\s*[0-9]+(?:\.[0-9]+)?)?\s*(?:LPA|L|lakhs?|k|p\.a\.|per annum)?/i) ||
+    jobText.match(/\b\d+(?:\.\d+)?\s*(?:[-–to]\s*\d+(?:\.\d+)?)?\s*LPA\b/i);
+  if (salaryMatch) {
+    salary = salaryMatch[0].trim();
+  }
+
+  // Work mode
+  let workMode: "Onsite" | "Hybrid" | "Remote" = "Onsite";
+  if (/\bremote\b/i.test(jobText)) workMode = "Remote";
+  else if (/\bhybrid\b/i.test(jobText)) workMode = "Hybrid";
+
+  // Clean title extraction
   const lines = jobText.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
   let title = lines[0] || "";
-  if (title.length > 80) title = title.substring(0, 80);
-
-  // Extract experience
-  let exp = "";
-  const expMatch = jobText.match(/(\d+)\s*(?:[-–to]\s*(\d+))?\s*(?:years?|yrs?)/i);
-  if (expMatch) {
-    exp = expMatch[2] ? `${expMatch[1]}-${expMatch[2]} years` : `${expMatch[1]} years`;
+  for (const line of lines.slice(0, 5)) {
+    if (
+      !/^(about us|about the company|job description|we are hiring|hiring|role overview|careers|overview):?$/i.test(line) &&
+      line.length >= 3 &&
+      line.length <= 60
+    ) {
+      title = line.replace(/^(job title|role|position):\s*/i, "").trim();
+      break;
+    }
   }
+  if (title.length > 70) title = title.substring(0, 70);
 
   // Detect category
   const detectedCategory = matchJobCategory(jobText) || "UI/UX & Product Design";
 
   return {
     title,
-    company: "",
+    company,
     category: detectedCategory,
-    location: "",
+    city: foundCity,
+    location: foundCity,
+    workMode,
     employmentType: "FULL_TIME",
-    experience: exp,
-    salary: "",
+    experience: expMin ? (expMax ? `${expMin}-${expMax} years` : `${expMin} years`) : "",
+    experienceMin: expMin,
+    experienceMax: expMax,
+    salary,
     description: jobText.trim(),
     skills: [],
     requirements: [],
@@ -198,24 +261,43 @@ Guidelines:
     const categoryList = JOB_CATEGORIES.map((c) => `- "${c}"`).join("\n");
 
     const prompt = `
-Extract the following job posting into structured JSON.
+You are an expert AI recruiting assistant. Extract the provided raw job draft into clean, structured JSON.
 
-For the "category" field, analyze the title, responsibilities, and skills, then select strictly ONE category from this list:
+For the "category" field, select strictly ONE category from this list:
 ${categoryList}
+
+Extract:
+- title: concise job title (e.g. "Senior React Developer")
+- company: company name
+- category: one category from above list
+- city: primary office city (e.g. "Bengaluru", "Mumbai", "Kochi", "Hyderabad", "Pune", "Delhi", "Remote", etc.)
+- state: state if known
+- country: "India" or country name
+- location: formatted location string
+- workMode: "Onsite" or "Hybrid" or "Remote"
+- employmentType: "FULL_TIME" or "PART_TIME" or "CONTRACTOR" or "INTERN"
+- experienceMin: numeric string of min years required (e.g. "0" for fresher, "3")
+- experienceMax: numeric string of max years (e.g. "5")
+- salary: formatted salary range (e.g. "₹12–18 LPA" or "Not Disclosed")
+- description: well-structured job description with responsibilities and requirements
+- email: application email address
 
 Return ONLY valid JSON matching this exact structure:
 {
   "title": "",
   "company": "",
   "category": "",
+  "city": "",
+  "state": "",
+  "country": "India",
   "location": "",
-  "employmentType": "",
-  "experience": "",
+  "workMode": "Onsite",
+  "employmentType": "FULL_TIME",
+  "experienceMin": "",
+  "experienceMax": "",
   "salary": "",
   "description": "",
   "skills": [],
-  "requirements": [],
-  "responsibilities": [],
   "email": ""
 }
 
@@ -223,7 +305,7 @@ Job text:
 ${job}
 `;
 
-    const aiText = await generateWithGemini(prompt);
+    const aiText = await generateWithGemini(prompt, true);
     let parsedData = "";
 
     if (aiText) {

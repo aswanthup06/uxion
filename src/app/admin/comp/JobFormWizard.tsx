@@ -581,9 +581,9 @@ export default function JobFormWizard({
 
       const cat = parsed.category || matchJobCategory(parsed.title || "");
 
-      let expMin = "";
-      let expMax = "";
-      if (parsed.experience) {
+      let expMin = String(parsed.experienceMin || "");
+      let expMax = String(parsed.experienceMax || "");
+      if (!expMin && parsed.experience) {
         const digits = (String(parsed.experience).match(/\d+/g) || []).map(Number);
         if (digits.length >= 2) {
           expMin = String(digits[0]);
@@ -599,8 +599,29 @@ export default function JobFormWizard({
       else if (empUpper.includes("INTERN")) empType = "INTERN";
       else if (empUpper.includes("CONTRACT")) empType = "CONTRACTOR";
 
-      const rawLoc = parsed.location || "";
-      const wm = normalizeWorkMode("", rawLoc);
+      // Resolve office location
+      const extractedCity = (parsed.city || parsed.location || "").trim();
+      let resolvedOffices: OfficeLocation[] = [];
+      if (extractedCity && !/^(remote|worldwide|pan-india|anywhere)$/i.test(extractedCity)) {
+        const found = CANONICAL_CITIES.find(
+          (c) => c.name.toLowerCase() === extractedCity.toLowerCase()
+        ) || CSC_CITIES.find(
+          (c) => c.name.toLowerCase() === extractedCity.toLowerCase()
+        );
+        resolvedOffices = [
+          {
+            city: found ? found.name : extractedCity,
+            state: found?.state || parsed.state || "",
+            country: "India",
+            countryCode: "IN",
+          },
+        ];
+      }
+
+      const wm: JobFormState["workMode"] =
+        parsed.workMode === "Remote" || parsed.workMode === "Hybrid"
+          ? parsed.workMode
+          : normalizeWorkMode("", parsed.location || extractedCity);
 
       setForm((prev) => ({
         ...prev,
@@ -612,11 +633,19 @@ export default function JobFormWizard({
         workMode: wm,
         experienceMin: expMin || prev.experienceMin,
         experienceMax: expMax || prev.experienceMax,
+        selectedOffices: resolvedOffices.length > 0 ? resolvedOffices : prev.selectedOffices,
         description: parsed.description || rawAiText,
         employmentType: empType,
       }));
 
-      toast.success("Job details extracted and auto-filled!");
+      // Clear any field errors that might have been visible
+      setFieldErrors({});
+
+      toast.success(
+        data.isAiPowered
+          ? "Gemini AI extracted and auto-filled all steps!"
+          : "Job details extracted and auto-filled!"
+      );
       setShowAiModal(false);
       setRawAiText("");
     } catch (err: unknown) {
