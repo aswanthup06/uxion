@@ -17,7 +17,7 @@ async function generateWithGemini(prompt: string, responseJson = false): Promise
   const ai = getAiClient();
   if (!ai) return null;
 
-  const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-flash-latest"];
+  const models = ["gemini-3.5-flash-lite", "gemini-3-flash-preview", "gemini-flash-latest"];
   for (const model of models) {
     try {
       const config: Record<string, unknown> = {};
