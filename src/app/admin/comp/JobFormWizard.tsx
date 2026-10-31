@@ -527,6 +527,40 @@ export default function JobFormWizard({
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [isEnhancingDesc, setIsEnhancingDesc] = useState(false);
 
+  // Auto-resizing refs for content-height textareas
+  const descriptionTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const aiTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const adjustDescriptionHeight = useCallback(() => {
+    const el = descriptionTextareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.max(el.scrollHeight, 220)}px`;
+  }, []);
+
+  const adjustAiTextareaHeight = useCallback(() => {
+    const el = aiTextareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.max(el.scrollHeight, 120)}px`;
+  }, []);
+
+  useEffect(() => {
+    if (currentStep === 4) {
+      requestAnimationFrame(() => {
+        adjustDescriptionHeight();
+      });
+    }
+  }, [currentStep, form.description, adjustDescriptionHeight]);
+
+  useEffect(() => {
+    if (showAiModal) {
+      requestAnimationFrame(() => {
+        adjustAiTextareaHeight();
+      });
+    }
+  }, [showAiModal, rawAiText, adjustAiTextareaHeight]);
+
   const handleParseWithAi = async () => {
     if (!rawAiText.trim()) {
       toast.error("Please paste the job description first.");
@@ -1558,10 +1592,15 @@ export default function JobFormWizard({
                 {showAiModal && (
                   <div className="mt-4 border-t border-brand/15 pt-3.5 space-y-3">
                     <textarea
-                      rows={5}
+                      ref={aiTextareaRef}
                       value={rawAiText}
-                      onChange={(e) => setRawAiText(e.target.value)}
+                      onChange={(e) => {
+                        setRawAiText(e.target.value);
+                        adjustAiTextareaHeight();
+                      }}
+                      onInput={adjustAiTextareaHeight}
                       placeholder="Paste job title, requirements, company info, or raw job text here..."
+                      style={{ minHeight: "120px", overflow: "hidden", resize: "none" }}
                       className={`${inputClass} text-xs leading-relaxed`}
                     />
                     <div className="flex items-center justify-between">
@@ -2077,13 +2116,22 @@ export default function JobFormWizard({
                 </div>
 
                 <textarea
+                  ref={descriptionTextareaRef}
                   id="description"
                   name="description"
-                  rows={9}
                   value={form.description}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    adjustDescriptionHeight();
+                  }}
+                  onInput={adjustDescriptionHeight}
                   placeholder="Paste or write the complete role description, responsibilities, and requirements..."
-                  className={`${inputClass} leading-relaxed ${
+                  style={{
+                    minHeight: "220px",
+                    overflow: "hidden",
+                    resize: "none",
+                  }}
+                  className={`${inputClass} leading-relaxed transition-[border-color,box-shadow] ${
                     fieldErrors.description
                       ? "border-status-error ring-1 ring-status-error/30 focus:border-status-error focus:ring-status-error/40"
                       : ""
