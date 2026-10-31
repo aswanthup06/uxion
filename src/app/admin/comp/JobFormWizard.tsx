@@ -1519,9 +1519,9 @@ export default function JobFormWizard({
           {mode !== "public" && (
             <Link
               href="/admin/jobs"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-text-secondary transition hover:text-text-primary"
+              className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 py-1.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
             >
-              <ArrowLeft size={14} />
+              <ArrowLeft size={13} />
               <span>Cancel</span>
             </Link>
           )}
@@ -1748,11 +1748,20 @@ export default function JobFormWizard({
                 type="url"
               />
 
-              <div className="flex items-center justify-end pt-4">
+              <div className="flex items-center justify-between pt-4">
+                {mode !== "public" ? (
+                  <Link
+                    href="/admin/jobs"
+                    className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
+                  >
+                    <ArrowLeft size={13} />
+                    <span>Cancel</span>
+                  </Link>
+                ) : <div />}
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover"
+                  className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover"
                 >
                   <span>Continue to Location</span>
                   <ArrowUpRight size={14} />
@@ -1965,7 +1974,7 @@ export default function JobFormWizard({
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-text-secondary transition hover:text-text-primary"
+                  className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
                 >
                   <ArrowLeft size={13} />
                   <span>Back</span>
@@ -2071,7 +2080,7 @@ export default function JobFormWizard({
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-text-secondary transition hover:text-text-primary"
+                  className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
                 >
                   <ArrowLeft size={13} />
                   <span>Back</span>
@@ -2245,7 +2254,7 @@ export default function JobFormWizard({
                   type="button"
                   onClick={handleBack}
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-text-secondary transition hover:text-text-primary disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary disabled:opacity-50"
                 >
                   <ArrowLeft size={13} />
                   <span>Back</span>
