@@ -56,11 +56,27 @@ export function mapDbJobToJob(row: DbJob): Job {
 export function normalizeToIso(dateStr?: string | null): string {
   if (!dateStr) return new Date().toISOString();
   const trimmed = dateStr.trim();
+  const todayStr = new Date().toISOString().slice(0, 10);
+
+  const dateOnlyMatch = trimmed.match(/^(\d{4}-\d{2}-\d{2})(?:T00:00:00(?:\.000)?Z?)?$/);
+  if (dateOnlyMatch) {
+    const inputDate = dateOnlyMatch[1];
+    if (inputDate === todayStr) {
+      return new Date().toISOString();
+    }
+    return new Date(`${inputDate}T12:00:00.000Z`).toISOString();
+  }
+
   const dmy = trimmed.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
   if (dmy) {
-    const d = new Date(Date.UTC(Number(dmy[3]), Number(dmy[2]) - 1, Number(dmy[1])));
+    const formatted = `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
+    if (formatted === todayStr) {
+      return new Date().toISOString();
+    }
+    const d = new Date(Date.UTC(Number(dmy[3]), Number(dmy[2]) - 1, Number(dmy[1]), 12, 0, 0));
     if (!isNaN(d.getTime())) return d.toISOString();
   }
+
   const parsed = new Date(trimmed);
   if (!isNaN(parsed.getTime())) return parsed.toISOString();
   return new Date().toISOString();

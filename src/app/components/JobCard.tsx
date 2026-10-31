@@ -12,6 +12,17 @@ function timeAgo(dateString?: string): string {
   const date = new Date(dateString);
   if (isNaN(date.getTime())) return "";
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 0) return "Just now";
+
+  // If timestamp has midnight UTC on today's calendar day, don't show false hours ago
+  const isMidnight = date.getUTCHours() === 0 && date.getUTCMinutes() === 0 && date.getUTCSeconds() === 0;
+  if (isMidnight) {
+    const todayUtc = new Date().toISOString().slice(0, 10);
+    const dateUtc = date.toISOString().slice(0, 10);
+    if (todayUtc === dateUtc) {
+      return "Just now";
+    }
+  }
 
   const intervals: { [key: string]: number } = {
     year: 31536000,

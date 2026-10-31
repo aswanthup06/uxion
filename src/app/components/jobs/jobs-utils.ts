@@ -97,7 +97,24 @@ export function applyFilters(jobs: Job[], f: Filters, skip?: "locations" | "expe
 }
 
 export function timeAgo(dateString: string): string {
-  const seconds = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
+  if (!dateString) return "Just now";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "Just now";
+
+  const now = Date.now();
+  const seconds = Math.floor((now - date.getTime()) / 1000);
+  if (seconds < 0) return "Just now";
+
+  // If timestamp has midnight UTC (00:00:00) on today's calendar day, don't show false hours ago
+  const isMidnight = date.getUTCHours() === 0 && date.getUTCMinutes() === 0 && date.getUTCSeconds() === 0;
+  if (isMidnight) {
+    const todayUtc = new Date().toISOString().slice(0, 10);
+    const dateUtc = date.toISOString().slice(0, 10);
+    if (todayUtc === dateUtc) {
+      return "Just now";
+    }
+  }
+
   const units: [string, number][] = [
     ["year", 31_536_000],
     ["month", 2_592_000],

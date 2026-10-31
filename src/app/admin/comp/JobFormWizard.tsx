@@ -462,6 +462,33 @@ function parseExperienceFromJob(job: Job): { min: string; max: string } {
   return { min: "0", max: "0" };
 }
 
+
+function computeSubmitPostedDate(
+  formPostedDate: string,
+  todayStr: string,
+  mode: string,
+  initialJobPostedDate?: string
+): string {
+  if (mode === "edit" && initialJobPostedDate) {
+    const initialInputDate = dateForInput(initialJobPostedDate);
+    if (initialInputDate === formPostedDate) {
+      const isMidnight =
+        /T00:00:00(\.000)?Z?$/i.test(initialJobPostedDate) ||
+        /00:00:00/.test(initialJobPostedDate);
+      if (formPostedDate === todayStr && isMidnight) {
+        return new Date().toISOString();
+      }
+      return initialJobPostedDate;
+    }
+  }
+
+  if (formPostedDate === todayStr) {
+    return new Date().toISOString();
+  }
+
+  return new Date(`${formPostedDate}T12:00:00.000Z`).toISOString();
+}
+
 function dateForInput(value?: string): string {
   if (!value) return "";
   const dateOnly = value.match(/^(\d{4}-\d{2}-\d{2})/);
@@ -1228,7 +1255,7 @@ export default function JobFormWizard({
           countryCode: o.countryCode,
         })),
         experience,
-        postedDate: new Date(`${form.postedDate}T00:00:00.000Z`).toISOString(),
+        postedDate: computeSubmitPostedDate(form.postedDate, getToday(), mode, initialJob?.postedDate),
         salary: form.salary.trim() || "Not Disclosed",
         mail: form.mail.trim(),
         companyLink: form.companyLink.trim(),
