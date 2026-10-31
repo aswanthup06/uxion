@@ -108,6 +108,7 @@ function Field({
   min,
   max,
   step,
+  error,
 }: {
   label: string;
   name: string;
@@ -122,6 +123,7 @@ function Field({
   min?: string;
   max?: string;
   step?: string;
+  error?: string;
 }) {
   return (
     <div className="min-w-0">
@@ -133,7 +135,11 @@ function Field({
       <div className="group relative">
         {Icon && (
           <Icon
-            className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand"
+            className={`pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors ${
+              error
+                ? "text-status-error"
+                : "text-text-muted group-focus-within:text-brand"
+            }`}
             strokeWidth={1.8}
           />
         )}
@@ -149,9 +155,20 @@ function Field({
           min={min}
           max={max}
           step={step}
-          className={`${inputClass} ${Icon ? "pl-10" : ""}`}
+          className={`${inputClass} ${Icon ? "pl-10" : ""} ${
+            error
+              ? "border-status-error ring-1 ring-status-error/30 focus:border-status-error focus:ring-status-error/40"
+              : ""
+          }`}
         />
       </div>
+
+      {error && (
+        <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
+          <AlertCircle size={12} className="shrink-0" />
+          <span>{error}</span>
+        </p>
+      )}
     </div>
   );
 }
@@ -500,6 +517,7 @@ export default function JobFormWizard({
   const [isSubmittedSuccess, setIsSubmittedSuccess] = useState(false);
   const [submittedJobData, setSubmittedJobData] = useState<Partial<Job> | null>(null);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [currentStep, setCurrentStep] = useState<number>(1);
 
   // AI Tools State
@@ -783,58 +801,60 @@ export default function JobFormWizard({
   }, [mode, jobId, initialJob, populateFromJob]);
 
   const validateStep = (stepNumber: number): boolean => {
+    const errors: Record<string, string> = {};
+
     if (stepNumber === 1) {
       if (!form.title.trim()) {
-        setError("Please enter a job title.");
-        return false;
+        errors.title = "Please enter a job title.";
       }
       if (!form.company.trim()) {
-        setError("Please enter the company name.");
-        return false;
+        errors.company = "Please enter the company name.";
       }
     } else if (stepNumber === 2) {
       if (form.selectedOffices.length === 0) {
-        setError("Please add at least one company office location.");
-        return false;
+        errors.selectedOffices = "Please add at least one company office location.";
       }
       if (
         form.candidatePreference === "SPECIFIC_LOCATION" &&
         form.preferredTargets.length === 0
       ) {
-        setError("Please select at least one allowed candidate city or state.");
-        return false;
+        errors.preferredTargets = "Please select at least one allowed candidate city or state.";
       }
     } else if (stepNumber === 3) {
       if (!form.experienceMin.trim()) {
-        setError("Please enter minimum experience required (0 for fresher).");
-        return false;
+        errors.experienceMin = "Please enter minimum experience required (0 for fresher).";
+      } else {
+        const min = Number(form.experienceMin);
+        if (isNaN(min) || min < 0) {
+          errors.experienceMin = "Please enter a valid minimum experience (0 or higher).";
+        }
       }
-      const min = Number(form.experienceMin);
-      if (isNaN(min) || min < 0) {
-        setError("Please enter a valid minimum experience (0 or higher).");
-        return false;
-      }
+
       if (form.experienceMax.trim() !== "") {
         const max = Number(form.experienceMax);
+        const min = Number(form.experienceMin) || 0;
         if (isNaN(max) || max < 0) {
-          setError("Please enter a valid maximum experience.");
-          return false;
-        }
-        if (max < min) {
-          setError("Maximum experience cannot be less than minimum experience.");
-          return false;
+          errors.experienceMax = "Please enter a valid maximum experience.";
+        } else if (max < min) {
+          errors.experienceMax = "Maximum experience cannot be less than minimum experience.";
         }
       }
     } else if (stepNumber === 4) {
       if (!form.description.trim()) {
-        setError("Please provide a job description.");
-        return false;
+        errors.description = "Please provide a job description.";
       }
       if (!form.mail.trim() || !form.mail.includes("@")) {
-        setError("Please provide a valid application email.");
-        return false;
+        errors.mail = "Please provide a valid application email.";
       }
     }
+
+    setFieldErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      setError("");
+      return false;
+    }
+
     setError("");
     return true;
   };
@@ -889,10 +909,17 @@ export default function JobFormWizard({
       }
       return updated;
     });
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const copy = { ...prev };
+      delete copy[name];
+      return copy;
+    });
     if (error) setError("");
   };
 
   const handleAddOffice = (office: OfficeLocation) => {
+    setFieldErrors((prev) => { const cp = { ...prev }; delete cp.selectedOffices; return cp; });
     setForm((prev) => {
       const exists = prev.selectedOffices.some(
         (o) => o.city.toLowerCase() === office.city.toLowerCase()
@@ -916,6 +943,12 @@ export default function JobFormWizard({
   };
 
   const handleAddPreferredTarget = (target: PreferredTarget) => {
+    setFieldErrors((prev) => {
+      if (!prev.preferredTargets) return prev;
+      const copy = { ...prev };
+      delete copy.preferredTargets;
+      return copy;
+    });
     setForm((prev) => {
       const exists = prev.preferredTargets.some(
         (t) => t.name.toLowerCase() === target.name.toLowerCase()
@@ -942,7 +975,24 @@ export default function JobFormWizard({
     e.preventDefault();
     if (isSubmitting) return;
 
-    if (!validateStep(1) || !validateStep(2) || !validateStep(3) || !validateStep(4)) {
+    if (!validateStep(1)) {
+      setCurrentStep(1);
+      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    if (!validateStep(2)) {
+      setCurrentStep(2);
+      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    if (!validateStep(3)) {
+      setCurrentStep(3);
+      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    if (!validateStep(4)) {
+      setCurrentStep(4);
+      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
@@ -1546,6 +1596,7 @@ export default function JobFormWizard({
                   onChange={handleChange}
                   placeholder="e.g. Senior Frontend Engineer"
                   icon={BriefcaseBusiness}
+                  error={fieldErrors.title}
                   required
                 />
 
@@ -1556,6 +1607,7 @@ export default function JobFormWizard({
                   onChange={handleChange}
                   placeholder="e.g. Acme Inc."
                   icon={Building2}
+                  error={fieldErrors.company}
                   required
                 />
               </div>
@@ -1672,6 +1724,12 @@ export default function JobFormWizard({
                   onSelect={handleAddOffice}
                   placeholder="Search city (e.g. Bengaluru, Kochi, Mumbai)..."
                 />
+                {fieldErrors.selectedOffices && (
+                  <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
+                    <AlertCircle size={12} className="shrink-0" />
+                    <span>{fieldErrors.selectedOffices}</span>
+                  </p>
+                )}
 
                 {/* Selected office chips */}
                 {form.selectedOffices.length > 0 && (
@@ -1744,6 +1802,12 @@ export default function JobFormWizard({
                             ...prev,
                             candidatePreference: pref.id as CandidatePreference,
                           }));
+                          setFieldErrors((prev) => {
+                            if (!prev.preferredTargets) return prev;
+                            const copy = { ...prev };
+                            delete copy.preferredTargets;
+                            return copy;
+                          });
                           if (error) setError("");
                         }}
                         className={`flex flex-col rounded-control border p-3 text-left transition-all ${isSelected
@@ -1778,6 +1842,12 @@ export default function JobFormWizard({
                       onAdd={handleAddPreferredTarget}
                       placeholder="Search allowed city or state..."
                     />
+                    {fieldErrors.preferredTargets && (
+                      <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
+                        <AlertCircle size={12} className="shrink-0" />
+                        <span>{fieldErrors.preferredTargets}</span>
+                      </p>
+                    )}
 
                     {form.preferredTargets.length > 0 && (
                       <div className="flex flex-wrap items-center gap-1.5 pt-1">
@@ -1848,6 +1918,7 @@ export default function JobFormWizard({
                     type="number"
                     min="0"
                     max="30"
+                    error={fieldErrors.experienceMin}
                     required
                   />
 
@@ -1860,6 +1931,7 @@ export default function JobFormWizard({
                     type="number"
                     min="0"
                     max="30"
+                    error={fieldErrors.experienceMax}
                   />
                 </div>
 
@@ -1890,6 +1962,7 @@ export default function JobFormWizard({
                   placeholder="careers@company.com"
                   icon={Mail}
                   type="email"
+                  error={fieldErrors.mail}
                   required
                 />
               </div>
@@ -1993,9 +2066,19 @@ export default function JobFormWizard({
                   value={form.description}
                   onChange={handleChange}
                   placeholder="Paste or write the complete role description, responsibilities, and requirements..."
-                  className={`${inputClass} leading-relaxed`}
+                  className={`${inputClass} leading-relaxed ${
+                    fieldErrors.description
+                      ? "border-status-error ring-1 ring-status-error/30 focus:border-status-error focus:ring-status-error/40"
+                      : ""
+                  }`}
                   required
                 />
+                {fieldErrors.description && (
+                  <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
+                    <AlertCircle size={12} className="shrink-0" />
+                    <span>{fieldErrors.description}</span>
+                  </p>
+                )}
               </div>
 
               {/* Live Preview Summary Card */}
