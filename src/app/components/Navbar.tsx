@@ -439,19 +439,19 @@ export default function Navbar() {
               </Link>
 
               <Link
-                href="/admin/candidates"
-                onClick={closeMenus}
-                className={adminLinkClass("/admin/candidates")}
-              >
-                Candidates
-              </Link>
-
-              <Link
                 href="/admin/submissions"
                 onClick={closeMenus}
                 className={adminLinkClass("/admin/submissions")}
               >
                 Submissions
+              </Link>
+
+              <Link
+                href="/admin/candidates"
+                onClick={closeMenus}
+                className={adminLinkClass("/admin/candidates")}
+              >
+                Candidates
               </Link>
             </>
           )}
@@ -535,24 +535,25 @@ export default function Navbar() {
             )}
           </div>
         ) : (
-          <div className="hidden shrink-0 items-center gap-2.5 md:flex">
+          <div className="hidden shrink-0 items-center gap-2 md:flex">
+            <button
+              type="button"
+              disabled={loggingOut}
+              onClick={handleAdminLogout}
+              title="Log out of admin"
+              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control px-3 text-xs font-medium text-text-muted transition-colors duration-150 hover:bg-surface-subtle hover:text-status-error disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <LogOut size={14} className={iconClass} />
+              <span>{loggingOut ? "Logging out..." : "Log out"}</span>
+            </button>
+
             <Link
               href="/admin/jobs/add"
               className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control bg-brand px-3.5 text-xs font-semibold text-text-inverse shadow-subtle transition-colors duration-200 hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
             >
               <Plus size={14} />
-              Add job
+              <span>Post Job</span>
             </Link>
-
-            <button
-              type="button"
-              disabled={loggingOut}
-              onClick={handleAdminLogout}
-              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border border-status-error/30 bg-status-error-bg/20 px-3 text-xs font-semibold text-status-error transition-colors duration-200 hover:bg-status-error-bg disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <LogOut size={14} className={iconClass} />
-              {loggingOut ? "Logging out..." : "Log out"}
-            </button>
           </div>
         )}
 
@@ -861,15 +862,6 @@ export default function Navbar() {
                   </Link>
 
                   <Link
-                    href="/admin/candidates"
-                    onClick={closeMenus}
-                    className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary hover:bg-surface-subtle"
-                  >
-                    <Users size={18} className={iconClass} />
-                    Candidates
-                  </Link>
-
-                  <Link
                     href="/admin/submissions"
                     onClick={closeMenus}
                     className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary hover:bg-surface-subtle"
@@ -878,26 +870,35 @@ export default function Navbar() {
                     Submissions
                   </Link>
 
+                  <Link
+                    href="/admin/candidates"
+                    onClick={closeMenus}
+                    className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary hover:bg-surface-subtle"
+                  >
+                    <Users size={18} className={iconClass} />
+                    Candidates
+                  </Link>
+
                   <div className="my-3 border-t border-border-default pt-2">
+                    <button
+                      type="button"
+                      disabled={loggingOut}
+                      onClick={handleAdminLogout}
+                      className="mb-2 flex w-full cursor-pointer items-center gap-2.5 rounded-control px-3 py-2.5 text-left text-xs font-medium text-text-muted transition-colors hover:bg-surface-subtle hover:text-status-error disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      <LogOut size={16} className={iconClass} />
+                      {loggingOut ? "Logging out..." : "Log out"}
+                    </button>
+
                     <Link
                       href="/admin/jobs/add"
                       onClick={closeMenus}
                       className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-4 text-sm font-semibold text-text-inverse transition-colors hover:bg-brand-hover shadow-subtle"
                     >
                       <Plus size={16} />
-                      Add job
+                      Post Job
                     </Link>
                   </div>
-
-                  <button
-                    type="button"
-                    disabled={loggingOut}
-                    onClick={handleAdminLogout}
-                    className="mt-2 flex w-full cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-left text-sm font-medium text-status-error hover:bg-status-error-bg disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    <LogOut size={18} className={iconClass} />
-                    {loggingOut ? "Logging out..." : "Log out"}
-                  </button>
                 </>
               )}
             </div>
