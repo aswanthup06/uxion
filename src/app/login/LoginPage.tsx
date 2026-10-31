@@ -1,12 +1,43 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import Script from "next/script";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { ArrowUpRight, AlertCircle, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: {
+            client_id: string;
+            callback: (response: { credential: string }) => void;
+            auto_select?: boolean;
+            cancel_on_tap_outside?: boolean;
+          }) => void;
+          renderButton: (
+            parent: HTMLElement,
+            options: {
+              type?: "standard" | "icon";
+              theme?: "outline" | "filled_blue" | "filled_black";
+              size?: "large" | "medium" | "small";
+              text?: "signin_with" | "signup_with" | "continue_with" | "signin";
+              shape?: "rectangular" | "pill" | "circle" | "square";
+              logo_alignment?: "left" | "center";
+              width?: number;
+            }
+          ) => void;
+          prompt: () => void;
+        };
+      };
+    };
+  }
+}
 
 type LoginPageProps = {
   mode?: "signin" | "signup";
@@ -14,32 +45,149 @@ type LoginPageProps = {
 
 export default function LoginPage({ mode = "signin" }: LoginPageProps) {
   const isSignin = mode === "signin";
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const errorParam = searchParams.get("error");
+  const [errorMessage, setErrorMessage] = useState<string | null>(() => {
+    if (!errorParam) return null;
+    return errorParam === "no_code"
+      ? "Authentication was cancelled or failed. Please try again."
+      : decodeURIComponent(errorParam);
+  });
+  const [isGsiRendered, setIsGsiRendered] = useState(false);
 
-  useEffect(() => {
-    const errorParam = searchParams.get("error");
-    if (errorParam) {
-      if (errorParam === "no_code") {
-        setErrorMessage("Authentication was cancelled or failed. Please try again.");
-      } else {
-        setErrorMessage(decodeURIComponent(errorParam));
+  const googleButtonRef = useRef<HTMLDivElement>(null);
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  // Handle client-side ID Token sign in
+  const handleCredentialResponse = useCallback(
+    async (response: { credential: string }) => {
+      if (!response.credential) return;
+
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase.auth.signInWithIdToken({
+          provider: "google",
+          token: response.credential,
+        });
+
+        if (error) {
+          setErrorMessage(error.message);
+          setIsLoading(false);
+          return;
+        }
+
+        if (data?.user) {
+          // Sync candidate profile with service role
+          try {
+            await fetch("/api/auth/sync-profile", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                id: data.user.id,
+                email: data.user.email,
+                full_name:
+                  data.user.user_metadata?.full_name ||
+                  data.user.user_metadata?.name ||
+                  data.user.email?.split("@")[0] ||
+                  "Candidate",
+                avatar_url:
+                  data.user.user_metadata?.avatar_url ||
+                  data.user.user_metadata?.picture ||
+                  "",
+              }),
+            });
+          } catch (syncErr) {
+            console.warn("Could not sync profile in background:", syncErr);
+          }
+
+          const nextDestination =
+            searchParams.get("redirect") ||
+            searchParams.get("next") ||
+            "/jobs";
+          router.push(nextDestination);
+          router.refresh();
+        }
+      } catch (err: unknown) {
+        const msg =
+          err instanceof Error ? err.message : "Failed to sign in with Google.";
+        setErrorMessage(msg);
+        setIsLoading(false);
       }
-    }
-  }, [searchParams]);
+    },
+    [router, searchParams]
+  );
 
-  const handleGoogleSignIn = async () => {
+  // Initialize and render Google Identity Services button
+  const initializeGoogleGSI = useCallback(() => {
+    if (
+      !googleClientId ||
+      typeof window === "undefined" ||
+      !window.google?.accounts?.id ||
+      !googleButtonRef.current
+    ) {
+      return;
+    }
+
+    try {
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: handleCredentialResponse,
+        auto_select: false,
+        cancel_on_tap_outside: true,
+      });
+
+      // Clear any prior renders
+      googleButtonRef.current.innerHTML = "";
+
+      const buttonWidth = Math.min(
+        390,
+        Math.max(240, Math.floor(googleButtonRef.current.offsetWidth || 350))
+      );
+
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        type: "standard",
+        theme: "outline",
+        size: "large",
+        text: isSignin ? "signin_with" : "signup_with",
+        shape: "rectangular",
+        logo_alignment: "left",
+        width: buttonWidth,
+      });
+
+      setIsGsiRendered(true);
+
+      // Prompt One Tap if eligible
+      try {
+        window.google.accounts.id.prompt();
+      } catch {
+        // One tap prompt failure is non-fatal
+      }
+    } catch (gsiErr) {
+      console.warn("Could not initialize Google Identity Services:", gsiErr);
+    }
+  }, [googleClientId, handleCredentialResponse, isSignin]);
+
+  // Fallback OAuth redirect if GSI is not configured or blocked
+  const handleGoogleSignInFallback = async () => {
     if (isLoading) return;
     setIsLoading(true);
     setErrorMessage(null);
 
     try {
       const supabase = createClient();
-      const nextDestination = searchParams.get("redirect") || searchParams.get("next") || "/jobs";
-      const origin = typeof window !== "undefined" ? window.location.origin : "";
-      const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(nextDestination)}`;
+      const nextDestination =
+        searchParams.get("redirect") || searchParams.get("next") || "/jobs";
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
+      const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(
+        nextDestination
+      )}`;
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -57,148 +205,191 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
         setIsLoading(false);
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to initiate Google sign in.";
+      const msg =
+        err instanceof Error ? err.message : "Failed to initiate Google sign in.";
       setErrorMessage(msg);
       setIsLoading(false);
     }
   };
 
   return (
-    <main className="fixed inset-0 h-[100dvh] w-full overflow-hidden bg-surface-page text-text-primary">
-      <div className="grid h-full min-h-0 w-full grid-cols-1 overflow-hidden lg:grid-cols-[1fr_1fr]">
-        <aside className="relative hidden min-h-0 overflow-hidden bg-surface-subtle px-10 py-9 text-brand lg:flex lg:flex-col lg:justify-between xl:px-16 xl:py-12">
-          <Link href="/" aria-label="Zenoway home" className="relative z-10 w-fit cursor-pointer">
-            <Image
-              src="/logo.png"
-              alt="Zenoway"
-              width={148}
-              height={44}
-              priority
-              className="h-9 w-auto object-contain object-left"
-            />
-          </Link>
+    <>
+      {googleClientId && (
+        <Script
+          src="https://accounts.google.com/gsi/client"
+          strategy="afterInteractive"
+          onLoad={initializeGoogleGSI}
+        />
+      )}
 
-          <div className="relative z-10 max-w-[460px] pb-8">
-            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand">
-              A better way forward
-            </p>
-            <h2 className="text-4xl font-medium leading-[1.12] tracking-[-0.045em] text-text-primary xl:text-[52px]">
-              Your next move
-              <br />
-              starts here.
-            </h2>
-            <p className="mt-5 max-w-[350px] text-[15px] leading-7 text-text-secondary">
-              Discover opportunities that move your career forward.
-            </p>
-            <div
-              aria-hidden="true"
-              className="pointer-events-none relative mt-12 h-32 max-w-[330px] overflow-hidden"
+      <main className="fixed inset-0 h-[100dvh] w-full overflow-hidden bg-surface-page text-text-primary">
+        <div className="grid h-full min-h-0 w-full grid-cols-1 overflow-hidden lg:grid-cols-[1fr_1fr]">
+          <aside className="relative hidden min-h-0 overflow-hidden bg-surface-subtle px-10 py-9 text-brand lg:flex lg:flex-col lg:justify-between xl:px-16 xl:py-12">
+            <Link
+              href="/"
+              aria-label="Zenoway home"
+              className="relative z-10 w-fit cursor-pointer"
             >
-              <div className="absolute left-0 top-5 h-20 w-20 rounded-full border border-border-default" />
-              <div className="absolute left-8 top-0 h-24 w-24 rounded-full border border-border-default" />
-              <div className="absolute left-20 top-9 h-16 w-16 rounded-full border border-border-default" />
-              <div className="absolute left-[7.25rem] top-0 h-28 w-28 rounded-full bg-brand-soft/70" />
-              <div className="absolute left-[8.25rem] top-4 h-20 w-20 rounded-full border border-border-subtle" />
-            </div>
-          </div>
-
-          <p className="relative z-10 text-[11px] tracking-wide text-text-muted">
-            ZENOWAY <span className="mx-2 text-border-strong">/</span> CAREER OPPORTUNITIES
-          </p>
-
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-40 -right-32 h-[430px] w-[430px] rounded-full border border-border-default" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 -right-16 h-[290px] w-[290px] rounded-full border border-border-default" />
-        </aside>
-
-        <section className="flex min-h-0 min-w-0 flex-col overflow-x-hidden overflow-y-auto overscroll-y-contain px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-10 lg:justify-center lg:px-12 lg:py-10 xl:px-20">
-          <header className="mx-auto flex w-full max-w-[390px] items-center justify-between lg:absolute lg:right-10 lg:top-9 lg:mx-0 lg:w-auto xl:right-12 xl:top-10">
-            <Link href="/" aria-label="Zenoway home" className="inline-flex w-fit cursor-pointer items-center lg:hidden">
               <Image
                 src="/logo.png"
                 alt="Zenoway"
-                width={132}
-                height={40}
+                width={148}
+                height={44}
                 priority
-                className="h-8 w-auto max-w-[145px] object-contain object-left"
+                className="h-9 w-auto object-contain object-left"
               />
             </Link>
-            <Link
-              href="/"
-              className="ml-auto inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-text-muted transition hover:text-brand"
-            >
-              Home <ArrowUpRight size={14} />
-            </Link>
-          </header>
 
-          <div className="mx-auto flex w-full max-w-[390px] flex-1 flex-col justify-center py-8 sm:py-10 lg:flex-initial lg:py-12">
-            <div className="mb-8 sm:mb-9">
-              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand">
-                Welcome to Zenoway
+            <div className="relative z-10 max-w-[460px] pb-8">
+              <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand">
+                A better way forward
               </p>
-              <h1 className="text-[32px] font-medium leading-[1.12] tracking-[-0.045em] text-text-primary sm:text-[38px]">
-                {isSignin ? "Good to have you back." : "Start your next chapter."}
-              </h1>
-              <p className="mt-3 max-w-[340px] text-sm leading-6 text-text-muted">
-                {isSignin
-                  ? "Sign in to continue your career journey."
-                  : "Continue to explore opportunities made for you."}
+              <h2 className="text-4xl font-medium leading-[1.12] tracking-[-0.045em] text-text-primary xl:text-[52px]">
+                Your next move
+                <br />
+                starts here.
+              </h2>
+              <p className="mt-5 max-w-[350px] text-[15px] leading-7 text-text-secondary">
+                Discover opportunities that move your career forward.
+              </p>
+              <div
+                aria-hidden="true"
+                className="pointer-events-none relative mt-12 h-32 max-w-[330px] overflow-hidden"
+              >
+                <div className="absolute left-0 top-5 h-20 w-20 rounded-full border border-border-default" />
+                <div className="absolute left-8 top-0 h-24 w-24 rounded-full border border-border-default" />
+                <div className="absolute left-20 top-9 h-16 w-16 rounded-full border border-border-default" />
+                <div className="absolute left-[7.25rem] top-0 h-28 w-28 rounded-full bg-brand-soft/70" />
+                <div className="absolute left-[8.25rem] top-4 h-20 w-20 rounded-full border border-border-subtle" />
+              </div>
+            </div>
+
+            <p className="relative z-10 text-[11px] tracking-wide text-text-muted">
+              ZENOWAY <span className="mx-2 text-border-strong">/</span> CAREER OPPORTUNITIES
+            </p>
+
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -bottom-40 -right-32 h-[430px] w-[430px] rounded-full border border-border-default"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -bottom-24 -right-16 h-[290px] w-[290px] rounded-full border border-border-default"
+            />
+          </aside>
+
+          <section className="flex min-h-0 min-w-0 flex-col overflow-x-hidden overflow-y-auto overscroll-y-contain px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-10 lg:justify-center lg:px-12 lg:py-10 xl:px-20">
+            <header className="mx-auto flex w-full max-w-[390px] items-center justify-between lg:absolute lg:right-10 lg:top-9 lg:mx-0 lg:w-auto xl:right-12 xl:top-10">
+              <Link
+                href="/"
+                aria-label="Zenoway home"
+                className="inline-flex w-fit cursor-pointer items-center lg:hidden"
+              >
+                <Image
+                  src="/logo.png"
+                  alt="Zenoway"
+                  width={132}
+                  height={40}
+                  priority
+                  className="h-8 w-auto max-w-[145px] object-contain object-left"
+                />
+              </Link>
+              <Link
+                href="/"
+                className="ml-auto inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-text-muted transition hover:text-brand"
+              >
+                Home <ArrowUpRight size={14} />
+              </Link>
+            </header>
+
+            <div className="mx-auto flex w-full max-w-[390px] flex-1 flex-col justify-center py-8 sm:py-10 lg:flex-initial lg:py-12">
+              <div className="mb-8 sm:mb-9">
+                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand">
+                  Welcome to Zenoway
+                </p>
+                <h1 className="text-[32px] font-medium leading-[1.12] tracking-[-0.045em] text-text-primary sm:text-[38px]">
+                  {isSignin ? "Good to have you back." : "Start your next chapter."}
+                </h1>
+                <p className="mt-3 max-w-[340px] text-sm leading-6 text-text-muted">
+                  {isSignin
+                    ? "Sign in to continue your career journey."
+                    : "Continue to explore opportunities made for you."}
+                </p>
+              </div>
+
+              {errorMessage && (
+                <div className="mb-5 flex items-start gap-2.5 rounded-control border border-status-error/30 bg-status-error-bg p-3 text-xs text-status-error">
+                  <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              {/* Native Google Sign In Button Container */}
+              <div className="w-full">
+                <div
+                  ref={googleButtonRef}
+                  className={`w-full flex justify-center min-h-[44px] ${
+                    isGsiRendered && !isLoading ? "block" : "hidden"
+                  }`}
+                />
+
+                {(!isGsiRendered || isLoading) && (
+                  <button
+                    type="button"
+                    onClick={handleGoogleSignInFallback}
+                    disabled={isLoading}
+                    className="group flex min-h-[50px] w-full cursor-pointer items-center justify-center gap-3 rounded-control border border-border-default bg-surface-card px-4 py-3 text-sm font-medium text-text-primary transition-colors hover:border-border-strong hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 size={18} className="animate-spin text-brand" />
+                        <span>Signing you in...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FcGoogle size={20} />
+                        <span>Continue with Google</span>
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+
+              <p className="mt-5 text-left text-sm text-text-muted">
+                {isSignin ? "Looking for opportunities?" : "Ready to explore opportunities?"}{" "}
+                <Link
+                  href="/jobs"
+                  className="cursor-pointer font-semibold text-brand underline-offset-4 hover:underline"
+                >
+                  Browse jobs
+                </Link>
+              </p>
+
+              <p className="mt-8 max-w-[340px] text-left text-[11px] leading-5 text-text-muted">
+                By continuing, you agree to our{" "}
+                <Link
+                  href="/terms"
+                  className="cursor-pointer underline underline-offset-2 hover:text-text-primary"
+                >
+                  Terms
+                </Link>{" "}
+                and{" "}
+                <Link
+                  href="/privacy-policy"
+                  className="cursor-pointer underline underline-offset-2 hover:text-text-primary"
+                >
+                  Privacy Policy
+                </Link>
+                .
               </p>
             </div>
 
-            {errorMessage && (
-              <div className="mb-5 flex items-start gap-2.5 rounded-control border border-status-error/30 bg-status-error-bg p-3 text-xs text-status-error">
-                <AlertCircle size={16} className="mt-0.5 shrink-0" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={handleGoogleSignIn}
-              disabled={isLoading}
-              className="group flex min-h-[50px] w-full cursor-pointer items-center justify-center gap-3 rounded-control border border-border-default bg-surface-card px-4 py-3 text-sm font-medium text-text-primary transition-colors hover:border-border-strong hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 size={18} className="animate-spin text-brand" />
-                  <span>Connecting to Google...</span>
-                </>
-              ) : (
-                <>
-                  <FcGoogle size={20} />
-                  <span>Continue with Google</span>
-                </>
-              )}
-            </button>
-
-            <p className="mt-5 text-left text-sm text-text-muted">
-              {isSignin ? "Looking for opportunities?" : "Ready to explore opportunities?"}{" "}
-              <Link
-                href="/jobs"
-                className="cursor-pointer font-semibold text-brand underline-offset-4 hover:underline"
-              >
-                Browse jobs
-              </Link>
-            </p>
-
-            <p className="mt-8 max-w-[340px] text-left text-[11px] leading-5 text-text-muted">
-              By continuing, you agree to our{" "}
-              <Link href="/terms" className="cursor-pointer underline underline-offset-2 hover:text-text-primary">
-                Terms
-              </Link>{" "}
-              and{" "}
-              <Link href="/privacy-policy" className="cursor-pointer underline underline-offset-2 hover:text-text-primary">
-                Privacy Policy
-              </Link>
-              .
-            </p>
-          </div>
-
-          <footer className="mx-auto w-full max-w-[390px] pb-1 text-center text-[10px] text-text-muted lg:absolute lg:bottom-5 lg:left-1/2 lg:w-auto lg:-translate-x-1/2 lg:pb-0">
-            © {new Date().getFullYear()} Zenoway
-          </footer>
-        </section>
-      </div>
-    </main>
+            <footer className="mx-auto w-full max-w-[390px] pb-1 text-center text-[10px] text-text-muted lg:absolute lg:bottom-5 lg:left-1/2 lg:w-auto lg:-translate-x-1/2 lg:pb-0">
+              © {new Date().getFullYear()} Zenoway
+            </footer>
+          </section>
+        </div>
+      </main>
+    </>
   );
 }

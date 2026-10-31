@@ -22,6 +22,7 @@ import {
   Menu,
   UserRound,
   Users,
+  Inbox,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -59,7 +60,7 @@ const categories = [
   },
 ];
 
-type DropdownName = "jobs" | "employers" | "admin" | "user" | null;
+type DropdownName = "jobs" | "employers" | "user" | null;
 
 const menuVariants = {
   hidden: { opacity: 0, y: -6 },
@@ -117,24 +118,43 @@ export default function Navbar() {
   };
 
   const linkClass = (href: string) =>
-    `cursor-pointer text-sm font-medium transition-colors duration-200 ${pathname === href
-      ? "text-brand"
-      : "text-text-secondary hover:text-brand"
+    `cursor-pointer text-sm font-medium transition-colors duration-200 ${
+      pathname === href ? "text-brand font-semibold" : "text-text-secondary hover:text-brand"
+    }`;
+
+  const isAdminActive = (href: string) => {
+    if (href === "/admin") {
+      return pathname === "/admin";
+    }
+    if (href === "/admin/jobs") {
+      return (
+        pathname === "/admin/jobs" ||
+        (pathname.startsWith("/admin/jobs/") && !pathname.startsWith("/admin/jobs/add"))
+      );
+    }
+    return pathname === href || pathname.startsWith(href + "/");
+  };
+
+  const adminLinkClass = (href: string) =>
+    `cursor-pointer text-sm font-medium transition-colors duration-200 ${
+      isAdminActive(href)
+        ? "text-brand font-semibold"
+        : "text-text-secondary hover:text-brand"
     }`;
 
   const motionProps = reduceMotion
     ? {
-      initial: false as const,
-      animate: { opacity: 1 },
-      exit: { opacity: 0 },
-      transition: { duration: 0.01 },
-    }
+        initial: false as const,
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0.01 },
+      }
     : {
-      variants: menuVariants,
-      initial: "hidden" as const,
-      animate: "visible" as const,
-      exit: "exit" as const,
-    };
+        variants: menuVariants,
+        initial: "hidden" as const,
+        animate: "visible" as const,
+        exit: "exit" as const,
+      };
 
   const handleAdminLogout = async () => {
     if (loggingOut) return;
@@ -170,14 +190,14 @@ export default function Navbar() {
       <div className="mx-auto flex h-[68px] items-center px-4 sm:px-6 lg:px-8">
         {/* Brand */}
         <Link
-          href="/"
+          href={isAdminRoute ? "/admin" : "/"}
           onClick={closeMenus}
-          aria-label="Zenoway home"
+          aria-label={isAdminRoute ? "Zenoway admin home" : "Zenoway home"}
           className="group flex shrink-0 cursor-pointer items-center gap-2.5"
         >
           <motion.span
             whileHover={reduceMotion ? undefined : { rotate: 5, scale: 1.04 }}
-            className="relative grid  shrink-0 place-items-center"
+            className="relative grid shrink-0 place-items-center"
           >
             <Image
               src="/logo.png"
@@ -192,11 +212,17 @@ export default function Navbar() {
           <span className="text-[20px] font-bold tracking-[-0.8px] text-text-primary sm:text-[21px]">
             zenoway
           </span>
+
+          {isAdminRoute && (
+            <span className="rounded-control bg-brand-soft px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand">
+              Admin
+            </span>
+          )}
         </Link>
 
         {/* Desktop navigation */}
-        <nav className="ml-8 hidden h-full items-center gap-6 lg:ml-10 lg:gap-7 md:flex">
-          {!isAdminRoute && (
+        <nav className="ml-6 hidden h-full items-center gap-5 md:flex lg:ml-10 lg:gap-7">
+          {!isAdminRoute ? (
             <>
               <Link
                 href="/"
@@ -233,17 +259,19 @@ export default function Navbar() {
                   aria-haspopup="true"
                   onMouseEnter={() => setDropdown("jobs")}
                   onClick={() => toggleDropdown("jobs")}
-                  className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors ${dropdown === "jobs"
+                  className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors ${
+                    dropdown === "jobs"
                       ? "text-brand"
                       : "text-text-secondary hover:text-brand"
-                    }`}
+                  }`}
                 >
                   For Job Seekers
                   <ChevronDown
                     size={15}
                     strokeWidth={1.8}
-                    className={`${iconClass} transition-transform duration-200 ${dropdown === "jobs" ? "rotate-180" : ""
-                      }`}
+                    className={`${iconClass} transition-transform duration-200 ${
+                      dropdown === "jobs" ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
 
@@ -325,17 +353,19 @@ export default function Navbar() {
                   aria-haspopup="true"
                   onMouseEnter={() => setDropdown("employers")}
                   onClick={() => toggleDropdown("employers")}
-                  className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors ${dropdown === "employers"
+                  className={`flex cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors ${
+                    dropdown === "employers"
                       ? "text-brand"
                       : "text-text-secondary hover:text-brand"
-                    }`}
+                  }`}
                 >
                   For Employers
                   <ChevronDown
                     size={15}
                     strokeWidth={1.8}
-                    className={`${iconClass} transition-transform duration-200 ${dropdown === "employers" ? "rotate-180" : ""
-                      }`}
+                    className={`${iconClass} transition-transform duration-200 ${
+                      dropdown === "employers" ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
 
@@ -388,96 +418,56 @@ export default function Navbar() {
                 </AnimatePresence>
               </div>
             </>
-          )}
-
-          {/* Admin menu */}
-          {isAdminRoute && (
-            <div className="relative flex h-full items-center">
-              <button
-                type="button"
-                aria-expanded={dropdown === "admin"}
-                aria-haspopup="true"
-                onMouseEnter={() => setDropdown("admin")}
-                onClick={() => toggleDropdown("admin")}
-                className="flex cursor-pointer items-center gap-1.5 text-sm font-medium text-text-secondary transition-colors hover:text-brand"
+          ) : (
+            /* Admin menu items rendered outside the dropdown */
+            <>
+              <Link
+                href="/admin"
+                onClick={closeMenus}
+                className={adminLinkClass("/admin")}
               >
-                Admin
-                <ChevronDown
-                  size={15}
-                  className={`${iconClass} transition-transform ${dropdown === "admin" ? "rotate-180" : ""
-                    }`}
-                />
-              </button>
+                Dashboard
+              </Link>
 
-              <AnimatePresence>
-                {dropdown === "admin" && (
-                  <motion.div
-                    key="admin-dropdown"
-                    {...motionProps}
-                    className="absolute left-0 top-[calc(100%-1px)] w-[235px] rounded-card border border-border-default bg-surface-card p-2 shadow-dropdown"
-                  >
-                    <p className="px-3 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[1.4px] text-text-muted">
-                      Administration
-                    </p>
+              <Link
+                href="/admin/jobs"
+                onClick={closeMenus}
+                className={adminLinkClass("/admin/jobs")}
+              >
+                Manage jobs
+              </Link>
 
-                    <Link
-                      href="/admin"
-                      onClick={closeMenus}
-                      className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-[13px] font-medium text-text-secondary hover:bg-surface-subtle"
-                    >
-                      <LayoutDashboard size={17} className={iconClass} />
-                      Dashboard
-                    </Link>
+              <Link
+                href="/admin/jobs/add"
+                onClick={closeMenus}
+                className={adminLinkClass("/admin/jobs/add")}
+              >
+                Add a job
+              </Link>
 
-                    <Link
-                      href="/admin/jobs"
-                      onClick={closeMenus}
-                      className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-[13px] font-medium text-text-secondary hover:bg-surface-subtle"
-                    >
-                      <BriefcaseBusiness size={17} className={iconClass} />
-                      Manage jobs
-                    </Link>
+              <Link
+                href="/admin/candidates"
+                onClick={closeMenus}
+                className={adminLinkClass("/admin/candidates")}
+              >
+                Candidates
+              </Link>
 
-                    <Link
-                      href="/admin/jobs/add"
-                      onClick={closeMenus}
-                      className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-[13px] font-medium text-text-secondary hover:bg-surface-subtle"
-                    >
-                      <Settings size={17} className={iconClass} />
-                      Add a job
-                    </Link>
-
-                    <Link
-                      href="/admin/candidates"
-                      onClick={closeMenus}
-                      className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-[13px] font-medium text-text-secondary hover:bg-surface-subtle"
-                    >
-                      <Users size={17} className={iconClass} />
-                      Candidates
-                    </Link>
-
-                    <div className="mx-2 my-2 border-t border-border-default" />
-
-                    <button
-                      type="button"
-                      disabled={loggingOut}
-                      onClick={handleAdminLogout}
-                      className="flex w-full cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-left text-[13px] font-medium text-status-error hover:bg-status-error-bg disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      <LogOut size={17} className={iconClass} />
-                      {loggingOut ? "Logging out..." : "Log out"}
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+              <Link
+                href="/admin/submissions"
+                onClick={closeMenus}
+                className={adminLinkClass("/admin/submissions")}
+              >
+                Submissions
+              </Link>
+            </>
           )}
         </nav>
 
         <div className="flex-1" />
 
         {/* Desktop actions */}
-        {!isAdminRoute && (
+        {!isAdminRoute ? (
           <div className="hidden shrink-0 items-center gap-3 md:flex lg:gap-3">
             {user ? (
               <div className="relative">
@@ -550,6 +540,26 @@ export default function Navbar() {
                 Sign in
               </Link>
             )}
+          </div>
+        ) : (
+          <div className="hidden shrink-0 items-center gap-2.5 md:flex">
+            <Link
+              href="/"
+              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 text-xs font-semibold text-text-secondary transition-colors duration-200 hover:border-brand hover:text-brand"
+            >
+              <ArrowUpRight size={14} className={iconClass} />
+              View site
+            </Link>
+
+            <button
+              type="button"
+              disabled={loggingOut}
+              onClick={handleAdminLogout}
+              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border border-status-error/30 bg-status-error-bg/20 px-3 text-xs font-semibold text-status-error transition-colors duration-200 hover:bg-status-error-bg disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <LogOut size={14} className={iconClass} />
+              {loggingOut ? "Logging out..." : "Log out"}
+            </button>
           </div>
         )}
 
@@ -628,8 +638,9 @@ export default function Navbar() {
                   <Link
                     href="/"
                     onClick={closeMenus}
-                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${pathname === "/" ? "text-brand" : "text-text-primary"
-                      }`}
+                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${
+                      pathname === "/" ? "text-brand" : "text-text-primary"
+                    }`}
                   >
                     Home
                   </Link>
@@ -637,8 +648,9 @@ export default function Navbar() {
                   <Link
                     href="/jobs"
                     onClick={closeMenus}
-                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${pathname === "/jobs" ? "text-brand" : "text-text-primary"
-                      }`}
+                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${
+                      pathname === "/jobs" ? "text-brand" : "text-text-primary"
+                    }`}
                   >
                     Explore Jobs
                   </Link>
@@ -646,8 +658,9 @@ export default function Navbar() {
                   <Link
                     href="/join"
                     onClick={closeMenus}
-                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${pathname === "/join" ? "text-brand" : "text-text-primary"
-                      }`}
+                    className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${
+                      pathname === "/join" ? "text-brand" : "text-text-primary"
+                    }`}
                   >
                     Community
                   </Link>
@@ -663,8 +676,9 @@ export default function Navbar() {
                     <ChevronDown
                       size={17}
                       strokeWidth={1.8}
-                      className={`${iconClass} transition-transform duration-200 ${dropdown === "jobs" ? "rotate-180" : ""
-                        }`}
+                      className={`${iconClass} transition-transform duration-200 ${
+                        dropdown === "jobs" ? "rotate-180" : ""
+                      }`}
                     />
                   </button>
 
@@ -739,8 +753,9 @@ export default function Navbar() {
                     <ChevronDown
                       size={17}
                       strokeWidth={1.8}
-                      className={`${iconClass} transition-transform duration-200 ${dropdown === "employers" ? "rotate-180" : ""
-                        }`}
+                      className={`${iconClass} transition-transform duration-200 ${
+                        dropdown === "employers" ? "rotate-180" : ""
+                      }`}
                     />
                   </button>
 
@@ -800,8 +815,8 @@ export default function Navbar() {
                         onClick={closeMenus}
                         className="flex h-11 cursor-pointer items-center justify-center rounded-control bg-brand px-3 text-sm font-semibold text-text-inverse transition-colors hover:bg-brand-hover"
                       >
-                Sign in
-              </Link>
+                        Sign in
+                      </Link>
                     )}
 
                     <Link
@@ -861,11 +876,40 @@ export default function Navbar() {
                     Add a job
                   </Link>
 
+                  <Link
+                    href="/admin/candidates"
+                    onClick={closeMenus}
+                    className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary hover:bg-surface-subtle"
+                  >
+                    <Users size={18} className={iconClass} />
+                    Candidates
+                  </Link>
+
+                  <Link
+                    href="/admin/submissions"
+                    onClick={closeMenus}
+                    className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary hover:bg-surface-subtle"
+                  >
+                    <Inbox size={18} className={iconClass} />
+                    Submissions
+                  </Link>
+
+                  <div className="my-2 border-t border-border-default" />
+
+                  <Link
+                    href="/"
+                    onClick={closeMenus}
+                    className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary hover:bg-surface-subtle"
+                  >
+                    <ArrowUpRight size={18} className={iconClass} />
+                    View site
+                  </Link>
+
                   <button
                     type="button"
                     disabled={loggingOut}
                     onClick={handleAdminLogout}
-                    className="mt-3 flex w-full cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-left text-sm font-medium text-status-error hover:bg-status-error-bg disabled:cursor-not-allowed disabled:opacity-60"
+                    className="mt-2 flex w-full cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-left text-sm font-medium text-status-error hover:bg-status-error-bg disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <LogOut size={18} className={iconClass} />
                     {loggingOut ? "Logging out..." : "Log out"}

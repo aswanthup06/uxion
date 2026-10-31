@@ -8,6 +8,7 @@ import {
   BriefcaseBusiness,
   Building2,
   CalendarDays,
+  ChevronDown,
   ChevronRight,
   Layers3,
   MapPin,
@@ -101,26 +102,70 @@ function getInitials(value?: string) {
   );
 }
 
-function isWithinLastSevenDays(value?: string) {
+type Timeframe =
+  | "today"
+  | "yesterday"
+  | "7days"
+  | "30days"
+  | "this_month"
+  | "all";
+
+const TIMEFRAME_OPTIONS: { value: Timeframe; label: string }[] = [
+  { value: "today", label: "Today" },
+  { value: "yesterday", label: "Yesterday" },
+  { value: "7days", label: "Last 7 days" },
+  { value: "30days", label: "Last 30 days" },
+  { value: "this_month", label: "This month" },
+  { value: "all", label: "All time" },
+];
+
+function isDateInTimeframe(
+  value: string | undefined,
+  timeframe: Timeframe,
+  now: Date = new Date()
+): boolean {
+  if (timeframe === "all") return true;
+
   const date = parseDate(value);
   if (!date) return false;
 
-  const now = new Date();
-  const today = new Date(
+  const startOfToday = new Date(
     now.getFullYear(),
     now.getMonth(),
     now.getDate()
   );
-
-  const posted = new Date(
+  const startOfYesterday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() - 1
+  );
+  const jobDay = new Date(
     date.getFullYear(),
     date.getMonth(),
     date.getDate()
   );
 
-  const difference = today.getTime() - posted.getTime();
+  const diffDays = Math.round(
+    (startOfToday.getTime() - jobDay.getTime()) / (24 * 60 * 60 * 1000)
+  );
 
-  return difference >= 0 && difference < 7 * 24 * 60 * 60 * 1000;
+  switch (timeframe) {
+    case "today":
+      return jobDay.getTime() === startOfToday.getTime();
+    case "yesterday":
+      return jobDay.getTime() === startOfYesterday.getTime();
+    case "7days":
+      return diffDays >= 0 && diffDays < 7;
+    case "30days":
+      return diffDays >= 0 && diffDays < 30;
+    case "this_month":
+      return (
+        date.getFullYear() === now.getFullYear() &&
+        date.getMonth() === now.getMonth()
+      );
+    default:
+      return true;
+  }
 }
 
 function isJob(value: unknown): value is Job {
@@ -143,20 +188,29 @@ function Stat({
   description,
   icon: Icon,
   loading,
+  control,
 }: {
-  label: string;
+  label: React.ReactNode;
   value: number;
-  description: string;
+  description: React.ReactNode;
   icon: typeof BriefcaseBusiness;
   loading: boolean;
+  control?: React.ReactNode;
 }) {
   return (
     <div className="min-w-0 border-b border-border-subtle py-5 sm:border-b-0 sm:border-r sm:border-border-subtle sm:px-5 sm:first:pl-0 sm:last:border-r-0 sm:last:pr-0">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[13px] font-medium text-text-muted">
-          {label}
-        </p>
-        <Icon size={17} strokeWidth={1.7} className="text-brand" />
+        <div className="flex items-center gap-1.5 min-w-0">
+          {typeof label === "string" ? (
+            <p className="text-[13px] font-medium text-text-muted truncate">
+              {label}
+            </p>
+          ) : (
+            label
+          )}
+          {control}
+        </div>
+        <Icon size={17} strokeWidth={1.7} className="text-brand shrink-0" />
       </div>
 
       {loading ? (
@@ -167,7 +221,7 @@ function Stat({
         </p>
       )}
 
-      <p className="mt-2 text-xs text-text-muted">{description}</p>
+      <div className="mt-2 text-xs text-text-muted">{description}</div>
     </div>
   );
 }
@@ -179,6 +233,8 @@ export default function AdminDashboard() {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [retryKey, setRetryKey] = useState(0);
+  const [timeframe, setTimeframe] = useState<Timeframe>("today");
+  const [tableDateFilter, setTableDateFilter] = useState<"all" | Timeframe>("all");
 
   const loadJobs = useCallback(async (signal: AbortSignal) => {
     setLoading(true);
@@ -234,10 +290,113 @@ export default function AdminDashboard() {
     return () => controller.abort();
   }, [loadJobs, retryKey]);
 
-  const recentCount = useMemo(
-    () => jobs.filter((job) => isWithinLastSevenDays(job.postedDate)).length,
-    [jobs]
-  );
+  const timeframeCounts = useMemo<Record<Timeframe, number>>(() => {
+    const now = new Date();
+    const counts: Record<Timeframe, number> = {
+      today: 0,
+      yesterday: 0,
+      "7days": 0,
+      "30days": 0,
+      this_month: 0,
+      all: jobs.length,
+    };
+
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+    const startOfYesterday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - 1
+    );
+
+    for (const job of jobs) {
+      const date = parseDate(job.postedDate);
+      if (!date) continue;
+
+      const jobDay = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+      );
+      const diffDays = Math.round(
+        (startOfToday.getTime() - jobDay.getTime()) / (24 * 60 * 60 * 1000)
+      );
+
+      if (jobDay.getTime() === startOfToday.getTime()) {
+        counts.today++;
+      }
+      if (jobDay.getTime() === startOfYesterday.getTime()) {
+        counts.yesterday++;
+      }
+      if (diffDays >= 0 && diffDays < 7) {
+        counts["7days"]++;
+      }
+      if (diffDays >= 0 && diffDays < 30) {
+        counts["30days"]++;
+      }
+      if (
+        date.getFullYear() === now.getFullYear() &&
+        date.getMonth() === now.getMonth()
+      ) {
+        counts.this_month++;
+      }
+    }
+
+    return counts;
+  }, [jobs]);
+
+  const timeframeDescriptions = useMemo<Record<Timeframe, string>>(() => {
+    const now = new Date();
+    const todayStr = now.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+    });
+
+    const yesterday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - 1
+    );
+    const yesterdayStr = yesterday.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+    });
+
+    const monthStr = now.toLocaleDateString("en-GB", {
+      month: "long",
+      year: "numeric",
+    });
+
+    const count = timeframeCounts[timeframe];
+    const jobWord = count === 1 ? "job" : "jobs";
+
+    return {
+      today:
+        count > 0
+          ? `${count} ${jobWord} posted today (${todayStr})`
+          : `No jobs posted today (${todayStr})`,
+      yesterday:
+        count > 0
+          ? `${count} ${jobWord} posted yesterday (${yesterdayStr})`
+          : `No jobs posted yesterday (${yesterdayStr})`,
+      "7days":
+        count > 0
+          ? `${count} ${jobWord} posted in the last 7 days`
+          : "No jobs posted in the last 7 days",
+      "30days":
+        count > 0
+          ? `${count} ${jobWord} posted in the last 30 days`
+          : "No jobs posted in the last 30 days",
+      this_month:
+        count > 0
+          ? `${count} ${jobWord} posted in ${monthStr}`
+          : `No jobs posted in ${monthStr}`,
+      all: "All-time available listings",
+    };
+  }, [timeframeCounts, timeframe]);
 
   const companiesCount = useMemo(
     () =>
@@ -250,15 +409,25 @@ export default function AdminDashboard() {
   );
 
   const filteredJobs = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    if (!query) return jobs;
+    let result = jobs;
 
-    return jobs.filter((job) =>
-      [job.title, job.company, job.location].some((value) =>
-        value.toLowerCase().includes(query)
-      )
-    );
-  }, [jobs, search]);
+    if (tableDateFilter !== "all") {
+      result = result.filter((job) =>
+        isDateInTimeframe(job.postedDate, tableDateFilter)
+      );
+    }
+
+    const query = search.trim().toLowerCase();
+    if (query) {
+      result = result.filter((job) =>
+        [job.title, job.company, job.location].some((value) =>
+          value.toLowerCase().includes(query)
+        )
+      );
+    }
+
+    return result;
+  }, [jobs, search, tableDateFilter]);
 
   const latestJob = jobs[0];
 
@@ -390,9 +559,48 @@ export default function AdminDashboard() {
               loading={loading}
             />
             <Stat
-              label="Posted in the last 7 days"
-              value={recentCount}
-              description="Recent posting activity"
+              label="Posted"
+              control={
+                <div className="relative inline-flex items-center">
+                  <select
+                    id="admin-posted-timeframe"
+                    value={timeframe}
+                    onChange={(e) => setTimeframe(e.target.value as Timeframe)}
+                    aria-label="Filter posted timeframe"
+                    className="h-6 cursor-pointer appearance-none rounded-control border border-border-default bg-surface-card pl-2 pr-5 text-xs font-semibold text-text-secondary shadow-2xs transition hover:border-brand hover:text-text-primary focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                  >
+                    {TIMEFRAME_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={12}
+                    className="pointer-events-none absolute right-1.5 text-text-muted"
+                  />
+                </div>
+              }
+              value={timeframeCounts[timeframe]}
+              description={
+                <span className="flex flex-wrap items-center justify-between gap-1">
+                  <span>{timeframeDescriptions[timeframe]}</span>
+                  {timeframeCounts[timeframe] > 0 && tableDateFilter !== timeframe && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTableDateFilter(timeframe);
+                        document
+                          .getElementById("job-listings-section")
+                          ?.scrollIntoView({ behavior: "smooth" });
+                      }}
+                      className="text-[11px] font-medium text-brand hover:underline"
+                    >
+                      View in list ↓
+                    </button>
+                  )}
+                </span>
+              }
               icon={CalendarDays}
               loading={loading}
             />
@@ -450,7 +658,7 @@ export default function AdminDashboard() {
         )}
 
         {/* Job listings */}
-        <section className="mt-9">
+        <section id="job-listings-section" className="mt-9">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
               <h2 className="text-lg font-semibold tracking-[-0.025em] text-text-primary">
@@ -461,8 +669,8 @@ export default function AdminDashboard() {
               </p>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <label className="relative block sm:w-[270px]">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <label className="relative block sm:w-[240px]">
                 <span className="sr-only">Search jobs</span>
                 <Search
                   size={16}
@@ -476,6 +684,28 @@ export default function AdminDashboard() {
                   className="h-10 w-full rounded-control border border-border-default bg-surface-card pl-9 pr-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring"
                 />
               </label>
+
+              <div className="relative inline-flex items-center">
+                <select
+                  value={tableDateFilter}
+                  onChange={(event) =>
+                    setTableDateFilter(event.target.value as "all" | Timeframe)
+                  }
+                  aria-label="Filter jobs table by date"
+                  className="h-10 cursor-pointer appearance-none rounded-control border border-border-default bg-surface-card pl-3 pr-8 text-xs font-medium text-text-secondary shadow-xs transition hover:bg-surface-subtle hover:text-text-primary focus:border-brand focus:outline-none"
+                >
+                  <option value="all">All dates</option>
+                  <option value="today">Today ({timeframeCounts.today})</option>
+                  <option value="yesterday">Yesterday ({timeframeCounts.yesterday})</option>
+                  <option value="7days">Last 7 days ({timeframeCounts["7days"]})</option>
+                  <option value="30days">Last 30 days ({timeframeCounts["30days"]})</option>
+                  <option value="this_month">This month ({timeframeCounts.this_month})</option>
+                </select>
+                <ChevronDown
+                  size={14}
+                  className="pointer-events-none absolute right-2.5 text-text-muted"
+                />
+              </div>
 
               <Link
                 href="/admin/jobs"
@@ -514,16 +744,28 @@ export default function AdminDashboard() {
                 </div>
 
                 <h3 className="mt-4 text-sm font-semibold text-text-primary">
-                  {search ? "No matching jobs" : "No jobs posted yet"}
+                  {search || tableDateFilter !== "all"
+                    ? "No matching jobs"
+                    : "No jobs posted yet"}
                 </h3>
 
                 <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-text-muted">
-                  {search
-                    ? "Try another title, company name, or location."
+                  {search || tableDateFilter !== "all"
+                    ? "No jobs found for the selected filter or search term."
                     : "Your job listings will appear here when you add your first job."}
                 </p>
 
-                {!search && (
+                {tableDateFilter !== "all" && (
+                  <button
+                    type="button"
+                    onClick={() => setTableDateFilter("all")}
+                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-brand hover:underline"
+                  >
+                    Reset date filter
+                  </button>
+                )}
+
+                {!search && tableDateFilter === "all" && (
                   <Link
                     href="/admin/jobs/add"
                     className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-hover"
@@ -629,10 +871,21 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="flex flex-col gap-2 border-t border-border-subtle py-4 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
-                  <span>
-                    Showing {Math.min(filteredJobs.length, 8)} of{" "}
-                    {filteredJobs.length} matching jobs
-                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span>
+                      Showing {Math.min(filteredJobs.length, 8)} of{" "}
+                      {filteredJobs.length} matching jobs
+                    </span>
+                    {tableDateFilter !== "all" && (
+                      <button
+                        type="button"
+                        onClick={() => setTableDateFilter("all")}
+                        className="font-medium text-brand hover:underline"
+                      >
+                        (Clear date filter)
+                      </button>
+                    )}
+                  </div>
                   <Link
                     href="/admin/jobs"
                     className="inline-flex items-center gap-1 self-start font-semibold text-brand hover:text-brand-hover sm:self-auto"
