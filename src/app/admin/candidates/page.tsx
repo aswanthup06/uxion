@@ -123,9 +123,7 @@ export default function AdminCandidatesPage() {
 
         {/* Content */}
         {loading ? (
-          <div className="py-20">
-            <LoadingSpinner />
-          </div>
+          <LoadingSpinner label="Loading candidate profiles..." className="py-20" />
         ) : error ? (
           <div className="rounded-card border border-status-error/30 bg-status-error-bg/30 p-6 text-center text-status-error">
             <AlertCircle className="mx-auto mb-2 h-6 w-6" />

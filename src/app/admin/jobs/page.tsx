@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,12 +11,10 @@ import {
   BriefcaseBusiness,
   Plus,
   RefreshCw,
-  Users,
 } from "lucide-react";
 
 export default function JobListPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [pendingCount, setPendingCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -26,20 +23,11 @@ export default function JobListPage() {
     else setLoading(true);
 
     try {
-      const [jobsRes, pendingRes] = await Promise.all([
-        fetch("/api/jobs", { cache: "no-store" }),
-        fetch("/api/jobs?status=pending", { cache: "no-store" }),
-      ]);
+      const res = await fetch("/api/jobs", { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to fetch jobs");
 
-      if (!jobsRes.ok) throw new Error("Failed to fetch jobs");
-
-      const data: Job[] = await jobsRes.json();
+      const data: Job[] = await res.json();
       setJobs(data);
-
-      if (pendingRes.ok) {
-        const pendingData: Job[] = await pendingRes.json();
-        setPendingCount(pendingData.length);
-      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to load jobs.");
@@ -81,8 +69,6 @@ export default function JobListPage() {
       toast.error("Something went wrong while deleting the job.");
     }
   };
-
-  if (loading) return <LoadingSpinner />;
 
   return (
     <main className="min-h-full bg-surface-page text-text-primary">
@@ -132,7 +118,7 @@ export default function JobListPage() {
             <button
               type="button"
               onClick={() => void loadJobs(true)}
-              disabled={refreshing}
+              disabled={refreshing || loading}
               aria-label="Refresh job listings"
               className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-border-default text-text-secondary transition hover:bg-surface-subtle disabled:opacity-50"
             >
@@ -153,34 +139,6 @@ export default function JobListPage() {
           </div>
         </header>
 
-        {/* Navigation Tabs */}
-        <div className="flex items-center gap-4 border-b border-border-subtle pt-4 text-sm font-medium">
-          <span className="flex items-center gap-2 border-b-2 border-brand pb-3 text-brand font-semibold">
-            <span>Published Listings</span>
-            <span className="rounded-control bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand">
-              {jobs.length}
-            </span>
-          </span>
-          <Link
-            href="/admin/submissions"
-            className="flex items-center gap-2 border-b-2 border-transparent pb-3 text-text-muted transition hover:text-text-primary"
-          >
-            <span>Submissions for Review</span>
-            {pendingCount > 0 && (
-              <span className="rounded-control bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
-                {pendingCount}
-              </span>
-            )}
-          </Link>
-          <Link
-            href="/admin/candidates"
-            className="flex items-center gap-2 border-b-2 border-transparent pb-3 text-text-muted transition hover:text-text-primary"
-          >
-            <Users size={15} />
-            <span>Candidates</span>
-          </Link>
-        </div>
-
         {/* Summary */}
         <section className="flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle py-5">
           <div className="flex items-center gap-3">
@@ -191,19 +149,23 @@ export default function JobListPage() {
             <div>
               <p className="text-xs text-text-muted">Total job listings</p>
               <p className="mt-0.5 text-xl font-semibold tracking-tight text-text-primary">
-                {jobs.length}
+                {loading ? "..." : jobs.length}
               </p>
             </div>
           </div>
 
           <span className="text-xs text-text-muted">
-            {jobs.length === 1 ? "1 listing" : `${jobs.length} listings`}
+            {loading ? "Loading..." : jobs.length === 1 ? "1 listing" : `${jobs.length} listings`}
           </span>
         </section>
 
         {/* Existing job table */}
         <section className="pt-6">
-          {jobs.length > 0 ? (
+          {loading ? (
+            <div className="rounded-panel border border-border-default bg-surface-card p-8">
+              <LoadingSpinner label="Loading published jobs..." className="py-12" />
+            </div>
+          ) : jobs.length > 0 ? (
             <JobTable jobs={jobs} onDelete={handleDelete} />
           ) : (
             <div className="py-16 text-center">

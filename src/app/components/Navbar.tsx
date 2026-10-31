@@ -23,6 +23,7 @@ import {
   UserRound,
   Users,
   Inbox,
+  Plus,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -438,14 +439,6 @@ export default function Navbar() {
               </Link>
 
               <Link
-                href="/admin/jobs/add"
-                onClick={closeMenus}
-                className={adminLinkClass("/admin/jobs/add")}
-              >
-                Add a job
-              </Link>
-
-              <Link
                 href="/admin/candidates"
                 onClick={closeMenus}
                 className={adminLinkClass("/admin/candidates")}
@@ -544,11 +537,11 @@ export default function Navbar() {
         ) : (
           <div className="hidden shrink-0 items-center gap-2.5 md:flex">
             <Link
-              href="/"
-              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 text-xs font-semibold text-text-secondary transition-colors duration-200 hover:border-brand hover:text-brand"
+              href="/admin/jobs/add"
+              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control bg-brand px-3.5 text-xs font-semibold text-text-inverse shadow-subtle transition-colors duration-200 hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
             >
-              <ArrowUpRight size={14} className={iconClass} />
-              View site
+              <Plus size={14} />
+              Add job
             </Link>
 
             <button
@@ -868,15 +861,6 @@ export default function Navbar() {
                   </Link>
 
                   <Link
-                    href="/admin/jobs/add"
-                    onClick={closeMenus}
-                    className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary hover:bg-surface-subtle"
-                  >
-                    <Settings size={18} className={iconClass} />
-                    Add a job
-                  </Link>
-
-                  <Link
                     href="/admin/candidates"
                     onClick={closeMenus}
                     className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary hover:bg-surface-subtle"
@@ -894,16 +878,16 @@ export default function Navbar() {
                     Submissions
                   </Link>
 
-                  <div className="my-2 border-t border-border-default" />
-
-                  <Link
-                    href="/"
-                    onClick={closeMenus}
-                    className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary hover:bg-surface-subtle"
-                  >
-                    <ArrowUpRight size={18} className={iconClass} />
-                    View site
-                  </Link>
+                  <div className="my-3 border-t border-border-default pt-2">
+                    <Link
+                      href="/admin/jobs/add"
+                      onClick={closeMenus}
+                      className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-4 text-sm font-semibold text-text-inverse transition-colors hover:bg-brand-hover shadow-subtle"
+                    >
+                      <Plus size={16} />
+                      Add job
+                    </Link>
+                  </div>
 
                   <button
                     type="button"

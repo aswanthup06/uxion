@@ -16,10 +16,7 @@ import {
   Globe,
   ChevronDown,
   ChevronUp,
-  ArrowUpRight,
-  ShieldAlert,
   Inbox,
-  AlertCircle,
 } from "lucide-react";
 import type { Job } from "@/app/types/job";
 import LoadingSpinner from "../comp/LoadingSpinner";
@@ -126,8 +123,6 @@ export default function SubmissionsPage() {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
-
   return (
     <main className="min-h-full bg-surface-page text-text-primary">
       <Toaster
@@ -149,17 +144,13 @@ export default function SubmissionsPage() {
             Dashboard
           </Link>
           <span>/</span>
-          <Link href="/admin/jobs" className="transition hover:text-brand">
-            Job management
-          </Link>
-          <span>/</span>
           <span className="font-medium text-text-primary">Public submissions</span>
         </nav>
 
         {/* Header */}
         <header className="flex flex-col gap-5 border-b border-border-subtle pb-7 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand">
+            <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-600 dark:text-amber-400">
               <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
               Moderation Queue
             </p>
@@ -173,53 +164,32 @@ export default function SubmissionsPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {!loading && (
+              <span className="rounded-control border border-amber-500/20 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                {submissions.length} {submissions.length === 1 ? "pending review" : "pending review"}
+              </span>
+            )}
+
             <button
               type="button"
               onClick={() => void loadSubmissions(true)}
-              disabled={refreshing}
+              disabled={refreshing || loading}
               aria-label="Refresh submissions"
               className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-border-default text-text-secondary transition hover:bg-surface-subtle disabled:opacity-50"
             >
               <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
             </button>
-
-            <Link
-              href="/admin/jobs"
-              className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 text-xs font-semibold text-text-secondary transition hover:bg-surface-subtle hover:text-text-primary"
-            >
-              <span>View Published Jobs</span>
-            </Link>
-
-            <Link
-              href="/admin/jobs/add"
-              className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-control bg-brand px-4 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover shadow-subtle"
-            >
-              <span>Add Job Directly</span>
-              <ArrowUpRight size={13} />
-            </Link>
           </div>
         </header>
 
-        {/* Navigation Tabs */}
-        <div className="flex items-center gap-4 border-b border-border-subtle pt-4 text-sm font-medium">
-          <Link
-            href="/admin/jobs"
-            className="border-b-2 border-transparent pb-3 text-text-muted transition hover:text-text-primary"
-          >
-            Published Listings
-          </Link>
-          <span className="flex items-center gap-2 border-b-2 border-brand pb-3 text-brand font-semibold">
-            <span>Pending Review</span>
-            <span className="rounded-control bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
-              {submissions.length}
-            </span>
-          </span>
-        </div>
-
         {/* Content Section */}
         <section className="pt-6">
-          {submissions.length === 0 ? (
+          {loading ? (
+            <div className="rounded-card border border-border-default bg-surface-card p-8">
+              <LoadingSpinner label="Loading pending submissions..." className="py-12" />
+            </div>
+          ) : submissions.length === 0 ? (
             <div className="rounded-card border border-border-default bg-surface-card py-16 text-center">
               <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-control bg-brand-soft text-brand">
                 <Inbox size={22} strokeWidth={1.8} />
@@ -230,12 +200,6 @@ export default function SubmissionsPage() {
               <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-text-muted">
                 All recruiter job postings have been reviewed. When recruiters submit listings via /post-job, they will appear here for your moderation.
               </p>
-              <Link
-                href="/admin/jobs"
-                className="mt-5 inline-flex items-center gap-1.5 rounded-control bg-surface-subtle border border-border-default px-4 py-2 text-xs font-semibold text-text-primary transition hover:bg-border-default"
-              >
-                <span>Back to Published Listings</span>
-              </Link>
             </div>
           ) : (
             <div className="space-y-4">
