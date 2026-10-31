@@ -230,7 +230,7 @@ export default function AdminCandidatesPage() {
                       </td>
                       <td className="px-5 py-4 text-right">
                         <Link
-                          href={`/candidate-profile/view?id=${candidate.id}`}
+                          href={`/candidates/${candidate.id}`}
                           className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-base px-2.5 py-1.5 text-[11px] font-semibold text-text-primary transition hover:border-brand hover:bg-brand-soft hover:text-brand"
                         >
                           View Profile <ExternalLink size={11} />

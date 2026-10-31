@@ -522,7 +522,7 @@ export default function Navbar() {
 
                       <div className="py-1">
                         <Link
-                          href="/candidate-profile/view"
+                          href="/profile"
                           onClick={closeMenus}
                           className="flex cursor-pointer items-center gap-2.5 rounded-control px-3 py-2 text-xs font-medium text-text-secondary hover:bg-surface-subtle hover:text-brand"
                         >
@@ -810,7 +810,7 @@ export default function Navbar() {
                   <div className="mt-5 grid grid-cols-2 gap-3 border-t border-border-default pt-5">
                     {user ? (
                       <Link
-                        href="/candidate-profile/view"
+                        href="/profile"
                         onClick={closeMenus}
                         className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-3 text-sm font-semibold text-text-primary transition-colors hover:border-brand hover:bg-brand-soft"
                       >
