@@ -547,7 +547,7 @@ export default function Navbar() {
                 href={LOGIN}
                 className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control bg-brand px-4 text-xs font-semibold text-text-inverse shadow-subtle transition-colors duration-200 hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
               >
-                Log in
+                Sign in
               </Link>
             )}
           </div>
@@ -800,8 +800,8 @@ export default function Navbar() {
                         onClick={closeMenus}
                         className="flex h-11 cursor-pointer items-center justify-center rounded-control bg-brand px-3 text-sm font-semibold text-text-inverse transition-colors hover:bg-brand-hover"
                       >
-                        Log in
-                      </Link>
+                Sign in
+              </Link>
                     )}
 
                     <Link
