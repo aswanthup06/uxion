@@ -1386,13 +1386,15 @@ export default function JobFormWizard({
               </>
             )}
           </div>
-          <Link
-            href={mode === "public" ? "/jobs" : "/admin/jobs"}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-text-secondary transition hover:text-text-primary"
-          >
-            <ArrowLeft size={14} />
-            <span>{mode === "public" ? "Back to Jobs" : "Cancel"}</span>
-          </Link>
+          {mode !== "public" && (
+            <Link
+              href="/admin/jobs"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-text-secondary transition hover:text-text-primary"
+            >
+              <ArrowLeft size={14} />
+              <span>Cancel</span>
+            </Link>
+          )}
         </header>
 
         {/* Minimal 4-Step Progress Section */}
