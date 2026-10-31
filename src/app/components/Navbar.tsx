@@ -545,28 +545,11 @@ export default function Navbar() {
             ) : (
               <Link
                 href={LOGIN}
-                className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-4 text-xs font-semibold text-text-primary transition-colors duration-200 hover:border-brand hover:bg-brand-soft hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+                className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control bg-brand px-4 text-xs font-semibold text-text-inverse shadow-subtle transition-colors duration-200 hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
               >
                 Log in
               </Link>
             )}
-
-            <motion.div
-              whileHover={reduceMotion ? undefined : { y: -1 }}
-              whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-            >
-              <Link
-                href={POST_JOB}
-                className="group inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-4 text-xs font-semibold text-text-inverse shadow-subtle transition-colors duration-200 hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
-              >
-                Post a job
-                <ArrowUpRight
-                  size={15}
-                  strokeWidth={2}
-                  className={`${iconClass} transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5`}
-                />
-              </Link>
-            </motion.div>
           </div>
         )}
 
@@ -815,7 +798,7 @@ export default function Navbar() {
                       <Link
                         href={LOGIN}
                         onClick={closeMenus}
-                        className="flex h-11 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-3 text-sm font-semibold text-text-primary transition-colors hover:border-brand hover:bg-brand-soft"
+                        className="flex h-11 cursor-pointer items-center justify-center rounded-control bg-brand px-3 text-sm font-semibold text-text-inverse transition-colors hover:bg-brand-hover"
                       >
                         Log in
                       </Link>
