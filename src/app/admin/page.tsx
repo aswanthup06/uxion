@@ -16,6 +16,7 @@ import {
   RefreshCw,
   Search,
   AlertCircle,
+  Users,
 } from "lucide-react";
 
 type Job = {
@@ -295,6 +296,14 @@ export default function AdminDashboard() {
               />
               Refresh
             </button>
+
+            <Link
+              href="/admin/candidates"
+              className="inline-flex h-10 items-center gap-2 rounded-control border border-border-default bg-surface-card px-3.5 text-sm font-medium text-text-secondary shadow-xs transition hover:bg-surface-subtle hover:text-text-primary"
+            >
+              <Users size={15} />
+              Candidates
+            </Link>
 
             <Link
               href="/admin/jobs/add"

@@ -12,6 +12,7 @@ import {
   BriefcaseBusiness,
   Plus,
   RefreshCw,
+  Users,
 } from "lucide-react";
 
 export default function JobListPage() {
@@ -170,6 +171,13 @@ export default function JobListPage() {
                 {pendingCount}
               </span>
             )}
+          </Link>
+          <Link
+            href="/admin/candidates"
+            className="flex items-center gap-2 border-b-2 border-transparent pb-3 text-text-muted transition hover:text-text-primary"
+          >
+            <Users size={15} />
+            <span>Candidates</span>
           </Link>
         </div>
 

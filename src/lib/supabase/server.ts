@@ -4,6 +4,8 @@
 // The service role key is NEVER exposed to the browser or prefixed with NEXT_PUBLIC_.
 
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 let serviceClientInstance: SupabaseClient | null = null;
 let serverReadClientInstance: SupabaseClient | null = null;
@@ -91,4 +93,40 @@ export function getServerSupabase(): SupabaseClient {
   });
 
   return serverReadClientInstance;
+}
+
+/**
+ * Server-side client with cookie handling for Next.js App Router (Server Components & Route Handlers).
+ * Reads the authenticated user's session from cookies safely.
+ */
+export async function createServerAuthClient(): Promise<SupabaseClient> {
+  const cookieStore = await cookies();
+
+  const url = getSupabaseUrl();
+  const anonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  if (!anonKey) {
+    throw new Error(
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY / PUBLISHABLE_KEY is not configured for auth client."
+    );
+  }
+
+  return createServerClient(url, anonKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          );
+        } catch {
+          // Can be safely ignored when called from Server Components
+        }
+      },
+    },
+  });
 }

@@ -20,7 +20,10 @@ import {
   LogOut,
   X,
   Menu,
+  UserRound,
+  Users,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const JOBS = "/jobs";
 const POST_JOB = "/post-job";
@@ -56,7 +59,7 @@ const categories = [
   },
 ];
 
-type DropdownName = "jobs" | "employers" | "admin" | null;
+type DropdownName = "jobs" | "employers" | "admin" | "user" | null;
 
 const menuVariants = {
   hidden: { opacity: 0, y: -6 },
@@ -99,6 +102,7 @@ export default function Navbar() {
   const [dropdown, setDropdown] = useState<DropdownName>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const { user, profile, signOut } = useAuth();
 
   const isAdminRoute = pathname.startsWith("/admin");
   const isAdminLogin = pathname === ADMIN_LOGIN;
@@ -443,6 +447,15 @@ export default function Navbar() {
                       Add a job
                     </Link>
 
+                    <Link
+                      href="/admin/candidates"
+                      onClick={closeMenus}
+                      className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-3 text-[13px] font-medium text-text-secondary hover:bg-surface-subtle"
+                    >
+                      <Users size={17} className={iconClass} />
+                      Candidates
+                    </Link>
+
                     <div className="mx-2 my-2 border-t border-border-default" />
 
                     <button
@@ -466,12 +479,83 @@ export default function Navbar() {
         {/* Desktop actions */}
         {!isAdminRoute && (
           <div className="hidden shrink-0 items-center gap-3 md:flex lg:gap-3">
-            <Link
-              href={LOGIN}
-              className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-4 text-xs font-semibold text-text-primary transition-colors duration-200 hover:border-brand hover:bg-brand-soft hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
-            >
-              Log in
-            </Link>
+            {user ? (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => toggleDropdown("user")}
+                  className="flex cursor-pointer items-center gap-2 rounded-control border border-border-default bg-surface-card py-1.5 pl-2 pr-3 text-xs font-medium text-text-primary transition-colors hover:border-brand"
+                >
+                  {profile?.avatar_url || user.user_metadata?.avatar_url ? (
+                    <img
+                      src={profile?.avatar_url || user.user_metadata?.avatar_url}
+                      alt={profile?.full_name || "Candidate"}
+                      className="h-6 w-6 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="grid h-6 w-6 place-items-center rounded-full bg-brand-soft text-[11px] font-semibold text-brand">
+                      {(profile?.full_name || user.email || "C").charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="max-w-[110px] truncate text-xs font-semibold">
+                    {profile?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0]}
+                  </span>
+                  <ChevronDown
+                    size={13}
+                    className={`text-text-muted transition-transform ${dropdown === "user" ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                <AnimatePresence>
+                  {dropdown === "user" && (
+                    <motion.div
+                      key="user-dropdown"
+                      {...motionProps}
+                      className="absolute right-0 top-[calc(100%+8px)] w-56 rounded-card border border-border-default bg-surface-card p-2 shadow-dropdown z-50"
+                    >
+                      <div className="border-b border-border-default px-3 py-2">
+                        <p className="truncate text-xs font-semibold text-text-primary">
+                          {profile?.full_name || user.user_metadata?.full_name || "Candidate"}
+                        </p>
+                        <p className="mt-0.5 truncate text-[11px] text-text-muted">{user.email}</p>
+                      </div>
+
+                      <div className="py-1">
+                        <Link
+                          href="/candidate-profile/view"
+                          onClick={closeMenus}
+                          className="flex cursor-pointer items-center gap-2.5 rounded-control px-3 py-2 text-xs font-medium text-text-secondary hover:bg-surface-subtle hover:text-brand"
+                        >
+                          <UserRound size={15} />
+                          My Profile
+                        </Link>
+                      </div>
+
+                      <div className="border-t border-border-default pt-1">
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            closeMenus();
+                            await signOut();
+                          }}
+                          className="flex w-full cursor-pointer items-center gap-2.5 rounded-control px-3 py-2 text-left text-xs font-medium text-status-error hover:bg-status-error-bg"
+                        >
+                          <LogOut size={15} />
+                          Sign out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <Link
+                href={LOGIN}
+                className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-4 text-xs font-semibold text-text-primary transition-colors duration-200 hover:border-brand hover:bg-brand-soft hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+              >
+                Log in
+              </Link>
+            )}
 
             <motion.div
               whileHover={reduceMotion ? undefined : { y: -1 }}
@@ -724,13 +808,24 @@ export default function Navbar() {
 
                   {/* Mobile actions */}
                   <div className="mt-5 grid grid-cols-2 gap-3 border-t border-border-default pt-5">
-                    <Link
-                      href={LOGIN}
-                      onClick={closeMenus}
-                      className="flex h-11 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-3 text-sm font-semibold text-text-primary transition-colors hover:border-brand hover:bg-brand-soft"
-                    >
-                      Log in
-                    </Link>
+                    {user ? (
+                      <Link
+                        href="/candidate-profile/view"
+                        onClick={closeMenus}
+                        className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-3 text-sm font-semibold text-text-primary transition-colors hover:border-brand hover:bg-brand-soft"
+                      >
+                        <UserRound size={16} />
+                        My Profile
+                      </Link>
+                    ) : (
+                      <Link
+                        href={LOGIN}
+                        onClick={closeMenus}
+                        className="flex h-11 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-3 text-sm font-semibold text-text-primary transition-colors hover:border-brand hover:bg-brand-soft"
+                      >
+                        Log in
+                      </Link>
+                    )}
 
                     <Link
                       href={POST_JOB}
@@ -741,6 +836,20 @@ export default function Navbar() {
                       <ArrowUpRight size={15} className={iconClass} />
                     </Link>
                   </div>
+
+                  {user && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        closeMenus();
+                        await signOut();
+                      }}
+                      className="mt-3 flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-status-error/20 bg-status-error-bg/30 text-xs font-semibold text-status-error"
+                    >
+                      <LogOut size={14} />
+                      Sign out ({user.email})
+                    </button>
+                  )}
                 </>
               ) : (
                 <>

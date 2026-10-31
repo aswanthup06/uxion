@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
-import { ArrowUpRight, Compass } from "lucide-react";
-import Modal from "@/app/components/Modal";
+import { ArrowUpRight, AlertCircle, Loader2 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 type LoginPageProps = {
   mode?: "signin" | "signup";
@@ -13,7 +14,54 @@ type LoginPageProps = {
 
 export default function LoginPage({ mode = "signin" }: LoginPageProps) {
   const isSignin = mode === "signin";
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const searchParams = useSearchParams();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam) {
+      if (errorParam === "no_code") {
+        setErrorMessage("Authentication was cancelled or failed. Please try again.");
+      } else {
+        setErrorMessage(decodeURIComponent(errorParam));
+      }
+    }
+  }, [searchParams]);
+
+  const handleGoogleSignIn = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const supabase = createClient();
+      const nextDestination = searchParams.get("redirect") || searchParams.get("next") || "/jobs";
+      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(nextDestination)}`;
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo,
+          queryParams: {
+            access_type: "offline",
+            prompt: "select_account",
+          },
+        },
+      });
+
+      if (error) {
+        setErrorMessage(error.message);
+        setIsLoading(false);
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to initiate Google sign in.";
+      setErrorMessage(msg);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <main className="fixed inset-0 h-[100dvh] w-full overflow-hidden bg-surface-page text-text-primary">
@@ -97,13 +145,30 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
               </p>
             </div>
 
+            {errorMessage && (
+              <div className="mb-5 flex items-start gap-2.5 rounded-control border border-status-error/30 bg-status-error-bg p-3 text-xs text-status-error">
+                <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
             <button
               type="button"
-              onClick={() => setIsModalOpen(true)}
-              className="group flex min-h-[50px] w-full cursor-pointer items-center justify-center gap-3 rounded-control border border-border-default bg-surface-card px-4 py-3 text-sm font-medium text-text-primary transition-colors hover:border-border-strong hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
+              className="group flex min-h-[50px] w-full cursor-pointer items-center justify-center gap-3 rounded-control border border-border-default bg-surface-card px-4 py-3 text-sm font-medium text-text-primary transition-colors hover:border-border-strong hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              <FcGoogle size={20} />
-              Continue with Google
+              {isLoading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin text-brand" />
+                  <span>Connecting to Google...</span>
+                </>
+              ) : (
+                <>
+                  <FcGoogle size={20} />
+                  <span>Continue with Google</span>
+                </>
+              )}
             </button>
 
             <p className="mt-5 text-left text-sm text-text-muted">
@@ -122,7 +187,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
                 Terms
               </Link>{" "}
               and{" "}
-              <Link href="/privacy" className="cursor-pointer underline underline-offset-2 hover:text-text-primary">
+              <Link href="/privacy-policy" className="cursor-pointer underline underline-offset-2 hover:text-text-primary">
                 Privacy Policy
               </Link>
               .
@@ -134,37 +199,6 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
           </footer>
         </section>
       </div>
-
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        maxWidth="sm"
-        showCloseButton={true}
-        bodyClassName="p-6 sm:p-8"
-        labelledBy="explore-modal-title"
-      >
-        <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-control bg-brand-soft text-brand">
-          <Compass size={22} strokeWidth={1.7} />
-        </div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
-          Explore first
-        </p>
-        <h2 id="explore-modal-title" className="mt-2 pr-5 text-2xl font-medium leading-tight tracking-[-0.035em] text-text-primary">
-          Take a look around.
-        </h2>
-        <p className="mt-3 text-sm leading-6 text-text-muted">
-          Browse Zenoway and discover opportunities without creating an
-          account. We’re continuing to build more ways to support your
-          career journey.
-        </p>
-        <Link
-          href="/"
-          onClick={() => setIsModalOpen(false)}
-          className="mt-6 flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 py-3 text-sm font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-        >
-          Explore Zenoway <ArrowUpRight size={16} />
-        </Link>
-      </Modal>
     </main>
   );
 }
