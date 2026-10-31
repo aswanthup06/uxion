@@ -123,10 +123,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Public submissions require contact email for verification
-    if (!isAdmin && !body.mail?.trim()) {
+    // Application email is strictly mandatory for all jobs
+    if (!body.mail?.trim()) {
       return NextResponse.json(
-        { error: "Contact email is required for public submissions" },
+        { error: "Application email is required" },
         { status: 400 }
       );
     }

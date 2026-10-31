@@ -839,12 +839,17 @@ export default function JobFormWizard({
           errors.experienceMax = "Maximum experience cannot be less than minimum experience.";
         }
       }
+
+      const trimmedMail = form.mail.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!trimmedMail) {
+        errors.mail = "Please enter an application email.";
+      } else if (!emailRegex.test(trimmedMail)) {
+        errors.mail = "Please enter a valid email address (e.g. hr@company.com).";
+      }
     } else if (stepNumber === 4) {
       if (!form.description.trim()) {
         errors.description = "Please provide a job description.";
-      }
-      if (!form.mail.trim() || !form.mail.includes("@")) {
-        errors.mail = "Please provide a valid application email.";
       }
     }
 

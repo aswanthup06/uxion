@@ -317,6 +317,11 @@ export async function createJob(jobData: Partial<Job>): Promise<Job> {
   if (!dbPayload.posted_date) {
     dbPayload.posted_date = new Date().toISOString();
   }
+  // Application email is mandatory for all jobs
+  if (!dbPayload.mail || !dbPayload.mail.trim()) {
+    throw new Error("Application email is mandatory for all jobs.");
+  }
+
   // Email-only applications
   dbPayload.apply = "";
 
