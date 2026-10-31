@@ -617,7 +617,13 @@ export default function JobFormWizard({
         throw new Error(data.error || "Failed to generate description");
       }
       setForm((prev) => ({ ...prev, description: data.description }));
-      toast.success("Professional description generated!");
+      setFieldErrors((prev) => {
+        if (!prev.description) return prev;
+        const cp = { ...prev };
+        delete cp.description;
+        return cp;
+      });
+      toast.success(data.isAiPowered ? "AI description generated!" : "Professional description generated!");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to generate description");
     } finally {
@@ -645,7 +651,13 @@ export default function JobFormWizard({
         throw new Error(data.error || "Failed to enhance description");
       }
       setForm((prev) => ({ ...prev, description: data.description }));
-      toast.success("Description enhanced and polished!");
+      setFieldErrors((prev) => {
+        if (!prev.description) return prev;
+        const cp = { ...prev };
+        delete cp.description;
+        return cp;
+      });
+      toast.success(data.isAiPowered ? "Description enhanced by AI!" : "Description formatted and polished!");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to enhance description");
     } finally {
