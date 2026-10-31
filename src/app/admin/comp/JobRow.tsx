@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Job } from "../../types/job";
-import { ArrowUpRight, Eye, Pencil, Trash2 } from "lucide-react";
+import { ArrowUpRight, Pencil, Trash2 } from "lucide-react";
 
 type Props = {
   job: Job;
@@ -50,8 +50,7 @@ export default function JobRow({ job, onDelete }: Props) {
       </td>
 
       <td className="px-5 py-4">
-        <span className="inline-flex items-center gap-1.5 text-sm tabular-nums text-text-secondary">
-          <Eye size={14} className="text-text-muted" />
+        <span className="text-sm tabular-nums text-text-secondary">
           {job.views ?? 0}
         </span>
       </td>

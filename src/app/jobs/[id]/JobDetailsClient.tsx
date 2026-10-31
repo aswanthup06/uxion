@@ -154,6 +154,23 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
   const [toast, setToast] = useState<string | null>(null);
   const [applyOpen, setApplyOpen] = useState(false);
 
+  useEffect(() => {
+    if (!job?.id) return;
+    try {
+      const storageKey = `zenoway_viewed_${job.id}`;
+      if (!sessionStorage.getItem(storageKey)) {
+        sessionStorage.setItem(storageKey, "1");
+        fetch("/api/jobs/view", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: job.id }),
+        }).catch(() => {});
+      }
+    } catch {
+      // Ignore errors in environments where sessionStorage is restricted
+    }
+  }, [job?.id]);
+
   const description = job.description?.trim() || "";
 
   const companyUrl = useMemo(

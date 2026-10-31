@@ -510,13 +510,15 @@ export async function incrementJobViews(id: string): Promise<void> {
   try {
     const supabase = getServiceSupabase();
     // Fetch current views and increment
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("jobs")
       .select("views")
       .eq("id", id)
-      .single();
+      .maybeSingle();
 
-    const currentViews = data?.views ?? 0;
+    if (error || !data) return;
+
+    const currentViews = typeof data.views === "number" ? data.views : 0;
     await supabase
       .from("jobs")
       .update({ views: currentViews + 1 })
