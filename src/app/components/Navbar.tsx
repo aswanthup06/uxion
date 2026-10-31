@@ -484,26 +484,20 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => toggleDropdown("user")}
-                  className="flex cursor-pointer items-center gap-2 rounded-control border border-border-default bg-surface-card py-1.5 pl-2 pr-3 text-xs font-medium text-text-primary transition-colors hover:border-brand"
+                  aria-label="User account menu"
+                  className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border-default bg-surface-card p-0.5 transition-all hover:border-brand hover:ring-2 hover:ring-brand-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                 >
                   {profile?.avatar_url || user.user_metadata?.avatar_url ? (
                     <img
                       src={profile?.avatar_url || user.user_metadata?.avatar_url}
                       alt={profile?.full_name || "Candidate"}
-                      className="h-6 w-6 rounded-full object-cover"
+                      className="h-full w-full rounded-full object-cover"
                     />
                   ) : (
-                    <div className="grid h-6 w-6 place-items-center rounded-full bg-brand-soft text-[11px] font-semibold text-brand">
+                    <div className="grid h-full w-full place-items-center rounded-full bg-brand-soft text-xs font-semibold text-brand">
                       {(profile?.full_name || user.email || "C").charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <span className="max-w-[110px] truncate text-xs font-semibold">
-                    {profile?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0]}
-                  </span>
-                  <ChevronDown
-                    size={13}
-                    className={`text-text-muted transition-transform ${dropdown === "user" ? "rotate-180" : ""}`}
-                  />
                 </button>
 
                 <AnimatePresence>
