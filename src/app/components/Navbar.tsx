@@ -191,9 +191,9 @@ export default function Navbar() {
       <div className="mx-auto flex h-[68px] items-center px-4 sm:px-6 lg:px-8">
         {/* Brand */}
         <Link
-          href={isAdminRoute ? "/admin" : "/"}
+          href="/"
           onClick={closeMenus}
-          aria-label={isAdminRoute ? "Zenoway admin home" : "Zenoway home"}
+          aria-label="Zenoway home"
           className="group flex shrink-0 cursor-pointer items-center gap-2.5"
         >
           <motion.span
