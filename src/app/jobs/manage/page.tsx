@@ -138,7 +138,7 @@ export default function HRManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-subtle text-text-primary">
+    <div className="min-h-full bg-surface-subtle text-text-primary">
       <div className="mx-auto max-w-[1440px] px-4 pb-12 pt-5 sm:px-6 lg:px-8">
         <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-text-muted">
           <Link href="/" className="cursor-pointer transition-colors hover:text-brand">Home</Link>
@@ -210,7 +210,7 @@ export default function HRManagementPage() {
             </div>
           )}
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto overflow-y-hidden">
             <table className="w-full min-w-[900px] border-collapse text-left">
               <thead className="bg-surface-subtle">
                 <tr className="text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted">
