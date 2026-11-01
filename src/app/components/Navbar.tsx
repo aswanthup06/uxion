@@ -351,11 +351,8 @@ export default function Navbar() {
                           className={`${iconClass} text-brand`}
                         />
                         <span className="min-w-0 flex-1">
-                          <span className="flex items-center gap-1.5 font-medium text-text-primary group-hover:text-brand">
-                            <span>Referral Rewards</span>
-                            <span className="rounded-pill bg-brand-soft px-1.5 py-0.2 text-[10px] font-semibold text-brand">
-                              ₹2/app
-                            </span>
+                          <span className="block font-medium text-text-primary group-hover:text-brand">
+                            Referral Rewards
                           </span>
                           <span className="mt-0.5 block text-xs text-text-muted">
                             Earn by sharing jobs
@@ -794,11 +791,8 @@ export default function Navbar() {
                           >
                             <Share2 size={17} className={`${iconClass} text-brand`} />
                             <span>
-                              <span className="flex items-center gap-1.5 font-medium">
-                                <span>Referral Rewards</span>
-                                <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-[10px] font-semibold text-brand">
-                                  ₹2/app
-                                </span>
+                              <span className="block font-medium">
+                                Referral Rewards
                               </span>
                               <span className="mt-0.5 block text-xs text-text-muted">
                                 Earn by sharing jobs
