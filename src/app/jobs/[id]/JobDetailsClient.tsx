@@ -18,7 +18,6 @@ import {
 
 import ApplyModal from "./ApplyModal";
 import FormattedDescription from "@/app/components/jobs/FormattedDescription";
-import { getJobCategory } from "@/app/components/jobs/jobs-utils";
 import type { Job } from "@/app/types/job";
 import {
   normalizeWorkMode,
@@ -539,9 +538,6 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
     companyUrl,
     isRemote,
   ]);
-
-  const category = useMemo(() => getJobCategory(job), [job]);
-
   return (
     <main className="min-h-screen bg-surface-base text-text-primary">
       {schema && (
@@ -568,41 +564,6 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
       </AnimatePresence>
 
       <div className="mx-auto w-full max-w-4xl px-5 pb-20 pt-8 sm:px-8 sm:pt-12">
-        <motion.nav
-          {...rise()}
-          aria-label="Breadcrumb"
-          className="mb-8 flex flex-wrap items-center gap-2 text-[13px]"
-        >
-          <Link
-            href="/jobs"
-            className="cursor-pointer font-medium text-text-muted transition-colors hover:text-brand"
-          >
-            Jobs
-          </Link>
-
-          <span aria-hidden="true" className="text-border-strong">
-            /
-          </span>
-
-          <Link
-            href={`/jobs?category=${encodeURIComponent(category.toLowerCase())}`}
-            className="cursor-pointer font-medium text-text-muted transition-colors hover:text-brand"
-          >
-            {category}
-          </Link>
-
-          <span aria-hidden="true" className="text-border-strong">
-            /
-          </span>
-
-          <span
-            aria-current="page"
-            className="max-w-[260px] truncate font-medium text-text-primary sm:max-w-md"
-            title={job.title}
-          >
-            {job.title}
-          </span>
-        </motion.nav>
 
         <motion.header
           {...rise(0.04)}

@@ -8,12 +8,13 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ChevronDown,
   ArrowUpRight,
+  Palette,
   Code2,
   Database,
   Cloud,
-  ShieldCheck,
   Bug,
   Mail,
+  Share2,
   BriefcaseBusiness,
   LayoutDashboard,
   Settings,
@@ -35,28 +36,28 @@ const ADMIN_LOGIN = "/admin/login";
 
 const categories = [
   {
-    label: "Software Development",
-    href: `${JOBS}?category=software`,
+    label: "UI/UX & Product Design",
+    href: `${JOBS}?category=${encodeURIComponent("UI/UX & Product Design")}`,
+    icon: Palette,
+  },
+  {
+    label: "Full Stack Development",
+    href: `${JOBS}?category=${encodeURIComponent("Full Stack Development")}`,
     icon: Code2,
   },
   {
-    label: "Data & AI",
-    href: `${JOBS}?category=data-ai`,
-    icon: Database,
-  },
-  {
     label: "DevOps & Cloud",
-    href: `${JOBS}?category=devops`,
+    href: `${JOBS}?category=${encodeURIComponent("DevOps, Cloud & Infrastructure")}`,
     icon: Cloud,
   },
   {
-    label: "Cybersecurity",
-    href: `${JOBS}?category=security`,
-    icon: ShieldCheck,
+    label: "Data Science & AI",
+    href: `${JOBS}?category=${encodeURIComponent("Data Science & AI / ML")}`,
+    icon: Database,
   },
   {
     label: "QA & Testing",
-    href: `${JOBS}?category=qa`,
+    href: `${JOBS}?category=${encodeURIComponent("QA & Automation Testing")}`,
     icon: Bug,
   },
 ];
@@ -281,10 +282,10 @@ export default function Navbar() {
                     <motion.div
                       key="jobs-dropdown"
                       {...motionProps}
-                      className="absolute left-0 top-[calc(100%-1px)] w-[290px] origin-top-left rounded-card border border-border-default bg-surface-card p-2 shadow-dropdown"
+                      className="absolute left-0 top-[calc(100%-1px)] w-[305px] origin-top-left rounded-card border border-border-default bg-surface-card p-2 shadow-dropdown"
                     >
-                      <p className="px-3 pb-2 pt-2 text-[10px] font-semibold uppercase tracking-[1.4px] text-text-muted">
-                        Explore IT jobs
+                      <p className="px-3 pb-1.5 pt-2 text-[10px] font-bold uppercase tracking-[1.4px] text-text-muted">
+                        Explore by domain
                       </p>
 
                       {categories.map(({ label, href, icon: Icon }) => (
@@ -292,17 +293,17 @@ export default function Navbar() {
                           key={label}
                           href={href}
                           onClick={closeMenus}
-                          className="group flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-[13px] font-medium text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
+                          className="group flex cursor-pointer items-center gap-3 rounded-control px-3 py-2 text-[13px] font-medium text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
                         >
                           <Icon
-                            size={17}
+                            size={16}
                             strokeWidth={1.8}
                             aria-hidden="true"
                             className={`${iconClass} text-text-muted group-hover:text-brand`}
                           />
                           <span className="flex-1">{label}</span>
                           <ArrowUpRight
-                            size={14}
+                            size={13}
                             aria-hidden="true"
                             className={`${iconClass} text-text-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand`}
                           />
@@ -311,35 +312,92 @@ export default function Navbar() {
 
                       <div className="mx-2 my-2 border-t border-border-default" />
 
+                      <p className="px-3 pb-1.5 pt-1 text-[10px] font-bold uppercase tracking-[1.4px] text-text-muted">
+                        Candidate resources
+                      </p>
+
                       <Link
-                        href="/email"
+                        href="/profile"
                         onClick={closeMenus}
-                        className="group flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-[13px] text-text-secondary transition-colors hover:bg-surface-subtle"
+                        className="group flex cursor-pointer items-center gap-3 rounded-control px-3 py-2 text-[13px] text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
                       >
-                        <Mail
-                          size={17}
+                        <UserRound
+                          size={16}
                           strokeWidth={1.8}
                           className={`${iconClass} text-brand`}
                         />
                         <span className="min-w-0 flex-1">
-                          <span className="block font-medium">Email Guide</span>
+                          <span className="block font-medium text-text-primary group-hover:text-brand">
+                            {user ? "My Profile" : "Candidate Profile"}
+                          </span>
+                          <span className="mt-0.5 block text-xs text-text-muted">
+                            {user ? "Manage resume & details" : "Sign in to build your profile"}
+                          </span>
+                        </span>
+                        <ArrowUpRight
+                          size={13}
+                          className={`${iconClass} text-text-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand`}
+                        />
+                      </Link>
+
+                      <Link
+                        href="/referral"
+                        onClick={closeMenus}
+                        className="group flex cursor-pointer items-center gap-3 rounded-control px-3 py-2 text-[13px] text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
+                      >
+                        <Share2
+                          size={16}
+                          strokeWidth={1.8}
+                          className={`${iconClass} text-brand`}
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="flex items-center gap-1.5 font-medium text-text-primary group-hover:text-brand">
+                            <span>Referral Rewards</span>
+                            <span className="rounded-pill bg-brand-soft px-1.5 py-0.2 text-[10px] font-semibold text-brand">
+                              ₹2/app
+                            </span>
+                          </span>
+                          <span className="mt-0.5 block text-xs text-text-muted">
+                            Earn by sharing jobs
+                          </span>
+                        </span>
+                        <ArrowUpRight
+                          size={13}
+                          className={`${iconClass} text-text-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand`}
+                        />
+                      </Link>
+
+                      <Link
+                        href="/email"
+                        onClick={closeMenus}
+                        className="group flex cursor-pointer items-center gap-3 rounded-control px-3 py-2 text-[13px] text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
+                      >
+                        <Mail
+                          size={16}
+                          strokeWidth={1.8}
+                          className={`${iconClass} text-brand`}
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block font-medium text-text-primary group-hover:text-brand">
+                            Email Guide
+                          </span>
                           <span className="mt-0.5 block text-xs text-text-muted">
                             Write better professional emails
                           </span>
                         </span>
                         <ArrowUpRight
-                          size={14}
-                          className={`${iconClass} text-text-muted`}
+                          size={13}
+                          className={`${iconClass} text-text-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand`}
                         />
                       </Link>
 
                       <Link
                         href={JOBS}
                         onClick={closeMenus}
-                        className="mt-1 flex cursor-pointer items-center justify-between rounded-control bg-brand-soft px-3 py-2.5 text-[13px] font-semibold text-brand transition-colors hover:bg-brand-soft-hover"
+                        className="mt-1.5 flex cursor-pointer items-center justify-between rounded-control bg-brand-soft px-3 py-2 text-[13px] font-semibold text-brand transition-colors hover:bg-brand-soft-hover"
                       >
-                        View all IT jobs
-                        <ArrowUpRight size={16} className={iconClass} />
+                        Browse all jobs
+                        <ArrowUpRight size={15} className={iconClass} />
                       </Link>
                     </motion.div>
                   )}
@@ -687,12 +745,15 @@ export default function Navbar() {
                         className="overflow-hidden"
                       >
                         <div className="space-y-1 py-2 pl-2">
+                          <p className="px-3 pb-1 pt-1 text-[10px] font-bold uppercase tracking-[1.4px] text-text-muted">
+                            Explore by domain
+                          </p>
                           {categories.map(({ label, href, icon: Icon }) => (
                             <Link
                               key={label}
                               href={href}
                               onClick={closeMenus}
-                              className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-sm text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
+                              className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
                             >
                               <Icon
                                 size={17}
@@ -704,10 +765,51 @@ export default function Navbar() {
                             </Link>
                           ))}
 
+                          <div className="my-2 border-t border-border-default" />
+
+                          <p className="px-3 pb-1 pt-1 text-[10px] font-bold uppercase tracking-[1.4px] text-text-muted">
+                            Candidate resources
+                          </p>
+
+                          <Link
+                            href="/profile"
+                            onClick={closeMenus}
+                            className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
+                          >
+                            <UserRound size={17} className={`${iconClass} text-brand`} />
+                            <span>
+                              <span className="block font-medium">
+                                {user ? "My Profile" : "Candidate Profile"}
+                              </span>
+                              <span className="mt-0.5 block text-xs text-text-muted">
+                                {user ? "Manage resume & details" : "Sign in to build your profile"}
+                              </span>
+                            </span>
+                          </Link>
+
+                          <Link
+                            href="/referral"
+                            onClick={closeMenus}
+                            className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
+                          >
+                            <Share2 size={17} className={`${iconClass} text-brand`} />
+                            <span>
+                              <span className="flex items-center gap-1.5 font-medium">
+                                <span>Referral Rewards</span>
+                                <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-[10px] font-semibold text-brand">
+                                  ₹2/app
+                                </span>
+                              </span>
+                              <span className="mt-0.5 block text-xs text-text-muted">
+                                Earn by sharing jobs
+                              </span>
+                            </span>
+                          </Link>
+
                           <Link
                             href="/email"
                             onClick={closeMenus}
-                            className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
+                            className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
                           >
                             <Mail
                               size={17}
@@ -728,7 +830,7 @@ export default function Navbar() {
                             onClick={closeMenus}
                             className="mt-1 flex cursor-pointer items-center justify-between rounded-control bg-brand-soft px-3 py-2.5 text-sm font-semibold text-brand transition-colors hover:bg-brand-soft-hover"
                           >
-                            All IT Jobs
+                            Browse all jobs
                             <ArrowUpRight size={16} className={iconClass} />
                           </Link>
                         </div>

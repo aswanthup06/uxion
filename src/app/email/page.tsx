@@ -93,25 +93,7 @@ function CheckItem({ children }: { children: React.ReactNode }) {
 export default function EmailGuidePage() {
   return (
     <main className="min-h-screen bg-surface-base text-text-primary">
-      <div className="mx-auto w-full max-w-5xl px-5 pb-16 pt-8 sm:px-8 sm:pb-20 sm:pt-10 lg:px-10">
-        {/* Breadcrumb */}
-        <nav
-          aria-label="Breadcrumb"
-          className="mb-12 flex items-center gap-2 text-sm sm:mb-16"
-        >
-          <Link
-            href="/"
-            className="text-text-muted transition-colors hover:text-brand"
-          >
-            Home
-          </Link>
-
-          <span className="text-border-strong">/</span>
-
-          <span className="font-medium text-brand" aria-current="page">
-            Career Guide
-          </span>
-        </nav>
+      <div className="mx-auto w-full max-w-5xl px-5 pb-16 pt-10 sm:px-8 sm:pb-20 sm:pt-14 lg:px-10">
 
         {/* Hero */}
         <header className="mb-16 max-w-3xl sm:mb-20">

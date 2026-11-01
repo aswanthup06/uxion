@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -14,8 +14,12 @@ import {
   Plus,
   UserRound,
   Loader2,
+  Trash2,
 } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
+import Modal from "@/app/components/Modal";
+import { createClient } from "@/lib/supabase/client";
 
 const sectionClass =
   "rounded-panel border border-border-default bg-surface-card p-5 sm:p-6 shadow-subtle";
@@ -26,12 +30,45 @@ export default function ProfilePage() {
   const router = useRouter();
   const { user, profile, isLoading } = useAuth();
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // 1. If not logged in and auth finished loading, redirect to /login
   useEffect(() => {
     if (!isLoading && !user) {
       router.replace("/login?redirect=/profile");
     }
   }, [user, isLoading, router]);
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+
+    try {
+      const res = await fetch("/api/auth/delete-account", {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Failed to delete account");
+      }
+
+      toast.success("Account deleted successfully.");
+
+      // Clear client-side Supabase tokens
+      const supabase = createClient();
+      await supabase.auth.signOut().catch(() => {});
+
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 500);
+    } catch (err: unknown) {
+      console.error("Account deletion error:", err);
+      const msg = err instanceof Error ? err.message : "Error deleting account";
+      toast.error(msg);
+      setIsDeleting(false);
+    }
+  };
 
   if (isLoading || !user) {
     return (
@@ -70,6 +107,18 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-surface-page text-text-primary">
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3500,
+          style: {
+            border: "1px solid var(--color-border-default)",
+            borderRadius: "8px",
+            fontSize: "13px",
+          },
+        }}
+      />
+
       <div className="mx-auto w-full max-w-5xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav
@@ -240,6 +289,28 @@ export default function ProfilePage() {
                 </div>
               </section>
             )}
+
+            {/* Delete Account Section */}
+            <section className={sectionClass}>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="text-sm font-semibold text-text-primary">
+                    Delete account
+                  </h2>
+                  <p className="mt-0.5 text-xs text-text-muted">
+                    Permanently remove your candidate profile, resume, and account data.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsDeleteModalOpen(true)}
+                  className="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-control border border-status-error/30 bg-surface-card px-3.5 text-xs font-semibold text-status-error shadow-subtle transition-all duration-150 hover:border-status-error hover:bg-status-error hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-status-error/20 active:scale-[0.99]"
+                >
+                  <Trash2 size={13} />
+                  <span>Delete account</span>
+                </button>
+              </div>
+            </section>
           </div>
 
           {/* Right Sidebar */}
@@ -315,7 +386,72 @@ export default function ProfilePage() {
           </aside>
         </div>
       </div>
+
+      {/* Delete Account Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          if (!isDeleting) {
+            setIsDeleteModalOpen(false);
+          }
+        }}
+        maxWidth="sm"
+        showCloseButton={false}
+        bodyClassName="p-6"
+        labelledBy="delete-modal-title"
+        describedBy="delete-modal-desc"
+      >
+        <div className="text-center">
+          {/* Warning Icon Badge */}
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-status-error-bg text-status-error ring-8 ring-status-error-bg/60">
+            <Trash2 className="h-5 w-5" />
+          </div>
+
+          {/* Title */}
+          <h3
+            id="delete-modal-title"
+            className="mt-4 text-base font-semibold text-text-primary"
+          >
+            Delete your account?
+          </h3>
+
+          {/* Description */}
+          <p
+            id="delete-modal-desc"
+            className="mt-2 text-xs leading-relaxed text-text-secondary"
+          >
+            Are you sure you want to delete your account? All of your candidate profile information, uploaded resume, and application data will be permanently removed. This action cannot be undone.
+          </p>
+
+          {/* Action Buttons */}
+          <div className="mt-6 flex items-center gap-3">
+            <button
+              type="button"
+              disabled={isDeleting}
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="flex-1 inline-flex h-9.5 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-4 text-xs font-semibold text-text-secondary shadow-subtle transition-colors hover:bg-surface-subtle hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              disabled={isDeleting}
+              onClick={handleDeleteAccount}
+              className="flex-1 inline-flex h-9.5 cursor-pointer items-center justify-center gap-2 rounded-control bg-status-error px-4 text-xs font-semibold text-white shadow-subtle transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.99]"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 size={13} className="animate-spin" />
+                  <span>Deleting...</span>
+                </>
+              ) : (
+                <span>Delete account</span>
+              )}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
-
