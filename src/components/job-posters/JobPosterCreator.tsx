@@ -374,7 +374,7 @@ export function JobPosterCreator({
 
   // Compute responsive preview scale keeping Feed (4:5), Square (1:1), and Story (9:16) cleanly framed
   const maxStageHeight =
-    format === "story" ? 680 : format === "square" ? 560 : 640;
+    format === "story" ? 680 : format === "square" ? 600 : 640;
   const previewScale =
     stageWidth > 0
       ? Math.min(stageWidth / formatSpec.width, maxStageHeight / formatSpec.height)
@@ -864,7 +864,7 @@ export function JobPosterCreator({
                       format === "story"
                         ? "aspect-[9/16] max-h-[680px]"
                         : format === "square"
-                          ? "aspect-square max-h-[560px]"
+                          ? "aspect-square max-h-[600px]"
                           : "aspect-[4/5] max-h-[640px]"
                     }`}
                   />

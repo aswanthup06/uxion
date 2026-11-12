@@ -307,10 +307,10 @@ function BoldHiringPoster({
   const isSquare = format === "square";
   const spec = POSTER_FORMATS[format];
 
-  const heroWordSize = isStory ? 182 : isSquare ? 120 : 156;
+  const heroWordSize = isStory ? 186 : isSquare ? 136 : 160;
   const titleSize = getAdaptiveTitleSize(
     data.title,
-    isStory ? 78 : isSquare ? 54 : 68
+    isStory ? 80 : isSquare ? 64 : 74
   );
 
   const displayBullets =
@@ -364,16 +364,16 @@ function BoldHiringPoster({
   }>;
 
   const megaphonePos = isStory
-    ? { top: 840, width: 515 }
+    ? { top: 820, width: 500 }
     : isSquare
-      ? { top: 300, width: 410 }
-      : { top: 485, width: 480 };
+      ? { top: 148, width: 390 }
+      : { top: 245, width: 440 };
 
   const rippleCenter = isStory
-    ? { cx: 835, cy: 1015 }
+    ? { cx: 835, cy: 990 }
     : isSquare
-      ? { cx: 865, cy: 440 }
-      : { cx: 845, cy: 655 };
+      ? { cx: 880, cy: 270 }
+      : { cx: 855, cy: 385 };
 
   return (
     <div
@@ -389,7 +389,7 @@ function BoldHiringPoster({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: isStory ? "78px 72px 64px" : isSquare ? "42px 58px 36px" : "58px 72px 46px",
+        padding: isStory ? "74px 72px 62px" : isSquare ? "38px 56px 34px" : "54px 68px 44px",
         boxSizing: "border-box",
       }}
     >
@@ -410,24 +410,24 @@ function BoldHiringPoster({
         size={isSquare ? 36 : 48}
         color="#FFFFFF"
         style={{
-          left: isStory ? 635 : isSquare ? 610 : 620,
-          top: isStory ? 535 : isSquare ? 145 : 265,
+          left: isStory ? 635 : isSquare ? 600 : 605,
+          top: isStory ? 535 : isSquare ? 116 : 195,
         }}
       />
       <SparkleStar
         size={isSquare ? 42 : 54}
         color="#B8FF3B"
         style={{
-          right: isSquare ? 88 : 112,
-          top: isStory ? 745 : isSquare ? 235 : 410,
+          right: isSquare ? 72 : 98,
+          top: isStory ? 745 : isSquare ? 104 : 175,
         }}
       />
       <SparkleStar
-        size={isSquare ? 36 : 46}
+        size={isSquare ? 34 : 46}
         color="#FFFFFF"
         style={{
-          left: isStory ? 595 : isSquare ? 595 : 590,
-          top: isStory ? 1275 : isSquare ? 630 : 845,
+          right: isSquare ? 82 : 108,
+          top: isStory ? 1240 : isSquare ? 430 : 590,
         }}
       />
       {isStory && (
@@ -475,14 +475,14 @@ function BoldHiringPoster({
       >
         <ZenowayLockup
           logoSrc={whiteLogoSrc}
-          size={isSquare ? "sm" : "md"}
+          size="md"
           darkText={false}
         />
         <span
           style={{
-            fontSize: isStory ? 21 : isSquare ? 17 : 19,
+            fontSize: isStory ? 22 : isSquare ? 20 : 21,
             fontWeight: 500,
-            color: "rgba(255, 255, 255, 0.88)",
+            color: "rgba(255, 255, 255, 0.9)",
             letterSpacing: "0.01em",
             whiteSpace: "nowrap",
           }}
@@ -501,8 +501,8 @@ function BoldHiringPoster({
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          paddingTop: isStory ? 32 : isSquare ? 10 : 20,
-          paddingBottom: isStory ? 32 : isSquare ? 12 : 20,
+          paddingTop: isStory ? 28 : isSquare ? 8 : 16,
+          paddingBottom: isStory ? 28 : isSquare ? 10 : 18,
         }}
       >
         {/* Massive Billboard Two-Line Display Headline */}
@@ -525,11 +525,11 @@ function BoldHiringPoster({
             margin: 0,
             marginTop: isStory ? 34 : isSquare ? 18 : 24,
             fontSize: titleSize,
-            fontWeight: 400,
+            fontWeight: 500,
             letterSpacing: "-0.03em",
-            lineHeight: 1.05,
+            lineHeight: 1.06,
             color: "#FFFFFF",
-            maxWidth: isStory ? 520 : isSquare ? 500 : 510,
+            maxWidth: isStory ? 550 : isSquare ? 610 : 600,
           }}
         >
           {truncateText(data.title, 68)}
@@ -538,21 +538,21 @@ function BoldHiringPoster({
         {/* Clean Company Attribution */}
         <div
           style={{
-            marginTop: isStory ? 22 : isSquare ? 10 : 14,
+            marginTop: isStory ? 24 : isSquare ? 14 : 18,
             display: "inline-flex",
             alignItems: "center",
-            gap: 12,
+            gap: 14,
           }}
         >
           <CompanyLogoBadge
             company={data.company}
             companyLogoSrc={companyLogoSrc}
-            size={isSquare ? 36 : 42}
+            size={isSquare ? 44 : 46}
             darkSurface={true}
           />
           <span
             style={{
-              fontSize: isStory ? 29 : isSquare ? 22 : 25,
+              fontSize: isStory ? 32 : isSquare ? 28 : 30,
               fontWeight: 600,
               color: "#CCF7DE",
               letterSpacing: "-0.01em",
@@ -566,12 +566,12 @@ function BoldHiringPoster({
         {prioritySpecs.length > 0 && (
           <div
             style={{
-              marginTop: isStory ? 30 : isSquare ? 16 : 22,
-              maxWidth: isStory ? 520 : isSquare ? 510 : 515,
+              marginTop: isStory ? 30 : isSquare ? 18 : 24,
+              maxWidth: isStory ? 560 : 940,
               display: "flex",
               flexWrap: "wrap",
-              columnGap: isStory ? 28 : isSquare ? 20 : 26,
-              rowGap: isStory ? 14 : isSquare ? 9 : 12,
+              columnGap: isStory ? 28 : isSquare ? 28 : 30,
+              rowGap: isStory ? 14 : isSquare ? 10 : 12,
             }}
           >
             {prioritySpecs.map((item) => {
@@ -582,16 +582,16 @@ function BoldHiringPoster({
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
-                    gap: 9,
+                    gap: 10,
                     color: item.highlight ? "#B8FF3B" : "#FFFFFF",
-                    fontSize: isStory ? 24 : isSquare ? 19 : 22,
+                    fontSize: isStory ? 27 : isSquare ? 24 : 26,
                     fontWeight: 700,
                     letterSpacing: "-0.01em",
                     whiteSpace: "nowrap",
                   }}
                 >
                   <Icon
-                    size={isSquare ? 18 : 20}
+                    size={isSquare ? 22 : 24}
                     strokeWidth={2.3}
                     style={{
                       color: "#B8FF3B",
@@ -609,16 +609,16 @@ function BoldHiringPoster({
         {displayBullets.length > 0 && (
           <div
             style={{
-              marginTop: isStory ? 38 : isSquare ? 16 : 26,
-              maxWidth: isStory ? 500 : isSquare ? 495 : 500,
+              marginTop: isStory ? 38 : isSquare ? 20 : 28,
+              maxWidth: 940,
             }}
           >
             <div
               style={{
-                fontSize: isStory ? 25 : isSquare ? 18 : 21,
+                fontSize: isStory ? 27 : isSquare ? 23 : 25,
                 fontWeight: 700,
                 color: "#B8FF3B",
-                marginBottom: isStory ? 14 : 8,
+                marginBottom: isStory ? 14 : 10,
                 letterSpacing: "-0.01em",
               }}
             >
@@ -628,7 +628,7 @@ function BoldHiringPoster({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: isStory ? 12 : isSquare ? 6 : 8,
+                gap: isStory ? 12 : isSquare ? 9 : 10,
               }}
             >
               {displayBullets.map((bullet, idx) => (
@@ -637,8 +637,8 @@ function BoldHiringPoster({
                   style={{
                     display: "flex",
                     alignItems: "flex-start",
-                    gap: 11,
-                    fontSize: isStory ? 24 : isSquare ? 18 : 21,
+                    gap: 12,
+                    fontSize: isStory ? 27 : isSquare ? 23 : 25,
                     fontWeight: 400,
                     lineHeight: 1.34,
                     color: "#F3FCF7",
@@ -679,13 +679,13 @@ function BoldHiringPoster({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: isSquare ? 16 : 22,
+            gap: isSquare ? 18 : 22,
             minWidth: 0,
           }}
         >
           <PosterQrCode
             value={data.jobUrl}
-            size={isStory ? 128 : isSquare ? 96 : 114}
+            size={isStory ? 132 : isSquare ? 102 : 118}
             borderColor="none"
             padding={isSquare ? 6 : 8}
             borderRadius={6}
@@ -693,7 +693,7 @@ function BoldHiringPoster({
           <div style={{ minWidth: 0 }}>
             <div
               style={{
-                fontSize: isStory ? 16 : 14,
+                fontSize: isStory ? 18 : isSquare ? 16 : 17,
                 fontWeight: 600,
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
@@ -706,7 +706,7 @@ function BoldHiringPoster({
             </div>
             <div
               style={{
-                fontSize: isStory ? 28 : isSquare ? 21 : 25,
+                fontSize: isStory ? 30 : isSquare ? 25 : 28,
                 fontWeight: 800,
                 letterSpacing: "0.01em",
                 color: "#B8FF3B",
@@ -718,7 +718,7 @@ function BoldHiringPoster({
             </div>
             <div
               style={{
-                fontSize: isStory ? 21 : isSquare ? 16 : 19,
+                fontSize: isStory ? 23 : isSquare ? 19 : 22,
                 fontWeight: 500,
                 color: "#FFFFFF",
                 marginTop: 4,
@@ -732,7 +732,7 @@ function BoldHiringPoster({
 
         <div
           style={{
-            paddingLeft: isSquare ? 20 : 28,
+            paddingLeft: isSquare ? 22 : 28,
             borderLeft: "1px solid rgba(255, 255, 255, 0.22)",
             textAlign: "right",
             flexShrink: 0,
@@ -740,9 +740,9 @@ function BoldHiringPoster({
         >
           <div
             style={{
-              fontSize: isStory ? 16 : 14,
+              fontSize: isStory ? 18 : isSquare ? 16 : 17,
               fontWeight: 500,
-              color: "rgba(255, 255, 255, 0.85)",
+              color: "rgba(255, 255, 255, 0.88)",
               whiteSpace: "nowrap",
             }}
           >
@@ -750,7 +750,7 @@ function BoldHiringPoster({
           </div>
           <div
             style={{
-              fontSize: isStory ? 22 : isSquare ? 17 : 19,
+              fontSize: isStory ? 24 : isSquare ? 20 : 22,
               fontWeight: 700,
               color: "#FFFFFF",
               marginTop: 4,
@@ -761,7 +761,7 @@ function BoldHiringPoster({
           </div>
           <div
             style={{
-              fontSize: isStory ? 18 : isSquare ? 15 : 16,
+              fontSize: isStory ? 20 : isSquare ? 18 : 19,
               fontWeight: 500,
               color: "#CCF7DE",
               marginTop: 3,
@@ -792,10 +792,10 @@ function MinimalPoster({
   const isSquare = format === "square";
   const spec = POSTER_FORMATS[format];
 
-  const heroWordSize = isStory ? 172 : isSquare ? 114 : 148;
+  const heroWordSize = isStory ? 176 : isSquare ? 128 : 154;
   const titleSize = getAdaptiveTitleSize(
     data.title,
-    isStory ? 76 : isSquare ? 54 : 66
+    isStory ? 80 : isSquare ? 62 : 72
   );
 
   const specItems = [
@@ -827,7 +827,7 @@ function MinimalPoster({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: isStory ? "82px 78px" : isSquare ? "46px 68px" : "64px 78px",
+        padding: isStory ? "78px 76px" : isSquare ? "40px 64px" : "58px 74px",
         boxSizing: "border-box",
       }}
     >
@@ -886,14 +886,14 @@ function MinimalPoster({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          paddingBottom: isStory ? 34 : isSquare ? 18 : 24,
+          paddingBottom: isStory ? 34 : isSquare ? 16 : 22,
           borderBottom: "1px solid rgba(8, 127, 80, 0.16)",
         }}
       >
-        <ZenowayLockup logoSrc={logoSrc} size={isSquare ? "sm" : "md"} />
+        <ZenowayLockup logoSrc={logoSrc} size="md" />
         <span
           style={{
-            fontSize: isStory ? 20 : isSquare ? 16 : 18,
+            fontSize: isStory ? 22 : isSquare ? 19 : 20,
             fontWeight: 500,
             color: "#536258",
             whiteSpace: "nowrap",
@@ -913,8 +913,8 @@ function MinimalPoster({
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          paddingTop: isStory ? 36 : isSquare ? 16 : 26,
-          paddingBottom: isStory ? 36 : isSquare ? 16 : 26,
+          paddingTop: isStory ? 32 : isSquare ? 12 : 22,
+          paddingBottom: isStory ? 32 : isSquare ? 12 : 22,
         }}
       >
         {/* Billboard Stacked "We're / Hiring!" */}
@@ -934,13 +934,13 @@ function MinimalPoster({
         <h1
           style={{
             margin: 0,
-            marginTop: isStory ? 32 : isSquare ? 18 : 24,
+            marginTop: isStory ? 32 : isSquare ? 16 : 22,
             fontSize: titleSize,
-            fontWeight: 400,
+            fontWeight: 500,
             letterSpacing: "-0.03em",
-            lineHeight: 1.05,
+            lineHeight: 1.06,
             color: "#12231B",
-            maxWidth: 880,
+            maxWidth: 920,
           }}
         >
           {truncateText(data.title, 74)}
@@ -958,12 +958,12 @@ function MinimalPoster({
           <CompanyLogoBadge
             company={data.company}
             companyLogoSrc={companyLogoSrc}
-            size={isSquare ? 40 : 46}
+            size={isSquare ? 42 : 46}
           />
           <div style={{ minWidth: 0 }}>
             <span
               style={{
-                fontSize: isStory ? 29 : isSquare ? 22 : 25,
+                fontSize: isStory ? 32 : isSquare ? 27 : 29,
                 fontWeight: 700,
                 color: "#087F50",
                 letterSpacing: "-0.015em",
@@ -974,7 +974,7 @@ function MinimalPoster({
             {data.companyWebsiteDisplay && (
               <span
                 style={{
-                  fontSize: isStory ? 22 : isSquare ? 17 : 19,
+                  fontSize: isStory ? 24 : isSquare ? 20 : 22,
                   fontWeight: 500,
                   color: "#738279",
                   marginLeft: 14,
@@ -990,9 +990,9 @@ function MinimalPoster({
         {specItems.length > 0 && (
           <div
             style={{
-              marginTop: isStory ? 38 : isSquare ? 18 : 26,
-              paddingTop: isStory ? 26 : isSquare ? 14 : 20,
-              paddingBottom: isStory ? 26 : isSquare ? 14 : 20,
+              marginTop: isStory ? 36 : isSquare ? 18 : 24,
+              paddingTop: isStory ? 24 : isSquare ? 14 : 18,
+              paddingBottom: isStory ? 24 : isSquare ? 14 : 18,
               borderTop: "1px solid rgba(8, 127, 80, 0.16)",
               borderBottom:
                 displayBullets.length > 0
@@ -1016,9 +1016,9 @@ function MinimalPoster({
                 >
                   <div
                     style={{
-                      fontSize: isSquare ? 13 : 14,
+                      fontSize: isStory ? 17 : isSquare ? 16 : 17,
                       fontWeight: 600,
-                      letterSpacing: "0.12em",
+                      letterSpacing: "0.1em",
                       textTransform: "uppercase",
                       color: "#738279",
                       marginBottom: 4,
@@ -1029,7 +1029,7 @@ function MinimalPoster({
                   </div>
                   <div
                     style={{
-                      fontSize: isStory ? 26 : isSquare ? 20 : 23,
+                      fontSize: isStory ? 28 : isSquare ? 24 : 26,
                       fontWeight: 700,
                       color: item.accent ? "#087F50" : "#12231B",
                       lineHeight: 1.28,
@@ -1047,16 +1047,16 @@ function MinimalPoster({
         {displayBullets.length > 0 && (
           <div
             style={{
-              marginTop: isStory ? 38 : isSquare ? 18 : 26,
+              marginTop: isStory ? 36 : isSquare ? 18 : 24,
               paddingLeft: 20,
               borderLeft: "4px solid #087F50",
             }}
           >
             <div
               style={{
-                fontSize: isStory ? 19 : isSquare ? 14 : 16,
+                fontSize: isStory ? 21 : isSquare ? 18 : 19,
                 fontWeight: 700,
-                letterSpacing: "0.1em",
+                letterSpacing: "0.08em",
                 textTransform: "uppercase",
                 color: "#087F50",
                 marginBottom: isStory ? 12 : 8,
@@ -1064,7 +1064,7 @@ function MinimalPoster({
             >
               Key Highlights
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: isStory ? 10 : 7 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: isStory ? 10 : 8 }}>
               {displayBullets.map((item, idx) => (
                 <div
                   key={idx}
@@ -1072,9 +1072,9 @@ function MinimalPoster({
                     display: "flex",
                     alignItems: "flex-start",
                     gap: 11,
-                    fontSize: isStory ? 25 : isSquare ? 18 : 21,
+                    fontSize: isStory ? 27 : isSquare ? 23 : 25,
                     fontWeight: 500,
-                    lineHeight: 1.36,
+                    lineHeight: 1.34,
                     color: "#2C3E35",
                   }}
                 >
@@ -1100,19 +1100,19 @@ function MinimalPoster({
           gap: 20,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: isSquare ? 16 : 22, minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: isSquare ? 18 : 22, minWidth: 0 }}>
           <PosterQrCode
             value={data.jobUrl}
-            size={isStory ? 128 : isSquare ? 98 : 114}
+            size={isStory ? 132 : isSquare ? 104 : 118}
             borderColor="#CFE3D6"
             padding={isSquare ? 6 : 8}
           />
           <div style={{ minWidth: 0 }}>
             <div
               style={{
-                fontSize: isSquare ? 14 : 16,
+                fontSize: isStory ? 18 : isSquare ? 17 : 18,
                 fontWeight: 700,
-                letterSpacing: "0.1em",
+                letterSpacing: "0.08em",
                 textTransform: "uppercase",
                 color: "#087F50",
                 marginBottom: 5,
@@ -1123,7 +1123,7 @@ function MinimalPoster({
             </div>
             <div
               style={{
-                fontSize: isStory ? 25 : isSquare ? 19 : 22,
+                fontSize: isStory ? 26 : isSquare ? 22 : 24,
                 fontWeight: 600,
                 color: "#12231B",
                 lineHeight: 1.3,
@@ -1137,7 +1137,7 @@ function MinimalPoster({
         <div style={{ textAlign: "right", flexShrink: 0 }}>
           <div
             style={{
-              fontSize: isSquare ? 15 : 17,
+              fontSize: isStory ? 20 : isSquare ? 18 : 19,
               fontWeight: 700,
               color: "#087F50",
               whiteSpace: "nowrap",
@@ -1147,7 +1147,7 @@ function MinimalPoster({
           </div>
           <div
             style={{
-              fontSize: isSquare ? 14 : 15,
+              fontSize: isStory ? 18 : isSquare ? 17 : 17,
               fontWeight: 500,
               color: "#536258",
               marginTop: 4,
@@ -1178,10 +1178,10 @@ function CorporatePoster({
   const isSquare = format === "square";
   const spec = POSTER_FORMATS[format];
 
-  const heroWordSize = isStory ? 138 : isSquare ? 88 : 116;
+  const heroWordSize = isStory ? 146 : isSquare ? 108 : 126;
   const titleSize = getAdaptiveTitleSize(
     data.title,
-    isStory ? 72 : isSquare ? 50 : 62
+    isStory ? 76 : isSquare ? 58 : 68
   );
 
   const metricColumns = [
@@ -1247,7 +1247,7 @@ function CorporatePoster({
           backgroundImage:
             "radial-gradient(circle at 86% 30%, rgba(15, 169, 104, 0.28) 0%, transparent 48%), linear-gradient(135deg, #092419 0%, #0E3526 60%, #134A34 100%)",
           color: "#FFFFFF",
-          padding: isStory ? "52px 72px" : isSquare ? "32px 64px" : "42px 72px",
+          padding: isStory ? "50px 72px" : isSquare ? "26px 60px" : "38px 70px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -1258,15 +1258,15 @@ function CorporatePoster({
           <CompanyLogoBadge
             company={data.company}
             companyLogoSrc={companyLogoSrc}
-            size={isStory ? 64 : isSquare ? 48 : 56}
+            size={isStory ? 64 : isSquare ? 50 : 56}
             darkSurface={true}
           />
           <div style={{ minWidth: 0 }}>
             <div
               style={{
-                fontSize: isSquare ? 12 : 13,
+                fontSize: isStory ? 16 : isSquare ? 15 : 16,
                 fontWeight: 700,
-                letterSpacing: "0.14em",
+                letterSpacing: "0.12em",
                 textTransform: "uppercase",
                 color: "#34F09A",
                 marginBottom: 4,
@@ -1276,7 +1276,7 @@ function CorporatePoster({
             </div>
             <div
               style={{
-                fontSize: isStory ? 31 : isSquare ? 24 : 28,
+                fontSize: isStory ? 32 : isSquare ? 27 : 30,
                 fontWeight: 700,
                 color: "#FFFFFF",
                 letterSpacing: "-0.02em",
@@ -1288,7 +1288,7 @@ function CorporatePoster({
             {data.companyWebsiteDisplay && (
               <div
                 style={{
-                  fontSize: isStory ? 18 : isSquare ? 15 : 16,
+                  fontSize: isStory ? 20 : isSquare ? 18 : 19,
                   fontWeight: 500,
                   color: "#9DD6B9",
                   marginTop: 4,
@@ -1302,11 +1302,11 @@ function CorporatePoster({
         </div>
 
         <div style={{ flexShrink: 0, textAlign: "right" }}>
-          <ZenowayLockup logoSrc={whiteLogoSrc} size="sm" darkText={false} />
+          <ZenowayLockup logoSrc={whiteLogoSrc} size="md" darkText={false} />
           {data.postedDateLabel && (
             <div
               style={{
-                fontSize: isSquare ? 14 : 15,
+                fontSize: isStory ? 18 : isSquare ? 17 : 17,
                 fontWeight: 500,
                 color: "#A7D7BD",
                 marginTop: 6,
@@ -1338,29 +1338,29 @@ function CorporatePoster({
           zIndex: 1,
           flex: 1,
           minHeight: 0,
-          padding: isStory ? "56px 72px" : isSquare ? "28px 64px" : "42px 72px",
+          padding: isStory ? "52px 72px" : isSquare ? "24px 60px" : "38px 70px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          gap: isStory ? 40 : isSquare ? 18 : 28,
+          gap: isStory ? 38 : isSquare ? 16 : 26,
         }}
       >
         <SparkleStar
           size={isSquare ? 38 : 48}
           color="#087F50"
-          style={{ right: 72, top: isStory ? 60 : isSquare ? 28 : 42 }}
+          style={{ right: 64, top: isStory ? 56 : isSquare ? 24 : 38 }}
         />
 
         <div>
           {data.category && (
             <div
               style={{
-                fontSize: isSquare ? 14 : 15,
+                fontSize: isStory ? 18 : isSquare ? 17 : 17,
                 fontWeight: 700,
-                letterSpacing: "0.14em",
+                letterSpacing: "0.12em",
                 textTransform: "uppercase",
                 color: "#536258",
-                marginBottom: isStory ? 14 : 10,
+                marginBottom: isStory ? 14 : 8,
                 whiteSpace: "nowrap",
               }}
             >
@@ -1385,9 +1385,9 @@ function CorporatePoster({
           <h1
             style={{
               margin: 0,
-              marginTop: isStory ? 30 : isSquare ? 16 : 22,
+              marginTop: isStory ? 28 : isSquare ? 14 : 20,
               fontSize: titleSize,
-              fontWeight: 400,
+              fontWeight: 500,
               letterSpacing: "-0.03em",
               lineHeight: 1.07,
               color: "#12231B",
@@ -1403,8 +1403,8 @@ function CorporatePoster({
             style={{
               borderTop: "1.5px solid #B7D1BE",
               borderBottom: "1.5px solid #B7D1BE",
-              paddingTop: isStory ? 26 : isSquare ? 14 : 20,
-              paddingBottom: isStory ? 26 : isSquare ? 14 : 20,
+              paddingTop: isStory ? 24 : isSquare ? 14 : 18,
+              paddingBottom: isStory ? 24 : isSquare ? 14 : 18,
               display: "grid",
               gridTemplateColumns: `repeat(${metricCols}, minmax(0, 1fr))`,
               gap: isStory ? "24px 28px" : isSquare ? "14px 22px" : "18px 26px",
@@ -1423,9 +1423,9 @@ function CorporatePoster({
                 >
                   <div
                     style={{
-                      fontSize: isSquare ? 13 : 14,
+                      fontSize: isStory ? 17 : isSquare ? 16 : 17,
                       fontWeight: 700,
-                      letterSpacing: "0.1em",
+                      letterSpacing: "0.08em",
                       textTransform: "uppercase",
                       color: "#738279",
                       marginBottom: 4,
@@ -1436,7 +1436,7 @@ function CorporatePoster({
                   </div>
                   <div
                     style={{
-                      fontSize: isStory ? 24 : isSquare ? 19 : 21,
+                      fontSize: isStory ? 27 : isSquare ? 23 : 24,
                       fontWeight: 700,
                       color: col.highlight ? "#087F50" : "#12231B",
                       lineHeight: 1.28,
@@ -1455,12 +1455,12 @@ function CorporatePoster({
           <div>
             <div
               style={{
-                fontSize: isSquare ? 14 : 16,
+                fontSize: isStory ? 19 : isSquare ? 18 : 18,
                 fontWeight: 700,
-                letterSpacing: "0.12em",
+                letterSpacing: "0.1em",
                 textTransform: "uppercase",
                 color: "#087F50",
-                marginBottom: isStory ? 14 : 10,
+                marginBottom: isStory ? 14 : 8,
                 whiteSpace: "nowrap",
               }}
             >
@@ -1474,15 +1474,15 @@ function CorporatePoster({
                     display: "flex",
                     alignItems: "flex-start",
                     gap: 12,
-                    fontSize: isStory ? 25 : isSquare ? 18 : 21,
+                    fontSize: isStory ? 27 : isSquare ? 22 : 24,
                     fontWeight: 500,
-                    lineHeight: 1.38,
+                    lineHeight: 1.35,
                     color: "#22362C",
                   }}
                 >
                   <span
                     style={{
-                      marginTop: isStory ? 10 : 8,
+                      marginTop: isStory ? 11 : 9,
                       width: 8,
                       height: 8,
                       borderRadius: 2,
@@ -1505,17 +1505,17 @@ function CorporatePoster({
           zIndex: 1,
           backgroundColor: "#E8F4ED",
           borderTop: "1.5px solid #B7D1BE",
-          padding: isStory ? "32px 72px" : isSquare ? "18px 64px" : "26px 72px",
+          padding: isStory ? "32px 72px" : isSquare ? "16px 60px" : "24px 70px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: 20,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: isSquare ? 16 : 22, minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: isSquare ? 18 : 22, minWidth: 0 }}>
           <PosterQrCode
             value={data.jobUrl}
-            size={isStory ? 128 : isSquare ? 98 : 114}
+            size={isStory ? 132 : isSquare ? 102 : 116}
             borderColor="#B7D1BE"
             padding={isSquare ? 6 : 8}
             borderRadius={4}
@@ -1523,7 +1523,7 @@ function CorporatePoster({
           <div style={{ minWidth: 0 }}>
             <div
               style={{
-                fontSize: isSquare ? 14 : 16,
+                fontSize: isStory ? 18 : isSquare ? 17 : 18,
                 fontWeight: 700,
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
@@ -1536,7 +1536,7 @@ function CorporatePoster({
             </div>
             <div
               style={{
-                fontSize: isStory ? 24 : isSquare ? 19 : 21,
+                fontSize: isStory ? 26 : isSquare ? 22 : 24,
                 fontWeight: 600,
                 color: "#12231B",
                 lineHeight: 1.3,
@@ -1550,7 +1550,7 @@ function CorporatePoster({
         <div style={{ textAlign: "right", flexShrink: 0 }}>
           <div
             style={{
-              fontSize: isSquare ? 15 : 17,
+              fontSize: isStory ? 19 : isSquare ? 18 : 19,
               fontWeight: 700,
               color: "#0C2D20",
               whiteSpace: "nowrap",
@@ -1560,7 +1560,7 @@ function CorporatePoster({
           </div>
           <div
             style={{
-              fontSize: isSquare ? 14 : 15,
+              fontSize: isStory ? 17 : isSquare ? 17 : 17,
               fontWeight: 500,
               color: "#536258",
               marginTop: 4,
@@ -1591,10 +1591,10 @@ function CompactPoster({
   const isSquare = format === "square";
   const spec = POSTER_FORMATS[format];
 
-  const heroWordSize = isStory ? 138 : isSquare ? 88 : 116;
+  const heroWordSize = isStory ? 148 : isSquare ? 112 : 128;
   const titleSize = getAdaptiveTitleSize(
     data.title,
-    isStory ? 66 : isSquare ? 48 : 58
+    isStory ? 74 : isSquare ? 58 : 66
   );
 
   const infoPills = [
@@ -1671,14 +1671,14 @@ function CompactPoster({
           zIndex: 1,
           backgroundColor: "#087F50",
           backgroundImage: "linear-gradient(90deg, #087F50 0%, #0FA968 100%)",
-          padding: isStory ? "32px 56px" : isSquare ? "20px 48px" : "26px 56px",
+          padding: isStory ? "32px 56px" : isSquare ? "18px 48px" : "24px 56px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: 20,
         }}
       >
-        <ZenowayLockup logoSrc={whiteLogoSrc} size="sm" darkText={false} />
+        <ZenowayLockup logoSrc={whiteLogoSrc} size="md" darkText={false} />
         <div style={{ display: "inline-flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
           <span
             style={{
@@ -1686,7 +1686,7 @@ function CompactPoster({
               color: "#053220",
               padding: isSquare ? "6px 14px" : "8px 18px",
               borderRadius: 4,
-              fontSize: isSquare ? 14 : 16,
+              fontSize: isStory ? 18 : isSquare ? 17 : 18,
               fontWeight: 800,
               letterSpacing: "0.08em",
               textTransform: "uppercase",
@@ -1697,7 +1697,7 @@ function CompactPoster({
           </span>
           <span
             style={{
-              fontSize: isSquare ? 15 : 17,
+              fontSize: isStory ? 19 : isSquare ? 18 : 19,
               fontWeight: 600,
               color: "#EDF7F1",
               whiteSpace: "nowrap",
@@ -1715,17 +1715,17 @@ function CompactPoster({
           zIndex: 1,
           flex: 1,
           minHeight: 0,
-          padding: isStory ? "48px 56px" : isSquare ? "24px 48px" : "34px 56px",
+          padding: isStory ? "44px 56px" : isSquare ? "22px 48px" : "30px 56px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          gap: isStory ? 34 : isSquare ? 16 : 24,
+          gap: isStory ? 32 : isSquare ? 16 : 22,
         }}
       >
         <SparkleStar
           size={isSquare ? 38 : 48}
           color="#34F09A"
-          style={{ right: 56, top: isStory ? 54 : isSquare ? 26 : 36 }}
+          style={{ right: 56, top: isStory ? 50 : isSquare ? 22 : 34 }}
         />
 
         <div>
@@ -1745,7 +1745,7 @@ function CompactPoster({
           <h1
             style={{
               margin: 0,
-              marginTop: isStory ? 28 : isSquare ? 16 : 20,
+              marginTop: isStory ? 26 : isSquare ? 14 : 18,
               fontSize: titleSize,
               fontWeight: 500,
               letterSpacing: "-0.025em",
@@ -1758,7 +1758,7 @@ function CompactPoster({
 
           <div
             style={{
-              marginTop: isSquare ? 10 : 14,
+              marginTop: isSquare ? 12 : 14,
               display: "flex",
               alignItems: "center",
               gap: 12,
@@ -1767,13 +1767,13 @@ function CompactPoster({
             <CompanyLogoBadge
               company={data.company}
               companyLogoSrc={companyLogoSrc}
-              size={isSquare ? 40 : 44}
+              size={isSquare ? 42 : 44}
               darkSurface={true}
             />
             <div style={{ minWidth: 0 }}>
               <span
                 style={{
-                  fontSize: isStory ? 28 : isSquare ? 22 : 24,
+                  fontSize: isStory ? 31 : isSquare ? 26 : 28,
                   fontWeight: 700,
                   color: "#B6F7D8",
                   lineHeight: 1.2,
@@ -1784,7 +1784,7 @@ function CompactPoster({
               {data.postedDateLabel && (
                 <span
                   style={{
-                    fontSize: isSquare ? 14 : 16,
+                    fontSize: isStory ? 18 : isSquare ? 17 : 18,
                     fontWeight: 500,
                     color: "#9EC8B3",
                     marginLeft: 12,
@@ -1803,11 +1803,11 @@ function CompactPoster({
           <div
             style={{
               borderTop: "1px solid rgba(52, 240, 154, 0.22)",
-              paddingTop: isStory ? 22 : isSquare ? 12 : 16,
+              paddingTop: isStory ? 22 : isSquare ? 14 : 16,
               display: "flex",
               flexWrap: "wrap",
-              columnGap: isStory ? 30 : isSquare ? 22 : 28,
-              rowGap: isStory ? 14 : isSquare ? 9 : 12,
+              columnGap: isStory ? 30 : isSquare ? 24 : 28,
+              rowGap: isStory ? 14 : isSquare ? 10 : 12,
             }}
           >
             {infoPills.map((cell) => {
@@ -1820,14 +1820,14 @@ function CompactPoster({
                     alignItems: "center",
                     gap: 10,
                     color: cell.highlight ? "#34F09A" : "#FFFFFF",
-                    fontSize: isStory ? 25 : isSquare ? 20 : 22,
+                    fontSize: isStory ? 27 : isSquare ? 23 : 25,
                     fontWeight: 700,
                     letterSpacing: "-0.01em",
                     whiteSpace: "nowrap",
                   }}
                 >
                   <Icon
-                    size={isSquare ? 18 : 20}
+                    size={isSquare ? 21 : 23}
                     strokeWidth={2.3}
                     style={{
                       color: "#34F09A",
@@ -1851,9 +1851,9 @@ function CompactPoster({
           >
             <div
               style={{
-                fontSize: isSquare ? 14 : 15,
+                fontSize: isStory ? 18 : isSquare ? 17 : 18,
                 fontWeight: 700,
-                letterSpacing: "0.12em",
+                letterSpacing: "0.1em",
                 textTransform: "uppercase",
                 color: "#34F09A",
                 marginBottom: isSquare ? 8 : 10,
@@ -1870,9 +1870,9 @@ function CompactPoster({
                     display: "flex",
                     alignItems: "flex-start",
                     gap: 12,
-                    fontSize: isStory ? 24 : isSquare ? 18 : 21,
+                    fontSize: isStory ? 27 : isSquare ? 23 : 24,
                     fontWeight: 500,
-                    lineHeight: 1.36,
+                    lineHeight: 1.35,
                     color: "#EDF7F1",
                   }}
                 >
@@ -1901,17 +1901,17 @@ function CompactPoster({
           zIndex: 1,
           backgroundColor: "#FFFFFF",
           color: "#0B241A",
-          padding: isStory ? "28px 56px" : isSquare ? "18px 48px" : "22px 56px",
+          padding: isStory ? "28px 56px" : isSquare ? "16px 48px" : "22px 56px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: 20,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: isSquare ? 16 : 22, minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: isSquare ? 18 : 22, minWidth: 0 }}>
           <PosterQrCode
             value={data.jobUrl}
-            size={isStory ? 128 : isSquare ? 98 : 112}
+            size={isStory ? 132 : isSquare ? 102 : 114}
             borderColor="#CFE3D6"
             padding={isSquare ? 6 : 7}
             borderRadius={6}
@@ -1919,9 +1919,9 @@ function CompactPoster({
           <div style={{ minWidth: 0 }}>
             <div
               style={{
-                fontSize: isSquare ? 14 : 16,
+                fontSize: isStory ? 18 : isSquare ? 17 : 18,
                 fontWeight: 800,
-                letterSpacing: "0.1em",
+                letterSpacing: "0.08em",
                 textTransform: "uppercase",
                 color: "#087F50",
                 marginBottom: 5,
@@ -1932,7 +1932,7 @@ function CompactPoster({
             </div>
             <div
               style={{
-                fontSize: isStory ? 24 : isSquare ? 19 : 21,
+                fontSize: isStory ? 26 : isSquare ? 22 : 24,
                 fontWeight: 700,
                 color: "#0B241A",
                 lineHeight: 1.3,
@@ -1946,7 +1946,7 @@ function CompactPoster({
         <div style={{ textAlign: "right", flexShrink: 0 }}>
           <div
             style={{
-              fontSize: isSquare ? 14 : 16,
+              fontSize: isStory ? 18 : isSquare ? 17 : 18,
               fontWeight: 800,
               color: "#087F50",
               textTransform: "uppercase",
@@ -1958,7 +1958,7 @@ function CompactPoster({
           </div>
           <div
             style={{
-              fontSize: isSquare ? 14 : 15,
+              fontSize: isStory ? 17 : isSquare ? 17 : 17,
               fontWeight: 600,
               color: "#536258",
               marginTop: 4,
