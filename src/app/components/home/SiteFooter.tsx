@@ -9,6 +9,7 @@ const COLUMNS = [
     links: [
       ["/jobs", "Browse jobs"],
       ["/jobs", "Browse by stack"],
+      // ["/resume-builder", "Resume builder"],
       ["/join", "Join community"],
     ],
   },

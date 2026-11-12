@@ -11,6 +11,7 @@ import {
   Compass,
   ExternalLink,
   Globe,
+  ImageDown,
   MapPin,
   Share2,
   Wallet,
@@ -127,6 +128,14 @@ function ActionButton({
   ].join(" ");
 
   if (href && !disabled) {
+    if (!external && href.startsWith("/")) {
+      return (
+        <Link href={href} className={classes}>
+          {children}
+        </Link>
+      );
+    }
+
     return (
       <a
         href={href}
@@ -601,11 +610,16 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
               </div>
             </div>
 
-            {/* Single Action Cluster: Share + Apply Now */}
-            <div className="flex shrink-0 items-center gap-2.5">
+            {/* Single Action Cluster: Share + Download Poster + Apply Now */}
+            <div className="flex shrink-0 flex-wrap items-center gap-2.5">
               <ActionButton onClick={shareJob}>
                 <Share2 size={15} strokeWidth={1.75} />
                 Share
+              </ActionButton>
+
+              <ActionButton href={`/job-posters?jobId=${encodeURIComponent(job.id)}`}>
+                <ImageDown size={15} strokeWidth={1.75} />
+                Download Poster
               </ActionButton>
 
               {job.mail?.trim() ? (

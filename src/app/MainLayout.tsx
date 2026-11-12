@@ -33,7 +33,7 @@ export default function MainLayout({
 
           <main
             className={`min-h-0 min-w-0 flex-1 ${
-              pathname === "/jobs"
+              pathname === "/jobs" || pathname === "/resume-builder"
                 ? "overflow-y-auto lg:overflow-hidden"
                 : "overflow-y-auto"
             } overscroll-y-contain`}

@@ -14,7 +14,7 @@ import {
   Cloud,
   Bug,
   Mail,
-  Share2,
+  // Share2,
   BriefcaseBusiness,
   LayoutDashboard,
   Settings,
@@ -25,6 +25,7 @@ import {
   Users,
   Inbox,
   Plus,
+  // FileText,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -311,6 +312,26 @@ export default function Navbar() {
                             Candidate resources
                           </p>
                           <div className="space-y-1">
+                            {/* Hidden while Resume Builder is in progress
+                            <Link
+                              href="/resume-builder"
+                              onClick={closeMenus}
+                              className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
+                            >
+                              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
+                                <FileText size={15} strokeWidth={1.8} />
+                              </span>
+                              <span className="min-w-0 flex-1">
+                                <span className="block text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                  ATS Resume Builder
+                                </span>
+                                <span className="mt-0.5 block text-xs text-text-muted leading-snug">
+                                  Create &amp; export ATS-ready PDF
+                                </span>
+                              </span>
+                            </Link>
+                            */}
+
                             <Link
                               href="/profile"
                               onClick={closeMenus}
@@ -329,6 +350,7 @@ export default function Navbar() {
                               </span>
                             </Link>
 
+                            {/* Hidden while Referral is in progress
                             <Link
                               href="/referral"
                               onClick={closeMenus}
@@ -346,6 +368,7 @@ export default function Navbar() {
                                 </span>
                               </span>
                             </Link>
+                            */}
 
                             <Link
                               href="/email"
@@ -548,6 +571,18 @@ export default function Navbar() {
                           </span>
                           <span>My Profile</span>
                         </Link>
+                        {/* Hidden while Resume Builder is in progress
+                        <Link
+                          href="/resume-builder"
+                          onClick={closeMenus}
+                          className="group flex cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
+                        >
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
+                            <FileText size={13} strokeWidth={1.8} />
+                          </span>
+                          <span>Resume Builder</span>
+                        </Link>
+                        */}
                       </div>
 
                       <div className="border-t border-border-subtle pt-1">
@@ -750,6 +785,26 @@ export default function Navbar() {
                             Candidate resources
                           </p>
 
+                          {/* Hidden while Resume Builder is in progress
+                          <Link
+                            href="/resume-builder"
+                            onClick={closeMenus}
+                            className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
+                          >
+                            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
+                              <FileText size={15} strokeWidth={1.8} />
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block font-medium text-text-primary group-hover:text-brand">
+                                ATS Resume Builder
+                              </span>
+                              <span className="mt-0.5 block text-xs text-text-muted leading-snug">
+                                Create &amp; export ATS-ready PDF
+                              </span>
+                            </span>
+                          </Link>
+                          */}
+
                           <Link
                             href="/profile"
                             onClick={closeMenus}
@@ -768,6 +823,7 @@ export default function Navbar() {
                             </span>
                           </Link>
 
+                          {/* Hidden while Referral is in progress
                           <Link
                             href="/referral"
                             onClick={closeMenus}
@@ -785,6 +841,7 @@ export default function Navbar() {
                               </span>
                             </span>
                           </Link>
+                          */}
 
                           <Link
                             href="/email"

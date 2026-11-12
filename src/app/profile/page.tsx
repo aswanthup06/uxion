@@ -220,6 +220,14 @@ export default function ProfilePage() {
                         >
                           <Download size={13} /> View Resume
                         </a>
+                        {/* Hidden while Resume Builder is in progress
+                        <Link
+                          href="/resume-builder"
+                          className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 py-1.5 text-xs font-semibold text-brand transition hover:border-brand hover:bg-brand-soft"
+                        >
+                          ATS Builder
+                        </Link>
+                        */}
                         <Link
                           href="/candidate-profile"
                           className="text-xs text-text-muted underline-offset-2 hover:text-brand hover:underline"
@@ -241,12 +249,22 @@ export default function ProfilePage() {
                           </p>
                         </div>
                       </div>
-                      <Link
-                        href="/candidate-profile"
-                        className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-control bg-brand px-3.5 py-1.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover"
-                      >
-                        <Plus size={13} /> Add Resume (PDF)
-                      </Link>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {/* Hidden while Resume Builder is in progress
+                        <Link
+                          href="/resume-builder"
+                          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 py-1.5 text-xs font-semibold text-text-primary transition hover:border-brand hover:text-brand"
+                        >
+                          <FileText size={13} className="text-brand" /> Build ATS Resume
+                        </Link>
+                        */}
+                        <Link
+                          href="/candidate-profile"
+                          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-control bg-brand px-3.5 py-1.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover"
+                        >
+                          <Plus size={13} /> Add Resume (PDF)
+                        </Link>
+                      </div>
                     </div>
                   )}
                 </div>
