@@ -786,6 +786,7 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
         open={applyOpen}
         onClose={() => setApplyOpen(false)}
         email={job.mail}
+        jobId={job.id}
         jobTitle={job.title}
         company={job.company}
       />

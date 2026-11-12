@@ -19,6 +19,7 @@ type ApplyModalProps = {
   open: boolean;
   onClose: () => void;
   email: string;
+  jobId?: string;
   jobTitle?: string;
   company?: string;
 };
@@ -60,6 +61,7 @@ export default function ApplyModal({
   open,
   onClose,
   email,
+  jobId,
   jobTitle = "the role",
   company = "the hiring company",
 }: ApplyModalProps) {
@@ -103,6 +105,13 @@ export default function ApplyModal({
     setEmailCopied(copied);
 
     if (copied) {
+      if (jobId) {
+        fetch("/api/jobs/copy", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: jobId }),
+        }).catch(() => {});
+      }
       setTimeout(() => setEmailCopied(false), 2000);
     }
   };

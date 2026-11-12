@@ -31,6 +31,7 @@ export type Job = {
   apply: string;
   description: string;
   views: number;
+  emailCopyCount?: number;
   applicantCountry?: string;
   validThrough?: string;
   employmentType?: string;

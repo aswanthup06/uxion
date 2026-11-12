@@ -48,6 +48,7 @@ export interface DbJob {
   apply: string | null;
   description: string;
   views: number;
+  email_copy_count?: number;
   employment_type: string | null;
   work_mode: string | null;
   category: string | null;

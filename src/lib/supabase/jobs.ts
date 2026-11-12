@@ -22,6 +22,7 @@ export function mapDbJobToJob(row: DbJob): Job {
     apply: row.apply || "",
     description: row.description || "",
     views: typeof row.views === "number" ? row.views : 0,
+    emailCopyCount: typeof row.email_copy_count === "number" ? row.email_copy_count : 0,
     applicantCountry: row.applicant_country || "IN",
     validThrough: row.valid_through || undefined,
     employmentType: row.employment_type || "FULL_TIME",
@@ -101,6 +102,7 @@ export function mapJobToDbInsert(job: Partial<Job>): DbJobInsert {
   if (job.companyLink !== undefined) insert.company_link = job.companyLink;
   if (job.apply !== undefined) insert.apply = job.apply;
   if (job.views !== undefined) insert.views = job.views;
+  if (job.emailCopyCount !== undefined) insert.email_copy_count = job.emailCopyCount;
   if (job.employmentType) insert.employment_type = job.employmentType;
   if (job.workMode) insert.work_mode = job.workMode;
   if (job.category !== undefined) insert.category = job.category;
@@ -412,6 +414,7 @@ export async function updateJob(id: string, jobData: Partial<Job>): Promise<Job>
   dbPayload.apply = "";
   if (jobData.description !== undefined) dbPayload.description = jobData.description;
   if (jobData.views !== undefined) dbPayload.views = jobData.views;
+  if (jobData.emailCopyCount !== undefined) dbPayload.email_copy_count = jobData.emailCopyCount;
   if (jobData.employmentType !== undefined) dbPayload.employment_type = jobData.employmentType;
   if (jobData.workMode !== undefined) dbPayload.work_mode = jobData.workMode;
   if (jobData.category !== undefined) dbPayload.category = jobData.category;
@@ -503,27 +506,53 @@ export async function deleteJob(id: string): Promise<boolean> {
 }
 
 /**
- * Increment job view count.
+ * Increment a numeric counter column on a job row safely.
  */
-export async function incrementJobViews(id: string): Promise<void> {
+async function incrementJobCounter(
+  id: string,
+  column: "views" | "email_copy_count"
+): Promise<void> {
   if (!isSupabaseConfigured()) return;
   try {
     const supabase = getServiceSupabase();
-    // Fetch current views and increment
     const { data, error } = await supabase
       .from("jobs")
-      .select("views")
+      .select(column)
       .eq("id", id)
       .maybeSingle();
 
-    if (error || !data) return;
+    if (error || !data) {
+      if (error) {
+        console.error(`Failed to read ${column} for job ${id}:`, error.message);
+      }
+      return;
+    }
 
-    const currentViews = typeof data.views === "number" ? data.views : 0;
-    await supabase
+    const row = data as Record<string, unknown>;
+    const currentValue = typeof row[column] === "number" ? (row[column] as number) : 0;
+    const { error: updateError } = await supabase
       .from("jobs")
-      .update({ views: currentViews + 1 })
+      .update({ [column]: currentValue + 1 })
       .eq("id", id);
+
+    if (updateError) {
+      console.error(`Failed to increment ${column} for job ${id}:`, updateError.message);
+    }
   } catch (error) {
-    console.error(`Failed to increment views for job ${id}:`, error);
+    console.error(`Failed to increment ${column} for job ${id}:`, error);
   }
+}
+
+/**
+ * Increment job view count.
+ */
+export async function incrementJobViews(id: string): Promise<void> {
+  await incrementJobCounter(id, "views");
+}
+
+/**
+ * Increment job email copy button click count.
+ */
+export async function incrementJobEmailCopyCount(id: string): Promise<void> {
+  await incrementJobCounter(id, "email_copy_count");
 }

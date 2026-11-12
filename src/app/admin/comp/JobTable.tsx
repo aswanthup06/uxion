@@ -135,7 +135,7 @@ export default function JobTable({ jobs, onDelete }: Props) {
             <table className="w-full min-w-[760px] border-collapse text-left">
               <thead>
                 <tr className="border-b border-border-subtle bg-surface-subtle">
-                  {["Job", "Company", "Location", "Views", "Actions"].map(
+                  {["Job", "Company", "Location", "Views", "Copy Clicks", "Actions"].map(
                     (heading) => (
                       <th
                         key={heading}

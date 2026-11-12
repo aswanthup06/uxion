@@ -11,10 +11,8 @@ import {
   Building2,
   Check,
   Compass,
-  Copy,
   ExternalLink,
   Globe,
-  Mail,
   MapPin,
   RotateCcw,
   Search,
@@ -267,7 +265,6 @@ function JobsViewContent() {
   const [activeJob, setActiveJob] = useState<Job | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const [emailCopied, setEmailCopied] = useState(false);
 
   const mainRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -645,14 +642,6 @@ function JobsViewContent() {
     observer.observe(node);
     return () => observer.disconnect();
   }, [hasMore, filteredJobs.length]);
-
-  const copyEmailAddress = (email: string) => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(email);
-      setEmailCopied(true);
-      setTimeout(() => setEmailCopied(false), 2000);
-    }
-  };
 
   const [shareCopied, setShareCopied] = useState(false);
 
@@ -1574,24 +1563,6 @@ function JobsViewContent() {
                 </h3>
                 <FormattedDescription content={activeJob.description} />
               </div>
-
-              {/* Direct email contact if available */}
-              {activeJob.mail && (
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-border-default bg-surface-subtle/70 p-3.5 text-xs">
-                  <div className="flex items-center gap-2 text-text-secondary">
-                    <Mail className="h-4 w-4 text-brand shrink-0" strokeWidth={1.75} />
-                    <span>Direct application email: <strong className="font-semibold text-text-primary select-all">{activeJob.mail}</strong></span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => copyEmailAddress(activeJob.mail)}
-                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-default bg-surface-card px-2.5 py-1.5 font-medium text-text-secondary shadow-subtle transition-all hover:bg-surface-subtle hover:text-text-primary active:scale-95"
-                  >
-                    {emailCopied ? <Check className="h-3.5 w-3.5 text-brand" strokeWidth={1.75} /> : <Copy className="h-3.5 w-3.5" strokeWidth={1.75} />}
-                    <span>{emailCopied ? "Copied" : "Copy"}</span>
-                  </button>
-                </div>
-              )}
             </div>
 
             {/* Pinned Sticky Footer Actions */}
@@ -1622,38 +1593,15 @@ function JobsViewContent() {
                     {shareCopied ? <Check className="h-4 w-4 text-brand" strokeWidth={1.75} /> : <Share2 className="h-4 w-4" strokeWidth={1.75} />}
                     <span>{shareCopied ? "Link Copied" : "Share"}</span>
                   </button>
-
-                  <Link
-                    href={`/jobs/${activeJob.id}`}
-                    className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-border-default bg-surface-card px-3.5 py-2.5 text-xs font-semibold text-text-secondary hover:bg-surface-subtle hover:text-text-primary transition-all"
-                  >
-                    <span>Full Page</span>
-                    <ArrowUpRight className="h-3.5 w-3.5 text-text-muted" strokeWidth={1.75} />
-                  </Link>
                 </div>
 
-                {activeJob.mail?.trim() ? (
-                  <a
-                    href={`mailto:${activeJob.mail.trim()}?subject=${encodeURIComponent(
-                      `Application for ${activeJob.title} - ${activeJob.company}`
-                    )}&body=${encodeURIComponent(
-                      `Hi Hiring Team,\n\nI am interested in applying for the ${activeJob.title} position at ${activeJob.company}.\n\nPlease find my resume attached.\n\nBest regards,`
-                    )}`}
-                    className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white shadow-subtle transition-all hover:bg-brand-hover active:scale-[0.99]"
-                  >
-                    <Mail className="h-4 w-4" strokeWidth={1.75} />
-                    <span>Apply via Email</span>
-                    <ArrowUpRight className="h-4 w-4" strokeWidth={1.75} />
-                  </a>
-                ) : (
-                  <button
-                    type="button"
-                    disabled
-                    className="inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-lg bg-surface-muted px-6 py-2.5 text-sm font-semibold text-text-muted"
-                  >
-                    Application Unavailable
-                  </button>
-                )}
+                <Link
+                  href={`/jobs/${activeJob.id}`}
+                  className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white shadow-subtle transition-all hover:bg-brand-hover active:scale-[0.99]"
+                >
+                  <span>View More</span>
+                  <ArrowUpRight className="h-4 w-4" strokeWidth={1.75} />
+                </Link>
               </div>
             </div>
           </div>

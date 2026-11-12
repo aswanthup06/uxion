@@ -56,6 +56,12 @@ export default function JobRow({ job, onDelete }: Props) {
       </td>
 
       <td className="px-5 py-4">
+        <span className="text-sm tabular-nums text-text-secondary">
+          {job.emailCopyCount ?? 0}
+        </span>
+      </td>
+
+      <td className="px-5 py-4">
         <div className="flex items-center justify-end gap-1">
           <Link
             href={`/admin/jobs/${job.id}`}
