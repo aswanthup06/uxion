@@ -80,7 +80,7 @@ export default function FormattedDescription({
       !line.toLowerCase().includes("email") &&
       !line.toLowerCase().includes("http");
     const isCommonTitle =
-      /^(about the role|about the company|responsibilities|key responsibilities|what you('ll| will) do|requirements|qualifications|what we('re| are) looking for|skills required|perks & benefits|benefits|nice to have|how to apply)$/i.test(
+      /^(about the role|about the company|responsibilities|key responsibilities|what you('ll| will) do|requirements|requirements & qualifications|qualifications|preferred qualifications|what we('re| are) looking for|skills required|perks & benefits|benefits|nice to have|good to have|bonus points|how to apply)$/i.test(
         line.replace(/[:#]/g, "").trim()
       );
 

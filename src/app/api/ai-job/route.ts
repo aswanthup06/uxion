@@ -235,8 +235,8 @@ ${currentDescription}
 
 Guidelines:
 - Fix grammar, awkward phrasing, and spelling errors.
-- Preserve all existing specific requirements, tools, company names, perks, and contact details without inventing new facts.
-- Use clear section headings (e.g., "About the Role:", "Key Responsibilities:", "Requirements:") and standard bullet points (•).
+- Preserve all existing specific requirements, experience levels, tools, "Good to Have" / "Nice to Have" items, perks, company names, and contact details without omitting sections or inventing new facts.
+- Use clear section headings (e.g., "About the Role:", "Key Responsibilities:", "Requirements:", "Nice to Have:") separated by blank lines, and standard bullet points (• ).
 - Return ONLY the polished text. Do not wrap in markdown code blocks (\`\`\`).
 `;
 
@@ -279,7 +279,8 @@ Extract:
 - experienceMin: numeric string of min years required (e.g. "0" for fresher, "3")
 - experienceMax: numeric string of max years (e.g. "5")
 - salary: formatted salary range (e.g. "₹12–18 LPA" or "Not Disclosed")
-- description: well-structured job description with responsibilities and requirements
+- description: well-structured plain-text job description using clean section headings separated by blank lines ("About the Role:", "Key Responsibilities:", "Requirements:", and "Nice to Have:" or "Perks & Benefits:" whenever present in the source text) and "• " bullet points for every list item. Preserve ALL responsibilities, tools, requirements (including years of experience if stated), and "Good to Have" / "Nice to Have" points from the source without omitting sections, while removing emojis and redundant application email/header lines that belong in the structured fields above.
+- skills: array of key technical/design skills extracted from the text
 - email: application email address
 
 Return ONLY valid JSON matching this exact structure:
