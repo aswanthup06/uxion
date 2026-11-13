@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import HeroSection from "./components/home/HeroSection";
 import StatsBand, { type Stat } from "./components/home/StatsBand";
 import HowItWorks from "./components/home/HowItWorks";
@@ -5,6 +6,15 @@ import HappyWork from "./components/home/HappyWork";
 import Faq from "./components/home/Faq";
 
 import SiteFooter from "./components/home/SiteFooter";
+
+export const metadata: Metadata = {
+  title: "Zenoway | Find Your Next Opportunity",
+  description:
+    "Find genuine job opportunities for UI/UX designers, frontend developers, and creative professionals across India.",
+  alternates: {
+    canonical: "https://www.zenoway.online",
+  },
+};
 
 const stats: Stat[] = [
   { value: 45, suffix: "+", label: "Active jobs" },

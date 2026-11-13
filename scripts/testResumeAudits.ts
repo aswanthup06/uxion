@@ -5,7 +5,12 @@ import {
 } from "../src/lib/resume/types";
 import { layoutResumeDocument } from "../src/lib/resume/document-layout";
 import { generateResumePdfBytes } from "../src/lib/resume/pdf";
-import { PDFDocument } from "pdf-lib";
+import {
+  analyzeResumeForAts,
+  applyAtsCorrectionToResume,
+} from "../src/lib/resume/ats-checker";
+import { sanitizeResumeData } from "../src/lib/resume/validation";
+import { PDFDocument, PDFName, PDFDict } from "pdf-lib";
 
 async function runAuditTests() {
   console.log("=== Starting ATS Resume Builder Audit & Verification Tests ===");
@@ -335,7 +340,318 @@ async function runAuditTests() {
   const timesPdf = await generateResumePdfBytes(timesResume);
   console.log(`- Times New Roman PDF generated: ${timesPdf.bytes.length} bytes`);
 
-  console.log("\n=== ALL 5 AUDIT & VERIFICATION TESTS PASSED SUCCESSFULLY! ===");
+  // -------------------------------------------------------------
+  // Test 6: Intelligent Quality Checker & Corrections Application
+  // -------------------------------------------------------------
+  console.log("\n[Test 6] Testing Intelligent Quality Checker & Fix Application...");
+  const flawed = createEmptyResumeData();
+  flawed.personal = {
+    firstName: "Alex",
+    lastName: "Taylor",
+    headline: "Frontend ninja",
+    email: "alex@example.com",
+    phone: "+1 555 123 4567",
+    city: "San Francisco, CA",
+    links: [],
+  };
+  flawed.summary =
+    "Experienced engineer with extensive managment skills who built the the cloud infrastructure (featuring advanced tooling.";
+  flawed.skills = [
+    {
+      id: "s1",
+      category: "Frontend",
+      items: ["javascript", "nextjs", "React"],
+    },
+  ];
+  flawed.experience = [
+    {
+      id: "exp1",
+      jobTitle: "Senior Software Engineer",
+      company: "Company Alpha",
+      location: "San Francisco",
+      startDate: "2022-01",
+      endDate: "2023-06",
+      isCurrent: false,
+      bullets: ["Responsible for managing databases."],
+    },
+    {
+      id: "exp2",
+      jobTitle: "Staff Software Engineer",
+      company: "Company Beta",
+      location: "San Francisco",
+      startDate: "2022-06",
+      endDate: "2023-12",
+      isCurrent: false,
+      bullets: ["Worked on frontend microservices."],
+    },
+  ];
+
+  const flawedAnalysis = analyzeResumeForAts(flawed);
+  console.log("- Quality Checks Found:", flawedAnalysis.checks.length);
+  console.log("  Errors:", flawedAnalysis.counts.errors, "Warnings:", flawedAnalysis.counts.warnings);
+  console.log("  All check titles:", flawedAnalysis.checks.map((c) => `[${c.category}] ${c.title}`));
+
+  // Check 1: Typo "managment"
+  const typoCheck = flawedAnalysis.checks.find((c) => c.title.includes("managment"));
+  if (!typoCheck || !typoCheck.action) throw new Error("Quality checker failed to catch typo 'managment'!");
+  console.log("  ✓ Caught typo 'managment':", typoCheck.action.label);
+
+  // Check 2: Brand casing "javascript" -> "JavaScript"
+  const casingCheck = flawedAnalysis.checks.find((c) => c.title.includes("javascript"));
+  if (!casingCheck || !casingCheck.action) throw new Error("Quality checker failed to catch brand casing 'javascript'!");
+  console.log("  ✓ Caught casing 'javascript':", casingCheck.action.label);
+
+  // Check 3: Repeated word "the the"
+  const repeatedCheck = flawedAnalysis.checks.find((c) => c.title.includes("the the"));
+  if (!repeatedCheck) throw new Error("Quality checker failed to catch duplicate adjacent word 'the the'!");
+  console.log("  ✓ Caught duplicate word 'the the'");
+
+  // Check 4: Unclosed parenthesis
+  const unclosedCheck = flawedAnalysis.checks.find((c) => c.title.includes("Unclosed"));
+  if (!unclosedCheck) throw new Error("Quality checker failed to catch unclosed parenthesis!");
+  console.log("  ✓ Caught unclosed parenthesis");
+
+  // Check 5: Unsupported buzzword "ninja"
+  const buzzwordCheck = flawedAnalysis.checks.find((c) => c.title.includes("ninja"));
+  if (!buzzwordCheck) throw new Error("Quality checker failed to catch buzzword 'ninja'!");
+  console.log("  ✓ Caught buzzword 'ninja'");
+
+  // Check 6: Passive duty phrasing "Responsible for" / "Worked on"
+  const passiveCheck = flawedAnalysis.checks.find((c) =>
+    c.title.toLowerCase().includes("passive duty phrasing")
+  );
+  if (!passiveCheck) throw new Error("Quality checker failed to catch passive duty phrasing!");
+  console.log("  ✓ Caught passive duty phrasing");
+
+  // Check 7: Employment overlap between Company Alpha and Company Beta
+  const overlapCheck = flawedAnalysis.checks.find(
+    (c) =>
+      c.category === "Dates & Chronology" &&
+      c.title.toLowerCase().includes("overlapping")
+  );
+  if (!overlapCheck) throw new Error("Quality checker failed to catch concurrent full-time employment overlap!");
+  console.log("  ✓ Caught employment date overlap:", overlapCheck.title);
+
+  // Test applyAtsCorrectionToResume on typo
+  const fixedResume = applyAtsCorrectionToResume(flawed, typoCheck.action);
+  if (!fixedResume.summary.includes("management")) {
+    throw new Error("applyAtsCorrectionToResume failed to replace 'managment' with 'management'!");
+  }
+  console.log("  ✓ Successfully applied typo fix to summary");
+
+  // Test applyAtsCorrectionToResume on skill casing
+  const fixedSkillsResume = applyAtsCorrectionToResume(fixedResume, casingCheck.action);
+  const fixedGroup = fixedSkillsResume.skills.find((g) => g.id === "s1");
+  if (!fixedGroup?.items.includes("JavaScript")) {
+    throw new Error("applyAtsCorrectionToResume failed to correct 'javascript' to 'JavaScript'!");
+  }
+  console.log("  ✓ Successfully applied casing fix to skills");
+
+  // -------------------------------------------------------------
+  // Test 7: Job Description Matching & Categorization
+  // -------------------------------------------------------------
+  console.log("\n[Test 7] Testing Job Description Matching Engine...");
+  const jdText = `
+    We are seeking a Senior Frontend Engineer proficient in React, TypeScript, Next.js, and Tailwind CSS.
+    Experience with GraphQL, Docker, and Kubernetes is highly desirable.
+    Must demonstrate strong leadership and mentorship capabilities.
+  `;
+  const jdAnalysis = analyzeResumeForAts(fixedSkillsResume, jdText);
+  if (!jdAnalysis.keywordAnalysis.hasJobDescription) {
+    throw new Error("Job match analysis should indicate hasJobDescription: true!");
+  }
+
+  console.log(`- Estimated Match Score: ${jdAnalysis.keywordAnalysis.matchPercentage}%`);
+  console.log("- Matched Skills:", jdAnalysis.keywordAnalysis.matchedKeywords.join(", "));
+  console.log("- Missing Critical Keywords:", jdAnalysis.keywordAnalysis.missingKeywords.join(", "));
+  console.log("- Transferable Skills:", jdAnalysis.keywordAnalysis.transferableKeywords.join(", "));
+
+  if (!jdAnalysis.keywordAnalysis.matchedKeywords.some((k) => k.toLowerCase() === "react")) {
+    throw new Error("Job matcher failed to match 'React'!");
+  }
+  if (!jdAnalysis.keywordAnalysis.missingKeywords.some((k) => k.toLowerCase() === "graphql")) {
+    throw new Error("Job matcher failed to identify missing keyword 'GraphQL'!");
+  }
+  if (!jdAnalysis.keywordAnalysis.matchScoreExplanation.includes("estimate")) {
+    throw new Error("Job match score explanation must clearly state it is an estimate!");
+  }
+  console.log("  ✓ Verified transparent estimated match score explanation and disclaimer");
+
+  // -------------------------------------------------------------
+  // Test 8: Clickable Link Annotations in Generated PDF
+  // -------------------------------------------------------------
+  console.log("\n[Test 8] Testing Clickable Link Annotations in Generated PDF...");
+  const linkResume = { ...experienced };
+  linkResume.projects = [
+    {
+      id: "p1",
+      name: "Zenoway Portal",
+      role: "Lead Engineer",
+      link: "https://zenoway.com/demo",
+      startDate: "2023-01",
+      endDate: "2023-12",
+      description: "Interactive candidate and job portal.",
+      highlights: [
+        "Live deployment at https://zenoway.com/live with 50,000 monthly active users.",
+      ],
+    },
+  ];
+
+  const linkPdf = await generateResumePdfBytes(linkResume);
+  const loadedLinkPdf = await PDFDocument.load(linkPdf.bytes);
+  let totalLinkAnnotations = 0;
+
+  for (let pageIdx = 0; pageIdx < loadedLinkPdf.getPageCount(); pageIdx++) {
+    const page = loadedLinkPdf.getPage(pageIdx);
+    const annots = page.node.get(PDFName.of("Annots"));
+    if (annots) {
+      const annotsArray = loadedLinkPdf.context.lookup(annots);
+      if (Array.isArray((annotsArray as unknown as { array: unknown[] })?.array)) {
+        const arr = (annotsArray as unknown as { array: unknown[] }).array;
+        for (const annotRef of arr) {
+          const dict = loadedLinkPdf.context.lookup(annotRef as unknown as Parameters<typeof loadedLinkPdf.context.lookup>[0]) as PDFDict;
+          if (dict && dict.get(PDFName.of("Subtype"))?.toString() === "/Link") {
+            const action = dict.get(PDFName.of("A"));
+            if (action) {
+              const actionDict = loadedLinkPdf.context.lookup(action as unknown as Parameters<typeof loadedLinkPdf.context.lookup>[0]) as PDFDict;
+              const uri = actionDict.get(PDFName.of("URI"))?.toString();
+              if (uri) {
+                totalLinkAnnotations++;
+                console.log(`  Found clickable PDF Link Annotation: ${uri}`);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  console.log(`- Total clickable link annotations in PDF: ${totalLinkAnnotations}`);
+  if (totalLinkAnnotations < 2) {
+    throw new Error(`Expected at least 2 clickable link annotations (project link and bullet URL), found ${totalLinkAnnotations}`);
+  }
+  console.log("  ✓ Successfully verified clickable PDF link annotations");
+
+  // -------------------------------------------------------------
+  // Test 9: Long Skill Token Preservation (Fixing 60-char truncation)
+  // -------------------------------------------------------------
+  console.log("\n[Test 9] Testing Long Skill Token Preservation & Parentheses Handling...");
+  const skillResume = createEmptyResumeData();
+  const longSkill = "Figma (Auto Layout, Design Systems, Variables/Tokens, Dev Mode, Wireframing, User Flows)";
+  skillResume.personal = { ...experienced.personal };
+  skillResume.skills = [
+    {
+      id: "s_design",
+      category: "Design & UX",
+      items: [longSkill, "Adobe Illustrator", "Responsive Design"],
+    },
+  ];
+
+  const sanitized = sanitizeResumeData(skillResume);
+  if (!sanitized.ok) throw new Error("Sanitization failed for long skills!");
+  const preservedItem = sanitized.data.skills[0].items[0];
+  console.log(`- Input Skill length: ${longSkill.length} chars`);
+  console.log(`- Sanitized Skill: "${preservedItem}" (Length: ${preservedItem.length})`);
+  if (preservedItem !== longSkill) {
+    throw new Error(`Skill was truncated! Expected "${longSkill}", got "${preservedItem}"`);
+  }
+  if (!preservedItem.includes("Dev Mode")) {
+    throw new Error("Skill had 'Dev Mode' truncated!");
+  }
+  console.log("  ✓ Verified full skill preserved without truncation");
+
+  // -------------------------------------------------------------
+  // Test 10: Recruiter Scorecard Pillars
+  // -------------------------------------------------------------
+  console.log("\n[Test 10] Testing Recruiter Scorecard Pillars & Status Labels...");
+  const scorecard = flawedAnalysis.scorecard;
+  console.log("- Scorecard Statuses:", {
+    contentQuality: scorecard.contentQuality.status,
+    experienceImpact: scorecard.experienceImpact.status,
+    pdfReadiness: scorecard.pdfReadiness.status,
+    jobMatch: scorecard.jobMatch.status,
+  });
+
+  if (scorecard.contentQuality.status !== "Needs review") {
+    throw new Error("Content Quality scorecard should be 'Needs review' when typos exist!");
+  }
+  if (scorecard.jobMatch.status !== "Not checked") {
+    throw new Error("Job Match scorecard should be 'Not checked' when JD is absent!");
+  }
+  if (jdAnalysis.scorecard.jobMatch.status === "Not checked") {
+    throw new Error("Job Match scorecard should update when JD is provided!");
+  }
+  console.log("  ✓ Verified Recruiter Review Scorecard status calculations and labels");
+
+  // -------------------------------------------------------------
+  // Test 11: Real-World Typo ("Desigd" -> "Designed") & Case Preservation
+  // -------------------------------------------------------------
+  console.log("\n[Test 11] Testing Real-World Typo ('Desigd' -> 'Designed') & Scorecard State...");
+  const userCaseResume = createEmptyResumeData();
+  userCaseResume.personal = {
+    firstName: "Aswanth",
+    lastName: "U P",
+    headline: "UI Developer",
+    email: "aswanth@example.com",
+    phone: "+91 98765 43210",
+    city: "Kozhikode, India",
+    links: [],
+  };
+  userCaseResume.experience = [
+    {
+      id: "exp_chaavie",
+      jobTitle: "UI Developer",
+      company: "Chaavie Solutions",
+      location: "Kozhikode, India",
+      startDate: "2023-06",
+      endDate: "2026-07",
+      isCurrent: false,
+      bullets: [
+        "•Desigd user flows and responsive interfaces in Figma, then built reusable component-based UI in React, Next.js, Tailwind CSS, JavaScript, and CSS3 across multiple products.",
+      ],
+    },
+  ];
+
+  const userCaseAnalysis = analyzeResumeForAts(userCaseResume);
+  console.log("- User Case Quality Checks Found:", userCaseAnalysis.checks.length);
+  console.log("  Errors:", userCaseAnalysis.counts.errors, "Warnings:", userCaseAnalysis.counts.warnings);
+  console.log("  Language & Typos status:", userCaseAnalysis.scorecard.contentQuality.status);
+
+  if (userCaseAnalysis.scorecard.contentQuality.status === "Passed") {
+    throw new Error("Scorecard should NOT pass when 'Desigd' typo is present!");
+  }
+
+  const desigdCheck = userCaseAnalysis.checks.find(
+    (c) => c.title.includes("Desigd") || c.explanation.includes("Desigd")
+  );
+  if (!desigdCheck || !desigdCheck.action) {
+    throw new Error("Checker failed to detect 'Desigd' as a spelling error!");
+  }
+  console.log("  ✓ Caught 'Desigd' typo:", desigdCheck.title);
+  console.log("  ✓ Suggested correction:", desigdCheck.suggestedCorrection);
+
+  if (desigdCheck.suggestedCorrection !== "Designed") {
+    throw new Error(`Expected case-preserved correction "Designed", got "${desigdCheck.suggestedCorrection}"`);
+  }
+
+  // Verify redundant bullet symbol is also flagged
+  const bulletSymbolCheck = userCaseAnalysis.checks.find((c) =>
+    c.id.startsWith("redundant-bullet")
+  );
+  if (!bulletSymbolCheck) {
+    throw new Error("Checker failed to flag redundant leading '•' bullet symbol!");
+  }
+  console.log("  ✓ Caught redundant leading bullet symbol '•'");
+
+  // Verify correction application
+  const fixedUserResume = applyAtsCorrectionToResume(userCaseResume, desigdCheck.action);
+  const fixedBullet = fixedUserResume.experience[0].bullets[0];
+  console.log("  ✓ Corrected Bullet:", fixedBullet);
+  if (!fixedBullet.includes("Designed")) {
+    throw new Error(`Failed to replace 'Desigd' with 'Designed'! Got: "${fixedBullet}"`);
+  }
+
+  console.log("\n=== ALL 11 AUDIT & VERIFICATION TESTS PASSED SUCCESSFULLY! ===");
 }
 
 runAuditTests().catch((err) => {

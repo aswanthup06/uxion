@@ -1,6 +1,5 @@
 
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Target,
@@ -11,6 +10,15 @@ import {
 } from "lucide-react";
 import { PiLinkedinLogoFill } from "react-icons/pi";
 import SiteFooter from "@/app/components/home/SiteFooter";
+
+export const metadata: Metadata = {
+  title: "About Us | Zenoway",
+  description:
+    "Learn about Zenoway's mission to connect early-stage startups and creative talent — making job hunting simpler, direct, and noise-free.",
+  alternates: {
+    canonical: "https://www.zenoway.online/about",
+  },
+};
 
 const values = [
   {

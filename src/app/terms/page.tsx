@@ -1,8 +1,16 @@
-"use client";
-
+import type { Metadata } from "next";
 import { Mail, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import SiteFooter from "@/app/components/home/SiteFooter";
+
+export const metadata: Metadata = {
+  title: "Terms and Conditions | Zenoway",
+  description:
+    "Read the terms and conditions for using Zenoway's job platform, listing guidelines, and user responsibilities.",
+  alternates: {
+    canonical: "https://www.zenoway.online/terms",
+  },
+};
 
 const sections = [
   {

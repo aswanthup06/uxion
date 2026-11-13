@@ -15,6 +15,7 @@ export type AiPendingSuggestion =
       roleLabel: string;
       bullets: string[];
       note: string;
+      contextPrompts?: string[];
     }
   | {
       type: "suggest-skills";
@@ -143,6 +144,21 @@ export default function AiReviewCard({
           </ul>
           {suggestion.note && (
             <p className="text-[11px] text-text-secondary">{suggestion.note}</p>
+          )}
+          {suggestion.contextPrompts && suggestion.contextPrompts.length > 0 && (
+            <div className="rounded-control border border-border-subtle bg-surface-subtle/70 p-2.5 text-xs text-text-secondary">
+              <p className="font-semibold text-text-primary text-[11px] mb-1">
+                Optional context / metrics to consider adding:
+              </p>
+              <ul className="space-y-1 text-[11px]">
+                {suggestion.contextPrompts.map((cp, idx) => (
+                  <li key={idx} className="flex items-start gap-1.5">
+                    <span className="text-brand">💡</span>
+                    <span>{cp}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
           <div className="flex flex-wrap items-center gap-2">
             <button

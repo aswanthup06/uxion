@@ -248,6 +248,7 @@ export type DocumentBlock =
       lineHeightPt: number;
       spaceAfterPt: number;
       heightPt: number;
+      href?: string;
     }
   | {
       type: "skill-line";
@@ -613,7 +614,7 @@ export function buildDocumentBlocks(data: ResumeData): {
           const firstLineAvailablePt = Math.max(60, CONTENT_WIDTH_PT - prefixWidthPt);
           const words = itemsText.split(/\s+/).filter(Boolean);
 
-          let line0Words: string[] = [];
+          const line0Words: string[] = [];
           let remainingWords: string[] = [];
 
           for (let wIdx = 0; wIdx < words.length; wIdx++) {
@@ -821,7 +822,8 @@ export function buildDocumentBlocks(data: ResumeData): {
         if (items.length === 0) return;
         pushSectionHeading(title);
 
-        items.forEach((item, idx) => {
+        items.forEach((item) => {
+          const cleanUrl = normalizeResumeUrl(item);
           const lines = wrap(item, CONTENT_WIDTH_PT - 14, 9.5, false);
           const spaceAfterPt = 2;
           blocks.push({
@@ -831,6 +833,7 @@ export function buildDocumentBlocks(data: ResumeData): {
             lineHeightPt: 13.5,
             spaceAfterPt,
             heightPt: lines.length * 13.5 + spaceAfterPt,
+            href: cleanUrl || undefined,
           });
         });
       });

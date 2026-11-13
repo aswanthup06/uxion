@@ -25,6 +25,7 @@ import {
   Users,
   Inbox,
   Plus,
+  Sparkles,
   // FileText,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -346,6 +347,27 @@ export default function Navbar() {
                                 </span>
                                 <span className="mt-0.5 block text-xs text-text-muted leading-snug">
                                   {user ? "Manage resume & details" : "Sign in to build your profile"}
+                                </span>
+                              </span>
+                            </Link>
+
+                            <Link
+                              href="/profile/dummy"
+                              onClick={closeMenus}
+                              className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
+                            >
+                              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-white">
+                                <Sparkles size={15} strokeWidth={1.8} />
+                              </span>
+                              <span className="min-w-0 flex-1">
+                                <span className="flex items-center gap-1.5 text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                  <span>Demo Profile</span>
+                                  <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-[10px] font-semibold text-brand">
+                                    Redesign
+                                  </span>
+                                </span>
+                                <span className="mt-0.5 block text-xs text-text-muted leading-snug">
+                                  Preview modern Bento showcase
                                 </span>
                               </span>
                             </Link>
@@ -819,6 +841,27 @@ export default function Navbar() {
                               </span>
                               <span className="mt-0.5 block text-xs text-text-muted leading-snug">
                                 {user ? "Manage resume & details" : "Sign in to build your profile"}
+                              </span>
+                            </span>
+                          </Link>
+
+                          <Link
+                            href="/profile/dummy"
+                            onClick={closeMenus}
+                            className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
+                          >
+                            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-white">
+                              <Sparkles size={15} strokeWidth={1.8} />
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="flex items-center gap-1.5 font-medium text-text-primary group-hover:text-brand">
+                                <span>Demo Profile</span>
+                                <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-[10px] font-semibold text-brand">
+                                  Redesign
+                                </span>
+                              </span>
+                              <span className="mt-0.5 block text-xs text-text-muted leading-snug">
+                                Preview modern Bento showcase
                               </span>
                             </span>
                           </Link>

@@ -44,6 +44,39 @@ function getClientIdentifier(request: NextRequest): string {
   return `ip:${ip}`;
 }
 
+function humanizeGeminiError(error: unknown): string {
+  if (!error) return "An unexpected error occurred while parsing the resume.";
+  const msg = error instanceof Error ? error.message : String(error);
+
+  try {
+    const parsed = JSON.parse(msg);
+    if (
+      parsed.error?.code === 503 ||
+      parsed.error?.status === "UNAVAILABLE" ||
+      parsed.error?.message?.toLowerCase().includes("high demand")
+    ) {
+      return "The AI parsing service is temporarily experiencing high traffic from Google. Please wait a few seconds and try again, or paste your resume text in the 'Paste Resume Text' tab.";
+    }
+    if (parsed.error?.code === 429 || parsed.error?.status === "RESOURCE_EXHAUSTED") {
+      return "The AI parsing quota has been temporarily reached. Please wait a moment and try again.";
+    }
+    if (parsed.error?.message) {
+      return parsed.error.message;
+    }
+  } catch {
+    // Not JSON
+  }
+
+  if (msg.includes("503") || msg.toLowerCase().includes("high demand") || msg.includes("UNAVAILABLE")) {
+    return "The AI parsing service is temporarily experiencing high traffic from Google. Please wait a few seconds and try again, or paste your resume text in the 'Paste Resume Text' tab.";
+  }
+  if (msg.includes("429") || msg.toLowerCase().includes("quota") || msg.includes("resource_exhausted")) {
+    return "The AI parsing service is temporarily rate-limited. Please wait a moment and try again.";
+  }
+
+  return msg;
+}
+
 /**
  * Extracts plain text from a Word .docx buffer without external dependencies.
  * .docx files are PKZip archives containing word/document.xml.
@@ -347,7 +380,12 @@ export async function POST(request: NextRequest) {
     }
 
     const ai = new GoogleGenAI({ apiKey });
-    const models = ["gemini-3.5-flash-lite", "gemini-3-flash-preview"];
+    const models = [
+      "gemini-3.5-flash",
+      "gemini-3.5-flash-lite",
+      "gemini-3-flash-preview",
+      "gemini-flash-lite-latest",
+    ];
     let parsedResult: unknown = null;
     let lastError: unknown = null;
 
@@ -430,6 +468,8 @@ export async function POST(request: NextRequest) {
       } catch (err) {
         lastError = err;
         console.warn(`Resume parser with model ${model} failed:`, err instanceof Error ? err.message : err);
+        // Short backoff pause before trying next fallback model
+        await new Promise((resolve) => setTimeout(resolve, 800));
       }
     }
 
@@ -467,8 +507,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Resume parse API error:", error);
-    const message =
-      error instanceof Error ? error.message : "An unexpected error occurred while parsing the resume.";
+    const message = humanizeGeminiError(error);
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

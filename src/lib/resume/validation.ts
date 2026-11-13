@@ -575,11 +575,11 @@ export function sanitizeResumeData(
     .filter((s): s is Record<string, unknown> => Boolean(s && typeof s === "object"))
     .map((s) => ({
       id: clampId(s.id, "skill"),
-      category: clampString(s.category, 80),
+      category: clampString(s.category, 100),
       items: Array.isArray(s.items)
         ? s.items
             .slice(0, 50)
-            .map((item) => clampString(item, 60).trim())
+            .map((item) => clampString(item, 180).trim())
             .filter(Boolean)
         : [],
     }));

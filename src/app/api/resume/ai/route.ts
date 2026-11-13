@@ -54,13 +54,15 @@ function getClientIdentifier(request: NextRequest, userId?: string | null): stri
   return `ip:${ip}`;
 }
 
-const SYSTEM_INSTRUCTION = `You are a careful, truthful career writing editor helping a candidate refine their ATS-friendly resume.
+const SYSTEM_INSTRUCTION = `You are a senior technical recruiter and careful career writing editor helping a candidate refine their ATS-friendly resume.
 STRICT RULES:
 1. NEVER fabricate, invent, or infer employers, job titles, employment dates, degrees, institutions, certifications, tools, skills, or numerical metrics/percentages/counts that were not explicitly provided in the candidate's input.
-2. Only polish, clarify, and reorganize the candidate's existing factual information into clear, concise, achievement-focused English.
-3. If an achievement lacks a measurable metric, write a strong factual statement without inventing numbers (never insert fake percentages or dollar/rupee figures).
-4. Do not use emojis, markdown code fences, or decorative symbols.
-5. Output valid JSON matching the requested schema.`;
+2. Prefer specific responsibilities, technical contributions, project scope, and verified outcomes over generic self-praise.
+3. Lead bullet points with strong action verbs (e.g., Built, Designed, Architected, Engineered, Delivered, Spearheaded, Optimized, Streamlined) and concise wording.
+4. When helpful, suggest prompt questions asking the candidate for missing metrics or context (e.g., team size, user count, percent speedup) without inventing fake numbers.
+5. If an achievement lacks a measurable metric, write a strong factual statement without fabricating numbers.
+6. Do not use emojis, markdown code fences, or decorative symbols.
+7. Output valid JSON matching the requested schema.`;
 
 async function callGeminiJson<T>(prompt: string, schema: Schema): Promise<T> {
   const apiKey = process.env.GEMINI_API_KEY?.trim();
@@ -69,7 +71,12 @@ async function callGeminiJson<T>(prompt: string, schema: Schema): Promise<T> {
   }
 
   const ai = new GoogleGenAI({ apiKey });
-  const models = ["gemini-3.5-flash-lite", "gemini-3-flash-preview"];
+  const models = [
+    "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3-flash-preview",
+    "gemini-flash-lite-latest",
+  ];
   let lastError: unknown = null;
 
   for (const model of models) {
@@ -82,7 +89,7 @@ async function callGeminiJson<T>(prompt: string, schema: Schema): Promise<T> {
           responseMimeType: "application/json",
           responseJsonSchema: schema,
           temperature: 0.2,
-          httpOptions: { timeout: 25000 },
+          httpOptions: { timeout: 35000 },
         },
       });
 
@@ -104,6 +111,7 @@ async function callGeminiJson<T>(prompt: string, schema: Schema): Promise<T> {
         `Gemini resume AI (${model}) failed:`,
         err instanceof Error ? err.message : err
       );
+      await new Promise((resolve) => setTimeout(resolve, 800));
     }
   }
 
@@ -347,12 +355,20 @@ ${jobDescription ? `\nTarget Job Description (highlight matching genuine strengt
             items: { type: Type.STRING },
           },
           note: { type: Type.STRING },
+          metricPrompts: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING },
+          },
         },
         required: ["bullets", "note"],
       };
 
       const prompt = `Rewrite these experience bullet points into crisp, action-verb-led, achievement-focused ATS resume bullets.
-Keep the exact factual scope, tools, and numbers supplied—do NOT invent metrics, percentages, team sizes, or technologies not mentioned by the candidate. Return the same number of bullets or fewer if two overlap.
+STRICT GUIDELINES:
+- Start every bullet point with a powerful past-tense action verb (e.g., Architected, Delivered, Built, Engineered, Spearheaded, Optimized, Designed).
+- Do NOT invent metrics, percentages, team sizes, or technologies not supplied.
+- If a bullet describes improvement or work where a metric would elevate recruiter interest, add a prompt in "metricPrompts" asking the user for missing context (e.g. "What was the estimated percentage reduction in build time or bug rate?").
+- Return concise statements (~15–30 words per bullet).
 
 Role: ${targetExp.jobTitle || "Candidate role"}
 Company: ${targetExp.company || "Employer"}
@@ -360,10 +376,11 @@ Original Bullets:
 ${sourceBullets.map((b, i) => `${i + 1}. ${b}`).join("\n")}
 ${jobDescription ? `\nOptional Job Description context (use aligned terminology only when factually accurate):\n${jobDescription}` : ""}`;
 
-      const result = await callGeminiJson<{ bullets: string[]; note: string }>(
-        prompt,
-        schema
-      );
+      const result = await callGeminiJson<{
+        bullets: string[];
+        note: string;
+        metricPrompts?: string[];
+      }>(prompt, schema);
 
       return NextResponse.json({
         success: true,
@@ -374,6 +391,9 @@ ${jobDescription ? `\nOptional Job Description context (use aligned terminology 
             ? result.bullets.map((b) => String(b).trim()).filter(Boolean)
             : [],
           note: result.note || "",
+          contextPrompts: Array.isArray(result.metricPrompts)
+            ? result.metricPrompts.map((p) => String(p).trim()).filter(Boolean)
+            : [],
         },
       });
     }

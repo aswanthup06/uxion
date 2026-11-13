@@ -51,6 +51,34 @@ type UploadTab = "file" | "paste";
 const ALLOWED_EXTENSIONS = [".pdf", ".docx", ".txt", ".md", ".json"];
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 
+function formatResumeUploadError(err: unknown): string {
+  if (!err) return "Failed to process resume document.";
+  const raw = err instanceof Error ? err.message : String(err);
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed.error?.message) {
+      if (
+        parsed.error.code === 503 ||
+        parsed.error.status === "UNAVAILABLE" ||
+        parsed.error.message.toLowerCase().includes("high demand")
+      ) {
+        return "The AI service is temporarily experiencing high traffic from Google. Please wait a few seconds and try again, or paste your resume text.";
+      }
+      return parsed.error.message;
+    }
+    if (parsed.message) return parsed.message;
+  } catch {
+    // not JSON
+  }
+
+  if (raw.includes("503") || raw.toLowerCase().includes("high demand") || raw.includes("UNAVAILABLE")) {
+    return "The AI service is temporarily experiencing high traffic from Google. Please wait a few seconds and try again, or paste your resume text.";
+  }
+
+  return raw;
+}
+
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -209,8 +237,7 @@ export default function ResumeUploadModal({
         stats: json.stats,
       });
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to import resume. Please try again.";
+      const message = formatResumeUploadError(err);
       setErrorMessage(message);
     } finally {
       setIsProcessing(false);
@@ -432,10 +459,21 @@ export default function ResumeUploadModal({
             {errorMessage && (
               <div
                 role="alert"
-                className="flex items-start gap-2.5 rounded-control border border-status-error-border bg-status-error-bg p-3 text-xs text-status-error"
+                className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-control border border-status-error-border bg-status-error-bg p-3 text-xs text-status-error"
               >
-                <AlertCircle size={15} className="mt-0.5 shrink-0" />
-                <span className="leading-relaxed">{errorMessage}</span>
+                <div className="flex items-start gap-2.5 min-w-0">
+                  <AlertCircle size={15} className="mt-0.5 shrink-0" />
+                  <span className="leading-relaxed">{errorMessage}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleStartParsing}
+                  disabled={isProcessing}
+                  className="shrink-0 inline-flex items-center gap-1 font-semibold underline hover:no-underline cursor-pointer"
+                >
+                  <RefreshCw size={12} />
+                  <span>Try again</span>
+                </button>
               </div>
             )}
 

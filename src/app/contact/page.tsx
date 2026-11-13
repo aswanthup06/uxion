@@ -1,5 +1,4 @@
-"use client";
-
+import type { Metadata } from "next";
 import {
   ArrowUpRight,
   Globe,
@@ -9,6 +8,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import SiteFooter from "@/app/components/home/SiteFooter";
+
+export const metadata: Metadata = {
+  title: "Contact Us | Zenoway",
+  description:
+    "Get in touch with Zenoway. Reach out for support, job posting inquiries, partnerships, or general feedback.",
+  alternates: {
+    canonical: "https://www.zenoway.online/contact",
+  },
+};
 
 const contactOptions = [
   {

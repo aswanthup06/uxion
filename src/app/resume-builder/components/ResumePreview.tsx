@@ -418,7 +418,18 @@ export default function ResumePreview({ data, onFontChange }: ResumePreviewProps
                                       •
                                     </span>
                                   )}
-                                  <span>{line}</span>
+                                  {block.href ? (
+                                    <a
+                                      href={block.href}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-[#0b66c2] underline underline-offset-2 hover:opacity-85"
+                                    >
+                                      {line}
+                                    </a>
+                                  ) : (
+                                    <span>{line}</span>
+                                  )}
                                 </div>
                               ))}
                             </div>

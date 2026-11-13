@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Post an IT Job | Zenoway",
   description:
     "Post tech, software engineering, and IT job openings on Zenoway. Reach top tech talent across India and worldwide.",
+  alternates: {
+    canonical: "https://www.zenoway.online/post-job",
+  },
 };
 
 export default function PostJobPage() {

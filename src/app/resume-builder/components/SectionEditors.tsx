@@ -1023,6 +1023,34 @@ export function EducationSectionEditor({
   );
 }
 
+function splitSkillTokens(raw: string): string[] {
+  const tokens: string[] = [];
+  let current = "";
+  let parenDepth = 0;
+
+  for (let i = 0; i < raw.length; i++) {
+    const char = raw[i];
+    if (char === "(" || char === "[" || char === "{") {
+      parenDepth++;
+      current += char;
+    } else if (char === ")" || char === "]" || char === "}") {
+      parenDepth = Math.max(0, parenDepth - 1);
+      current += char;
+    } else if (char === "," && parenDepth === 0) {
+      const trimmed = current.trim();
+      if (trimmed) tokens.push(trimmed);
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+
+  const lastTrimmed = current.trim();
+  if (lastTrimmed) tokens.push(lastTrimmed);
+
+  return tokens;
+}
+
 export function SkillsSectionEditor({
   data,
   onChange,
@@ -1058,10 +1086,7 @@ export function SkillsSectionEditor({
   };
 
   const addSkillsFromText = (groupId: string, rawText: string) => {
-    const incoming = rawText
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
+    const incoming = splitSkillTokens(rawText);
     if (incoming.length === 0) return;
 
     onChange((prev) => ({
@@ -1173,9 +1198,16 @@ export function SkillsSectionEditor({
                       }))
                     }
                     onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === ",") {
+                      if (e.key === "Enter") {
                         e.preventDefault();
                         addSkillsFromText(group.id, draft);
+                      } else if (e.key === ",") {
+                        const openParens = (draft.match(/[\(\[\{]/g) || []).length;
+                        const closeParens = (draft.match(/[\)\]\}]/g) || []).length;
+                        if (openParens <= closeParens) {
+                          e.preventDefault();
+                          addSkillsFromText(group.id, draft);
+                        }
                       }
                     }}
                     placeholder="Type skill(s) e.g. React, TypeScript, Figma"
@@ -1195,9 +1227,24 @@ export function SkillsSectionEditor({
                     {group.items.map((skill) => (
                       <span
                         key={skill}
-                        className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 py-1 text-xs font-medium text-text-primary"
+                        className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-2.5 py-1 text-xs font-medium text-text-primary transition-colors hover:border-brand/40"
                       >
-                        <span>{skill}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDraftByGroup((prev) => ({
+                              ...prev,
+                              [group.id]: draft ? `${draft}, ${skill}` : skill,
+                            }));
+                            updateGroup(group.id, {
+                              items: group.items.filter((s) => s !== skill),
+                            });
+                          }}
+                          title="Click to edit this skill"
+                          className="cursor-pointer text-left transition-colors hover:text-brand"
+                        >
+                          {skill}
+                        </button>
                         <button
                           type="button"
                           onClick={() =>
@@ -1206,7 +1253,7 @@ export function SkillsSectionEditor({
                             })
                           }
                           aria-label={`Remove ${skill}`}
-                          className="cursor-pointer text-text-muted hover:text-status-error"
+                          className="cursor-pointer text-text-muted transition-colors hover:text-status-error"
                         >
                           <X size={12} />
                         </button>

@@ -45,9 +45,9 @@ import {
   sanitizeResumeData,
   validateResumeData,
 } from "@/lib/resume/validation";
-import { analyzeResumeForAts } from "@/lib/resume/ats-checker";
 import ResumePreview from "./ResumePreview";
 import AtsCheckerPanel from "./AtsCheckerPanel";
+import RecruiterReviewModal from "./RecruiterReviewModal";
 import AiReviewCard, { type AiPendingSuggestion } from "./AiReviewCard";
 import SavedResumesModal from "./SavedResumesModal";
 import ResumeUploadModal from "./ResumeUploadModal";
@@ -56,6 +56,11 @@ import {
   PersonalSectionEditor,
 } from "./SectionEditors";
 import Modal from "@/app/components/Modal";
+import {
+  analyzeResumeForAts,
+  applyAtsCorrectionToResume,
+  type AtsCheckAction,
+} from "@/lib/resume/ats-checker";
 
 const LOCAL_DRAFT_KEY = "zenoway_ats_resume_draft_v1";
 
@@ -108,6 +113,8 @@ export default function ResumeBuilderWorkspace() {
   // Validation & Export states
   const [showExportErrors, setShowExportErrors] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [dismissedCheckIds, setDismissedCheckIds] = useState<Set<string>>(new Set());
 
   // Cloud persistence states
   const [savedResumes, setSavedResumes] = useState<SavedResumeRecord[]>([]);
@@ -414,8 +421,25 @@ export default function ResumeBuilderWorkspace() {
     toast.success("Imported available details from your Zenoway profile.");
   };
 
-  // Download selectable A4 PDF
-  const handleDownloadPdf = async () => {
+  const handleApplyAtsCorrection = (action: AtsCheckAction) => {
+    updateResumeData((prev) => applyAtsCorrectionToResume(prev, action));
+    toast.success(`Applied: ${action.label}`);
+  };
+
+  const handleDismissCheck = (checkId: string) => {
+    setDismissedCheckIds((prev) => new Set([...prev, checkId]));
+  };
+
+  const handleUndismissCheck = (checkId: string) => {
+    setDismissedCheckIds((prev) => {
+      const next = new Set(prev);
+      next.delete(checkId);
+      return next;
+    });
+  };
+
+  // Download selectable A4 PDF with Recruiter Pre-Review
+  const handleDownloadPdf = async (forceDownload = false) => {
     setShowExportErrors(true);
     const exportCheck = validateResumeData(resumeData, {
       requireContactForExport: true,
@@ -428,6 +452,16 @@ export default function ResumeBuilderWorkspace() {
       return;
     }
 
+    // If not forced and there are unresolved issues, show the recruiter review modal first
+    if (!forceDownload && (atsAnalysis.counts.errors > 0 || atsAnalysis.counts.warnings > 0)) {
+      setIsReviewModalOpen(true);
+      return;
+    }
+
+    await executeDownloadPdf();
+  };
+
+  const executeDownloadPdf = async () => {
     setIsExportingPdf(true);
     try {
       const res = await fetch("/api/resume/pdf", {
@@ -455,7 +489,7 @@ export default function ResumeBuilderWorkspace() {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-      toast.success("ATS-friendly PDF downloaded.");
+      toast.success("Recruiter-grade ATS PDF downloaded.");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to generate PDF.");
     } finally {
@@ -913,8 +947,39 @@ export default function ResumeBuilderWorkspace() {
 
             <button
               type="button"
+              onClick={() => setIsReviewModalOpen(true)}
+              className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 text-xs font-semibold text-text-primary transition-colors hover:border-brand hover:text-brand"
+              title="Recruiter Pre-Review & Quality Audit"
+            >
+              <ShieldCheck
+                size={14}
+                className={
+                  atsAnalysis.counts.errors > 0
+                    ? "text-status-error"
+                    : atsAnalysis.counts.warnings > 0
+                      ? "text-status-warning"
+                      : "text-brand"
+                }
+              />
+              <span className="hidden sm:inline">Recruiter Review</span>
+              <span className="sm:hidden">Review</span>
+              {atsBadgeCount > 0 && (
+                <span
+                  className={`rounded-pill px-1.5 py-0.5 text-[10px] font-bold ${
+                    atsAnalysis.counts.errors > 0
+                      ? "bg-status-error-bg text-status-error"
+                      : "bg-status-warning-bg text-status-warning"
+                  }`}
+                >
+                  {atsBadgeCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
               disabled={isExportingPdf}
-              onClick={handleDownloadPdf}
+              onClick={() => handleDownloadPdf()}
               className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-control bg-brand px-4 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isExportingPdf ? (
@@ -1003,7 +1068,7 @@ export default function ResumeBuilderWorkspace() {
                   }`}
                 >
                   <ShieldCheck size={13} />
-                  ATS Check & Job Match
+                  Recruiter Review & ATS
                   <span
                     className={`rounded-pill px-1.5 py-0.5 text-[10px] ${
                       atsAnalysis.counts.errors > 0
@@ -1366,6 +1431,10 @@ export default function ResumeBuilderWorkspace() {
                     setIsDirty(true);
                   }}
                   onJumpToSection={jumpToSection}
+                  onApplyCorrection={handleApplyAtsCorrection}
+                  dismissedCheckIds={dismissedCheckIds}
+                  onDismissCheck={handleDismissCheck}
+                  onUndismissCheck={handleUndismissCheck}
                   aiConfigured={aiConfigured}
                   aiLoading={aiLoadingKey === "tailor-to-jd"}
                   onTailorWithAi={() => callAiAssistant("tailor-to-jd")}
@@ -1388,6 +1457,17 @@ export default function ResumeBuilderWorkspace() {
           />
         </div>
       </div>
+
+      {/* Recruiter Review Pre-Download Modal */}
+      <RecruiterReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        analysis={atsAnalysis}
+        onDownloadPdf={() => executeDownloadPdf()}
+        isExportingPdf={isExportingPdf}
+        onJumpToSection={jumpToSection}
+        onApplyCorrection={handleApplyAtsCorrection}
+      />
 
       {/* Saved Resumes Modal */}
       <SavedResumesModal

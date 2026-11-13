@@ -268,7 +268,7 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
     // Deduplicate candidate preference note (e.g. remove redundant "candidates preferred" or "(no relocation)")
     let formattedPreference: { label: string; text: string } | null = null;
     if (preferenceNote) {
-      let trimmed = preferenceNote
+      const trimmed = preferenceNote
         .trim()
         .replace(/\s*[-–—]?\s*\(no relocation\)/gi, "")
         .replace(/\s*\(no relocation\)/gi, "")

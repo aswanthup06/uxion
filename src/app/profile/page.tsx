@@ -15,6 +15,7 @@ import {
   UserRound,
   Loader2,
   Trash2,
+  Sparkles,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
@@ -129,6 +130,30 @@ export default function ProfilePage() {
             My Profile
           </span>
         </nav>
+
+        {/* Prototype Redesign Banner */}
+        <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-panel border border-brand/20 bg-brand-soft/40 p-4 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-3">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand text-white shadow-subtle">
+              <Sparkles className="h-4 w-4" />
+            </span>
+            <div>
+              <p className="text-xs font-bold text-text-primary">
+                Preview the New Profile Redesign (Bento & Editorial Concept)
+              </p>
+              <p className="text-[11px] text-text-muted">
+                Explore the redesigned showcase with rich dummy data, portfolio case studies & impact metrics.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/profile/dummy"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-control bg-brand px-3.5 py-1.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover shadow-subtle"
+          >
+            <span>Explore Prototype</span>
+            <ExternalLink size={12} />
+          </Link>
+        </div>
 
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
           {/* Main Column */}

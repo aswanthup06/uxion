@@ -250,6 +250,7 @@ export async function generateResumePdfBytes(
         }
         cursorY -= block.spaceAfterPt;
       } else if (block.type === "bullet") {
+        const bulletColor = block.href ? colorLink : colorPrimary;
         block.lines.forEach((line, idx) => {
           const safeLine = sanitizeForPdfWinAnsi(line);
           const baselineY = cursorY - block.fontSizePt * 0.85;
@@ -267,8 +268,20 @@ export async function generateResumePdfBytes(
             y: baselineY,
             size: block.fontSizePt,
             font: fontRegular,
-            color: colorPrimary,
+            color: bulletColor,
           });
+          if (block.href) {
+            const lineW = fontRegular.widthOfTextAtSize(safeLine, block.fontSizePt);
+            addLinkAnnotation(
+              pdfDoc,
+              page,
+              block.href,
+              MARGIN_X_PT + 14,
+              baselineY - 2,
+              lineW,
+              block.fontSizePt + 2
+            );
+          }
           cursorY -= block.lineHeightPt;
         });
         cursorY -= block.spaceAfterPt;

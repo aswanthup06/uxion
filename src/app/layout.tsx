@@ -24,10 +24,6 @@ export const metadata: Metadata = {
   description:
     "Find genuine job opportunities for UI/UX designers, frontend developers, and creative professionals across India.",
 
-  alternates: {
-    canonical: SITE_URL,
-  },
-
   keywords: [
     "UI jobs",
     "UX jobs",
@@ -49,6 +45,10 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
     apple: "/favicon.ico",
+  },
+
+  other: {
+    "google-adsense-account": "ca-pub-8853112000993716",
   },
 
   openGraph: {
@@ -95,6 +95,16 @@ export default function RootLayout({
   return (
     <html lang="en" className={manrope.variable}>
       <head>
+        <meta
+          name="google-adsense-account"
+          content="ca-pub-8853112000993716"
+        />
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8853112000993716"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-TKZQD3T9PD"
           strategy="afterInteractive"

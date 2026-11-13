@@ -1,8 +1,16 @@
-"use client";
-
+import type { Metadata } from "next";
 import { Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import SiteFooter from "@/app/components/home/SiteFooter";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | Zenoway",
+  description:
+    "Learn how Zenoway collects, uses, and protects your personal information and resume data.",
+  alternates: {
+    canonical: "https://www.zenoway.online/privacy-policy",
+  },
+};
 
 const sections = [
   {

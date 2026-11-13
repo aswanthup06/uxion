@@ -19,6 +19,10 @@ export async function generateMetadata({
     return {
       title: "Job Not Found | Zenoway",
       description: "The requested career opportunity could not be found.",
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
@@ -30,6 +34,9 @@ export async function generateMetadata({
   return {
     title: `${job.title} at ${job.company} | Zenoway`,
     description: excerpt,
+    alternates: {
+      canonical: `https://www.zenoway.online/jobs/${job.id}`,
+    },
     openGraph: {
       title: `${job.title} at ${job.company}`,
       description: excerpt,
