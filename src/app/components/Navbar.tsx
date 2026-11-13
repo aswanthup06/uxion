@@ -280,155 +280,157 @@ export default function Navbar() {
                     <motion.div
                       key="jobs-dropdown"
                       {...motionProps}
-                      className="absolute left-0 top-[calc(100%+6px)] w-[580px] origin-top-left rounded-panel border border-border-default bg-surface-card shadow-modal overflow-hidden before:absolute before:-top-3 before:left-0 before:right-0 before:h-3"
+                      className="absolute left-0 top-full pt-1.5 w-[580px] origin-top-left z-50"
                     >
-                      <div className="grid grid-cols-2 divide-x divide-border-subtle p-3.5">
-                        {/* Left column: Explore by Domain */}
-                        <div className="pr-3">
-                          <p className="px-2.5 pb-2 text-[10.5px] font-bold uppercase tracking-[1.2px] text-text-muted">
-                            Explore by domain
-                          </p>
-                          <div className="space-y-1">
-                            {categories.map(({ label, href, icon: Icon }) => (
-                              <Link
-                                key={label}
-                                href={href}
-                                onClick={closeMenus}
-                                className="group flex cursor-pointer items-center gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
-                              >
-                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                                  <Icon size={15} strokeWidth={1.8} />
-                                </span>
-                                <span className="text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
-                                  {label}
-                                </span>
-                              </Link>
-                            ))}
+                      <div className="rounded-panel border border-border-default bg-surface-card shadow-modal overflow-hidden">
+                        <div className="grid grid-cols-2 divide-x divide-border-subtle p-3.5">
+                          {/* Left column: Explore by Domain */}
+                          <div className="pr-3">
+                            <p className="px-2.5 pb-2 text-[10.5px] font-bold uppercase tracking-[1.2px] text-text-muted">
+                              Explore by domain
+                            </p>
+                            <div className="space-y-1">
+                              {categories.map(({ label, href, icon: Icon }) => (
+                                <Link
+                                  key={label}
+                                  href={href}
+                                  onClick={closeMenus}
+                                  className="group flex cursor-pointer items-center gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
+                                >
+                                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
+                                    <Icon size={15} strokeWidth={1.8} />
+                                  </span>
+                                  <span className="text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                    {label}
+                                  </span>
+                                </Link>
+                              ))}
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Right column: Candidate Resources */}
-                        <div className="pl-3">
-                          <p className="px-2.5 pb-2 text-[10.5px] font-bold uppercase tracking-[1.2px] text-text-muted">
-                            Candidate resources
-                          </p>
-                          <div className="space-y-1">
-                            {/* Hidden while Resume Builder is in progress
-                            <Link
-                              href="/resume-builder"
-                              onClick={closeMenus}
-                              className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
-                            >
-                              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                                <FileText size={15} strokeWidth={1.8} />
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="block text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
-                                  ATS Resume Builder
+                          {/* Right column: Candidate Resources */}
+                          <div className="pl-3">
+                            <p className="px-2.5 pb-2 text-[10.5px] font-bold uppercase tracking-[1.2px] text-text-muted">
+                              Candidate resources
+                            </p>
+                            <div className="space-y-1">
+                              {/* Hidden while Resume Builder is in progress
+                              <Link
+                                href="/resume-builder"
+                                onClick={closeMenus}
+                                className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
+                              >
+                                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
+                                  <FileText size={15} strokeWidth={1.8} />
                                 </span>
-                                <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                  Create &amp; export ATS-ready PDF
-                                </span>
-                              </span>
-                            </Link>
-                            */}
-
-                            <Link
-                              href="/profile"
-                              onClick={closeMenus}
-                              className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
-                            >
-                              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                                <UserRound size={15} strokeWidth={1.8} />
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="block text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
-                                  {user ? "My Profile" : "Candidate Profile"}
-                                </span>
-                                <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                  {user ? "Manage resume & details" : "Sign in to build your profile"}
-                                </span>
-                              </span>
-                            </Link>
-
-                            <Link
-                              href="/profile/dummy"
-                              onClick={closeMenus}
-                              className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
-                            >
-                              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-white">
-                                <Sparkles size={15} strokeWidth={1.8} />
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="flex items-center gap-1.5 text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
-                                  <span>Demo Profile</span>
-                                  <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-[10px] font-semibold text-brand">
-                                    Redesign
+                                <span className="min-w-0 flex-1">
+                                  <span className="block text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                    ATS Resume Builder
+                                  </span>
+                                  <span className="mt-0.5 block text-xs text-text-muted leading-snug">
+                                    Create &amp; export ATS-ready PDF
                                   </span>
                                 </span>
-                                <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                  Preview modern Bento showcase
-                                </span>
-                              </span>
-                            </Link>
+                              </Link>
+                              */}
 
-                            {/* Hidden while Referral is in progress
-                            <Link
-                              href="/referral"
-                              onClick={closeMenus}
-                              className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
-                            >
-                              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                                <Share2 size={15} strokeWidth={1.8} />
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="block text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
-                                  Referral Rewards
+                              <Link
+                                href="/profile"
+                                onClick={closeMenus}
+                                className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
+                              >
+                                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
+                                  <UserRound size={15} strokeWidth={1.8} />
                                 </span>
-                                <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                  Earn rewards by sharing jobs
+                                <span className="min-w-0 flex-1">
+                                  <span className="block text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                    {user ? "My Profile" : "Candidate Profile"}
+                                  </span>
+                                  <span className="mt-0.5 block text-xs text-text-muted leading-snug">
+                                    {user ? "Manage resume & details" : "Sign in to build your profile"}
+                                  </span>
                                 </span>
-                              </span>
-                            </Link>
-                            */}
+                              </Link>
 
-                            <Link
-                              href="/email"
-                              onClick={closeMenus}
-                              className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
-                            >
-                              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                                <Mail size={15} strokeWidth={1.8} />
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="block text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
-                                  Email Guide
+                              <Link
+                                href="/profile/dummy"
+                                onClick={closeMenus}
+                                className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
+                              >
+                                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-white">
+                                  <Sparkles size={15} strokeWidth={1.8} />
                                 </span>
-                                <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                  Professional outreach templates
+                                <span className="min-w-0 flex-1">
+                                  <span className="flex items-center gap-1.5 text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                    <span>Demo Profile</span>
+                                    <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-[10px] font-semibold text-brand">
+                                      Redesign
+                                    </span>
+                                  </span>
+                                  <span className="mt-0.5 block text-xs text-text-muted leading-snug">
+                                    Preview modern Bento showcase
+                                  </span>
                                 </span>
-                              </span>
-                            </Link>
+                              </Link>
+
+                              {/* Hidden while Referral is in progress
+                              <Link
+                                href="/referral"
+                                onClick={closeMenus}
+                                className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
+                              >
+                                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
+                                  <Share2 size={15} strokeWidth={1.8} />
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                  <span className="block text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                    Referral Rewards
+                                  </span>
+                                  <span className="mt-0.5 block text-xs text-text-muted leading-snug">
+                                    Earn rewards by sharing jobs
+                                  </span>
+                                </span>
+                              </Link>
+                              */}
+
+                              <Link
+                                href="/email"
+                                onClick={closeMenus}
+                                className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
+                              >
+                                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
+                                  <Mail size={15} strokeWidth={1.8} />
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                  <span className="block text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                    Email Guide
+                                  </span>
+                                  <span className="mt-0.5 block text-xs text-text-muted leading-snug">
+                                    Professional outreach templates
+                                  </span>
+                                </span>
+                              </Link>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Bottom Footer Bar */}
-                      <div className="border-t border-border-subtle bg-surface-subtle/70 px-4 py-4">
-                        <Link
-                          href={JOBS}
-                          onClick={closeMenus}
-                          className="group flex cursor-pointer items-center justify-between text-xs font-semibold text-text-secondary transition-colors hover:text-brand"
-                        >
-                          <span className="flex items-center gap-2">
-                            <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                            <span>Browse all active jobs on Zenoway</span>
-                          </span>
-                          <ArrowUpRight
-                            size={14}
-                            className="text-text-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand"
-                          />
-                        </Link>
+                        {/* Bottom Footer Bar */}
+                        <div className="border-t border-border-subtle bg-surface-subtle/70 px-4 py-4">
+                          <Link
+                            href={JOBS}
+                            onClick={closeMenus}
+                            className="group flex cursor-pointer items-center justify-between text-xs font-semibold text-text-secondary transition-colors hover:text-brand"
+                          >
+                            <span className="flex items-center gap-2">
+                              <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+                              <span>Browse all active jobs on Zenoway</span>
+                            </span>
+                            <ArrowUpRight
+                              size={14}
+                              className="text-text-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand"
+                            />
+                          </Link>
+                        </div>
                       </div>
                     </motion.div>
                   )}
@@ -462,43 +464,45 @@ export default function Navbar() {
                     <motion.div
                       key="employers-dropdown"
                       {...motionProps}
-                      className="absolute left-0 top-[calc(100%+6px)] w-[250px] origin-top-left rounded-panel border border-border-default bg-surface-card p-2 shadow-modal overflow-hidden before:absolute before:-top-3 before:left-0 before:right-0 before:h-3"
+                      className="absolute left-0 top-full pt-1.5 w-[250px] origin-top-left z-50"
                     >
-                      <Link
-                        href={POST_JOB}
-                        onClick={closeMenus}
-                        className="group flex cursor-pointer items-center gap-3 rounded-control px-2.5 py-2.5 transition-colors hover:bg-surface-subtle"
-                      >
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                          <BriefcaseBusiness size={16} strokeWidth={1.8} />
-                        </span>
-                        <span>
-                          <span className="block text-[13px] font-semibold text-text-primary transition-colors group-hover:text-brand">
-                            Post a job
+                      <div className="rounded-panel border border-border-default bg-surface-card p-2 shadow-modal overflow-hidden">
+                        <Link
+                          href={POST_JOB}
+                          onClick={closeMenus}
+                          className="group flex cursor-pointer items-center gap-3 rounded-control px-2.5 py-2.5 transition-colors hover:bg-surface-subtle"
+                        >
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
+                            <BriefcaseBusiness size={16} strokeWidth={1.8} />
                           </span>
-                          <span className="mt-0.5 block text-xs text-text-muted">
-                            Find IT talent
+                          <span>
+                            <span className="block text-[13px] font-semibold text-text-primary transition-colors group-hover:text-brand">
+                              Post a job
+                            </span>
+                            <span className="mt-0.5 block text-xs text-text-muted">
+                              Find IT talent
+                            </span>
                           </span>
-                        </span>
-                      </Link>
+                        </Link>
 
-                      <Link
-                        href={MY_JOBS}
-                        onClick={closeMenus}
-                        className="group flex cursor-pointer items-center gap-3 rounded-control px-2.5 py-2.5 transition-colors hover:bg-surface-subtle"
-                      >
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                          <BriefcaseBusiness size={16} strokeWidth={1.8} />
-                        </span>
-                        <span>
-                          <span className="block text-[13px] font-semibold text-text-primary transition-colors group-hover:text-brand">
-                            My jobs
+                        <Link
+                          href={MY_JOBS}
+                          onClick={closeMenus}
+                          className="group flex cursor-pointer items-center gap-3 rounded-control px-2.5 py-2.5 transition-colors hover:bg-surface-subtle"
+                        >
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
+                            <BriefcaseBusiness size={16} strokeWidth={1.8} />
                           </span>
-                          <span className="mt-0.5 block text-xs text-text-muted">
-                            Manage listings
+                          <span>
+                            <span className="block text-[13px] font-semibold text-text-primary transition-colors group-hover:text-brand">
+                              My jobs
+                            </span>
+                            <span className="mt-0.5 block text-xs text-text-muted">
+                              Manage listings
+                            </span>
                           </span>
-                        </span>
-                      </Link>
+                        </Link>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -573,54 +577,56 @@ export default function Navbar() {
                     <motion.div
                       key="user-dropdown"
                       {...motionProps}
-                      className="absolute right-0 top-[calc(100%+6px)] w-56 rounded-panel border border-border-default bg-surface-card p-2 shadow-modal z-50 before:absolute before:-top-3 before:left-0 before:right-0 before:h-3"
+                      className="absolute right-0 top-full pt-1.5 w-56 origin-top-right z-50"
                     >
-                      <div className="border-b border-border-subtle px-3 py-2.5">
-                        <p className="truncate text-xs font-semibold text-text-primary">
-                          {profile?.full_name || user.user_metadata?.full_name || "Candidate"}
-                        </p>
-                        <p className="mt-0.5 truncate text-[11px] text-text-muted">{user.email}</p>
-                      </div>
+                      <div className="rounded-panel border border-border-default bg-surface-card p-2 shadow-modal">
+                        <div className="border-b border-border-subtle px-3 py-2.5">
+                          <p className="truncate text-xs font-semibold text-text-primary">
+                            {profile?.full_name || user.user_metadata?.full_name || "Candidate"}
+                          </p>
+                          <p className="mt-0.5 truncate text-[11px] text-text-muted">{user.email}</p>
+                        </div>
 
-                      <div className="py-1">
-                        <Link
-                          href="/profile"
-                          onClick={closeMenus}
-                          className="group flex cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
-                        >
-                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                            <UserRound size={13} strokeWidth={1.8} />
-                          </span>
-                          <span>My Profile</span>
-                        </Link>
-                        {/* Hidden while Resume Builder is in progress
-                        <Link
-                          href="/resume-builder"
-                          onClick={closeMenus}
-                          className="group flex cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
-                        >
-                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                            <FileText size={13} strokeWidth={1.8} />
-                          </span>
-                          <span>Resume Builder</span>
-                        </Link>
-                        */}
-                      </div>
+                        <div className="py-1">
+                          <Link
+                            href="/profile"
+                            onClick={closeMenus}
+                            className="group flex cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
+                          >
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
+                              <UserRound size={13} strokeWidth={1.8} />
+                            </span>
+                            <span>My Profile</span>
+                          </Link>
+                          {/* Hidden while Resume Builder is in progress
+                          <Link
+                            href="/resume-builder"
+                            onClick={closeMenus}
+                            className="group flex cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
+                          >
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
+                              <FileText size={13} strokeWidth={1.8} />
+                            </span>
+                            <span>Resume Builder</span>
+                          </Link>
+                          */}
+                        </div>
 
-                      <div className="border-t border-border-subtle pt-1">
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            closeMenus();
-                            await signOut();
-                          }}
-                          className="group flex w-full cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-left text-xs font-medium text-status-error transition-colors hover:bg-status-error-bg"
-                        >
-                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control border border-status-error-border/60 bg-status-error-bg text-status-error transition-colors">
-                            <LogOut size={13} strokeWidth={1.8} />
-                          </span>
-                          <span>Sign out</span>
-                        </button>
+                        <div className="border-t border-border-subtle pt-1">
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              closeMenus();
+                              await signOut();
+                            }}
+                            className="group flex w-full cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-left text-xs font-medium text-status-error transition-colors hover:bg-status-error-bg"
+                          >
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control border border-status-error-border/60 bg-status-error-bg text-status-error transition-colors">
+                              <LogOut size={13} strokeWidth={1.8} />
+                            </span>
+                            <span>Sign out</span>
+                          </button>
+                        </div>
                       </div>
                     </motion.div>
                   )}
