@@ -8,6 +8,7 @@ import {
   Loader2,
   LogIn,
   Trash2,
+  Upload,
 } from "lucide-react";
 import Modal from "@/app/components/Modal";
 import type { SavedResumeRecord } from "@/lib/resume/types";
@@ -25,6 +26,7 @@ interface SavedResumesModalProps {
   onSelectResume: (resume: SavedResumeRecord) => void;
   onDeleteResume: (id: string) => void;
   onCreateNew: () => void;
+  onUploadResume?: () => void;
 }
 
 function formatUpdatedAt(iso: string): string {
@@ -52,6 +54,7 @@ export default function SavedResumesModal({
   onSelectResume,
   onDeleteResume,
   onCreateNew,
+  onUploadResume,
 }: SavedResumesModalProps) {
   return (
     <Modal
@@ -92,21 +95,36 @@ export default function SavedResumesModal({
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-xs text-text-muted">
               {resumes.length} saved {resumes.length === 1 ? "resume" : "resumes"}
             </p>
-            <button
-              type="button"
-              onClick={() => {
-                onCreateNew();
-                onClose();
-              }}
-              className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-control border border-border-strong bg-brand-soft px-3 text-xs font-semibold text-brand transition-colors hover:bg-brand-soft-hover"
-            >
-              <FilePlus2 size={13} />
-              New blank resume
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              {onUploadResume && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onUploadResume();
+                    onClose();
+                  }}
+                  className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 text-xs font-semibold text-text-primary transition-colors hover:border-brand hover:text-brand"
+                >
+                  <Upload size={13} />
+                  Upload resume
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  onCreateNew();
+                  onClose();
+                }}
+                className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-control border border-border-strong bg-brand-soft px-3 text-xs font-semibold text-brand transition-colors hover:bg-brand-soft-hover"
+              >
+                <FilePlus2 size={13} />
+                New blank resume
+              </button>
+            </div>
           </div>
 
           {migrationRequired && (

@@ -13,6 +13,7 @@ import {
   deleteJob,
 } from "@/lib/supabase/jobs";
 import type { Job } from "@/app/types/job";
+import { validateEmailDomain } from "@/lib/validation/email";
 
 /**
  * Helper to verify that the request comes from an authenticated admin session
@@ -129,6 +130,15 @@ export async function POST(req: NextRequest) {
     if (!body.mail?.trim()) {
       return NextResponse.json(
         { error: "Application email is required" },
+        { status: 400 }
+      );
+    }
+
+    // Verify email domain format and active MX records
+    const emailValidation = await validateEmailDomain(body.mail);
+    if (!emailValidation.valid) {
+      return NextResponse.json(
+        { error: emailValidation.reason || "Invalid application email address." },
         { status: 400 }
       );
     }
@@ -250,6 +260,16 @@ export async function PUT(req: NextRequest) {
         { error: "Job ID is required for updating" },
         { status: 400 }
       );
+    }
+
+    if (body.mail) {
+      const emailValidation = await validateEmailDomain(body.mail);
+      if (!emailValidation.valid) {
+        return NextResponse.json(
+          { error: emailValidation.reason || "Invalid application email address." },
+          { status: 400 }
+        );
+      }
     }
 
     const updatedJob = await updateJob(body.id, {

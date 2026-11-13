@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FileText, ZoomIn, ZoomOut } from "lucide-react";
-import type { ResumeData } from "@/lib/resume/types";
+import type { ResumeData, ResumeFontFamily } from "@/lib/resume/types";
 import {
   A4_HEIGHT_PT,
   A4_WIDTH_PT,
@@ -22,9 +22,10 @@ type ZoomMode = "fit" | "75" | "100";
 interface ResumePreviewProps {
   data: ResumeData;
   documentTitle?: string;
+  onFontChange?: (font: ResumeFontFamily) => void;
 }
 
-export default function ResumePreview({ data }: ResumePreviewProps) {
+export default function ResumePreview({ data, onFontChange }: ResumePreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(560);
   const [zoomMode, setZoomMode] = useState<ZoomMode>("fit");
@@ -66,14 +67,50 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
           <span>
             {layout.pages.length} {layout.pages.length === 1 ? "page" : "pages"}
           </span>
-          <span className="hidden text-text-muted sm:inline">· Arial, single column</span>
+          <span className="hidden text-text-muted sm:inline">
+            · {data.fontFamily === "times" ? "Times New Roman" : "Arial"}, single column
+          </span>
         </div>
 
-        <div
-          className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle p-0.5 text-[11px]"
-          role="group"
-          aria-label="Preview zoom"
-        >
+        <div className="flex flex-wrap items-center gap-2">
+          {onFontChange && (
+            <div
+              className="inline-flex items-center gap-0.5 rounded-control border border-border-default bg-surface-subtle p-0.5 text-[11px]"
+              role="group"
+              aria-label="Font selection"
+            >
+              <button
+                type="button"
+                onClick={() => onFontChange("helvetica")}
+                className={`cursor-pointer rounded-control px-2 py-1 font-medium transition-colors ${
+                  (data.fontFamily || "helvetica") === "helvetica"
+                    ? "bg-surface-card text-brand shadow-subtle font-semibold"
+                    : "text-text-secondary hover:text-text-primary"
+                }`}
+                title="Modern Clean (Helvetica / Arial)"
+              >
+                Helvetica
+              </button>
+              <button
+                type="button"
+                onClick={() => onFontChange("times")}
+                className={`cursor-pointer rounded-control px-2 py-1 font-serif transition-colors ${
+                  data.fontFamily === "times"
+                    ? "bg-surface-card text-brand shadow-subtle font-semibold"
+                    : "text-text-secondary hover:text-text-primary"
+                }`}
+                title="Classic Serif (Times New Roman)"
+              >
+                Times New Roman
+              </button>
+            </div>
+          )}
+
+          <div
+            className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle p-0.5 text-[11px]"
+            role="group"
+            aria-label="Preview zoom"
+          >
           <button
             type="button"
             onClick={() => setZoomMode("fit")}
@@ -109,6 +146,7 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
             <ZoomIn size={11} />
             100%
           </button>
+          </div>
         </div>
       </div>
 
@@ -140,7 +178,10 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
                     paddingBottom: `${PAD_TOP_PX}px`,
                     transform: `scale(${scale})`,
                     transformOrigin: "top left",
-                    fontFamily: "Arial, Helvetica, sans-serif",
+                    fontFamily:
+                      data.fontFamily === "times"
+                        ? '"Times New Roman", Times, Georgia, serif'
+                        : 'Arial, Helvetica, "Liberation Sans", sans-serif',
                     color: "#141717",
                   }}
                   className="bg-white select-text"
@@ -210,12 +251,15 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
                                     >
                                       {segLine.map((seg, sIdx) => (
                                         <span key={sIdx}>
+                                          {seg.label && (
+                                            <span className="text-[#3d4542]">{seg.label}</span>
+                                          )}
                                           {seg.href ? (
                                             <a
                                               href={seg.href}
                                               target="_blank"
                                               rel="noopener noreferrer"
-                                              className="text-[#3d4542] underline-offset-2 hover:underline"
+                                              className="text-[#0b66c2] underline-offset-2 hover:underline"
                                             >
                                               {seg.text}
                                             </a>
@@ -231,13 +275,6 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
                                   ))}
                                 </div>
                               )}
-
-                              <div
-                                style={{
-                                  marginTop: `${2 * PT_TO_PX}px`,
-                                  borderBottom: "1px solid #c7ccc9",
-                                }}
-                              />
                             </header>
                           );
                         }
@@ -247,7 +284,7 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
                             <div
                               key={`sh-${idx}`}
                               style={{
-                                height: `${block.heightPt * PT_TO_PX}px`,
+                                minHeight: `${block.heightPt * PT_TO_PX}px`,
                                 paddingTop: `${4 * PT_TO_PX}px`,
                               }}
                             >
@@ -262,11 +299,6 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
                               >
                                 {block.title}
                               </h2>
-                              <div
-                                style={{
-                                  borderBottom: "0.75px solid #c7ccc9",
-                                }}
-                              />
                             </div>
                           );
                         }
@@ -277,7 +309,7 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
                             <div
                               key={`sr-${idx}`}
                               style={{
-                                height: `${block.heightPt * PT_TO_PX}px`,
+                                minHeight: `${block.heightPt * PT_TO_PX}px`,
                                 paddingBottom: `${block.spaceAfterPt * PT_TO_PX}px`,
                               }}
                               className="relative"
@@ -326,7 +358,7 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
                             <div
                               key={`p-${idx}`}
                               style={{
-                                height: `${block.heightPt * PT_TO_PX}px`,
+                                minHeight: `${block.heightPt * PT_TO_PX}px`,
                                 paddingBottom: `${block.spaceAfterPt * PT_TO_PX}px`,
                               }}
                             >
@@ -338,7 +370,7 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
                                     lineHeight: `${block.lineHeightPt * PT_TO_PX}px`,
                                     margin: 0,
                                   }}
-                                  className={`${colorClass} ${block.bold ? "font-bold" : ""}`}
+                                  className={`${block.href ? "text-[#0b66c2]" : colorClass} ${block.bold ? "font-bold" : ""}`}
                                 >
                                   {block.href ? (
                                     <a
@@ -363,7 +395,7 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
                             <div
                               key={`b-${idx}`}
                               style={{
-                                height: `${block.heightPt * PT_TO_PX}px`,
+                                minHeight: `${block.heightPt * PT_TO_PX}px`,
                                 paddingBottom: `${block.spaceAfterPt * PT_TO_PX}px`,
                               }}
                             >
@@ -398,7 +430,7 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
                             <div
                               key={`sk-${idx}`}
                               style={{
-                                height: `${block.heightPt * PT_TO_PX}px`,
+                                minHeight: `${block.heightPt * PT_TO_PX}px`,
                                 paddingBottom: `${block.spaceAfterPt * PT_TO_PX}px`,
                               }}
                             >

@@ -4,6 +4,7 @@ import {
   type ResumeData,
   type ResumeEducationItem,
   type ResumeExperienceItem,
+  type ResumeFontFamily,
   type ResumeLink,
   type ResumeOptionalSection,
   type ResumePersonalDetails,
@@ -261,51 +262,54 @@ export interface ValidationIssue {
 
 export function hasExperienceContent(item: ResumeExperienceItem): boolean {
   return Boolean(
-    item.jobTitle.trim() ||
-      item.company.trim() ||
-      item.location.trim() ||
-      item.startDate.trim() ||
-      item.endDate.trim() ||
-      item.bullets.some((b) => b.trim())
+    (item.jobTitle || "").trim() ||
+      (item.company || "").trim() ||
+      (item.location || "").trim() ||
+      (item.startDate || "").trim() ||
+      (item.endDate || "").trim() ||
+      (item.bullets || []).some((b) => (b || "").trim())
   );
 }
 
 export function hasEducationContent(item: ResumeEducationItem): boolean {
   return Boolean(
-    item.degree.trim() ||
-      item.fieldOfStudy.trim() ||
-      item.institution.trim() ||
-      item.location.trim() ||
-      item.startDate.trim() ||
-      item.endDate.trim() ||
-      item.grade.trim() ||
-      item.highlights.trim()
+    (item.degree || "").trim() ||
+      (item.fieldOfStudy || "").trim() ||
+      (item.institution || "").trim() ||
+      (item.location || "").trim() ||
+      (item.startDate || "").trim() ||
+      (item.endDate || "").trim() ||
+      (item.grade || "").trim() ||
+      (item.highlights || "").trim()
   );
 }
 
 export function hasProjectContent(item: ResumeProjectItem): boolean {
   return Boolean(
-    item.name.trim() ||
-      item.role.trim() ||
-      item.link.trim() ||
-      item.startDate.trim() ||
-      item.endDate.trim() ||
-      item.description.trim() ||
-      item.highlights.some((h) => h.trim())
+    (item.name || "").trim() ||
+      (item.role || "").trim() ||
+      (item.link || "").trim() ||
+      (item.startDate || "").trim() ||
+      (item.endDate || "").trim() ||
+      (item.description || "").trim() ||
+      (item.highlights || []).some((h) => (h || "").trim())
   );
 }
 
 export function hasCertificationContent(item: ResumeCertificationItem): boolean {
   return Boolean(
-    item.name.trim() ||
-      item.issuer.trim() ||
-      item.issueDate.trim() ||
-      item.credentialUrl.trim()
+    (item.name || "").trim() ||
+      (item.issuer || "").trim() ||
+      (item.issueDate || "").trim() ||
+      (item.credentialUrl || "").trim()
   );
 }
 
 export function hasOptionalSectionContent(item: ResumeOptionalSection): boolean {
-  return Boolean(item.title.trim() || item.items.some((entry) => entry.trim()));
+  return Boolean(
+    (item.title || "").trim() ||
+      (item.items || []).some((entry) => (entry || "").trim())
+  );
 }
 
 export function validateResumeData(
@@ -642,9 +646,13 @@ export function sanitizeResumeData(
     }
   }
 
+  const fontFamily: ResumeFontFamily =
+    raw.fontFamily === "times" ? "times" : "helvetica";
+
   return {
     ok: true,
     data: {
+      fontFamily,
       personal: {
         firstName: clampString(rawPersonal.firstName, 80),
         lastName: clampString(rawPersonal.lastName, 80),

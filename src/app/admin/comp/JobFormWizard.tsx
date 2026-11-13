@@ -101,6 +101,7 @@ function Field({
   name,
   value,
   onChange,
+  onBlur,
   placeholder,
   icon: Icon,
   type = "text",
@@ -116,6 +117,7 @@ function Field({
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   placeholder: string;
   icon?: React.ElementType;
   type?: string;
@@ -150,6 +152,7 @@ function Field({
           type={type}
           value={value}
           onChange={onChange}
+          onBlur={onBlur}
           placeholder={placeholder}
           required={required}
           min={min}
@@ -545,6 +548,8 @@ export default function JobFormWizard({
   const [submittedJobData, setSubmittedJobData] = useState<Partial<Job> | null>(null);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [isValidatingEmail, setIsValidatingEmail] = useState(false);
+  const [emailVerifiedDomain, setEmailVerifiedDomain] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<number>(1);
 
   // AI Tools State
@@ -966,12 +971,68 @@ export default function JobFormWizard({
     return true;
   };
 
-  const handleNext = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep((prev) => Math.min(prev + 1, 4));
-      if (typeof window !== "undefined") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+  const verifyEmailDomain = async (emailToVerify: string): Promise<boolean> => {
+    const trimmed = (emailToVerify || "").trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!trimmed) {
+      setFieldErrors((prev) => ({ ...prev, mail: "Please enter an application email." }));
+      setEmailVerifiedDomain(null);
+      return false;
+    }
+    if (!emailRegex.test(trimmed)) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        mail: "Please enter a valid email address (e.g. hr@company.com).",
+      }));
+      setEmailVerifiedDomain(null);
+      return false;
+    }
+
+    setIsValidatingEmail(true);
+    try {
+      const res = await fetch(`/api/validate-email?email=${encodeURIComponent(trimmed)}`);
+      const data = await res.json();
+      if (!res.ok || !data.valid) {
+        setFieldErrors((prev) => ({
+          ...prev,
+          mail: data.reason || "The domain has no active mail server (MX records).",
+        }));
+        setEmailVerifiedDomain(null);
+        return false;
       }
+
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next.mail;
+        return next;
+      });
+      setEmailVerifiedDomain(data.domain || trimmed.split("@")[1]);
+      return true;
+    } catch {
+      // In case of network errors during checking, avoid hard blocking the wizard
+      return true;
+    } finally {
+      setIsValidatingEmail(false);
+    }
+  };
+
+  const handleEmailBlur = async () => {
+    if (form.mail.trim()) {
+      await verifyEmailDomain(form.mail);
+    }
+  };
+
+  const handleNext = async () => {
+    if (!validateStep(currentStep)) return;
+
+    if (currentStep === 3) {
+      const isDomainValid = await verifyEmailDomain(form.mail);
+      if (!isDomainValid) return;
+    }
+
+    setCurrentStep((prev) => Math.min(prev + 1, 4));
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -1022,6 +1083,9 @@ export default function JobFormWizard({
       delete copy[name];
       return copy;
     });
+    if (name === "mail") {
+      setEmailVerifiedDomain(null);
+    }
     if (error) setError("");
   };
 
@@ -1322,7 +1386,19 @@ export default function JobFormWizard({
       }
     } catch (err: unknown) {
       console.error(err);
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      const errMsg = err instanceof Error ? err.message : "Something went wrong.";
+      setError(errMsg);
+      if (
+        errMsg.toLowerCase().includes("mail") ||
+        errMsg.toLowerCase().includes("email") ||
+        errMsg.toLowerCase().includes("domain")
+      ) {
+        setFieldErrors((prev) => ({ ...prev, mail: errMsg }));
+        setCurrentStep(3);
+        if (typeof window !== "undefined") {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
       setIsSubmitting(false);
     }
   };
@@ -2075,17 +2151,32 @@ export default function JobFormWizard({
                   icon={Banknote}
                 />
 
-                <Field
-                  label="Application Email"
-                  name="mail"
-                  value={form.mail}
-                  onChange={handleChange}
-                  placeholder="careers@company.com"
-                  icon={Mail}
-                  type="email"
-                  error={fieldErrors.mail}
-                  required
-                />
+                <div>
+                  <Field
+                    label="Application Email"
+                    name="mail"
+                    value={form.mail}
+                    onChange={handleChange}
+                    onBlur={handleEmailBlur}
+                    placeholder="careers@company.com"
+                    icon={Mail}
+                    type="email"
+                    error={fieldErrors.mail}
+                    required
+                  />
+                  {isValidatingEmail && (
+                    <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-text-muted animate-in fade-in duration-150">
+                      <LoaderCircle size={12} className="animate-spin text-brand shrink-0" />
+                      <span>Verifying mail server & MX records...</span>
+                    </p>
+                  )}
+                  {!isValidatingEmail && !fieldErrors.mail && emailVerifiedDomain && (
+                    <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 animate-in fade-in duration-150">
+                      <CheckCircle2 size={12} className="shrink-0 text-emerald-500" />
+                      <span>Mail server verified for @{emailVerifiedDomain}</span>
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Posting Date */}
@@ -2115,10 +2206,20 @@ export default function JobFormWizard({
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover"
+                  disabled={isValidatingEmail}
+                  className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  <span>Continue to Review</span>
-                  <ArrowUpRight size={14} />
+                  {isValidatingEmail ? (
+                    <>
+                      <LoaderCircle size={14} className="animate-spin" />
+                      <span>Verifying Email...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Continue to Review</span>
+                      <ArrowUpRight size={14} />
+                    </>
+                  )}
                 </button>
               </div>
             </div>

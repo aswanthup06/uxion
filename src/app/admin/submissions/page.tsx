@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import {
   BriefcaseBusiness,
   CheckCircle2,
@@ -125,18 +125,6 @@ export default function SubmissionsPage() {
 
   return (
     <main className="min-h-full bg-surface-page text-text-primary">
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 3500,
-          style: {
-            border: "1px solid var(--color-border-default)",
-            borderRadius: "8px",
-            fontSize: "13px",
-          },
-        }}
-      />
-
       <div className="mx-auto max-w-7xl px-5 pb-16 pt-6 sm:px-8 sm:pt-9">
         {/* Breadcrumb */}
         <nav className="mb-6 flex items-center gap-2 text-xs text-text-muted">

@@ -16,7 +16,7 @@ import {
   Loader2,
   Trash2,
 } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 import Modal from "@/app/components/Modal";
 import { createClient } from "@/lib/supabase/client";
@@ -107,18 +107,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-surface-page text-text-primary">
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 3500,
-          style: {
-            border: "1px solid var(--color-border-default)",
-            borderRadius: "8px",
-            fontSize: "13px",
-          },
-        }}
-      />
-
       <div className="mx-auto w-full max-w-5xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav

@@ -5,7 +5,7 @@ import Link from "next/link";
 import JobTable from "../comp/JobTable";
 import LoadingSpinner from "../comp/LoadingSpinner";
 import { Job } from "../../types/job";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
@@ -72,18 +72,6 @@ export default function JobListPage() {
 
   return (
     <main className="min-h-full bg-surface-page text-text-primary">
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            border: "1px solid var(--color-border-default)",
-            borderRadius: "8px",
-            fontSize: "13px",
-          },
-        }}
-      />
-
       <div className="mx-auto max-w-7xl px-5 pb-10 pt-6 sm:px-8 sm:pt-9">
         {/* Breadcrumb */}
         <nav className="mb-6 flex items-center gap-2 text-xs text-text-muted">

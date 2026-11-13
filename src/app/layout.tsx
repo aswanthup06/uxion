@@ -3,7 +3,7 @@ import Script from "next/script";
 import { Manrope } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Toaster } from "react-hot-toast";
+import ZenowayToaster from "./components/ZenowayToaster";
 
 import MainLayout from "./MainLayout";
 import "./globals.css";
@@ -112,10 +112,10 @@ export default function RootLayout({
         </Script>
       </head>
 
-      <body className={`${manrope.className} antialiased`}>
+      <body className={`${manrope.className} ${manrope.variable} antialiased`}>
         <MainLayout>{children}</MainLayout>
 
-        <Toaster position="top-right" reverseOrder={false} />
+        <ZenowayToaster />
         <Analytics />
         <SpeedInsights />
       </body>

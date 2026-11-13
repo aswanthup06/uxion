@@ -9,6 +9,36 @@ export type ResumeSectionKey =
 
 export type ResumeTemplateId = "classic-ats";
 
+export type ResumeFontFamily = "helvetica" | "times";
+
+export interface ResumeFontOption {
+  id: ResumeFontFamily;
+  name: string;
+  label: string;
+  category: "Sans-Serif" | "Serif";
+  cssFamily: string;
+  description: string;
+}
+
+export const RESUME_FONT_OPTIONS: ResumeFontOption[] = [
+  {
+    id: "helvetica",
+    name: "Helvetica / Arial",
+    label: "Modern Clean (Helvetica)",
+    category: "Sans-Serif",
+    cssFamily: 'Arial, Helvetica, "Liberation Sans", sans-serif',
+    description: "Clean, balanced, modern standard. Recommended for Tech, Product, Design, and Startups.",
+  },
+  {
+    id: "times",
+    name: "Times New Roman",
+    label: "Classic Serif (Times)",
+    category: "Serif",
+    cssFamily: '"Times New Roman", Times, Georgia, serif',
+    description: "Prestigious, traditional serif. Recommended for Finance, Law, Academia, and Consulting.",
+  },
+];
+
 export interface ResumeLink {
   id: string;
   label: string;
@@ -81,6 +111,7 @@ export interface ResumeOptionalSection {
 }
 
 export interface ResumeData {
+  fontFamily?: ResumeFontFamily;
   personal: ResumePersonalDetails;
   summary: string;
   experience: ResumeExperienceItem[];
@@ -105,10 +136,20 @@ export interface SavedResumeRecord {
 
 export const DEFAULT_SECTION_ORDER: ResumeSectionKey[] = [
   "summary",
-  "experience",
-  "education",
   "skills",
+  "experience",
   "projects",
+  "education",
+  "certifications",
+  "optional",
+];
+
+export const FRESHER_SECTION_ORDER: ResumeSectionKey[] = [
+  "summary",
+  "education",
+  "projects",
+  "skills",
+  "experience",
   "certifications",
   "optional",
 ];
@@ -132,6 +173,7 @@ export function createId(prefix = "item"): string {
 
 export function createEmptyResumeData(): ResumeData {
   return {
+    fontFamily: "helvetica",
     personal: {
       firstName: "",
       lastName: "",

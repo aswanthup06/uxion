@@ -18,13 +18,17 @@ import {
   ShieldCheck,
   Sparkles,
   Trash2,
+  Upload,
   UserCheck,
   X,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 import {
+  DEFAULT_SECTION_ORDER,
+  FRESHER_SECTION_ORDER,
   type ResumeData,
+  type ResumeFontFamily,
   type ResumeSectionKey,
   type SavedResumeRecord,
   SECTION_LABELS,
@@ -46,6 +50,7 @@ import ResumePreview from "./ResumePreview";
 import AtsCheckerPanel from "./AtsCheckerPanel";
 import AiReviewCard, { type AiPendingSuggestion } from "./AiReviewCard";
 import SavedResumesModal from "./SavedResumesModal";
+import ResumeUploadModal from "./ResumeUploadModal";
 import {
   OrderedSectionEditor,
   PersonalSectionEditor,
@@ -113,6 +118,7 @@ export default function ResumeBuilderWorkspace() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
   const [isClearModalOpen, setIsClearModalOpen] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [lastCloudSavedAt, setLastCloudSavedAt] = useState<string | null>(null);
 
   // AI states
@@ -279,6 +285,20 @@ export default function ResumeBuilderWorkspace() {
     return { states, coreCount, progressPct };
   }, [resumeData]);
 
+  const hasExistingData = useMemo(
+    () =>
+      Boolean(
+        resumeData.personal.firstName.trim() ||
+          resumeData.personal.lastName.trim() ||
+          resumeData.personal.email.trim() ||
+          resumeData.summary.trim() ||
+          resumeData.experience.length > 0 ||
+          resumeData.education.length > 0 ||
+          resumeData.skills.length > 0
+      ),
+    [resumeData]
+  );
+
   const updateResumeData = useCallback((updater: (prev: ResumeData) => ResumeData) => {
     setResumeData((prev) => updater(prev));
     setIsDirty(true);
@@ -307,6 +327,32 @@ export default function ResumeBuilderWorkspace() {
       order.splice(nextIndex, 0, moved);
       return { ...prev, sectionOrder: order };
     });
+  };
+
+  const isFresherOrder = useMemo(() => {
+    const order = resumeData.sectionOrder;
+    const eduIdx = order.indexOf("education");
+    const expIdx = order.indexOf("experience");
+    return eduIdx !== -1 && expIdx !== -1 && eduIdx < expIdx;
+  }, [resumeData.sectionOrder]);
+
+  const applyProfileOrder = (profileType: "experienced" | "fresher") => {
+    const targetOrder =
+      profileType === "fresher" ? FRESHER_SECTION_ORDER : DEFAULT_SECTION_ORDER;
+    updateResumeData((prev) => ({
+      ...prev,
+      sectionOrder: [...targetOrder],
+    }));
+    toast.success(
+      profileType === "fresher"
+        ? "Applied Student / Fresher structure (Education & Projects prioritized)"
+        : "Applied Standard structure (Summary, Skills & Experience prioritized)"
+    );
+  };
+
+  const handleFontChange = (fontFamily: ResumeFontFamily) => {
+    setResumeData((prev) => ({ ...prev, fontFamily }));
+    setIsDirty(true);
   };
 
   // Prefill from Zenoway candidate profile (only fills blank fields)
@@ -523,6 +569,119 @@ export default function ResumeBuilderWorkspace() {
     }
   };
 
+  const handleApplyUploadedResume = (
+    parsedData: ResumeData,
+    detectedTitle?: string,
+    mode: "replace" | "merge" = "replace"
+  ) => {
+    if (mode === "replace") {
+      setResumeData(parsedData);
+      if (detectedTitle?.trim()) {
+        setResumeTitle(detectedTitle.trim());
+      }
+      setActiveResumeId(null);
+      setLastCloudSavedAt(null);
+      setIsDirty(true);
+      setShowExportErrors(false);
+      setPendingSuggestion(null);
+      setAiError(null);
+      toast.success("Resume imported successfully! All sections are ready to review and edit.");
+    } else {
+      updateResumeData((prev) => {
+        const next: ResumeData = {
+          ...prev,
+          personal: {
+            ...prev.personal,
+            firstName: prev.personal.firstName.trim() || parsedData.personal.firstName,
+            lastName: prev.personal.lastName.trim() || parsedData.personal.lastName,
+            headline: prev.personal.headline.trim() || parsedData.personal.headline,
+            email: prev.personal.email.trim() || parsedData.personal.email,
+            phone: prev.personal.phone.trim() || parsedData.personal.phone,
+            city: prev.personal.city.trim() || parsedData.personal.city,
+            links: [...prev.personal.links],
+          },
+          experience: [...prev.experience],
+          education: [...prev.education],
+          skills: [...prev.skills],
+          projects: [...prev.projects],
+          certifications: [...prev.certifications],
+          optionalSections: [...prev.optionalSections],
+          sectionOrder: [...prev.sectionOrder],
+        };
+
+        const existingUrls = new Set(next.personal.links.map((l) => l.url.trim().toLowerCase()));
+        parsedData.personal.links.forEach((link) => {
+          if (link.url && !existingUrls.has(link.url.trim().toLowerCase())) {
+            next.personal.links.push(link);
+            existingUrls.add(link.url.trim().toLowerCase());
+          }
+        });
+
+        if (!next.summary.trim() && parsedData.summary.trim()) {
+          next.summary = parsedData.summary;
+        }
+
+        if (parsedData.experience.length > 0) {
+          next.experience.push(...parsedData.experience);
+        }
+
+        if (parsedData.education.length > 0) {
+          next.education.push(...parsedData.education);
+        }
+
+        parsedData.skills.forEach((g) => {
+          const match = next.skills.find(
+            (eg) => eg.category.trim().toLowerCase() === g.category.trim().toLowerCase()
+          );
+          if (match) {
+            const itemSet = new Set(match.items.map((i) => i.trim().toLowerCase()));
+            g.items.forEach((item) => {
+              if (item.trim() && !itemSet.has(item.trim().toLowerCase())) {
+                match.items.push(item);
+                itemSet.add(item.trim().toLowerCase());
+              }
+            });
+          } else if (g.items.length > 0) {
+            next.skills.push(g);
+          }
+        });
+
+        if (parsedData.projects.length > 0) {
+          next.projects.push(...parsedData.projects);
+        }
+
+        if (parsedData.certifications.length > 0) {
+          next.certifications.push(...parsedData.certifications);
+        }
+
+        if (parsedData.optionalSections.length > 0) {
+          next.optionalSections.push(...parsedData.optionalSections);
+        }
+
+        return next;
+      });
+      toast.success("Resume merged into current draft!");
+    }
+
+    setDesktopTab("build");
+    setMobileTab("build");
+    setActiveNavSection("personal");
+    setOpenSections({
+      personal: true,
+      summary: true,
+      experience: true,
+      education: true,
+      skills: true,
+      projects: true,
+      certifications: true,
+      optional: true,
+    });
+
+    setTimeout(() => {
+      editorScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    }, 80);
+  };
+
   // AI Assistance Handler
   const callAiAssistant = async (
     action: "improve-summary" | "rewrite-bullets" | "suggest-skills" | "tailor-to-jd",
@@ -672,6 +831,16 @@ export default function ResumeBuilderWorkspace() {
 
           {/* Primary Actions */}
           <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsUploadModalOpen(true)}
+              className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 text-xs font-semibold text-text-primary transition-colors hover:border-brand hover:text-brand"
+            >
+              <Upload size={13} className="text-brand" />
+              <span className="hidden sm:inline">Upload Resume</span>
+              <span className="sm:hidden">Upload</span>
+            </button>
+
             {user && profile && (
               <button
                 type="button"
@@ -871,6 +1040,40 @@ export default function ResumeBuilderWorkspace() {
               </div>
             </div>
 
+            {/* Career Profile Preset Selector */}
+            {(desktopTab === "build" || mobileTab === "build") && (
+              <div className="mt-2.5 flex items-center justify-between text-[11px] text-text-muted">
+                <span>Section layout:</span>
+                <div className="inline-flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => applyProfileOrder("experienced")}
+                    className={`cursor-pointer rounded-pill px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                      !isFresherOrder
+                        ? "border border-border-default bg-surface-subtle font-semibold text-brand"
+                        : "text-text-secondary hover:text-text-primary"
+                    }`}
+                    title="Summary → Skills → Experience → Projects → Education"
+                  >
+                    Experienced
+                  </button>
+                  <span>·</span>
+                  <button
+                    type="button"
+                    onClick={() => applyProfileOrder("fresher")}
+                    className={`cursor-pointer rounded-pill px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                      isFresherOrder
+                        ? "border border-border-default bg-surface-subtle font-semibold text-brand"
+                        : "text-text-secondary hover:text-text-primary"
+                    }`}
+                    title="Summary → Education → Projects → Skills → Experience"
+                  >
+                    Student / Fresher
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Section Jump Pills (visible when in Build mode) */}
             {(desktopTab === "build" || mobileTab === "build") && (
               <nav
@@ -917,6 +1120,35 @@ export default function ResumeBuilderWorkspace() {
             className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6"
           >
             <div className="mx-auto max-w-2xl space-y-4 pb-8">
+              {/* Quick Start / Upload Existing Resume Banner for fresh drafts */}
+              {!hasExistingData && (
+                <div className="rounded-card border border-brand/30 bg-brand-soft/40 p-4 sm:p-5">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-start gap-3">
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand text-text-inverse shadow-2xs">
+                        <Upload size={18} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-text-primary">
+                          Have an existing resume?
+                        </h3>
+                        <p className="mt-0.5 text-xs text-text-secondary leading-relaxed">
+                          Upload your PDF, Word (.docx), or text resume to auto-fill your contact info, work history, and skills in seconds.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsUploadModalOpen(true)}
+                      className="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-control bg-brand px-4 text-xs font-semibold text-text-inverse shadow-subtle hover:bg-brand-hover transition-colors"
+                    >
+                      <Upload size={14} />
+                      <span>Upload Resume</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Validation summary banner (only when triggered or explicit field error exists) */}
               {showExportErrors && !validation.valid && (
                 <div
@@ -1149,7 +1381,11 @@ export default function ResumeBuilderWorkspace() {
             mobileTab === "preview" ? "block" : "hidden lg:block"
           } min-h-0 h-full overflow-hidden`}
         >
-          <ResumePreview data={resumeData} documentTitle={resumeTitle} />
+          <ResumePreview
+            data={resumeData}
+            documentTitle={resumeTitle}
+            onFontChange={handleFontChange}
+          />
         </div>
       </div>
 
@@ -1167,6 +1403,15 @@ export default function ResumeBuilderWorkspace() {
         onSelectResume={handleLoadSavedResume}
         onDeleteResume={handleDeleteCloudResume}
         onCreateNew={handleCreateNewBlank}
+        onUploadResume={() => setIsUploadModalOpen(true)}
+      />
+
+      {/* Upload Existing Resume Modal */}
+      <ResumeUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onApplyResume={handleApplyUploadedResume}
+        hasExistingData={hasExistingData}
       />
 
       {/* Reset Local Draft Confirmation Modal */}

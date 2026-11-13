@@ -71,13 +71,18 @@ export async function generateResumePdfBytes(
   pdfDoc.setCreator("Zenoway ATS Resume Builder");
   pdfDoc.setProducer("Zenoway (pdf-lib)");
 
-  const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  const isTimes = data.fontFamily === "times";
+  const fontRegular = await pdfDoc.embedFont(
+    isTimes ? StandardFonts.TimesRoman : StandardFonts.Helvetica
+  );
+  const fontBold = await pdfDoc.embedFont(
+    isTimes ? StandardFonts.TimesRomanBold : StandardFonts.HelveticaBold
+  );
 
   const colorPrimary = rgb(0.08, 0.09, 0.09); // #141717
   const colorSecondary = rgb(0.24, 0.27, 0.26); // #3d4542
   const colorMuted = rgb(0.35, 0.38, 0.37); // #59615e
-  const colorRule = rgb(0.78, 0.8, 0.79); // #c7ccc9
+  const colorLink = rgb(0.043, 0.4, 0.761); // #0b66c2
 
   for (const docPage of layout.pages) {
     const page = pdfDoc.addPage([A4_WIDTH_PT, A4_HEIGHT_PT]);
@@ -117,14 +122,28 @@ export async function generateResumePdfBytes(
             const baselineY = cursorY - 8;
             for (let sIdx = 0; sIdx < segLine.length; sIdx++) {
               const seg = segLine[sIdx];
+
+              if (seg.label) {
+                const safeLabel = sanitizeForPdfWinAnsi(seg.label);
+                const labelW = fontRegular.widthOfTextAtSize(safeLabel, 9.5);
+                page.drawText(safeLabel, {
+                  x,
+                  y: baselineY,
+                  size: 9.5,
+                  font: fontRegular,
+                  color: colorSecondary,
+                });
+                x += labelW;
+              }
+
               const safeText = sanitizeForPdfWinAnsi(seg.text);
-              const segW = fontRegular.widthOfTextAtSize(safeText, 9.5);
+              const textW = fontRegular.widthOfTextAtSize(safeText, 9.5);
               page.drawText(safeText, {
                 x,
                 y: baselineY,
                 size: 9.5,
                 font: fontRegular,
-                color: colorSecondary,
+                color: seg.href ? colorLink : colorSecondary,
               });
               if (seg.href) {
                 addLinkAnnotation(
@@ -133,11 +152,11 @@ export async function generateResumePdfBytes(
                   seg.href,
                   x,
                   baselineY - 2,
-                  segW,
+                  textW,
                   11
                 );
               }
-              x += segW;
+              x += textW;
               if (sIdx < segLine.length - 1) {
                 page.drawText(sep, {
                   x,
@@ -154,13 +173,7 @@ export async function generateResumePdfBytes(
           cursorY -= 3;
         }
 
-        page.drawLine({
-          start: { x: MARGIN_X_PT, y: cursorY - 2 },
-          end: { x: MARGIN_X_PT + CONTENT_WIDTH_PT, y: cursorY - 2 },
-          thickness: 0.75,
-          color: colorRule,
-        });
-        cursorY -= 12;
+        cursorY -= 10;
       } else if (block.type === "section-heading") {
         cursorY -= 4;
         const safeTitle = sanitizeForPdfWinAnsi(block.title);
@@ -171,14 +184,7 @@ export async function generateResumePdfBytes(
           font: fontBold,
           color: colorPrimary,
         });
-        cursorY -= 12;
-        page.drawLine({
-          start: { x: MARGIN_X_PT, y: cursorY },
-          end: { x: MARGIN_X_PT + CONTENT_WIDTH_PT, y: cursorY },
-          thickness: 0.5,
-          color: colorRule,
-        });
-        cursorY -= 7;
+        cursorY -= 16;
       } else if (block.type === "split-row") {
         const fontLeft = block.boldLeft ? fontBold : fontRegular;
         const rightSize = Math.max(9, block.fontSizePt - 0.5);
@@ -210,8 +216,9 @@ export async function generateResumePdfBytes(
         });
         cursorY -= block.spaceAfterPt;
       } else if (block.type === "paragraph") {
-        const color =
-          block.color === "muted"
+        const color = block.href
+          ? colorLink
+          : block.color === "muted"
             ? colorMuted
             : block.color === "secondary"
               ? colorSecondary
@@ -295,6 +302,33 @@ export async function generateResumePdfBytes(
         cursorY -= block.spaceAfterPt;
       } else if (block.type === "entry-gap") {
         cursorY -= block.heightPt;
+      }
+    }
+
+    // For multi-page resumes, draw a clean page numbering footer in the bottom margin
+    if (layout.pages.length > 1) {
+      const pageNumberText = `Page ${docPage.pageNumber} of ${layout.pages.length}`;
+      const pageNumberWidth = fontRegular.widthOfTextAtSize(pageNumberText, 8.5);
+      page.drawText(pageNumberText, {
+        x: MARGIN_X_PT + CONTENT_WIDTH_PT - pageNumberWidth,
+        y: 24,
+        size: 8.5,
+        font: fontRegular,
+        color: colorMuted,
+      });
+
+      const fullName = [data.personal.firstName.trim(), data.personal.lastName.trim()]
+        .filter(Boolean)
+        .join(" ");
+      if (fullName && docPage.pageNumber > 1) {
+        const safeName = sanitizeForPdfWinAnsi(fullName);
+        page.drawText(safeName, {
+          x: MARGIN_X_PT,
+          y: 24,
+          size: 8.5,
+          font: fontRegular,
+          color: colorMuted,
+        });
       }
     }
   }
