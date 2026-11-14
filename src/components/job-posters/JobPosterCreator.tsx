@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import {
   AlertCircle,
   ArrowLeft,
+  ArrowRight,
   ArrowUpRight,
   BriefcaseBusiness,
   Check,
@@ -16,6 +17,7 @@ import {
   RectangleVertical,
   RefreshCw,
   RotateCcw,
+  SlidersHorizontal,
   Smartphone,
   Square,
 } from "lucide-react";
@@ -129,10 +131,27 @@ export function JobPosterCreator({
   const [exporting, setExporting] = useState<boolean>(false);
   const [exportError, setExportError] = useState<string | null>(null);
 
+  // Responsive mobile tab state: defaults to "preview" so mobile users instantly see the poster
+  const [mobileTab, setMobileTab] = useState<"preview" | "controls">("preview");
+
   const previewStageRef = useRef<HTMLDivElement>(null);
   const exportNodeRef = useRef<HTMLDivElement>(null);
-  const [stageWidth, setStageWidth] = useState<number>(0);
-  const [stageHeight, setStageHeight] = useState<number>(0);
+
+  // Initialize stage dimensions intelligently to avoid any 0-scale flash on mount
+  const [stageWidth, setStageWidth] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth < 1024
+        ? window.innerWidth
+        : Math.max(380, window.innerWidth - 440);
+    }
+    return 600;
+  });
+  const [stageHeight, setStageHeight] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      return Math.max(380, window.innerHeight - 150);
+    }
+    return 750;
+  });
 
   const formatSpec = POSTER_FORMATS[format];
   const activeTemplateMeta = useMemo(
@@ -151,16 +170,20 @@ export function JobPosterCreator({
     [portraitId]
   );
 
-  // Measure available preview stage width and height cleanly on mount & resize
+  // Measure available preview stage width and height cleanly on mount, tab switch & resize
   useEffect(() => {
     const el = previewStageRef.current;
     if (!el) return;
 
     const measure = () => {
-      if (el.clientWidth > 0) setStageWidth(el.clientWidth);
-      if (el.clientHeight > 0) setStageHeight(el.clientHeight);
+      const rect = el.getBoundingClientRect();
+      const w = el.clientWidth || rect.width;
+      const h = el.clientHeight || rect.height;
+      if (w > 0) setStageWidth(w);
+      if (h > 0) setStageHeight(h);
     };
 
+    measure();
     const rafId = window.requestAnimationFrame(measure);
     if (typeof ResizeObserver === "undefined") {
       window.addEventListener("resize", measure);
@@ -172,8 +195,10 @@ export function JobPosterCreator({
 
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        if (entry.contentRect.width > 0) setStageWidth(entry.contentRect.width);
-        if (entry.contentRect.height > 0) setStageHeight(entry.contentRect.height);
+        const w = entry.contentRect.width || el.clientWidth;
+        const h = entry.contentRect.height || el.clientHeight;
+        if (w > 0) setStageWidth(w);
+        if (h > 0) setStageHeight(h);
       }
     });
     observer.observe(el);
@@ -181,7 +206,7 @@ export function JobPosterCreator({
       window.cancelAnimationFrame(rafId);
       observer.disconnect();
     };
-  }, [selectedJob?.id]);
+  }, [selectedJob?.id, mobileTab, format]);
 
   // Preload /logo.png as a data URI and capture resolved Manrope font family
   useEffect(() => {
@@ -396,25 +421,97 @@ export function JobPosterCreator({
   };
 
   // Compute responsive preview scale to fit the viewport stage cleanly
-  const paddingX = 40;
-  const paddingY = 40;
+  const paddingX = stageWidth > 0 && stageWidth < 640 ? 20 : 40;
+  const paddingY = stageWidth > 0 && stageWidth < 640 ? 20 : 40;
   const fitWidth = Math.max(0, stageWidth - paddingX);
   const fitHeight = Math.max(0, stageHeight - paddingY);
+
+  const safeFallbackScale =
+    stageWidth > 0
+      ? Math.min((stageWidth - 24) / formatSpec.width, 0.45)
+      : typeof window !== "undefined"
+        ? Math.min((window.innerWidth - 32) / formatSpec.width, 0.35)
+        : 0.3;
 
   const previewScale =
     fitWidth > 0 && fitHeight > 0
       ? Math.min(fitWidth / formatSpec.width, fitHeight / formatSpec.height, 0.95)
-      : fitWidth > 0
-        ? Math.min(fitWidth / formatSpec.width, 0.45)
-        : 0;
+      : safeFallbackScale;
 
   const previewDisplayWidth = Math.round(formatSpec.width * previewScale);
   const previewDisplayHeight = Math.round(formatSpec.height * previewScale);
 
   return (
-    <div className="h-full w-full overflow-hidden bg-surface-base text-text-primary flex flex-col lg:flex-row">
-      {/* Left Column: Integrated Header & Customization Controls (No outer box, small corner minimal design) */}
-      <aside className="w-full lg:w-[410px] xl:w-[440px] shrink-0 border-b lg:border-b-0 lg:border-r border-border-subtle bg-surface-base h-full overflow-y-auto p-5 sm:p-6 space-y-6">
+    <div className="h-full w-full overflow-hidden bg-surface-base text-text-primary flex flex-col">
+      {/* Mobile Top Navigation Bar (lg:hidden) */}
+      <div className="lg:hidden shrink-0 border-b border-border-subtle bg-surface-card px-3 py-2.5 shadow-subtle z-10">
+        <div className="flex items-center justify-between gap-2">
+          {/* Segmented Tab Control */}
+          <div className="flex items-center gap-1 rounded-control bg-surface-subtle p-1 border border-border-subtle flex-1 max-w-[260px]">
+            <button
+              type="button"
+              onClick={() => setMobileTab("preview")}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-[3px] text-xs font-semibold transition-all ${
+                mobileTab === "preview"
+                  ? "bg-brand text-text-inverse shadow-subtle"
+                  : "text-text-secondary hover:text-text-primary"
+              }`}
+            >
+              <Layers size={13} strokeWidth={2.2} />
+              <span>Preview</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTab("controls")}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-[3px] text-xs font-semibold transition-all ${
+                mobileTab === "controls"
+                  ? "bg-brand text-text-inverse shadow-subtle"
+                  : "text-text-secondary hover:text-text-primary"
+              }`}
+            >
+              <SlidersHorizontal size={13} strokeWidth={2.2} />
+              <span>Customize</span>
+            </button>
+          </div>
+
+          {/* Quick Action Button in Mobile Header */}
+          <div className="flex items-center gap-1.5">
+            {mobileTab === "preview" ? (
+              <button
+                type="button"
+                onClick={handleDownloadPng}
+                disabled={!selectedJob || exporting}
+                className="inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-control bg-brand px-3 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {exporting ? (
+                  <Loader2 size={13} className="animate-spin" />
+                ) : (
+                  <ImageDown size={13} strokeWidth={2} />
+                )}
+                <span>Download PNG</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setMobileTab("preview")}
+                className="inline-flex h-8 cursor-pointer items-center justify-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 text-xs font-semibold text-brand transition-colors hover:bg-surface-subtle"
+              >
+                <span>View Poster</span>
+                <ArrowRight size={12} strokeWidth={2} />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Studio Body: Side-by-side on desktop, Tab-switched on mobile */}
+      <div className="flex-1 min-h-0 w-full overflow-hidden flex flex-col lg:flex-row">
+        {/* Left Column: Integrated Header & Customization Controls */}
+        <aside
+          className={`${
+            mobileTab === "controls" ? "flex" : "hidden"
+          } lg:flex flex-col w-full lg:w-[410px] xl:w-[440px] shrink-0 border-r-0 lg:border-r border-border-subtle bg-surface-base h-full overflow-y-auto p-4 sm:p-6 space-y-6`}
+        >
         {/* Minimal Studio Header (Integrated into Left Section) */}
         <div className="border-b border-border-subtle pb-4">
           <div className="flex items-center justify-between gap-2">
@@ -899,6 +996,19 @@ export function JobPosterCreator({
                 <span>Shuffle template</span>
               </button>
             </section>
+
+            {/* Mobile-only CTA to jump to preview after configuring */}
+            <div className="lg:hidden pt-2 pb-6">
+              <button
+                type="button"
+                onClick={() => setMobileTab("preview")}
+                className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-4 text-xs font-bold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover"
+              >
+                <Layers size={14} />
+                <span>View Live Poster Preview ({formatSpec.label})</span>
+                <ArrowRight size={13} strokeWidth={2.5} />
+              </button>
+            </div>
           </div>
         )}
       </aside>
@@ -906,7 +1016,9 @@ export function JobPosterCreator({
       {/* Right Section: Full Viewport Live Preview Stage with Download Button Above */}
       <section
         aria-labelledby="preview-stage-heading"
-        className="flex-1 h-full min-w-0 flex flex-col bg-surface-subtle overflow-hidden"
+        className={`${
+          mobileTab === "preview" ? "flex" : "hidden"
+        } lg:flex flex-1 h-full min-w-0 flex-col bg-surface-subtle overflow-y-auto lg:overflow-hidden`}
       >
         {/* Action Bar Above Preview */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle bg-surface-card px-4 py-3 sm:px-6 shrink-0">
@@ -940,7 +1052,7 @@ export function JobPosterCreator({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-2">
             <button
               type="button"
               onClick={handleDownloadPng}
@@ -962,6 +1074,87 @@ export function JobPosterCreator({
           </div>
         </div>
 
+        {/* Mobile Quick Control Strip: Format switcher, Shuffle button, and Model strip */}
+        <div className="lg:hidden flex flex-col border-b border-border-subtle bg-surface-card shrink-0">
+          <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-border-subtle/60">
+            {/* Format pills */}
+            <div
+              role="radiogroup"
+              aria-label="Format on mobile"
+              className="inline-flex rounded-control border border-border-default bg-surface-subtle p-0.5"
+            >
+              {(["feed", "story", "square"] as PosterFormatId[]).map((f) => {
+                const active = format === f;
+                return (
+                  <button
+                    key={f}
+                    type="button"
+                    role="radio"
+                    aria-checked={active}
+                    onClick={() => {
+                      setFormat(f);
+                      resetExportFeedback();
+                    }}
+                    className={`cursor-pointer rounded-[3px] px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+                      active
+                        ? "bg-brand text-text-inverse shadow-subtle"
+                        : "text-text-secondary hover:text-text-primary"
+                    }`}
+                  >
+                    {POSTER_FORMATS[f].label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Shuffle button */}
+            <button
+              type="button"
+              onClick={handleCycleTemplate}
+              disabled={!selectedJob || exporting}
+              className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-2.5 py-1 text-[11px] font-semibold text-text-primary hover:bg-surface-subtle disabled:opacity-50"
+            >
+              <RefreshCw size={12} strokeWidth={2} />
+              <span>Shuffle</span>
+            </button>
+          </div>
+
+          {/* Quick Model Selector when Editorial Portrait template is active */}
+          {template === "portrait" && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 overflow-x-auto bg-surface-subtle/50 no-scrollbar">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted shrink-0 mr-1">
+                Model:
+              </span>
+              {POSTER_PORTRAITS.map((p) => {
+                const isActive = p.id === portraitId;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => {
+                      setPortraitId(p.id);
+                      resetExportFeedback();
+                    }}
+                    className={`flex shrink-0 items-center gap-1.5 rounded-pill px-2.5 py-1 text-[11px] font-medium transition-all ${
+                      isActive
+                        ? "bg-brand text-text-inverse shadow-subtle"
+                        : "border border-border-subtle bg-surface-card text-text-secondary hover:text-text-primary"
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={p.src}
+                      alt={p.name}
+                      className="h-3.5 w-3.5 rounded-full object-cover"
+                    />
+                    <span>{p.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         {/* Feedback Notifications */}
         {exportError && (
           <div
@@ -976,7 +1169,7 @@ export function JobPosterCreator({
         {/* Full Viewport Canvas Stage: Centered, Sharp Corner Poster */}
         <div
           ref={previewStageRef}
-          className="flex-1 min-h-0 w-full overflow-hidden flex items-center justify-center p-4 sm:p-6 lg:p-8"
+          className="flex-1 min-h-0 w-full overflow-hidden flex items-center justify-center p-3 sm:p-6 lg:p-8"
         >
           {!selectedJob ? (
             <div className="flex w-full max-w-md flex-col items-center justify-center rounded-card border border-dashed border-border-default bg-surface-card px-6 py-16 text-center">
@@ -990,15 +1183,24 @@ export function JobPosterCreator({
                 Choose any active role from the selector to render all
                 four poster templates.
               </p>
+              <button
+                type="button"
+                onClick={() => setMobileTab("controls")}
+                className="mt-4 lg:hidden inline-flex items-center gap-1.5 rounded-control bg-brand px-3 py-1.5 text-xs font-semibold text-text-inverse shadow-subtle"
+              >
+                <span>Select a job</span>
+                <ArrowRight size={12} />
+              </button>
             </div>
           ) : previewScale <= 0 ? (
             <div
-              className={`w-full max-w-[440px] animate-pulse rounded-control border border-border-default bg-surface-card ${format === "story"
-                ? "aspect-[9/16] max-h-[680px]"
-                : format === "square"
-                  ? "aspect-square max-h-[600px]"
-                  : "aspect-[4/5] max-h-[640px]"
-                }`}
+              className={`w-full max-w-[440px] animate-pulse rounded-control border border-border-default bg-surface-card ${
+                format === "story"
+                  ? "aspect-[9/16] max-h-[680px]"
+                  : format === "square"
+                    ? "aspect-square max-h-[600px]"
+                    : "aspect-[4/5] max-h-[640px]"
+              }`}
             />
           ) : (
             <div
@@ -1036,7 +1238,23 @@ export function JobPosterCreator({
             </div>
           )}
         </div>
+
+        {/* Mobile Bottom Bar: Customize Button */}
+        <div className="lg:hidden border-t border-border-subtle bg-surface-card px-4 py-2.5 shrink-0 flex items-center justify-between gap-3">
+          <span className="text-[11px] text-text-muted truncate">
+            {activeTemplateMeta.name} · {activeFontMeta.name}
+          </span>
+          <button
+            type="button"
+            onClick={() => setMobileTab("controls")}
+            className="inline-flex items-center gap-1 text-xs font-semibold text-brand hover:underline shrink-0"
+          >
+            <span>Edit fonts & options</span>
+            <ArrowRight size={12} strokeWidth={2} />
+          </button>
+        </div>
       </section>
+    </div>
 
       {/* Dedicated Unscaled 1080px Export Surface (never visible, never scaled) */}
       {selectedJob && (
