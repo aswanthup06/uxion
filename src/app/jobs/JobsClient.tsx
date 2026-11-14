@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   ArrowDownUp,
   ArrowUpRight,
@@ -9,6 +10,7 @@ import {
   BriefcaseBusiness,
   Building2,
   Check,
+  ChevronDown,
   Compass,
   ExternalLink,
   Globe,
@@ -233,7 +235,7 @@ const navCls = (active: boolean) =>
   }`;
 
 const selectCls =
-  "mt-2 h-10 w-full cursor-pointer rounded-control border border-border-default bg-surface-card px-3 text-sm text-text-primary outline-none transition-colors hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring";
+  "mt-2 h-10 w-full cursor-pointer appearance-none rounded-control border border-border-default bg-surface-card pl-3 pr-9 text-sm text-text-primary outline-none transition-colors hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring";
 
 function JobsViewContent({
   initialJobs,
@@ -242,6 +244,10 @@ function JobsViewContent({
   initialJobs?: Job[];
   initialCategory?: string;
 }) {
+  const searchParams = useSearchParams();
+  const urlCategory = searchParams ? searchParams.get("category") : null;
+  const effectiveInitialCategory = initialCategory || urlCategory || undefined;
+
   const [jobs, setJobs] = useState<Job[]>(initialJobs && initialJobs.length > 0 ? initialJobs : []);
   const [loading, setLoading] = useState(initialJobs && initialJobs.length > 0 ? false : true);
   const [error, setError] = useState(false);
@@ -255,8 +261,8 @@ function JobsViewContent({
   const [type, setType] = useState<string>("All job types");
   const [mode, setMode] = useState<string>("All work modes");
   const [category, setCategory] = useState<string>(
-    initialCategory
-      ? categories.find((c) => c.toLowerCase().includes(initialCategory.toLowerCase())) || "All categories"
+    effectiveInitialCategory
+      ? categories.find((c) => c.toLowerCase().includes(effectiveInitialCategory.toLowerCase())) || "All categories"
       : "All categories"
   );
   const [experience, setExperience] = useState<string>("Any experience");
@@ -282,6 +288,16 @@ function JobsViewContent({
       // Local storage unavailable
     }
   }, []);
+
+  // Sync category if URL search param changes
+  useEffect(() => {
+    if (urlCategory) {
+      const match = categories.find((c) => c.toLowerCase().includes(urlCategory.toLowerCase()));
+      if (match) {
+        setCategory(match);
+      }
+    }
+  }, [urlCategory]);
 
   const toggleSaved = (id: string) => {
     setSaved((current) => {
@@ -797,31 +813,37 @@ function JobsViewContent({
 
           <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
             Experience
-            <select
-              value={experience}
-              onChange={(e) => setExperience(e.target.value)}
-              className={`${selectCls} font-normal normal-case tracking-normal`}
-            >
-              {experiences.map((x) => (
-                <option key={x}>{x}</option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={experience}
+                onChange={(e) => setExperience(e.target.value)}
+                className={`${selectCls} font-normal normal-case tracking-normal`}
+              >
+                {experiences.map((x) => (
+                  <option key={x}>{x}</option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 mt-1 h-4 w-4 -translate-y-1/2 text-text-muted" />
+            </div>
           </label>
 
           <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
             Min. monthly salary
-            <select
-              value={salaryFloor}
-              onChange={(e) => setSalaryFloor(e.target.value)}
-              className={`${selectCls} font-normal normal-case tracking-normal`}
-            >
-              <option value="0">Any salary</option>
-              <option value="15000">₹15,000+</option>
-              <option value="25000">₹25,000+</option>
-              <option value="40000">₹40,000+</option>
-              <option value="60000">₹60,000+</option>
-              <option value="100000">₹1,00,000+</option>
-            </select>
+            <div className="relative">
+              <select
+                value={salaryFloor}
+                onChange={(e) => setSalaryFloor(e.target.value)}
+                className={`${selectCls} font-normal normal-case tracking-normal`}
+              >
+                <option value="0">Any salary</option>
+                <option value="15000">₹15,000+</option>
+                <option value="25000">₹25,000+</option>
+                <option value="40000">₹40,000+</option>
+                <option value="60000">₹60,000+</option>
+                <option value="100000">₹1,00,000+</option>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 mt-1 h-4 w-4 -translate-y-1/2 text-text-muted" />
+            </div>
           </label>
         </div>
 
@@ -871,19 +893,20 @@ function JobsViewContent({
                 </span>
               )}
             </button>
-            <label className="inline-flex h-10 items-center gap-2 rounded-control border border-border-default bg-surface-card px-3.5 text-sm text-text-muted">
+            <label className="relative inline-flex h-10 items-center gap-2 rounded-control border border-border-default bg-surface-card pl-3.5 pr-8 text-sm text-text-muted transition-colors hover:border-border-strong">
               <ArrowDownUp className="h-4 w-4" strokeWidth={1.75} />
               <select
                 aria-label="Sort jobs"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="cursor-pointer bg-transparent text-sm font-medium text-text-primary outline-none"
+                className="cursor-pointer appearance-none bg-transparent pr-1 text-sm font-medium text-text-primary outline-none"
               >
                 <option value="recent">Most recent</option>
                 <option value="salary-high">Salary: high to low</option>
                 <option value="salary-low">Salary: low to high</option>
                 <option value="company">Company A–Z</option>
               </select>
+              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
             </label>
           </div>
         </header>
@@ -1288,6 +1311,7 @@ function JobsViewContent({
                           <h2 className="line-clamp-2 text-[16px] font-semibold leading-snug tracking-[-0.015em] text-text-primary transition-colors group-hover:text-brand">
                             <Link
                               href={`/jobs/${job.id}`}
+                              prefetch={true}
                               onClick={(e) => e.stopPropagation()}
                             >
                               {job.title}
@@ -1601,6 +1625,7 @@ function JobsViewContent({
 
                 <Link
                   href={`/jobs/${activeJob.id}`}
+                  prefetch={true}
                   className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white shadow-subtle transition-all hover:bg-brand-hover active:scale-[0.99]"
                 >
                   <span>View More</span>
@@ -1623,9 +1648,11 @@ export default function JobsClient({
   initialCategory?: string;
 }) {
   return (
-    <JobsViewContent
-      initialJobs={initialJobs}
-      initialCategory={initialCategory}
-    />
+    <Suspense fallback={null}>
+      <JobsViewContent
+        initialJobs={initialJobs}
+        initialCategory={initialCategory}
+      />
+    </Suspense>
   );
 }

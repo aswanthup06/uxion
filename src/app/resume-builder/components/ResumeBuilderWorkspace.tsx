@@ -13,6 +13,7 @@ import {
   HardDrive,
   Loader2,
   PenLine,
+  RefreshCw,
   RotateCcw,
   Save,
   ShieldCheck,
@@ -48,6 +49,7 @@ import {
 import ResumePreview from "./ResumePreview";
 import AtsCheckerPanel from "./AtsCheckerPanel";
 import RecruiterReviewModal from "./RecruiterReviewModal";
+import AiSidekickDrawer from "./AiSidekickDrawer";
 import AiReviewCard, { type AiPendingSuggestion } from "./AiReviewCard";
 import SavedResumesModal from "./SavedResumesModal";
 import ResumeUploadModal from "./ResumeUploadModal";
@@ -114,6 +116,7 @@ export default function ResumeBuilderWorkspace() {
   const [showExportErrors, setShowExportErrors] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isSidekickOpen, setIsSidekickOpen] = useState(false);
   const [dismissedCheckIds, setDismissedCheckIds] = useState<Set<string>>(new Set());
 
   // Cloud persistence states
@@ -438,8 +441,8 @@ export default function ResumeBuilderWorkspace() {
     });
   };
 
-  // Download selectable A4 PDF with Recruiter Pre-Review
-  const handleDownloadPdf = async (forceDownload = false) => {
+  // Download selectable A4 PDF directly (unblocked by ATS warnings)
+  const handleDownloadPdf = async () => {
     setShowExportErrors(true);
     const exportCheck = validateResumeData(resumeData, {
       requireContactForExport: true,
@@ -452,13 +455,25 @@ export default function ResumeBuilderWorkspace() {
       return;
     }
 
-    // If not forced and there are unresolved issues, show the recruiter review modal first
-    if (!forceDownload && (atsAnalysis.counts.errors > 0 || atsAnalysis.counts.warnings > 0)) {
-      setIsReviewModalOpen(true);
-      return;
-    }
-
     await executeDownloadPdf();
+  };
+
+  const [isRecheckingAudit, setIsRecheckingAudit] = useState(false);
+  const handleManualAuditRecheck = () => {
+    setIsRecheckingAudit(true);
+    setTimeout(() => {
+      setIsRecheckingAudit(false);
+      const errors = atsAnalysis.counts.errors;
+      const warnings = atsAnalysis.counts.warnings;
+      if (errors === 0 && warnings === 0) {
+        toast.success("Resume audit up to date: No issues found!", { id: "recheck-toast" });
+      } else {
+        toast(
+          `Resume audit up to date: Found ${autoFixCount} quick fix(es) and ${errors + warnings} recommendation(s).`,
+          { icon: "🔍", id: "recheck-toast" }
+        );
+      }
+    }, 350);
   };
 
   const executeDownloadPdf = async () => {
@@ -811,6 +826,11 @@ export default function ResumeBuilderWorkspace() {
   };
 
   const atsBadgeCount = atsAnalysis.counts.errors + atsAnalysis.counts.warnings;
+  const autoFixCount = atsAnalysis.checks.filter(
+    (c) =>
+      c.action?.type === "replace-text" &&
+      typeof c.action.replacementText === "string"
+  ).length;
 
   return (
     <div className="min-h-full bg-surface-page text-text-primary lg:flex lg:h-full lg:min-h-0 lg:flex-col lg:overflow-hidden">
@@ -947,31 +967,34 @@ export default function ResumeBuilderWorkspace() {
 
             <button
               type="button"
-              onClick={() => setIsReviewModalOpen(true)}
-              className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 text-xs font-semibold text-text-primary transition-colors hover:border-brand hover:text-brand"
-              title="Recruiter Pre-Review & Quality Audit"
+              onClick={handleManualAuditRecheck}
+              aria-label="Recheck resume"
+              title="Recheck resume for spelling, dates, impact and layout"
+              className="inline-flex h-9 cursor-pointer items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 text-xs font-medium text-text-muted transition-colors hover:border-border-strong hover:text-text-primary"
             >
-              <ShieldCheck
-                size={14}
-                className={
-                  atsAnalysis.counts.errors > 0
-                    ? "text-status-error"
-                    : atsAnalysis.counts.warnings > 0
-                      ? "text-status-warning"
-                      : "text-brand"
-                }
-              />
-              <span className="hidden sm:inline">Recruiter Review</span>
-              <span className="sm:hidden">Review</span>
-              {atsBadgeCount > 0 && (
-                <span
-                  className={`rounded-pill px-1.5 py-0.5 text-[10px] font-bold ${
-                    atsAnalysis.counts.errors > 0
-                      ? "bg-status-error-bg text-status-error"
-                      : "bg-status-warning-bg text-status-warning"
-                  }`}
-                >
-                  {atsBadgeCount}
+              <RefreshCw size={13} className={isRecheckingAudit ? "animate-spin text-brand" : ""} />
+              <span className="hidden xl:inline">Recheck</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsSidekickOpen((prev) => !prev)}
+              className={`inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-control border px-3 text-xs font-semibold transition-colors ${
+                isSidekickOpen
+                  ? "border-brand bg-brand-soft text-brand shadow-2xs"
+                  : "border-border-default bg-surface-card text-text-primary hover:border-brand hover:text-brand"
+              }`}
+              title="Toggle AI Sidekick, 1-Click Fixes & ATS Analysis"
+            >
+              <Sparkles size={14} className="text-brand" />
+              <span className="hidden sm:inline">AI Sidekick</span>
+              <span className="sm:hidden">Sidekick</span>
+              <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-[10px] font-bold text-brand">
+                {atsAnalysis.overallScore}%
+              </span>
+              {autoFixCount > 0 && (
+                <span className="rounded-pill bg-brand px-1.5 py-0.5 text-[10px] font-bold text-text-inverse animate-pulse">
+                  {autoFixCount} fix{autoFixCount > 1 ? "es" : ""}
                 </span>
               )}
             </button>
@@ -1016,7 +1039,7 @@ export default function ResumeBuilderWorkspace() {
             }`}
           >
             <ShieldCheck size={13} />
-            <span>ATS ({atsBadgeCount})</span>
+            <span>ATS ({atsAnalysis.overallScore}%)</span>
           </button>
           <button
             type="button"
@@ -1068,17 +1091,9 @@ export default function ResumeBuilderWorkspace() {
                   }`}
                 >
                   <ShieldCheck size={13} />
-                  Recruiter Review & ATS
-                  <span
-                    className={`rounded-pill px-1.5 py-0.5 text-[10px] ${
-                      atsAnalysis.counts.errors > 0
-                        ? "bg-status-error-bg text-status-error"
-                        : atsAnalysis.counts.warnings > 0
-                          ? "bg-status-warning-bg text-status-warning"
-                          : "bg-brand-soft text-brand"
-                    }`}
-                  >
-                    {atsBadgeCount === 0 ? "OK" : atsBadgeCount}
+                  Recruiter Review &amp; ATS
+                  <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-[10px] font-bold text-brand">
+                    {atsAnalysis.overallScore}%
                   </span>
                 </button>
               </div>
@@ -1408,6 +1423,8 @@ export default function ResumeBuilderWorkspace() {
                         });
                       }}
                       onAiSuggestSkills={() => callAiAssistant("suggest-skills")}
+                      atsChecks={atsAnalysis.checks}
+                      onApplyCorrection={handleApplyAtsCorrection}
                     />
                   ))}
                 </div>
@@ -1525,6 +1542,25 @@ export default function ResumeBuilderWorkspace() {
           </button>
         </div>
       </Modal>
+      {/* AI Recruiter Sidekick Drawer */}
+      <AiSidekickDrawer
+        isOpen={isSidekickOpen}
+        onClose={() => setIsSidekickOpen(false)}
+        data={resumeData}
+        onUpdateResumeData={updateResumeData}
+        atsAnalysis={atsAnalysis}
+        onJumpToSection={jumpToSection}
+        onApplyCorrection={handleApplyAtsCorrection}
+        targetJobDescription={targetJobDescription}
+        onJobDescriptionChange={(text) => {
+          setTargetJobDescription(text);
+          setIsDirty(true);
+        }}
+        aiConfigured={aiConfigured}
+        onOpenUploadModal={() => setIsUploadModalOpen(true)}
+        onDownloadPdf={handleDownloadPdf}
+        isExportingPdf={isExportingPdf}
+      />
     </div>
   );
 }

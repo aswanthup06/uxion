@@ -23,6 +23,9 @@ import {
   ArrowUpRight,
   Sparkles,
   Wand2,
+  ChevronDown,
+  Zap,
+  MapPin,
 } from "lucide-react";
 import { State, City } from "country-state-city";
 import { JOB_CATEGORIES, matchJobCategory } from "@/data/categories";
@@ -43,7 +46,34 @@ const CSC_CITIES = (City.getCitiesOfCountry("IN") || []).map((c) => ({
   countryCode: "IN",
 }));
 
+export function resolveOfficeState(cityName: string): string {
+  if (!cityName) return "";
+  const cityLower = cityName.trim().toLowerCase();
+  const canonical = CANONICAL_CITIES.find(
+    (c) => c.name.toLowerCase() === cityLower || c.aliases?.some((a) => a.toLowerCase() === cityLower)
+  );
+  if (canonical?.state) return canonical.state;
+
+  const csc = CSC_CITIES.find((c) => c.name.toLowerCase() === cityLower);
+  return csc?.state || "";
+}
+
+export function getOfficeStates(offices: OfficeLocation[]): string[] {
+  const states: string[] = [];
+  for (const o of offices) {
+    let st = (o.state || "").trim();
+    if (!st && o.city) {
+      st = resolveOfficeState(o.city);
+    }
+    if (st && !states.some((existing) => existing.toLowerCase() === st.toLowerCase())) {
+      states.push(st);
+    }
+  }
+  return states;
+}
+
 export type CandidatePreference =
+  | "COMPANY_STATE"
   | "ALL_INDIA"
   | "EXACT_LOCATION"
   | "SPECIFIC_LOCATION"
@@ -280,9 +310,10 @@ function CompanyCitySelector({
             <button
               type="button"
               onClick={() => {
+                const trimmedCity = query.trim();
                 onSelect({
-                  city: query.trim(),
-                  state: "",
+                  city: trimmedCity,
+                  state: resolveOfficeState(trimmedCity),
                   country: "India",
                   countryCode: "IN",
                 });
@@ -406,25 +437,6 @@ function CandidateScopeSelector({
   );
 }
 
-function SectionHeader({
-  title,
-  icon: Icon,
-}: {
-  title: string;
-  icon?: React.ElementType;
-}) {
-  return (
-    <div className="mb-5 flex items-center justify-between border-b border-border-default/40 pb-3">
-      <div className="flex items-center gap-2">
-        {Icon && <Icon className="h-4 w-4 text-brand" strokeWidth={2.2} />}
-        <h2 className="text-base font-semibold tracking-tight text-text-primary">
-          {title}
-        </h2>
-      </div>
-    </div>
-  );
-}
-
 function formatExperienceLabel(minVal: string, maxVal: string): string {
   const minNum = minVal.trim() === "" ? 0 : Number(minVal);
   const hasMax = maxVal.trim() !== "";
@@ -504,6 +516,54 @@ function dateForInput(value?: string): string {
   return Number.isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
 }
 
+const WIZARD_STEPS = [
+  {
+    num: 1,
+    tag: "01",
+    label: "Role",
+    brief: "Job title, company & type",
+  },
+  {
+    num: 2,
+    tag: "02",
+    label: "Location",
+    brief: "Offices & candidate residency",
+  },
+  {
+    num: 3,
+    tag: "03",
+    label: "Compensation",
+    brief: "Experience, salary & contact email",
+  },
+  {
+    num: 4,
+    tag: "04",
+    label: "Review",
+    brief: "Job description & publish",
+  },
+];
+
+const SAMPLE_JOB_DESCRIPTION = `Role: Senior Frontend Engineer
+Company: Zenoway Tech
+Location: Bengaluru, Karnataka (Hybrid)
+Employment Type: Full-time
+Experience: 3 to 6 years
+Salary: ₹18,00,000 - ₹26,00,000 per annum
+Contact Email: careers@zenoway.online
+
+About the Role:
+We are looking for an experienced Senior Frontend Engineer to build high-performance web applications using Next.js, React, and TypeScript. You will collaborate closely with UI/UX designers and backend engineers to craft responsive, accessible interfaces.
+
+Key Responsibilities:
+- Build modular, accessible web interfaces using Next.js App Router and Tailwind CSS.
+- Optimize web application performance, Core Web Vitals, and responsive layouts.
+- Collaborate with product designers in Figma to implement design systems and reusable components.
+
+Requirements:
+- 3+ years of experience with React, Next.js, and TypeScript.
+- Strong knowledge of modern CSS, Tailwind, state management, and web performance.
+- Passion for great developer experience, automated testing, and semantic HTML.`;
+
 export default function JobFormWizard({
   mode,
   jobId,
@@ -527,7 +587,7 @@ export default function JobFormWizard({
     workMode: "Onsite",
     location: "",
     selectedOffices: [],
-    candidatePreference: "ALL_INDIA",
+    candidatePreference: "COMPANY_STATE",
     preferredTargets: [],
     remoteEligibilityType: "COUNTRIES",
     remoteEligibilityCountries: ["IN"],
@@ -550,6 +610,9 @@ export default function JobFormWizard({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isValidatingEmail, setIsValidatingEmail] = useState(false);
   const [emailVerifiedDomain, setEmailVerifiedDomain] = useState<string | null>(null);
+  const [isCheckingNext, setIsCheckingNext] = useState(false);
+  const lastVerifiedEmailRef = useRef<string>("");
+  const isNavigatingRef = useRef<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(1);
 
   // AI Tools State
@@ -592,6 +655,28 @@ export default function JobFormWizard({
       });
     }
   }, [showAiModal, rawAiText, adjustAiTextareaHeight]);
+
+  const handleLoadSample = () => {
+    setRawAiText(SAMPLE_JOB_DESCRIPTION);
+    setShowAiModal(true);
+    setTimeout(() => {
+      adjustAiTextareaHeight();
+      aiTextareaRef.current?.focus();
+    }, 50);
+  };
+
+  const handleToggleAiModal = () => {
+    setShowAiModal((prev) => {
+      const next = !prev;
+      if (next) {
+        setTimeout(() => {
+          adjustAiTextareaHeight();
+          aiTextareaRef.current?.focus();
+        }, 50);
+      }
+      return next;
+    });
+  };
 
   const handleParseWithAi = async () => {
     if (!rawAiText.trim()) {
@@ -815,7 +900,10 @@ export default function JobFormWizard({
     // Determine preference
     const remType = job.remoteEligibilityType || "COUNTRIES";
     const notes = String(job.workModeNotes || "");
-    let candPref: CandidatePreference = "ALL_INDIA";
+    const rawLocLower = rawLoc.toLowerCase();
+    const officeStates = getOfficeStates(offices);
+    const officeStateSet = new Set(officeStates.map((s) => s.toLowerCase()));
+    let candPref: CandidatePreference = "COMPANY_STATE";
 
     if (
       remType === "WORLDWIDE" ||
@@ -823,16 +911,30 @@ export default function JobFormWizard({
       notes.toLowerCase().includes("worldwide")
     ) {
       candPref = "WORLDWIDE";
+    } else if (
+      notes.toLowerCase().includes("local only") ||
+      notes.toLowerCase().includes("must reside in office") ||
+      rawLocLower.includes("local only")
+    ) {
+      candPref = "EXACT_LOCATION";
+    } else if (
+      remType === "REGIONS" &&
+      Array.isArray(job.remoteEligibilityRegions) &&
+      job.remoteEligibilityRegions.length > 0 &&
+      job.remoteEligibilityRegions.every((r) => r.region && officeStateSet.has(r.region.toLowerCase()))
+    ) {
+      candPref = "COMPANY_STATE";
+      targets.length = 0;
     } else if (targets.length > 0 || remType === "REGIONS") {
       candPref = "SPECIFIC_LOCATION";
     } else if (
-      notes.toLowerCase().includes("local only") ||
-      notes.toLowerCase().includes("must reside in") ||
-      rawLoc.includes("Local only")
+      rawLocLower.includes("pan-india") ||
+      notes.toLowerCase().includes("anywhere in india") ||
+      (remType === "COUNTRIES" && job.remoteEligibilityCountries?.includes("IN"))
     ) {
-      candPref = "EXACT_LOCATION";
-    } else {
       candPref = "ALL_INDIA";
+    } else {
+      candPref = "COMPANY_STATE";
     }
 
     const exp = parseExperienceFromJob(job);
@@ -927,6 +1029,12 @@ export default function JobFormWizard({
       ) {
         errors.preferredTargets = "Please select at least one allowed candidate city or state.";
       }
+      if (form.candidatePreference === "COMPANY_STATE" && form.selectedOffices.length > 0) {
+        const states = getOfficeStates(form.selectedOffices);
+        if (states.length === 0) {
+          errors.selectedOffices = "Please choose a recognized city with an identifiable state.";
+        }
+      }
     } else if (stepNumber === 3) {
       if (!form.experienceMin.trim()) {
         errors.experienceMin = "Please enter minimum experience required (0 for fresher).";
@@ -977,6 +1085,7 @@ export default function JobFormWizard({
     if (!trimmed) {
       setFieldErrors((prev) => ({ ...prev, mail: "Please enter an application email." }));
       setEmailVerifiedDomain(null);
+      lastVerifiedEmailRef.current = "";
       return false;
     }
     if (!emailRegex.test(trimmed)) {
@@ -985,7 +1094,17 @@ export default function JobFormWizard({
         mail: "Please enter a valid email address (e.g. hr@company.com).",
       }));
       setEmailVerifiedDomain(null);
+      lastVerifiedEmailRef.current = "";
       return false;
+    }
+
+    const domain = trimmed.split("@")[1]?.toLowerCase();
+    if (
+      lastVerifiedEmailRef.current.toLowerCase() === trimmed.toLowerCase() ||
+      (emailVerifiedDomain && domain && emailVerifiedDomain.toLowerCase() === domain)
+    ) {
+      lastVerifiedEmailRef.current = trimmed;
+      return true;
     }
 
     setIsValidatingEmail(true);
@@ -998,6 +1117,7 @@ export default function JobFormWizard({
           mail: data.reason || "The domain has no active mail server (MX records).",
         }));
         setEmailVerifiedDomain(null);
+        lastVerifiedEmailRef.current = "";
         return false;
       }
 
@@ -1006,30 +1126,65 @@ export default function JobFormWizard({
         delete next.mail;
         return next;
       });
-      setEmailVerifiedDomain(data.domain || trimmed.split("@")[1]);
+      const resolvedDomain = data.domain || domain;
+      setEmailVerifiedDomain(resolvedDomain);
+      lastVerifiedEmailRef.current = trimmed;
       return true;
     } catch {
       // In case of network errors during checking, avoid hard blocking the wizard
+      lastVerifiedEmailRef.current = trimmed;
       return true;
     } finally {
       setIsValidatingEmail(false);
     }
   };
 
-  const handleEmailBlur = async () => {
-    if (form.mail.trim()) {
-      await verifyEmailDomain(form.mail);
+  const handleEmailBlur = () => {
+    if (isNavigatingRef.current) return;
+    const trimmed = form.mail.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!trimmed || !emailRegex.test(trimmed)) return;
+
+    const domain = trimmed.split("@")[1]?.toLowerCase();
+    if (
+      lastVerifiedEmailRef.current.toLowerCase() === trimmed.toLowerCase() ||
+      (emailVerifiedDomain && domain && emailVerifiedDomain.toLowerCase() === domain)
+    ) {
+      return;
     }
+
+    verifyEmailDomain(trimmed);
   };
 
   const handleNext = async () => {
-    if (!validateStep(currentStep)) return;
-
-    if (currentStep === 3) {
-      const isDomainValid = await verifyEmailDomain(form.mail);
-      if (!isDomainValid) return;
+    if (isCheckingNext) return;
+    if (!validateStep(currentStep)) {
+      isNavigatingRef.current = false;
+      return;
     }
 
+    if (currentStep === 3) {
+      const trimmed = form.mail.trim();
+      const domain = trimmed.split("@")[1]?.toLowerCase();
+      const alreadyValid =
+        lastVerifiedEmailRef.current.toLowerCase() === trimmed.toLowerCase() ||
+        Boolean(emailVerifiedDomain && domain && emailVerifiedDomain.toLowerCase() === domain);
+
+      if (!alreadyValid) {
+        setIsCheckingNext(true);
+        try {
+          const isDomainValid = await verifyEmailDomain(form.mail);
+          if (!isDomainValid) {
+            isNavigatingRef.current = false;
+            return;
+          }
+        } finally {
+          setIsCheckingNext(false);
+        }
+      }
+    }
+
+    isNavigatingRef.current = false;
     setCurrentStep((prev) => Math.min(prev + 1, 4));
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1037,6 +1192,7 @@ export default function JobFormWizard({
   };
 
   const handleBack = () => {
+    isNavigatingRef.current = false;
     setError("");
     setCurrentStep((prev) => Math.max(prev - 1, 1));
     if (typeof window !== "undefined") {
@@ -1045,6 +1201,7 @@ export default function JobFormWizard({
   };
 
   const handleStepClick = (targetStep: number) => {
+    isNavigatingRef.current = false;
     if (targetStep < currentStep) {
       setError("");
       setCurrentStep(targetStep);
@@ -1084,21 +1241,29 @@ export default function JobFormWizard({
       return copy;
     });
     if (name === "mail") {
-      setEmailVerifiedDomain(null);
+      const nextDomain = value.trim().split("@")[1]?.toLowerCase();
+      if (!nextDomain || nextDomain !== emailVerifiedDomain) {
+        setEmailVerifiedDomain(null);
+        lastVerifiedEmailRef.current = "";
+      }
     }
     if (error) setError("");
   };
 
   const handleAddOffice = (office: OfficeLocation) => {
     setFieldErrors((prev) => { const cp = { ...prev }; delete cp.selectedOffices; return cp; });
+    const enrichedOffice: OfficeLocation = {
+      ...office,
+      state: office.state || resolveOfficeState(office.city),
+    };
     setForm((prev) => {
       const exists = prev.selectedOffices.some(
-        (o) => o.city.toLowerCase() === office.city.toLowerCase()
+        (o) => o.city.toLowerCase() === enrichedOffice.city.toLowerCase()
       );
       if (exists) return prev;
       return {
         ...prev,
-        selectedOffices: [...prev.selectedOffices, office],
+        selectedOffices: [...prev.selectedOffices, enrichedOffice],
       };
     });
     if (error) setError("");
@@ -1191,11 +1356,13 @@ export default function JobFormWizard({
 
       const primaryOffice = form.selectedOffices[0];
       const primaryCity = primaryOffice?.city || "";
-      const primaryState = primaryOffice?.state || "";
+      const primaryState = primaryOffice?.state || resolveOfficeState(primaryCity) || "";
       const primaryCountry = primaryOffice?.country || "India";
       const primaryCountryCode = primaryOffice?.countryCode || "IN";
       const officeNames = form.selectedOffices.map((o) => o.city);
       const officeSummary = officeNames.join(", ");
+      const officeStates = getOfficeStates(form.selectedOffices);
+      const officeStatesSummary = officeStates.join(", ");
 
       const targetCities = form.preferredTargets.filter((t) => t.type === "city");
       const targetStates = form.preferredTargets.filter((t) => t.type === "state");
@@ -1210,7 +1377,12 @@ export default function JobFormWizard({
       let remoteEligibilityCities: Array<{ countryCode: string; region: string; city: string }> | undefined;
 
       if (isRemote) {
-        if (form.candidatePreference === "WORLDWIDE") {
+        if (form.candidatePreference === "COMPANY_STATE") {
+          computedLocation = officeStatesSummary ? `Remote · ${officeStatesSummary}` : "Remote · Pan-India";
+          workModeNotes = officeStatesSummary ? `Remote (Must reside in ${officeStatesSummary})` : "Candidates in company's state only";
+          remoteEligibilityType = "REGIONS";
+          remoteEligibilityRegions = officeStates.map((s) => ({ countryCode: "IN", region: s }));
+        } else if (form.candidatePreference === "WORLDWIDE") {
           computedLocation = "Remote · Worldwide";
           workModeNotes = "Open to global applicants";
           remoteEligibilityType = "WORLDWIDE";
@@ -1255,7 +1427,16 @@ export default function JobFormWizard({
       } else {
         // Onsite or Hybrid
         const prefix = isHybrid ? "Hybrid · " : "";
-        if (form.candidatePreference === "EXACT_LOCATION") {
+        if (form.candidatePreference === "COMPANY_STATE") {
+          computedLocation = officeStatesSummary
+            ? `${prefix}${officeSummary} (${officeStatesSummary} only)`
+            : `${prefix}${officeSummary}`;
+          workModeNotes = officeStatesSummary
+            ? `Candidates in ${officeStatesSummary} only`
+            : "Candidates in company's state only";
+          remoteEligibilityType = "REGIONS";
+          remoteEligibilityRegions = officeStates.map((s) => ({ countryCode: "IN", region: s }));
+        } else if (form.candidatePreference === "EXACT_LOCATION") {
           computedLocation = `${prefix}${officeSummary} (Local only)`;
           workModeNotes = "Local candidates only";
           remoteEligibilityType = "CITIES";
@@ -1345,7 +1526,7 @@ export default function JobFormWizard({
         }
 
         toast.success("Job updated successfully!");
-        router.push("/admin/jobs");
+        router.push(jobId ? `/admin/jobs/${jobId}` : "/admin/jobs");
         router.refresh();
       } else if (mode === "public") {
         payload.status = "draft";
@@ -1413,9 +1594,14 @@ export default function JobFormWizard({
     const isHybrid = form.workMode === "Hybrid";
     const officeNames = form.selectedOffices.map((o) => o.city);
     const officeSummary = officeNames.join(", ") || "City not set";
+    const officeStates = getOfficeStates(form.selectedOffices);
+    const stateSummary = officeStates.join(", ");
     const prefNames = form.preferredTargets.map((t) => t.name).join(", ");
 
     if (isRemote) {
+      if (form.candidatePreference === "COMPANY_STATE") {
+        return stateSummary ? `Remote · ${stateSummary}` : "Remote · Company State";
+      }
       if (form.candidatePreference === "ALL_INDIA") return "Remote · Pan-India";
       if (form.candidatePreference === "WORLDWIDE") return "Remote · Worldwide";
       if (form.candidatePreference === "EXACT_LOCATION") return `Remote · ${officeSummary}`;
@@ -1424,6 +1610,11 @@ export default function JobFormWizard({
     }
 
     const prefix = isHybrid ? "Hybrid · " : "";
+    if (form.candidatePreference === "COMPANY_STATE") {
+      return stateSummary
+        ? `${prefix}${officeSummary} (${stateSummary} only)`
+        : `${prefix}${officeSummary}`;
+    }
     if (form.candidatePreference === "EXACT_LOCATION") return `${prefix}${officeSummary} (Local only)`;
     if (form.candidatePreference === "SPECIFIC_LOCATION") return `${prefix}${officeSummary} (${prefNames || "Preferred areas"})`;
     return `${prefix}${officeSummary}`;
@@ -1532,7 +1723,7 @@ export default function JobFormWizard({
                     workMode: "Onsite",
                     location: "",
                     selectedOffices: [],
-                    candidatePreference: "ALL_INDIA",
+                    candidatePreference: "COMPANY_STATE",
                     preferredTargets: [],
                     remoteEligibilityType: "COUNTRIES",
                     remoteEligibilityCountries: ["IN"],
@@ -1548,6 +1739,9 @@ export default function JobFormWizard({
                   setCurrentStep(1);
                   setIsSubmittedSuccess(false);
                   setSubmittedJobData(null);
+                  setEmailVerifiedDomain(null);
+                  lastVerifiedEmailRef.current = "";
+                  setIsCheckingNext(false);
                 }}
                 className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-5 text-xs font-semibold text-text-secondary transition hover:bg-surface-subtle hover:text-text-primary"
               >
@@ -1562,7 +1756,7 @@ export default function JobFormWizard({
 
   return (
     <main className="min-h-full bg-surface-base text-text-primary">
-      <div className="mx-auto max-w-4xl px-5 pb-16 pt-6 sm:px-8 sm:pt-8">
+      <div className="mx-auto max-w-7xl px-5 pb-16 pt-6 sm:px-8 sm:pt-8 lg:px-12">
         {/* Breadcrumb */}
         {mode === "public" ? (
           <nav className="mb-6 flex items-center gap-2 text-xs text-text-muted">
@@ -1586,104 +1780,372 @@ export default function JobFormWizard({
               Job listings
             </Link>
             <span>/</span>
-            <span className="font-medium text-text-primary">
-              {mode === "edit" ? "Edit job" : "Add job"}
-            </span>
+            {mode === "edit" && jobId ? (
+              <>
+                <Link
+                  href={`/admin/jobs/${jobId}`}
+                  className="transition hover:text-brand"
+                >
+                  Job details
+                </Link>
+                <span>/</span>
+                <span className="font-medium text-text-primary">Edit</span>
+              </>
+            ) : (
+              <span className="font-medium text-text-primary">
+                Add job
+              </span>
+            )}
           </nav>
         )}
 
-        {/* Header */}
-        <header className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            {mode === "public" ? (
-              <>
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand">
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                  Recruiter & Hiring Portal
-                </span>
-                <h1 className="mt-1 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
+        {/* Public Hero vs Admin Header */}
+        {mode === "public" ? (
+          currentStep === 1 ? (
+            <div className="mb-8 border-b border-border-default/40 pb-8">
+              {/* Eyebrow */}
+              <div className="flex items-center gap-2 text-xs text-text-muted">
+                <span className="font-semibold text-brand">Zenoway Hiring Portal</span>
+                <span>•</span>
+                <span className="text-text-secondary">Direct & Zero Brokerage</span>
+              </div>
+
+              {/* Main Headline */}
+              <h1 className="mt-4 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl lg:text-4xl">
+                Hire India’s Top Tech & Design Talent. <span className="text-brand">Fast.</span>
+              </h1>
+
+              {/* Subtitle */}
+              <p className="mt-2.5 max-w-3xl text-xs leading-relaxed text-text-secondary sm:text-sm">
+                Publish your openings to verified software engineers, UI/UX designers, and tech leaders across India. Candidates apply directly to your company inbox or ATS — zero agency commissions, zero middleman delays.
+              </p>
+
+              {/* 4 Feature Highlights Grid */}
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-3.5">
+                <div className="rounded-control border border-border-default/60 bg-surface-card p-3 shadow-subtle transition hover:border-brand/40">
+                  <div className="flex items-center gap-1.5 text-brand mb-1">
+                    <Mail size={14} className="shrink-0" />
+                    <span className="text-xs font-bold text-text-primary">Direct Applications</span>
+                  </div>
+                  <p className="text-[11px] text-text-muted leading-snug">
+                    Resumes arrive directly to your verified HR email or ATS link.
+                  </p>
+                </div>
+
+                <div className="rounded-control border border-border-default/60 bg-surface-card p-3 shadow-subtle transition hover:border-brand/40">
+                  <div className="flex items-center gap-1.5 text-brand mb-1">
+                    <Sparkles size={14} className="shrink-0" />
+                    <span className="text-xs font-bold text-text-primary">Gemini AI Auto-Fill</span>
+                  </div>
+                  <p className="text-[11px] text-text-muted leading-snug">
+                    Paste any draft JD — Gemini extracts and fills all 4 steps in seconds.
+                  </p>
+                </div>
+
+                <div className="rounded-control border border-border-default/60 bg-surface-card p-3 shadow-subtle transition hover:border-brand/40">
+                  <div className="flex items-center gap-1.5 text-brand mb-1">
+                    <MapPin size={14} className="shrink-0" />
+                    <span className="text-xs font-bold text-text-primary">Pan-India & Remote</span>
+                  </div>
+                  <p className="text-[11px] text-text-muted leading-snug">
+                    Target office hubs (Bengaluru, NCR, Kochi) or hire remote talent.
+                  </p>
+                </div>
+
+                <div className="rounded-control border border-border-default/60 bg-surface-card p-3 shadow-subtle transition hover:border-brand/40">
+                  <div className="flex items-center gap-1.5 text-brand mb-1">
+                    <Zap size={14} className="shrink-0" />
+                    <span className="text-xs font-bold text-text-primary">Fast 4-Step Publish</span>
+                  </div>
+                  <p className="text-[11px] text-text-muted leading-snug">
+                    Simple wizard with live markdown preview. Live in under 2 minutes.
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <header className="mb-6 flex flex-col gap-1 border-b border-border-default/40 pb-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h1 className="text-lg font-bold tracking-tight text-text-primary sm:text-xl">
                   Post an IT Job
                 </h1>
-                <p className="mt-1.5 text-xs text-text-muted">
-                  Reach skilled software engineers, developers, designers, and IT professionals across India and worldwide.
+                <p className="text-xs text-text-muted">
+                  Step {currentStep} of 4 • {WIZARD_STEPS[currentStep - 1]?.label}: {WIZARD_STEPS[currentStep - 1]?.brief}
                 </p>
-              </>
-            ) : (
-              <>
-                <h1 className="text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
-                  {mode === "edit" ? "Edit Job Listing" : "Add New Job"}
-                </h1>
-                {mode === "edit" && jobId && (
-                  <p className="mt-1 font-mono text-[11px] text-text-muted">ID: {jobId}</p>
-                )}
-              </>
-            )}
-          </div>
-          {mode !== "public" && (
-            <Link
-              href="/admin/jobs"
-              className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 py-1.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
-            >
-              <ArrowLeft size={13} />
-              <span>Cancel</span>
-            </Link>
-          )}
-        </header>
+              </div>
+              <div className="hidden sm:inline-flex items-center gap-1.5 text-xs text-text-muted">
+                <span className="font-semibold text-brand">Direct Applications</span>
+                <span>•</span>
+                <span className="text-text-secondary">Zero Brokerage</span>
+              </div>
+            </header>
+          )
+        ) : (
+          /* Admin / Edit Header */
+          <header className="mb-8 border-b border-border-default/40 pb-5">
+            <h1 className="text-xl font-bold tracking-tight text-text-primary sm:text-2xl">
+              {mode === "edit" ? "Edit Job Listing" : "Add New Job"}
+            </h1>
+            <p className="mt-0.5 text-xs text-text-muted">
+              {mode === "edit" && jobId
+                ? `Listing ID: ${jobId}`
+                : "Fill in role details and publish to the Zenoway catalog."}
+            </p>
+          </header>
+        )}
 
-        {/* Minimal 4-Step Progress Section */}
-        <div className="mb-8 border-b border-border-default/60 pb-3">
-          <div className="grid grid-cols-4 gap-2">
-            {[
-              { num: 1, tag: "01", label: "Role" },
-              { num: 2, tag: "02", label: "Location" },
-              { num: 3, tag: "03", label: "Compensation" },
-              { num: 4, tag: "04", label: "Review" },
-            ].map((step) => {
-              const isActive = currentStep === step.num;
-              const isPast = currentStep > step.num;
-
-              return (
-                <button
-                  key={step.num}
-                  type="button"
-                  onClick={() => handleStepClick(step.num)}
-                  className={`group flex flex-col text-left transition-colors focus:outline-none ${isActive
-                    ? "text-brand"
-                    : isPast
-                      ? "text-text-primary hover:text-brand"
-                      : "text-text-muted hover:text-text-secondary"
-                    }`}
-                >
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wider uppercase">
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full transition-colors ${isActive
-                        ? "bg-brand"
-                        : isPast
-                          ? "bg-text-secondary"
-                          : "bg-border-strong"
-                        }`}
-                    />
-                    <span>{step.tag}</span>
-                    <span className="hidden sm:inline font-medium text-text-secondary">
-                      {step.label}
+        {/* Upgraded AI Auto-Fill Section */}
+        {currentStep === 1 && (
+          <div className="mb-8 rounded-control border border-brand/25 bg-gradient-to-br from-brand-soft/60 via-surface-card to-brand-soft/20 p-4 sm:p-5 shadow-subtle transition-all">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start sm:items-center gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-brand text-text-inverse shadow-subtle">
+                  <Sparkles size={17} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-xs sm:text-sm font-bold text-text-primary">
+                      Gemini AI Smart Importer
+                    </h2>
+                    <span className="rounded-control bg-brand/10 border border-brand/20 px-2 py-0.5 text-[10px] font-bold text-brand uppercase tracking-wider">
+                      All 4 Steps
                     </span>
                   </div>
-                  <div
-                    className={`mt-2 h-0.5 w-full rounded-full transition-colors ${isActive
-                      ? "bg-brand"
-                      : isPast
-                        ? "bg-brand/60"
-                        : "bg-border-default"
-                      }`}
-                  />
-                </button>
-              );
-            })}
-          </div>
-        </div>
+                  <p className="mt-0.5 text-[11px] sm:text-xs text-text-secondary">
+                    Paste raw text from a draft, PDF, or email. Gemini AI automatically parses and fills all 4 steps.
+                  </p>
+                </div>
+              </div>
 
-        {/* Form Container */}
-        <form onSubmit={handleSubmit} noValidate>
+              <div className="flex items-center gap-2 shrink-0">
+                {!showAiModal && (
+                  <button
+                    type="button"
+                    onClick={handleLoadSample}
+                    className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 py-1.5 text-xs font-semibold text-text-secondary shadow-subtle transition hover:border-brand/40 hover:text-text-primary"
+                  >
+                    <span>Try Sample JD</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={handleToggleAiModal}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-control bg-brand px-3.5 py-1.5 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover shrink-0"
+                >
+                  <Wand2 size={13} />
+                  <span>{showAiModal ? "Close AI Importer" : "Paste Draft with AI"}</span>
+                </button>
+              </div>
+            </div>
+
+            {showAiModal && (
+              <div className="mt-4 border-t border-brand/15 pt-4 space-y-3.5 animate-in fade-in duration-200">
+                {/* Extraction tags preview */}
+                <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-text-muted">
+                  <span className="font-semibold text-text-secondary">Auto-extracts:</span>
+                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">🏷️ Role & Category</span>
+                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">🏢 Company & City</span>
+                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">💼 Work Mode & Type</span>
+                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">💰 Experience & Salary</span>
+                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">✉️ Contact Email</span>
+                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">📝 Description</span>
+                </div>
+
+                {/* Textarea */}
+                <div className="relative">
+                  <textarea
+                    ref={aiTextareaRef}
+                    value={rawAiText}
+                    disabled={isParsingAi}
+                    onChange={(e) => {
+                      setRawAiText(e.target.value);
+                      adjustAiTextareaHeight();
+                    }}
+                    onInput={adjustAiTextareaHeight}
+                    placeholder="Paste job title, requirements, company info, or raw job text here...&#10;&#10;e.g. 'Senior UI/UX Designer at TechCorp in Bengaluru (Hybrid), 3-5 years experience, ₹15-20 LPA, contact hiring@techcorp.com...'"
+                    style={{ minHeight: "130px", overflow: "hidden", resize: "none" }}
+                    className={`${inputClass} text-xs leading-relaxed font-sans placeholder:text-text-muted/70 bg-surface-card`}
+                  />
+                </div>
+
+                {/* Footer action bar */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+                  <div className="flex items-center gap-2 text-[11px] text-text-muted">
+                    <span className="font-mono">{rawAiText.length} characters</span>
+                    {rawAiText.length > 0 && (
+                      <>
+                        <span>•</span>
+                        <span className="text-brand font-medium">Ready for AI extraction</span>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 self-end sm:self-auto">
+                    {rawAiText.length === 0 ? (
+                      <button
+                        type="button"
+                        onClick={handleLoadSample}
+                        className="rounded-control px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary transition"
+                      >
+                        Insert Sample
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setRawAiText("");
+                          setTimeout(adjustAiTextareaHeight, 0);
+                        }}
+                        className="rounded-control px-2.5 py-1.5 text-xs font-medium text-text-muted hover:text-rose-600 transition"
+                      >
+                        Clear
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAiModal(false);
+                      }}
+                      className="rounded-control px-3 py-1.5 text-xs font-medium text-text-muted hover:text-text-primary transition"
+                    >
+                      Close
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isParsingAi || !rawAiText.trim()}
+                      onClick={handleParseWithAi}
+                      className="inline-flex items-center gap-1.5 rounded-control bg-brand px-4 py-1.5 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {isParsingAi ? (
+                        <>
+                          <LoaderCircle size={13} className="animate-spin" />
+                          <span>Extracting & Auto-Filling...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={13} />
+                          <span>Auto-Fill All Steps</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 2-Column Wizard Layout: Left Progress Stepper + Right Form Step */}
+        <div className="flex flex-col md:flex-row md:items-start gap-10 lg:gap-14">
+          {/* Progress Section (Left Sidebar on Desktop, Compact Stepper on Mobile) */}
+          <aside className="w-full md:w-64 lg:w-72 shrink-0">
+            {/* Mobile Stepper (< md) */}
+            <div className="md:hidden mb-6 rounded-control border border-border-default/60 bg-surface-card p-3.5 shadow-subtle">
+              <div className="flex items-center justify-between text-xs mb-2">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="font-mono text-[11px] font-bold text-brand shrink-0">
+                    {WIZARD_STEPS[currentStep - 1].tag}
+                  </span>
+                  <span className="font-semibold text-text-primary shrink-0">
+                    {WIZARD_STEPS[currentStep - 1].label}
+                  </span>
+                  <span className="text-text-muted shrink-0">·</span>
+                  <span className="text-text-muted truncate text-[11px]">
+                    {WIZARD_STEPS[currentStep - 1].brief}
+                  </span>
+                </div>
+                <span className="font-mono text-[11px] text-text-muted shrink-0 ml-2">
+                  {currentStep} / 4
+                </span>
+              </div>
+              <div className="h-1.5 w-full rounded-full bg-surface-subtle overflow-hidden">
+                <div
+                  className="h-full bg-brand transition-all duration-300 rounded-full"
+                  style={{ width: `${(currentStep / 4) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Desktop Left Stepper (md+) - Clean Light White Cards with Right-Side Checkmark */}
+            <div className="hidden md:block md:sticky md:top-8">
+              <nav className="space-y-2.5" aria-label="Wizard Steps">
+                {WIZARD_STEPS.map((step) => {
+                  const isActive = currentStep === step.num;
+                  const isPast = currentStep > step.num;
+
+                  return (
+                    <button
+                      key={step.num}
+                      type="button"
+                      onClick={() => handleStepClick(step.num)}
+                      className={`group flex w-full items-center justify-between gap-3 rounded-control border p-3.5 text-left transition-all duration-150 ${
+                        isPast
+                          ? "border-brand/30 bg-brand-soft/40 text-brand shadow-subtle hover:bg-brand-soft/60"
+                          : isActive
+                            ? "border-brand/40 bg-white shadow-subtle ring-1 ring-brand/20"
+                            : "border-border-default/50 bg-white/70 text-text-muted hover:border-border-strong hover:bg-white hover:text-text-secondary"
+                      }`}
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`font-mono text-xs font-bold ${
+                              isPast
+                                ? "text-brand"
+                                : isActive
+                                  ? "text-brand"
+                                  : "text-text-muted"
+                            }`}
+                          >
+                            {step.tag}
+                          </span>
+                          <span
+                            className={`text-sm font-bold tracking-tight ${
+                              isPast
+                                ? "text-brand"
+                                : isActive
+                                  ? "text-text-primary"
+                                  : "text-text-muted group-hover:text-text-secondary"
+                            }`}
+                          >
+                            {step.label}
+                          </span>
+                        </div>
+                        <p
+                          className={`mt-0.5 text-xs truncate ${
+                            isPast
+                              ? "text-brand/80"
+                              : isActive
+                                ? "text-text-secondary"
+                                : "text-text-muted/70 group-hover:text-text-muted"
+                          }`}
+                        >
+                          {step.brief}
+                        </p>
+                      </div>
+
+                      {/* Right side tick mark for completed tasks */}
+                      {isPast ? (
+                        <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
+                          <Check size={13} className="stroke-[2.5]" />
+                        </div>
+                      ) : isActive ? (
+                        <div className="flex h-5 w-5 shrink-0 items-center justify-center">
+                          <span className="h-2 w-2 rounded-full bg-brand ring-4 ring-brand/15" />
+                        </div>
+                      ) : (
+                        <div className="h-5 w-5 shrink-0" />
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+          </aside>
+
+          {/* Right Form Content */}
+          <div className="flex-1 min-w-0">
+            <form onSubmit={handleSubmit} noValidate>
           {error && (
             <div className="mb-6 flex items-start gap-2.5 rounded-control border border-status-error/30 bg-status-error/10 p-3.5 text-xs text-status-error">
               <AlertCircle size={15} className="mt-0.5 shrink-0" />
@@ -1694,88 +2156,6 @@ export default function JobFormWizard({
           {/* STEP 1: ROLE */}
           {currentStep === 1 && (
             <div className="space-y-6">
-              {/* AI Auto-Fill Banner / Modal */}
-              <div className="rounded-card border border-brand/20 bg-brand-soft/30 p-4 transition">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-brand text-text-inverse">
-                      <Sparkles size={16} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-text-primary">
-                        Have a raw job description or draft?
-                      </p>
-                      <p className="text-[11px] text-text-muted">
-                        Paste it and let Gemini AI automatically extract and fill all form steps.
-                      </p>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowAiModal((prev) => !prev)}
-                    className="inline-flex items-center justify-center gap-1.5 rounded-control bg-brand px-3 py-1.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover shrink-0"
-                  >
-                    <Wand2 size={13} />
-                    <span>{showAiModal ? "Close AI Importer" : "Paste with AI"}</span>
-                  </button>
-                </div>
-
-                {showAiModal && (
-                  <div className="mt-4 border-t border-brand/15 pt-3.5 space-y-3">
-                    <textarea
-                      ref={aiTextareaRef}
-                      value={rawAiText}
-                      onChange={(e) => {
-                        setRawAiText(e.target.value);
-                        adjustAiTextareaHeight();
-                      }}
-                      onInput={adjustAiTextareaHeight}
-                      placeholder="Paste job title, requirements, company info, or raw job text here..."
-                      style={{ minHeight: "120px", overflow: "hidden", resize: "none" }}
-                      className={`${inputClass} text-xs leading-relaxed`}
-                    />
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-text-muted">
-                        {rawAiText.length} characters
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowAiModal(false);
-                            setRawAiText("");
-                          }}
-                          className="rounded-control px-3 py-1.5 text-xs font-medium text-text-muted hover:text-text-primary"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="button"
-                          disabled={isParsingAi || !rawAiText.trim()}
-                          onClick={handleParseWithAi}
-                          className="inline-flex items-center gap-1.5 rounded-control bg-brand px-4 py-1.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover disabled:opacity-50"
-                        >
-                          {isParsingAi ? (
-                            <>
-                              <LoaderCircle size={13} className="animate-spin" />
-                              <span>Extracting...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles size={13} />
-                              <span>Auto-Fill All Steps</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <SectionHeader title="Role Overview" icon={BriefcaseBusiness} />
-
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <Field
                   label="Job Title"
@@ -1806,38 +2186,52 @@ export default function JobFormWizard({
                     Job Category
                     <span className="ml-1 text-status-error">*</span>
                   </label>
-                  <select
-                    id="category"
-                    name="category"
-                    value={form.category}
-                    onChange={handleChange}
-                    className={inputClass}
-                    required
-                  >
-                    {JOB_CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="group relative">
+                    <select
+                      id="category"
+                      name="category"
+                      value={form.category}
+                      onChange={handleChange}
+                      className={`${inputClass} cursor-pointer appearance-none pr-10`}
+                      required
+                    >
+                      {JOB_CATEGORIES.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown
+                      size={15}
+                      strokeWidth={1.8}
+                      className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand"
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label htmlFor="employmentType" className={labelClass}>
                     Employment Type
                   </label>
-                  <select
-                    id="employmentType"
-                    name="employmentType"
-                    value={form.employmentType}
-                    onChange={handleChange}
-                    className={inputClass}
-                  >
-                    <option value="FULL_TIME">Full-time</option>
-                    <option value="PART_TIME">Part-time</option>
-                    <option value="CONTRACTOR">Contract</option>
-                    <option value="INTERN">Internship</option>
-                  </select>
+                  <div className="group relative">
+                    <select
+                      id="employmentType"
+                      name="employmentType"
+                      value={form.employmentType}
+                      onChange={handleChange}
+                      className={`${inputClass} cursor-pointer appearance-none pr-10`}
+                    >
+                      <option value="FULL_TIME">Full-time</option>
+                      <option value="PART_TIME">Part-time</option>
+                      <option value="CONTRACTOR">Contract</option>
+                      <option value="INTERN">Internship</option>
+                    </select>
+                    <ChevronDown
+                      size={15}
+                      strokeWidth={1.8}
+                      className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -1851,18 +2245,13 @@ export default function JobFormWizard({
                 type="url"
               />
 
-              <div className="flex items-center justify-between pt-4">
-                {mode !== "public" ? (
-                  <Link
-                    href="/admin/jobs"
-                    className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
-                  >
-                    <ArrowLeft size={13} />
-                    <span>Cancel</span>
-                  </Link>
-                ) : <div />}
+              <div className="flex items-center justify-end pt-4">
                 <button
                   type="button"
+                  onMouseDown={(e) => {
+                    isNavigatingRef.current = true;
+                    e.preventDefault();
+                  }}
                   onClick={handleNext}
                   className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover"
                 >
@@ -1876,8 +2265,6 @@ export default function JobFormWizard({
           {/* STEP 2: LOCATION */}
           {currentStep === 2 && (
             <div className="space-y-6">
-              <SectionHeader title="Work Mode & Locations" icon={Compass} />
-
               {/* Work Mode Toggle */}
               <div>
                 <label className={labelClass}>Work Mode</label>
@@ -1961,73 +2348,141 @@ export default function JobFormWizard({
                 <label className={labelClass}>Candidate Residency & Eligibility</label>
 
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {[
-                    {
-                      id: "ALL_INDIA",
-                      title: "Pan-India",
-                      desc: form.workMode === "Remote"
-                        ? "Anywhere in India (Remote · Pan-India)"
-                        : "Anywhere in India",
-                    },
-                    {
-                      id: "EXACT_LOCATION",
-                      title: "Office Location Only",
-                      desc: form.workMode === "Remote"
-                        ? "Remote, but candidate must reside in office city"
-                        : "Local candidates only",
-                    },
-                    {
-                      id: "SPECIFIC_LOCATION",
-                      title: "Specific States / Cities",
-                      desc: "Limit eligible applicants to chosen regions or cities",
-                    },
-                    {
-                      id: "WORLDWIDE",
-                      title: "Worldwide",
-                      desc: form.workMode === "Remote"
-                        ? "Open to global international candidates"
-                        : "International applicants",
-                    },
-                  ].map((pref) => {
-                    const isSelected = form.candidatePreference === pref.id;
-                    return (
-                      <button
-                        key={pref.id}
-                        type="button"
-                        onClick={() => {
-                          setForm((prev) => ({
-                            ...prev,
-                            candidatePreference: pref.id as CandidatePreference,
-                          }));
-                          setFieldErrors((prev) => {
-                            if (!prev.preferredTargets) return prev;
-                            const copy = { ...prev };
-                            delete copy.preferredTargets;
-                            return copy;
-                          });
-                          if (error) setError("");
-                        }}
-                        className={`flex flex-col rounded-control border p-3 text-left transition-all ${isSelected
-                          ? "border-brand bg-brand-soft/60"
-                          : "border-border-default bg-surface-card hover:border-border-strong"
+                  {(() => {
+                    const officeStates = getOfficeStates(form.selectedOffices);
+                    const stateDesc = officeStates.join(", ");
+                    const officeCities = form.selectedOffices.map((o) => o.city);
+                    const officeSummary = officeCities.join(", ");
+
+                    const residencyOptions: Array<{
+                      id: CandidatePreference;
+                      title: string;
+                      desc: string;
+                      fullWidth?: boolean;
+                    }> = [
+                      {
+                        id: "COMPANY_STATE",
+                        title: "Company State",
+                        desc: stateDesc
+                          ? (form.workMode === "Remote" ? `Remote, within ${stateDesc}` : `Candidates in ${stateDesc} only`)
+                          : (form.workMode === "Remote" ? "Remote, within company state" : "Candidates in company's state only"),
+                      },
+                      {
+                        id: "ALL_INDIA",
+                        title: "Pan-India",
+                        desc: form.workMode === "Remote"
+                          ? "Anywhere in India (Remote · Pan-India)"
+                          : "Anywhere in India",
+                      },
+                      {
+                        id: "EXACT_LOCATION",
+                        title: "Office Location Only",
+                        desc: officeSummary
+                          ? (form.workMode === "Remote" ? `Remote, within ${officeSummary}` : `Local candidates in ${officeSummary} only`)
+                          : (form.workMode === "Remote" ? "Remote, but candidate must reside in office city" : "Local candidates only"),
+                      },
+                      {
+                        id: "SPECIFIC_LOCATION",
+                        title: "Specific States / Cities",
+                        desc: "Limit eligible applicants to chosen regions or cities",
+                      },
+                      {
+                        id: "WORLDWIDE",
+                        title: "Worldwide",
+                        desc: form.workMode === "Remote"
+                          ? "Open to global international candidates"
+                          : "International applicants",
+                        fullWidth: true,
+                      },
+                    ];
+
+                    return residencyOptions.map((pref) => {
+                      const isSelected = form.candidatePreference === pref.id;
+                      return (
+                        <button
+                          key={pref.id}
+                          type="button"
+                          onClick={() => {
+                            setForm((prev) => ({
+                              ...prev,
+                              candidatePreference: pref.id,
+                            }));
+                            setFieldErrors((prev) => {
+                              if (!prev.preferredTargets) return prev;
+                              const copy = { ...prev };
+                              delete copy.preferredTargets;
+                              return copy;
+                            });
+                            if (error) setError("");
+                          }}
+                          className={`flex flex-col rounded-control border p-3 text-left transition-all ${
+                            pref.fullWidth ? "sm:col-span-2" : ""
+                          } ${
+                            isSelected
+                              ? "border-brand bg-brand-soft/60 ring-1 ring-brand/30"
+                              : "border-border-default bg-surface-card hover:border-border-strong"
                           }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span
-                            className={`text-xs font-semibold ${isSelected ? "text-brand" : "text-text-primary"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span
+                              className={`text-xs font-semibold ${
+                                isSelected ? "text-brand" : "text-text-primary"
                               }`}
-                          >
-                            {pref.title}
+                            >
+                              {pref.title}
+                            </span>
+                            {isSelected && <Check size={14} className="text-brand" />}
+                          </div>
+                          <span className="mt-1 text-[11px] leading-4 text-text-muted">
+                            {pref.desc}
                           </span>
-                          {isSelected && <Check size={14} className="text-brand" />}
-                        </div>
-                        <span className="mt-1 text-[11px] leading-4 text-text-muted">
-                          {pref.desc}
-                        </span>
-                      </button>
-                    );
-                  })}
+                        </button>
+                      );
+                    });
+                  })()}
                 </div>
+
+                {/* Feedback helper when COMPANY_STATE is selected */}
+                {form.candidatePreference === "COMPANY_STATE" && (
+                  <div className="rounded-control border border-border-default/60 bg-surface-subtle/50 px-3 py-2 text-xs text-text-secondary">
+                    {(() => {
+                      const states = getOfficeStates(form.selectedOffices);
+                      if (states.length > 0) {
+                        return (
+                          <span className="flex items-center gap-1.5">
+                            <CheckCircle2 size={13} className="shrink-0 text-brand" />
+                            <span>
+                              Candidates residing in <strong className="text-text-primary">{states.join(", ")}</strong> will be eligible to apply.
+                            </span>
+                          </span>
+                        );
+                      }
+                      return (
+                        <span className="text-[11px] text-text-muted">
+                          Add your company office location above to automatically limit applicant eligibility to your company&apos;s state.
+                        </span>
+                      );
+                    })()}
+                  </div>
+                )}
+
+                {/* Feedback helper when EXACT_LOCATION is selected */}
+                {form.candidatePreference === "EXACT_LOCATION" && (
+                  <div className="rounded-control border border-border-default/60 bg-surface-subtle/50 px-3 py-2 text-xs text-text-secondary">
+                    {form.selectedOffices.length > 0 ? (
+                      <span className="flex items-center gap-1.5">
+                        <CheckCircle2 size={13} className="shrink-0 text-brand" />
+                        <span>
+                          Only candidates residing in <strong className="text-text-primary">{form.selectedOffices.map((o) => o.city).join(", ")}</strong> will be eligible to apply.
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="text-[11px] text-text-muted">
+                        Add your company office location above to automatically limit applicant eligibility to your office city.
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 {/* Specific targets selector if chosen */}
                 {form.candidatePreference === "SPECIFIC_LOCATION" && (
@@ -2076,6 +2531,7 @@ export default function JobFormWizard({
               <div className="flex items-center justify-between pt-4">
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={handleBack}
                   className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
                 >
@@ -2084,6 +2540,10 @@ export default function JobFormWizard({
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => {
+                    isNavigatingRef.current = true;
+                    e.preventDefault();
+                  }}
                   onClick={handleNext}
                   className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover"
                 >
@@ -2097,8 +2557,6 @@ export default function JobFormWizard({
           {/* STEP 3: COMPENSATION */}
           {currentStep === 3 && (
             <div className="space-y-6">
-              <SectionHeader title="Experience & Compensation" icon={Banknote} />
-
               {/* Experience fields */}
               <div>
                 <label className={labelClass}>
@@ -2164,18 +2622,20 @@ export default function JobFormWizard({
                     error={fieldErrors.mail}
                     required
                   />
-                  {isValidatingEmail && (
-                    <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-text-muted animate-in fade-in duration-150">
-                      <LoaderCircle size={12} className="animate-spin text-brand shrink-0" />
-                      <span>Verifying mail server & MX records...</span>
-                    </p>
-                  )}
-                  {!isValidatingEmail && !fieldErrors.mail && emailVerifiedDomain && (
-                    <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 animate-in fade-in duration-150">
-                      <CheckCircle2 size={12} className="shrink-0 text-emerald-500" />
-                      <span>Mail server verified for @{emailVerifiedDomain}</span>
-                    </p>
-                  )}
+                  <div className="min-h-[22px]">
+                    {isValidatingEmail && (
+                      <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-text-muted animate-in fade-in duration-150">
+                        <LoaderCircle size={12} className="animate-spin text-brand shrink-0" />
+                        <span>Verifying mail server & MX records...</span>
+                      </p>
+                    )}
+                    {!isValidatingEmail && !fieldErrors.mail && emailVerifiedDomain && (
+                      <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-text-muted animate-in fade-in duration-150">
+                        <CheckCircle2 size={12} className="shrink-0 text-brand" />
+                        <span>Active email domain (@{emailVerifiedDomain})</span>
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -2197,6 +2657,7 @@ export default function JobFormWizard({
               <div className="flex items-center justify-between pt-4">
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={handleBack}
                   className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
                 >
@@ -2205,14 +2666,18 @@ export default function JobFormWizard({
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => {
+                    isNavigatingRef.current = true;
+                    e.preventDefault();
+                  }}
                   onClick={handleNext}
-                  disabled={isValidatingEmail}
+                  disabled={isCheckingNext}
                   className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {isValidatingEmail ? (
+                  {isCheckingNext ? (
                     <>
                       <LoaderCircle size={14} className="animate-spin" />
-                      <span>Verifying Email...</span>
+                      <span>Verifying & Continuing...</span>
                     </>
                   ) : (
                     <>
@@ -2228,8 +2693,6 @@ export default function JobFormWizard({
           {/* STEP 4: REVIEW */}
           {currentStep === 4 && (
             <div className="space-y-6">
-              <SectionHeader title="Review & Publish" icon={FileText} />
-
               {/* Description */}
               <div>
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
@@ -2380,6 +2843,7 @@ export default function JobFormWizard({
               <div className="flex items-center justify-between pt-4">
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={handleBack}
                   disabled={isSubmitting}
                   className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary disabled:opacity-50"
@@ -2421,6 +2885,8 @@ export default function JobFormWizard({
             </div>
           )}
         </form>
+          </div>
+        </div>
       </div>
     </main>
   );

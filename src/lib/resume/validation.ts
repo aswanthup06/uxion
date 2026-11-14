@@ -352,15 +352,17 @@ export function validateResumeData(
     }
   }
 
+  const requireComplete = Boolean(options.requireContactForExport);
+
   data.personal.links.forEach((link) => {
     const hasAny = Boolean(link.label.trim() || link.url.trim());
     if (!hasAny) return;
-    if (!link.label.trim()) {
+    if (requireComplete && !link.label.trim()) {
       add(`personal.links.${link.id}.label`, "personal", "Add a link label (e.g. LinkedIn).");
     }
-    if (!link.url.trim()) {
+    if (requireComplete && !link.url.trim()) {
       add(`personal.links.${link.id}.url`, "personal", "Add a URL for this link.");
-    } else if (!normalizeResumeUrl(link.url)) {
+    } else if (link.url.trim() && !normalizeResumeUrl(link.url)) {
       add(
         `personal.links.${link.id}.url`,
         "personal",
@@ -371,28 +373,28 @@ export function validateResumeData(
 
   data.experience.forEach((exp) => {
     if (!hasExperienceContent(exp)) return;
-    if (!exp.jobTitle.trim()) {
+    if (requireComplete && !exp.jobTitle.trim()) {
       add(`experience.${exp.id}.jobTitle`, "experience", "Job title is required for this entry.");
     }
-    if (!exp.company.trim()) {
+    if (requireComplete && !exp.company.trim()) {
       add(`experience.${exp.id}.company`, "experience", "Company name is required for this entry.");
     }
-    if (!exp.startDate.trim()) {
+    if (requireComplete && !exp.startDate.trim()) {
       add(`experience.${exp.id}.startDate`, "experience", "Start date is required.");
-    } else {
+    } else if (exp.startDate.trim()) {
       const startParsed = parseResumeDate(exp.startDate);
       if (!startParsed.valid) {
         add(`experience.${exp.id}.startDate`, "experience", startParsed.error || "Invalid start date.");
       }
     }
     if (!exp.isCurrent) {
-      if (!exp.endDate.trim()) {
+      if (requireComplete && !exp.endDate.trim()) {
         add(
           `experience.${exp.id}.endDate`,
           "experience",
           "End date is required unless you currently work here."
         );
-      } else {
+      } else if (exp.endDate.trim()) {
         const endParsed = parseResumeDate(exp.endDate);
         if (!endParsed.valid) {
           add(`experience.${exp.id}.endDate`, "experience", endParsed.error || "Invalid end date.");
@@ -409,10 +411,10 @@ export function validateResumeData(
 
   data.education.forEach((edu) => {
     if (!hasEducationContent(edu)) return;
-    if (!edu.degree.trim()) {
+    if (requireComplete && !edu.degree.trim()) {
       add(`education.${edu.id}.degree`, "education", "Degree or qualification is required.");
     }
-    if (!edu.institution.trim()) {
+    if (requireComplete && !edu.institution.trim()) {
       add(`education.${edu.id}.institution`, "education", "Institution name is required.");
     }
     if (edu.startDate.trim()) {
@@ -437,7 +439,7 @@ export function validateResumeData(
 
   data.projects.forEach((proj) => {
     if (!hasProjectContent(proj)) return;
-    if (!proj.name.trim()) {
+    if (requireComplete && !proj.name.trim()) {
       add(`projects.${proj.id}.name`, "projects", "Project name is required.");
     }
     if (proj.link.trim() && !normalizeResumeUrl(proj.link)) {
@@ -465,7 +467,7 @@ export function validateResumeData(
 
   data.certifications.forEach((cert) => {
     if (!hasCertificationContent(cert)) return;
-    if (!cert.name.trim()) {
+    if (requireComplete && !cert.name.trim()) {
       add(`certifications.${cert.id}.name`, "certifications", "Certification name is required.");
     }
     if (cert.issueDate.trim()) {

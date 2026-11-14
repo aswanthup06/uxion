@@ -52,6 +52,7 @@ export default function LatestJobs() {
         </h2>
         <Link
           href="/jobs"
+          prefetch={true}
           className="text-xs h-8 rounded-control flex items-center justify-center gap-2 transition"
         >
           All jobs{" "}

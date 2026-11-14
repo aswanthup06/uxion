@@ -15,11 +15,12 @@ import {
 type Props = {
   jobs: Job[];
   onDelete: (id: string) => void;
+  onViewPoster?: (job: Job) => void;
 };
 
 const PAGE_SIZE = 20;
 
-export default function JobTable({ jobs, onDelete }: Props) {
+export default function JobTable({ jobs, onDelete, onViewPoster }: Props) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
@@ -156,6 +157,7 @@ export default function JobTable({ jobs, onDelete }: Props) {
                     key={job.id}
                     job={job}
                     onDelete={onDelete}
+                    onViewPoster={onViewPoster}
                   />
                 ))}
               </tbody>

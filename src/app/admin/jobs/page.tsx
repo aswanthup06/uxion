@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import JobTable from "../comp/JobTable";
 import LoadingSpinner from "../comp/LoadingSpinner";
+import JobPosterModal from "../comp/JobPosterModal";
 import { Job } from "../../types/job";
 import toast from "react-hot-toast";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
+  ImageDown,
   Plus,
   RefreshCw,
 } from "lucide-react";
@@ -17,6 +19,7 @@ export default function JobListPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [posterJob, setPosterJob] = useState<Job | null>(null);
 
   const loadJobs = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -116,6 +119,17 @@ export default function JobListPage() {
               />
             </button>
 
+            <a
+              href="/job-posters"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-sm font-medium text-text-primary shadow-subtle transition hover:bg-surface-subtle"
+            >
+              <ImageDown size={15} className="text-brand" />
+              <span>Job Posters</span>
+              <ArrowUpRight size={14} className="text-text-muted" />
+            </a>
+
             <Link
               href="/admin/jobs/add"
               className="inline-flex min-h-10 items-center justify-center gap-2 rounded-control bg-brand px-4 text-sm font-medium text-text-inverse transition hover:bg-brand-hover"
@@ -154,7 +168,11 @@ export default function JobListPage() {
               <LoadingSpinner label="Loading published jobs..." className="py-12" />
             </div>
           ) : jobs.length > 0 ? (
-            <JobTable jobs={jobs} onDelete={handleDelete} />
+            <JobTable
+              jobs={jobs}
+              onDelete={handleDelete}
+              onViewPoster={(job) => setPosterJob(job)}
+            />
           ) : (
             <div className="py-16 text-center">
               <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-control bg-brand-soft text-brand">
@@ -181,6 +199,13 @@ export default function JobListPage() {
           )}
         </section>
       </div>
+
+      {/* Admin Job Poster Modal */}
+      <JobPosterModal
+        job={posterJob}
+        isOpen={Boolean(posterJob)}
+        onClose={() => setPosterJob(null)}
+      />
     </main>
   );
 }

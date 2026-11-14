@@ -7,6 +7,7 @@ import {
   BriefcaseBusiness,
   CalendarDays,
   Check,
+  ChevronDown,
   CircleHelp,
   Download,
   Filter,
@@ -183,16 +184,18 @@ export default function HRManagementPage() {
               <label className="relative block">
                 <span className="sr-only">Filter by status</span>
                 <Filter className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-                <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className={`${controlClass} w-full cursor-pointer pl-9 sm:w-40`}>
+                <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className={`${controlClass} w-full cursor-pointer appearance-none pl-9 pr-8 sm:w-40`}>
                   <option>All statuses</option>{statuses.map((status) => <option key={status}>{status}</option>)}
                 </select>
+                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               </label>
               <label className="relative block">
                 <span className="sr-only">Filter by role</span>
                 <SlidersHorizontal className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-                <select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)} className={`${controlClass} w-full cursor-pointer pl-9 sm:w-48`}>
+                <select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)} className={`${controlClass} w-full cursor-pointer appearance-none pl-9 pr-8 sm:w-48`}>
                   {roles.map((role) => <option key={role}>{role}</option>)}
                 </select>
+                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               </label>
             </div>
           </div>
@@ -202,9 +205,12 @@ export default function HRManagementPage() {
               <p className="text-sm text-brand-dark">{selected.length} candidate{selected.length === 1 ? "" : "s"} selected</p>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs text-brand">Change selected status:</span>
-                <select aria-label="Set selected candidate status" defaultValue="" onChange={(event) => { if (event.target.value) { const status = event.target.value as CandidateStatus; setCandidates((current) => current.map((candidate) => selected.includes(candidate.id) ? { ...candidate, status } : candidate)); setSelected([]); event.target.value = ""; setNotice("Selected candidate statuses updated."); setTimeout(() => setNotice(""), 2600); } }} className={`${controlClass} cursor-pointer`}>
-                  <option value="" disabled>Choose status</option>{statuses.map((status) => <option key={status}>{status}</option>)}
-                </select>
+                <div className="relative inline-flex items-center">
+                  <select aria-label="Set selected candidate status" defaultValue="" onChange={(event) => { if (event.target.value) { const status = event.target.value as CandidateStatus; setCandidates((current) => current.map((candidate) => selected.includes(candidate.id) ? { ...candidate, status } : candidate)); setSelected([]); event.target.value = ""; setNotice("Selected candidate statuses updated."); setTimeout(() => setNotice(""), 2600); } }} className={`${controlClass} cursor-pointer appearance-none pr-8`}>
+                    <option value="" disabled>Choose status</option>{statuses.map((status) => <option key={status}>{status}</option>)}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+                </div>
                 <button type="button" onClick={() => setSelected([])} className="cursor-pointer px-2 py-2 text-xs font-medium text-brand hover:text-brand-dark">Clear selection</button>
               </div>
             </div>
@@ -236,7 +242,20 @@ export default function HRManagementPage() {
                     </td>
                     <td className="px-3 py-4"><span className="text-sm text-text-secondary">{candidate.role}</span><span className="mt-1 block text-xs text-text-muted">{candidate.location}</span></td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-text-muted">{candidate.applied}</td>
-                    <td className="px-3 py-4"><label className="sr-only" htmlFor={`status-${candidate.id}`}>Status for {candidate.name}</label><select id={`status-${candidate.id}`} value={candidate.status} onChange={(event) => updateStatus(candidate.id, event.target.value as CandidateStatus)} className="cursor-pointer rounded-full border-0 bg-transparent py-1 pl-0 pr-6 text-xs font-medium outline-none focus:ring-2 focus:ring-focus-ring"><option value="New">New</option><option value="Screening">Screening</option><option value="Interview">Interview</option><option value="Offer">Offer</option><option value="Hired">Hired</option><option value="Rejected">Rejected</option></select></td>
+                    <td className="px-3 py-4">
+                      <label className="sr-only" htmlFor={`status-${candidate.id}`}>Status for {candidate.name}</label>
+                      <div className="relative inline-flex items-center">
+                        <select id={`status-${candidate.id}`} value={candidate.status} onChange={(event) => updateStatus(candidate.id, event.target.value as CandidateStatus)} className="cursor-pointer appearance-none rounded-full border-0 bg-transparent py-1 pl-0 pr-5 text-xs font-medium outline-none focus:ring-2 focus:ring-focus-ring">
+                          <option value="New">New</option>
+                          <option value="Screening">Screening</option>
+                          <option value="Interview">Interview</option>
+                          <option value="Offer">Offer</option>
+                          <option value="Hired">Hired</option>
+                          <option value="Rejected">Rejected</option>
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-0.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted" />
+                      </div>
+                    </td>
                     <td className="px-3 py-4 text-sm text-text-secondary">{candidate.experience}</td>
                     <td className="px-3 py-4 text-sm text-text-muted">{candidate.source}</td>
                     <td className="px-4 py-4 text-right"><button type="button" onClick={() => setActiveCandidate(candidate)} aria-label={`View ${candidate.name}`} className="inline-flex cursor-pointer items-center gap-1 rounded-control px-2 py-1.5 text-xs font-semibold text-brand transition-colors hover:bg-brand-soft">View <ArrowUpRight className="h-3.5 w-3.5" /></button></td>
@@ -283,9 +302,12 @@ export default function HRManagementPage() {
             </label>
             <label className="block">
               <span className="mb-1.5 block text-xs font-medium text-text-secondary">Applied for</span>
-              <select value={newRole} onChange={(event) => setNewRole(event.target.value)} className={`${controlClass} w-full cursor-pointer`}>
-                {Array.from(new Set(candidates.map((candidate) => candidate.role))).map((role) => <option key={role}>{role}</option>)}
-              </select>
+              <div className="relative">
+                <select value={newRole} onChange={(event) => setNewRole(event.target.value)} className={`${controlClass} w-full cursor-pointer appearance-none pr-9`}>
+                  {Array.from(new Set(candidates.map((candidate) => candidate.role))).map((role) => <option key={role}>{role}</option>)}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+              </div>
             </label>
             <label className="block">
               <span className="mb-1.5 block text-xs font-medium text-text-secondary">Location</span>
@@ -354,18 +376,21 @@ export default function HRManagementPage() {
               </div>
               <div className="mt-5">
                 <label htmlFor="detail-status" className="mb-1.5 block text-xs font-medium text-text-secondary">Update hiring stage</label>
-                <select
-                  id="detail-status"
-                  value={activeCandidate.status}
-                  onChange={(event) => {
-                    const status = event.target.value as CandidateStatus;
-                    updateStatus(activeCandidate.id, status);
-                    setActiveCandidate({ ...activeCandidate, status });
-                  }}
-                  className={`${controlClass} w-full cursor-pointer`}
-                >
-                  {statuses.map((status) => <option key={status}>{status}</option>)}
-                </select>
+                <div className="relative">
+                  <select
+                    id="detail-status"
+                    value={activeCandidate.status}
+                    onChange={(event) => {
+                      const status = event.target.value as CandidateStatus;
+                      updateStatus(activeCandidate.id, status);
+                      setActiveCandidate({ ...activeCandidate, status });
+                    }}
+                    className={`${controlClass} w-full cursor-pointer appearance-none pr-9`}
+                  >
+                    {statuses.map((status) => <option key={status}>{status}</option>)}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+                </div>
               </div>
               <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-border-subtle pt-4">
                 <a href={`mailto:${activeCandidate.email}`} className="inline-flex cursor-pointer items-center gap-2 rounded-control border border-border-default px-3 py-2 text-sm font-medium text-text-secondary hover:bg-surface-subtle hover:text-text-primary">

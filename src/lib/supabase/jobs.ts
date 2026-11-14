@@ -4,6 +4,7 @@
 import type { Job } from "@/app/types/job";
 import { getServerSupabase, getServiceSupabase, isSupabaseConfigured } from "./server";
 import type { DbJob, DbJobInsert, DbJobUpdate } from "./types";
+import { unstable_cache } from "next/cache";
 
 /**
  * Maps a database row (snake_case) to the application Job type (camelCase).
@@ -132,6 +133,56 @@ export function mapJobToDbInsert(job: Partial<Job>): DbJobInsert {
   return insert;
 }
 
+async function fetchPublishedJobsDirectly(): Promise<Job[]> {
+  if (!isSupabaseConfigured()) return [];
+  try {
+    const supabase = getServerSupabase();
+    const CHUNK_SIZE = 500;
+    let allRows: DbJob[] = [];
+    let from = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("*")
+        .or("status.eq.published,status.is.null")
+        .order("posted_date", { ascending: false })
+        .range(from, from + CHUNK_SIZE - 1);
+
+      if (error) {
+        console.error("Error querying Supabase jobs:", error.message);
+        break;
+      }
+
+      if (!data || data.length === 0) {
+        hasMore = false;
+      } else {
+        allRows = allRows.concat(data as DbJob[]);
+        if (data.length < CHUNK_SIZE) {
+          hasMore = false;
+        } else {
+          from += CHUNK_SIZE;
+        }
+      }
+    }
+
+    return allRows.map(mapDbJobToJob);
+  } catch (error) {
+    console.error("Failed to fetch jobs directly from Supabase:", error);
+    return [];
+  }
+}
+
+export const getCachedPublishedJobs = unstable_cache(
+  async () => fetchPublishedJobsDirectly(),
+  ["all-published-jobs"],
+  {
+    revalidate: 60,
+    tags: ["jobs"],
+  }
+);
+
 /**
  * Fetch jobs sorted by posted_date descending.
  * Defaults to fetching only "published" jobs for public views.
@@ -143,6 +194,16 @@ export async function getAllJobs(options?: {
   limit?: number;
   status?: "published" | "draft" | "archived" | "all";
 }): Promise<Job[]> {
+  // Fast path: cached published jobs
+  const isDefaultPublishedQuery =
+    !options?.page &&
+    !options?.limit &&
+    (!options?.status || options.status === "published");
+
+  if (isDefaultPublishedQuery) {
+    return getCachedPublishedJobs();
+  }
+
   if (!isSupabaseConfigured()) {
     console.warn("getAllJobs: Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL in .env.local.");
     return [];

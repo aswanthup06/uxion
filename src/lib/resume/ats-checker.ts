@@ -29,6 +29,8 @@ export interface AtsCheckAction {
   fieldPath?: string;
   currentText?: string;
   replacementText?: string;
+  originalToken?: string;
+  replacementToken?: string;
   section: "personal" | ResumeSectionKey;
 }
 
@@ -44,6 +46,7 @@ export interface AtsCheckItem {
   suggestedCorrection?: string;
   action?: AtsCheckAction;
   section?: "personal" | ResumeSectionKey;
+  canAutoFix?: boolean;
 }
 
 export interface RecruiterScorecard {
@@ -99,6 +102,8 @@ export interface AtsAnalysisResult {
   wordCount: number;
   keywordAnalysis: AtsKeywordAnalysis;
   disclaimer: string;
+  overallScore: number;
+  readinessLabel: string;
 }
 
 export const ATS_DISCLAIMER =
@@ -109,6 +114,101 @@ const EMOJI_OR_DECORATIVE_RE =
 
 const PLACEHOLDER_RE =
   /\b(lorem ipsum|tbd|to be decided|insert here|your name|company name|example\.com)\b|\[(?:insert|add|your|company|metric|x%)[^\]]*\]/i;
+
+const KNOWN_VALID_WORDS = new Set([
+  "design",
+  "designs",
+  "designer",
+  "designers",
+  "designing",
+  "architect",
+  "architects",
+  "architecture",
+  "architectural",
+  "streamline",
+  "streamlines",
+  "streamlining",
+  "streamlined",
+  "engineer",
+  "engineers",
+  "engineering",
+  "engineered",
+  "develop",
+  "developer",
+  "developers",
+  "developing",
+  "development",
+  "developed",
+  "sales",
+  "connect",
+  "removing",
+  "present",
+  "lead",
+  "leader",
+  "leaders",
+  "leading",
+  "leadership",
+  "manage",
+  "manager",
+  "managers",
+  "managing",
+  "management",
+  "coordinate",
+  "coordinates",
+  "coordinating",
+  "coordinated",
+  "coordination",
+  "maintain",
+  "maintains",
+  "maintaining",
+  "maintained",
+  "maintenance",
+  "integrate",
+  "integrates",
+  "integrating",
+  "integrated",
+  "integration",
+  "collaborate",
+  "collaborates",
+  "collaborating",
+  "collaborated",
+  "collaboration",
+  "optimize",
+  "optimizes",
+  "optimizing",
+  "optimized",
+  "optimization",
+  "implement",
+  "implements",
+  "implementing",
+  "implemented",
+  "implementation",
+  "responsive",
+  "interface",
+  "interfaces",
+  "component",
+  "components",
+  "system",
+  "systems",
+  "product",
+  "products",
+  "production",
+  "frontend",
+  "backend",
+  "fullstack",
+  "graphic",
+  "graphics",
+  "prototype",
+  "prototypes",
+  "prototyping",
+  "wireframe",
+  "wireframes",
+  "wireframing",
+  "user",
+  "users",
+  "experience",
+  "experiences",
+]);
 
 const WEAK_STARTER_MAP: Record<string, string> = {
   "responsible for": "Delivered",
@@ -130,36 +230,6 @@ function preserveCase(original: string, target: string): string {
     return target[0].toUpperCase() + target.slice(1);
   }
   return target.toLowerCase();
-}
-
-function levenshteinDistance(a: string, b: string): number {
-  if (a === b) return 0;
-  const aLen = a.length;
-  const bLen = b.length;
-  if (aLen === 0) return bLen;
-  if (bLen === 0) return aLen;
-  if (Math.abs(aLen - bLen) > 3) return 999;
-
-  const prev = Array.from({ length: bLen + 1 }, (_, i) => i);
-  const curr = new Array<number>(bLen + 1);
-
-  for (let i = 1; i <= aLen; i++) {
-    curr[0] = i;
-    const aChar = a.charCodeAt(i - 1);
-    for (let j = 1; j <= bLen; j++) {
-      const cost = aChar === b.charCodeAt(j - 1) ? 0 : 1;
-      curr[j] = Math.min(
-        prev[j] + 1,
-        curr[j - 1] + 1,
-        prev[j - 1] + cost
-      );
-    }
-    for (let k = 0; k <= bLen; k++) {
-      prev[k] = curr[k];
-    }
-  }
-
-  return prev[bLen];
 }
 
 const COMMON_TYPOS: Record<string, string> = {
@@ -235,7 +305,7 @@ const COMMON_TYPOS: Record<string, string> = {
   prototpes: "prototypes",
   wirefame: "wireframe",
   wirefames: "wireframes",
-  wireframing: "wireframing",
+  wireframng: "wireframing",
   typograhy: "typography",
   illusrator: "illustrator",
   aniamtion: "animation",
@@ -248,10 +318,21 @@ const COMMON_TYPOS: Record<string, string> = {
   devloper: "developer",
   devlopers: "developers",
   devlopment: "development",
+  develped: "developed",
+  developped: "developed",
   enginered: "engineered",
+  enginred: "engineered",
+  enginerd: "engineered",
+  engneer: "engineer",
+  engneers: "engineers",
+  engneering: "engineering",
   enginering: "engineering",
   enginer: "engineer",
   enginier: "engineer",
+  enginner: "engineer",
+  enginnering: "engineering",
+  enginnered: "engineered",
+  enginneered: "engineered",
   impliment: "implement",
   implimented: "implemented",
   implimenting: "implementing",
@@ -262,8 +343,10 @@ const COMMON_TYPOS: Record<string, string> = {
   maintaned: "maintained",
   maintaning: "maintaining",
   maintened: "maintained",
+  mainteined: "maintained",
   optmize: "optimize",
   optmized: "optimized",
+  optmizd: "optimized",
   optmizing: "optimizing",
   optmization: "optimization",
   optimiztion: "optimization",
@@ -271,17 +354,24 @@ const COMMON_TYPOS: Record<string, string> = {
   colaborated: "collaborated",
   colaborating: "collaborating",
   colaberated: "collaborated",
+  collaobrate: "collaborate",
+  collaobrated: "collaborated",
   collaobration: "collaboration",
   delivr: "deliver",
   delivred: "delivered",
   deliverd: "delivered",
-  delivering: "delivering",
+  delivring: "delivering",
   integart: "integrate",
   integarted: "integrated",
   intigrated: "integrated",
   integreted: "integrated",
   integartion: "integration",
   intigration: "integration",
+  architecd: "architected",
+  archited: "architected",
+  architeced: "architected",
+  architectd: "architected",
+  architeched: "architected",
   architecht: "architect",
   architechtured: "architected",
   archtected: "architected",
@@ -289,31 +379,44 @@ const COMMON_TYPOS: Record<string, string> = {
   archtecture: "architecture",
   spearhed: "spearhead",
   spearheded: "spearheaded",
+  spearheadd: "spearheaded",
+  spearheadde: "spearheaded",
   cordinate: "coordinate",
   cordinated: "coordinated",
   cordinating: "coordinating",
+  coordiante: "coordinate",
+  coordianted: "coordinated",
   faciliated: "facilitated",
+  faciltated: "facilitated",
   orchestred: "orchestrated",
+  orchesterated: "orchestrated",
   supervized: "supervised",
   automed: "automated",
   automted: "automated",
+  automatted: "automated",
   configurd: "configured",
+  configered: "configured",
   deplyed: "deployed",
   creatd: "created",
   analyzd: "analyzed",
   monitered: "monitored",
   troubleshooted: "troubleshot",
   refactred: "refactored",
+  refactord: "refactored",
   migrted: "migrated",
   reducde: "reduced",
   increasde: "increased",
   enhancd: "enhanced",
   partenered: "partnered",
   standarized: "standardized",
+  standerdized: "standardized",
   streamlind: "streamlined",
+  streamlinned: "streamlined",
+  streamling: "streamlining",
   producde: "produced",
   executd: "executed",
   directd: "directed",
+  direced: "directed",
   generatd: "generated",
 
   // Architecture, Infrastructure & Systems
@@ -403,73 +506,6 @@ const COMMON_TYPOS: Record<string, string> = {
   reccomend: "recommend",
   recomended: "recommended",
 };
-
-const RESUME_CANONICAL_VOCABULARY: string[] = [
-  "designed", "design", "designs", "designing", "designer", "designers",
-  "developed", "develop", "develops", "developing", "developer", "developers", "development",
-  "engineered", "engineer", "engineers", "engineering",
-  "implemented", "implement", "implements", "implementing", "implementation",
-  "built", "build", "builds", "building",
-  "created", "create", "creates", "creating",
-  "maintained", "maintain", "maintains", "maintaining", "maintenance",
-  "optimized", "optimize", "optimizes", "optimizing", "optimization",
-  "managed", "manage", "manages", "managing", "management", "manager", "managers",
-  "collaborated", "collaborate", "collaborates", "collaborating", "collaboration",
-  "delivered", "deliver", "delivers", "delivering", "deliverable", "deliverables",
-  "integrated", "integrate", "integrates", "integrating", "integration",
-  "architected", "architect", "architects", "architecting", "architecture",
-  "spearheaded", "spearhead", "spearheads", "spearheading",
-  "coordinated", "coordinate", "coordinates", "coordinating", "coordination",
-  "facilitated", "facilitate", "facilitates", "facilitating",
-  "orchestrated", "orchestrate", "orchestrates", "orchestrating",
-  "supervised", "supervise", "supervises", "supervising", "supervision",
-  "automated", "automate", "automates", "automating", "automation",
-  "configured", "configure", "configures", "configuring", "configuration",
-  "deployed", "deploy", "deploys", "deploying", "deployment",
-  "analyzed", "analyze", "analyzes", "analyzing", "analytics", "analysis",
-  "monitored", "monitor", "monitors", "monitoring",
-  "troubleshot", "troubleshoot", "troubleshoots", "troubleshooting",
-  "refactored", "refactor", "refactors", "refactoring",
-  "migrated", "migrate", "migrates", "migrating", "migration",
-  "reduced", "reduce", "reduces", "reducing", "reduction",
-  "increased", "increase", "increases", "increasing",
-  "enhanced", "enhance", "enhances", "enhancing", "enhancement",
-  "partnered", "partner", "partners", "partnering",
-  "standardized", "standardize", "standardizes", "standardizing",
-  "streamlined", "streamline", "streamlines", "streamlining",
-  "conducted", "conduct", "conducts", "conducting",
-  "produced", "produce", "produces", "producing",
-  "launched", "launch", "launches", "launching",
-  "established", "establish", "establishes", "establishing",
-  "mentored", "mentor", "mentors", "mentoring",
-  "trained", "train", "trains", "training",
-  "resolved", "resolve", "resolves", "resolving", "resolution",
-  "scaled", "scale", "scales", "scaling",
-  "authored", "author", "authors", "authoring",
-  "accelerated", "accelerate", "accelerates", "accelerating",
-  "executed", "execute", "executes", "executing", "execution",
-  "directed", "direct", "directs", "directing", "director",
-  "generated", "generate", "generates", "generating",
-  "initiated", "initiate", "initiates", "initiating", "initiative",
-  "administered", "administer", "administers", "administering",
-  "responsive", "interface", "interfaces", "component", "components",
-  "reusable", "product", "products", "framework", "frameworks",
-  "library", "libraries", "service", "services", "application", "applications",
-  "solution", "solutions", "requirement", "requirements", "algorithm", "algorithms",
-  "infrastructure", "efficiency", "efficient", "scalable", "scalability",
-  "reliability", "reliable", "authentication", "authorization", "security",
-  "performance", "dashboard", "dashboards", "repository", "repositories",
-  "documentation", "dependency", "dependencies", "asynchronous", "synchronous",
-  "process", "processes", "processing", "distributed", "concurrency", "concurrent",
-  "parallel", "experience", "experienced", "leadership", "communication",
-  "technology", "technologies", "strategy", "strategies", "workflow", "workflows",
-  "timeline", "timelines", "schedule", "schedules", "consistent", "compatible",
-  "accessible", "available", "relevant", "comprehensive", "recommend", "recommended",
-  "responsible", "responsibility", "responsibilities", "database", "databases",
-  "software", "hardware", "system", "systems", "frontend", "backend", "fullstack"
-];
-
-const CANONICAL_WORDS_SET = new Set(RESUME_CANONICAL_VOCABULARY);
 
 const BRAND_CASING_CORRECTIONS: Record<string, string> = {
   javascript: "JavaScript",
@@ -723,6 +759,22 @@ export function extractJobKeywords(jobDescription: string): string[] {
   return selected.slice(0, 24);
 }
 
+function applyTextReplacement(current: string, action: AtsCheckAction): string {
+  if (action.originalToken && action.replacementToken !== undefined) {
+    if (action.originalToken === "•" || action.originalToken === "-" || action.originalToken === "*") {
+      return current.replace(/^[•\-\*]\s*/, action.replacementToken);
+    }
+    const regex = new RegExp(`\\b${escapeRegExp(action.originalToken)}\\b`, "i");
+    if (regex.test(current)) {
+      return current.replace(regex, action.replacementToken);
+    }
+    if (current.includes(action.originalToken)) {
+      return current.replace(action.originalToken, action.replacementToken);
+    }
+  }
+  return action.replacementText ?? current;
+}
+
 export function applyAtsCorrectionToResume(
   prev: ResumeData,
   action: AtsCheckAction
@@ -735,7 +787,10 @@ export function applyAtsCorrectionToResume(
     if (key === "headline") {
       return {
         ...prev,
-        personal: { ...prev.personal, headline: action.replacementText },
+        personal: {
+          ...prev.personal,
+          headline: applyTextReplacement(prev.personal.headline, action),
+        },
       };
     }
   }
@@ -743,7 +798,7 @@ export function applyAtsCorrectionToResume(
   if (parts[0] === "summary") {
     return {
       ...prev,
-      summary: action.replacementText,
+      summary: applyTextReplacement(prev.summary, action),
     };
   }
 
@@ -756,11 +811,14 @@ export function applyAtsCorrectionToResume(
         if (parts[2] === "bullets" && parts[3] !== undefined) {
           const bIdx = Number(parts[3]);
           const newBullets = [...exp.bullets];
-          newBullets[bIdx] = action.replacementText!;
+          newBullets[bIdx] = applyTextReplacement(exp.bullets[bIdx] ?? "", action);
           return { ...exp, bullets: newBullets };
         }
         if (parts[2] === "jobTitle") {
-          return { ...exp, jobTitle: action.replacementText! };
+          return {
+            ...exp,
+            jobTitle: applyTextReplacement(exp.jobTitle, action),
+          };
         }
         return exp;
       }),
@@ -776,11 +834,14 @@ export function applyAtsCorrectionToResume(
         if (parts[2] === "highlights" && parts[3] !== undefined) {
           const hIdx = Number(parts[3]);
           const newHighlights = [...proj.highlights];
-          newHighlights[hIdx] = action.replacementText!;
+          newHighlights[hIdx] = applyTextReplacement(proj.highlights[hIdx] ?? "", action);
           return { ...proj, highlights: newHighlights };
         }
         if (parts[2] === "description") {
-          return { ...proj, description: action.replacementText! };
+          return {
+            ...proj,
+            description: applyTextReplacement(proj.description, action),
+          };
         }
         return proj;
       }),
@@ -796,7 +857,7 @@ export function applyAtsCorrectionToResume(
         if (parts[2] === "items" && parts[3] !== undefined) {
           const itemIdx = Number(parts[3]);
           const newItems = [...grp.items];
-          newItems[itemIdx] = action.replacementText!;
+          newItems[itemIdx] = applyTextReplacement(grp.items[itemIdx] ?? "", action);
           return { ...grp, items: newItems };
         }
         return grp;
@@ -805,6 +866,30 @@ export function applyAtsCorrectionToResume(
   }
 
   return prev;
+}
+
+/**
+ * Applies all auto-fixable replacement actions (e.g. typos, brand casing, redundant bullets)
+ * in a single atomic pass, returning the updated ResumeData and the count of applied fixes.
+ */
+export function applyAllAtsFixes(
+  data: ResumeData,
+  checks: AtsCheckItem[]
+): { updatedData: ResumeData; appliedCount: number } {
+  let current = data;
+  let appliedCount = 0;
+
+  for (const check of checks) {
+    if (
+      check.action?.type === "replace-text" &&
+      typeof check.action.replacementText === "string"
+    ) {
+      current = applyAtsCorrectionToResume(current, check.action);
+      appliedCount += 1;
+    }
+  }
+
+  return { updatedData: current, appliedCount };
 }
 
 export function analyzeResumeForAts(
@@ -1072,20 +1157,6 @@ export function analyzeResumeForAts(
   // --- 3. Intelligent Spelling, Grammar & Punctuation Checker ---
   let spellingIssuesCount = 0;
 
-  const COMMON_ENGLISH_WORDS = new Set([
-    "that", "with", "from", "this", "they", "have", "were", "which", "their",
-    "been", "about", "would", "these", "other", "into", "more", "also", "some",
-    "time", "very", "when", "come", "than", "make", "them", "then", "will",
-    "what", "many", "most", "only", "such", "even", "much", "well", "work",
-    "over", "after", "both", "used", "through", "across", "using", "first",
-    "every", "each", "under", "while", "along", "since", "until", "where",
-    "before", "user", "users", "flows", "flow", "tools", "tool", "data",
-    "team", "teams", "code", "page", "pages", "view", "views", "site",
-    "sites", "lead", "help", "role", "roles", "goal", "goals", "task", "tasks",
-    "part", "parts", "high", "live", "real", "best", "fast", "next", "full",
-    "core", "rich", "safe", "clean", "wide", "free", "open", "base", "main"
-  ]);
-
   // Helper scanner for any content text
   const inspectTextForLanguageErrors = (
     text: string,
@@ -1097,13 +1168,17 @@ export function analyzeResumeForAts(
 
     const seenTypoKeys = new Set<string>();
 
-    // Check 1: Typos from comprehensive dictionary with case preservation
+    // Check 1: Typos from comprehensive verified dictionary with case preservation
     for (const [typo, replacement] of Object.entries(COMMON_TYPOS)) {
+      if (typo.toLowerCase() === replacement.toLowerCase()) continue;
       const typoRegex = new RegExp(`\\b${escapeRegExp(typo)}\\b`, "i");
       const match = typoRegex.exec(text);
       if (match) {
         const originalWord = match[0];
+        if (KNOWN_VALID_WORDS.has(originalWord.toLowerCase())) continue;
+        if (originalWord.toLowerCase() === replacement.toLowerCase()) continue;
         const casedReplacement = preserveCase(originalWord, replacement);
+        if (originalWord === casedReplacement) continue;
         seenTypoKeys.add(typo.toLowerCase());
         spellingIssuesCount++;
         const fixedText = text.replace(typoRegex, casedReplacement);
@@ -1118,72 +1193,15 @@ export function analyzeResumeForAts(
             "Spelling errors in developer and designer resumes indicate a lack of attention to detail and polish.",
           howToFix: `Change "${originalWord}" to "${casedReplacement}".`,
           suggestedCorrection: casedReplacement,
+          canAutoFix: true,
           action: {
             type: "replace-text",
             label: `Fix spelling to "${casedReplacement}"`,
             fieldPath,
             currentText: text,
             replacementText: fixedText,
-            section,
-          },
-          section,
-        });
-      }
-    }
-
-    // Check 1b: Fuzzy matching for action verbs & core resume terms
-    const wordTokens = text.match(/\b[a-zA-Z]{4,}\b/g) || [];
-    for (const token of wordTokens) {
-      const lower = token.toLowerCase();
-      if (
-        COMMON_TYPOS[lower] ||
-        seenTypoKeys.has(lower) ||
-        CANONICAL_WORDS_SET.has(lower) ||
-        COMMON_ENGLISH_WORDS.has(lower)
-      ) {
-        continue;
-      }
-
-      let bestCandidate: string | null = null;
-      let minDistance = 999;
-
-      for (const canonical of RESUME_CANONICAL_VOCABULARY) {
-        if (Math.abs(lower.length - canonical.length) > 2) continue;
-        const dist = levenshteinDistance(lower, canonical);
-        const isMatch =
-          dist === 1 ||
-          (dist === 2 && lower.length >= 6 && lower.slice(0, 2) === canonical.slice(0, 2));
-
-        if (isMatch && dist < minDistance) {
-          minDistance = dist;
-          bestCandidate = canonical;
-        }
-      }
-
-      if (bestCandidate) {
-        seenTypoKeys.add(lower);
-        spellingIssuesCount++;
-        const casedReplacement = preserveCase(token, bestCandidate);
-        const tokenRegex = new RegExp(`\\b${escapeRegExp(token)}\\b`, "g");
-        const fixedText = text.replace(tokenRegex, casedReplacement);
-
-        checks.push({
-          id: `fuzzy-typo-${fieldPath}-${lower}`,
-          severity: "error",
-          category: "Spelling & Grammar",
-          location: fieldLocation,
-          title: `Spelling error: "${token}"`,
-          explanation: `The word "${token}" appears to be a misspelling of "${casedReplacement}".`,
-          whyItMatters:
-            "Recruiters and hiring managers notice typographical errors in action statements and core skills immediately.",
-          howToFix: `Change "${token}" to "${casedReplacement}".`,
-          suggestedCorrection: casedReplacement,
-          action: {
-            type: "replace-text",
-            label: `Fix spelling to "${casedReplacement}"`,
-            fieldPath,
-            currentText: text,
-            replacementText: fixedText,
+            originalToken: originalWord,
+            replacementToken: casedReplacement,
             section,
           },
           section,
@@ -1216,6 +1234,8 @@ export function analyzeResumeForAts(
             fieldPath,
             currentText: text,
             replacementText: fixedText,
+            originalToken: match[0],
+            replacementToken: properBrand,
             section,
           },
           section,
@@ -1246,6 +1266,8 @@ export function analyzeResumeForAts(
           fieldPath,
           currentText: text,
           replacementText: fixedText,
+          originalToken: duplicateWordMatch[0],
+          replacementToken: dupWord,
           section,
         },
         section,
@@ -1394,6 +1416,8 @@ export function analyzeResumeForAts(
             fieldPath,
             currentText: cleanB,
             replacementText: stripped,
+            originalToken: symbol,
+            replacementToken: "",
             section: "experience",
           },
           section: "experience",
@@ -1888,6 +1912,23 @@ export function analyzeResumeForAts(
     },
   };
 
+  // Motivating ATS Readiness Score (0-100)
+  let calculatedScore = 30; // base score for standard ATS formatting
+  if (hasFullName && isValidEmail(data.personal.email)) calculatedScore += 20;
+  if (data.personal.phone.trim() || data.personal.city.trim()) calculatedScore += 10;
+  if (data.summary.trim()) calculatedScore += 10;
+  if (activeExperiences.length > 0 || activeProjects.length > 0) calculatedScore += 15;
+  if (allSkillItems.length > 0) calculatedScore += 10;
+  if (activeEducation.length > 0) calculatedScore += 5;
+  // Deduct for active typos/errors
+  const penalty = errors * 4 + Math.min(10, warnings * 1);
+  const overallScore = Math.max(15, Math.min(100, calculatedScore - penalty));
+
+  let readinessLabel = "Draft in Progress";
+  if (overallScore >= 85) readinessLabel = "ATS Ready (Excellent)";
+  else if (overallScore >= 70) readinessLabel = "Strong Draft";
+  else if (overallScore >= 50) readinessLabel = "Needs Contact & Sections";
+
   return {
     checks,
     counts: { errors, warnings, passes },
@@ -1905,6 +1946,8 @@ export function analyzeResumeForAts(
       sectionImprovementIdeas,
     },
     disclaimer: ATS_DISCLAIMER,
+    overallScore,
+    readinessLabel,
   };
 }
 

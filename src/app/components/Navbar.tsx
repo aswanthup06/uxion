@@ -237,6 +237,7 @@ export default function Navbar() {
 
               <Link
                 href="/jobs"
+                prefetch={true}
                 onMouseEnter={() => setDropdown(null)}
                 onClick={closeMenus}
                 className={linkClass("/jobs")}
@@ -747,6 +748,7 @@ export default function Navbar() {
 
                   <Link
                     href="/jobs"
+                    prefetch={true}
                     onClick={closeMenus}
                     className={`block cursor-pointer py-4 text-sm font-medium transition-colors hover:text-brand ${pathname === "/jobs" ? "text-brand" : "text-text-primary"
                       }`}

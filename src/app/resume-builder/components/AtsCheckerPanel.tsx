@@ -90,15 +90,23 @@ export default function AtsCheckerPanel({
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5 text-xs">
-            <span className="inline-flex items-center gap-1 rounded-pill border border-status-error-border bg-status-error-bg px-2.5 py-1 text-[11px] font-semibold text-status-error">
-              <AlertCircle size={12} />
-              {analysis.counts.errors} critical
-            </span>
-            <span className="inline-flex items-center gap-1 rounded-pill border border-status-warning-border bg-status-warning-bg px-2.5 py-1 text-[11px] font-semibold text-status-warning">
-              <AlertTriangle size={12} />
-              {analysis.counts.warnings} suggestions
-            </span>
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <div className="flex items-center gap-1.5 rounded-pill border border-brand/30 bg-brand-soft px-3 py-1 text-xs font-bold text-brand">
+              <span>Readiness:</span>
+              <span className="text-sm font-extrabold">{analysis.overallScore}%</span>
+            </div>
+            {analysis.counts.errors > 0 && (
+              <span className="inline-flex items-center gap-1 rounded-pill border border-status-error-border bg-status-error-bg px-2.5 py-1 text-[11px] font-semibold text-status-error">
+                <AlertCircle size={12} />
+                {analysis.counts.errors} to fix
+              </span>
+            )}
+            {analysis.counts.warnings > 0 && (
+              <span className="inline-flex items-center gap-1 rounded-pill border border-status-warning-border bg-status-warning-bg px-2.5 py-1 text-[11px] font-semibold text-status-warning">
+                <AlertTriangle size={12} />
+                {analysis.counts.warnings} suggestions
+              </span>
+            )}
             <span className="inline-flex items-center gap-1 rounded-pill border border-status-success-border bg-status-success-bg px-2.5 py-1 text-[11px] font-semibold text-brand">
               <CheckCircle2 size={12} />
               {analysis.counts.passes} passed

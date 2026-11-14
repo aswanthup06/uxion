@@ -10,6 +10,7 @@ import {
   CalendarDays,
   ChevronDown,
   ChevronRight,
+  ImageDown,
   Layers3,
   MapPin,
   Pencil,
@@ -627,7 +628,12 @@ export default function AdminDashboard() {
             <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
               <div className="min-w-0">
                 <h2 className="break-words text-xl font-semibold tracking-[-0.035em] text-text-primary sm:text-2xl">
-                  {latestJob.title}
+                  <Link
+                    href={`/admin/jobs/${latestJob.id}`}
+                    className="hover:text-brand transition"
+                  >
+                    {latestJob.title}
+                  </Link>
                 </h2>
 
                 <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs text-text-secondary">
@@ -646,13 +652,25 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <Link
-                href={`/admin/jobs/${latestJob.id}`}
-                className="inline-flex shrink-0 items-center gap-2 self-start text-sm font-semibold text-brand transition hover:text-brand-hover sm:self-center"
-              >
-                Edit job
-                <ArrowUpRight size={16} />
-              </Link>
+              <div className="flex shrink-0 items-center gap-3 self-start sm:self-center">
+                <a
+                  href={`/job-posters?jobId=${encodeURIComponent(latestJob.id)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-text-secondary transition hover:text-brand"
+                >
+                  <ImageDown size={15} className="text-brand" />
+                  <span>Poster</span>
+                </a>
+
+                <Link
+                  href={`/admin/jobs/${latestJob.id}/edit`}
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-brand transition hover:text-brand-hover"
+                >
+                  Edit job
+                  <ArrowUpRight size={16} />
+                </Link>
+              </div>
             </div>
           </section>
         )}
@@ -799,7 +817,12 @@ export default function AdminDashboard() {
                               </div>
                               <div className="min-w-0">
                                 <p className="max-w-sm truncate text-sm font-medium text-text-primary">
-                                  {job.title}
+                                  <Link
+                                    href={`/admin/jobs/${job.id}`}
+                                    className="hover:text-brand hover:underline transition"
+                                  >
+                                    {job.title}
+                                  </Link>
                                 </p>
                                 <p className="mt-1 text-xs text-text-muted">
                                   {job.company}
@@ -820,14 +843,28 @@ export default function AdminDashboard() {
                           </td>
 
                           <td className="py-4 pl-4 text-right">
-                            <Link
-                              href={`/admin/jobs/${job.id}`}
-                              aria-label={`Edit ${job.title}`}
-                              className="inline-flex items-center gap-1.5 text-sm font-medium text-text-muted transition hover:text-brand"
-                            >
-                              <Pencil size={14} />
-                              Edit
-                            </Link>
+                            <div className="flex items-center justify-end gap-3">
+                              <a
+                                href={`/job-posters?jobId=${encodeURIComponent(job.id)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`View poster for ${job.title}`}
+                                title="View poster"
+                                className="inline-flex items-center gap-1 text-xs text-text-muted transition hover:text-brand"
+                              >
+                                <ImageDown size={14} className="text-brand" />
+                                <span>Poster</span>
+                              </a>
+
+                              <Link
+                                href={`/admin/jobs/${job.id}/edit`}
+                                aria-label={`Edit ${job.title}`}
+                                className="inline-flex items-center gap-1.5 text-sm font-medium text-text-muted transition hover:text-brand"
+                              >
+                                <Pencil size={14} />
+                                Edit
+                              </Link>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -845,7 +882,12 @@ export default function AdminDashboard() {
 
                       <div className="min-w-0 flex-1">
                         <p className="break-words text-sm font-medium text-text-primary">
-                          {job.title}
+                          <Link
+                            href={`/admin/jobs/${job.id}`}
+                            className="hover:text-brand hover:underline transition"
+                          >
+                            {job.title}
+                          </Link>
                         </p>
                         <p className="mt-1 text-xs text-text-muted">
                           {job.company}
@@ -859,7 +901,7 @@ export default function AdminDashboard() {
                         </div>
 
                         <Link
-                          href={`/admin/jobs/${job.id}`}
+                          href={`/admin/jobs/${job.id}/edit`}
                           className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-brand hover:text-brand-hover"
                         >
                           <Pencil size={13} />

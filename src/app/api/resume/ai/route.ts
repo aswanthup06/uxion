@@ -11,7 +11,8 @@ type AiAction =
   | "improve-summary"
   | "rewrite-bullets"
   | "suggest-skills"
-  | "tailor-to-jd";
+  | "tailor-to-jd"
+  | "copilot-chat";
 
 const MAX_BODY_BYTES = 80_000;
 const MAX_JD_LENGTH = 8_000;
@@ -248,6 +249,8 @@ export async function POST(request: NextRequest) {
     const body = parsedBody as {
       action?: unknown;
       data?: unknown;
+      message?: unknown;
+      targetSection?: unknown;
       experienceId?: unknown;
       jobDescription?: unknown;
     };
@@ -257,7 +260,8 @@ export async function POST(request: NextRequest) {
       action !== "improve-summary" &&
       action !== "rewrite-bullets" &&
       action !== "suggest-skills" &&
-      action !== "tailor-to-jd"
+      action !== "tailor-to-jd" &&
+      action !== "copilot-chat"
     ) {
       return NextResponse.json(
         { success: false, error: "Unsupported AI action." },
@@ -457,55 +461,55 @@ ${summarizeCandidateFacts(resume)}`;
       });
     }
 
-    // action === "tailor-to-jd"
-    if (!jobDescription || jobDescription.length < 30) {
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            "Please paste a job description (at least 30 characters) to generate tailoring suggestions.",
-        },
-        { status: 400 }
-      );
-    }
+    if (action === "tailor-to-jd") {
+      if (!jobDescription || jobDescription.length < 30) {
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "Please paste a job description (at least 30 characters) to generate tailoring suggestions.",
+          },
+          { status: 400 }
+        );
+      }
 
-    const schema: Schema = {
-      type: Type.OBJECT,
-      properties: {
-        summarySuggestion: { type: Type.STRING },
-        experienceSuggestions: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              experienceId: { type: Type.STRING },
-              roleLabel: { type: Type.STRING },
-              suggestedBullets: {
-                type: Type.ARRAY,
-                items: { type: Type.STRING },
+      const schema: Schema = {
+        type: Type.OBJECT,
+        properties: {
+          summarySuggestion: { type: Type.STRING },
+          experienceSuggestions: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                experienceId: { type: Type.STRING },
+                roleLabel: { type: Type.STRING },
+                suggestedBullets: {
+                  type: Type.ARRAY,
+                  items: { type: Type.STRING },
+                },
               },
+              required: ["experienceId", "roleLabel", "suggestedBullets"],
             },
-            required: ["experienceId", "roleLabel", "suggestedBullets"],
+          },
+          alignmentNotes: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING },
+          },
+          missingRequirementsToVerify: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING },
           },
         },
-        alignmentNotes: {
-          type: Type.ARRAY,
-          items: { type: Type.STRING },
-        },
-        missingRequirementsToVerify: {
-          type: Type.ARRAY,
-          items: { type: Type.STRING },
-        },
-      },
-      required: [
-        "summarySuggestion",
-        "experienceSuggestions",
-        "alignmentNotes",
-        "missingRequirementsToVerify",
-      ],
-    };
+        required: [
+          "summarySuggestion",
+          "experienceSuggestions",
+          "alignmentNotes",
+          "missingRequirementsToVerify",
+        ],
+      };
 
-    const prompt = `Review the candidate's resume against the supplied Job Description and propose factual tailoring suggestions for user approval.
+      const prompt = `Review the candidate's resume against the supplied Job Description and propose factual tailoring suggestions for user approval.
 CRITICAL RULES:
 - NEVER fabricate employers, job titles, dates, degrees, skills, or metrics.
 - Only rephrase existing summary and existing experience bullets (using their exact experienceId) to clarify genuine alignment with the target role.
@@ -517,32 +521,153 @@ ${summarizeCandidateFacts(resume)}
 Target Job Description:
 ${jobDescription}`;
 
-    const result = await callGeminiJson<{
-      summarySuggestion: string;
-      experienceSuggestions: Array<{
-        experienceId: string;
-        roleLabel: string;
-        suggestedBullets: string[];
-      }>;
-      alignmentNotes: string[];
-      missingRequirementsToVerify: string[];
-    }>(prompt, schema);
+      const result = await callGeminiJson<{
+        summarySuggestion: string;
+        experienceSuggestions: Array<{
+          experienceId: string;
+          roleLabel: string;
+          suggestedBullets: string[];
+        }>;
+        alignmentNotes: string[];
+        missingRequirementsToVerify: string[];
+      }>(prompt, schema);
 
-    const validExpIds = new Set(resume.experience.map((e) => e.id));
-    const safeExpSuggestions = (result.experienceSuggestions || []).filter(
-      (item) => validExpIds.has(item.experienceId) && item.suggestedBullets?.length > 0
+      const validExpIds = new Set(resume.experience.map((e) => e.id));
+      const safeExpSuggestions = (result.experienceSuggestions || []).filter(
+        (item) => validExpIds.has(item.experienceId) && item.suggestedBullets?.length > 0
+      );
+
+      return NextResponse.json({
+        success: true,
+        action,
+        suggestion: {
+          summarySuggestion: (result.summarySuggestion || "").trim(),
+          experienceSuggestions: safeExpSuggestions,
+          alignmentNotes: result.alignmentNotes || [],
+          missingRequirementsToVerify: result.missingRequirementsToVerify || [],
+        },
+      });
+    }
+
+    if (action === "copilot-chat") {
+      const userMessage =
+        typeof body.message === "string" ? body.message.trim().slice(0, 1000) : "";
+      if (!userMessage) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Please enter an instruction or question for the AI co-pilot.",
+          },
+          { status: 400 }
+        );
+      }
+
+      const targetExpId =
+        typeof body.experienceId === "string" ? body.experienceId : "";
+      const targetExp = resume.experience.find((e) => e.id === targetExpId);
+
+      const schema: Schema = {
+        type: Type.OBJECT,
+        properties: {
+          reply: {
+            type: Type.STRING,
+            description: "Concise, friendly explanation of changes or guidance.",
+          },
+          proposedSummary: {
+            type: Type.STRING,
+            description: "Improved summary if requested; otherwise empty string.",
+          },
+          proposedBullets: {
+            type: Type.OBJECT,
+            properties: {
+              experienceId: { type: Type.STRING },
+              roleLabel: { type: Type.STRING },
+              bullets: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
+              },
+            },
+          },
+          metricPrompts: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING },
+            description: "Questions asking for missing real metrics.",
+          },
+        },
+        required: ["reply"],
+      };
+
+      const prompt = `You are a recruiter-grade ATS resume co-pilot and real-time writing mentor.
+User Instruction: "${userMessage}"
+
+CRITICAL RULES:
+1. NEVER invent employers, dates, qualifications, degrees, skills, or metrics that the candidate did not mention.
+2. If the user asks for measurable results, ask clarifying questions in "metricPrompts" instead of fabricating fake percentages or numbers.
+3. Start resume bullets with strong past-tense action verbs (e.g., Designed, Built, Architected, Spearheaded, Engineered, Delivered).
+4. If the instruction relates to a specific job role, rewrite its bullets and populate "proposedBullets".
+5. If the instruction relates to the summary, populate "proposedSummary".
+6. Keep "reply" concise, direct, and professional (1-2 sentences).
+
+Candidate Background & Current Draft:
+${summarizeCandidateFacts(resume)}
+${
+  targetExp
+    ? `\nTarget Role Selected: ${targetExp.jobTitle} at ${targetExp.company} (ID: ${targetExp.id})\nCurrent Bullets:\n${targetExp.bullets.map((b, i) => `${i + 1}. ${b}`).join("\n")}`
+    : ""
+}
+${jobDescription ? `\nTarget Job Description:\n${jobDescription}` : ""}`;
+
+      const result = await callGeminiJson<{
+        reply: string;
+        proposedSummary?: string;
+        proposedBullets?: {
+          experienceId?: string;
+          roleLabel?: string;
+          bullets?: string[];
+        };
+        metricPrompts?: string[];
+      }>(prompt, schema);
+
+      const matchedExp =
+        resume.experience.find((e) => e.id === result.proposedBullets?.experienceId) ||
+        (result.proposedBullets?.roleLabel
+          ? resume.experience.find(
+              (e) =>
+                e.company.toLowerCase().includes(result.proposedBullets!.roleLabel!.toLowerCase()) ||
+                result.proposedBullets!.roleLabel!.toLowerCase().includes(e.company.toLowerCase()) ||
+                e.jobTitle.toLowerCase().includes(result.proposedBullets!.roleLabel!.toLowerCase()) ||
+                result.proposedBullets!.roleLabel!.toLowerCase().includes(e.jobTitle.toLowerCase())
+            )
+          : undefined) ||
+        targetExp ||
+        resume.experience[0];
+
+      return NextResponse.json({
+        success: true,
+        action,
+        reply: result.reply,
+        proposedSummary: result.proposedSummary?.trim() || undefined,
+        proposedBullets:
+          result.proposedBullets &&
+          Array.isArray(result.proposedBullets.bullets) &&
+          result.proposedBullets.bullets.length > 0 &&
+          matchedExp
+            ? {
+                experienceId: matchedExp.id,
+                roleLabel:
+                  result.proposedBullets.roleLabel ||
+                  `${matchedExp.jobTitle} at ${matchedExp.company}`,
+                bullets: result.proposedBullets.bullets.filter(Boolean),
+              }
+            : undefined,
+        metricPrompts: result.metricPrompts || [],
+      });
+    }
+
+    return NextResponse.json(
+      { success: false, error: "Unsupported or unhandled action." },
+      { status: 400 }
     );
-
-    return NextResponse.json({
-      success: true,
-      action,
-      suggestion: {
-        summarySuggestion: (result.summarySuggestion || "").trim(),
-        experienceSuggestions: safeExpSuggestions,
-        alignmentNotes: result.alignmentNotes || [],
-        missingRequirementsToVerify: result.missingRequirementsToVerify || [],
-      },
-    });
   } catch (error) {
     if (error instanceof Error && error.message === "AI_NOT_CONFIGURED") {
       return NextResponse.json(

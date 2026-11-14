@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Job } from "@/app/types/job";
-import { ArrowUpRight, MapPin } from "lucide-react";
+import { ArrowUpRight, ImageDown, MapPin } from "lucide-react";
 
 interface JobListProps {
   jobs: Job[];
@@ -40,7 +40,12 @@ export default function JobList({ jobs }: JobListProps) {
         >
           <div className="min-w-0">
             <h3 className="truncate text-sm font-semibold text-text-primary">
-              {job.title}
+              <Link
+                href={`/admin/jobs/${job.id}`}
+                className="hover:text-brand hover:underline transition-colors"
+              >
+                {job.title}
+              </Link>
             </h3>
 
             <p className="mt-1 text-sm text-text-secondary">
@@ -59,13 +64,25 @@ export default function JobList({ jobs }: JobListProps) {
             </div>
           </div>
 
-          <Link
-            href={`/admin/jobs/${job.id}`}
-            className="inline-flex w-fit shrink-0 items-center gap-1.5 text-sm font-medium text-brand transition-colors hover:text-brand-hover"
-          >
-            Edit job
-            <ArrowUpRight size={15} />
-          </Link>
+          <div className="flex shrink-0 items-center gap-3">
+            <a
+              href={`/job-posters?jobId=${encodeURIComponent(job.id)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-medium text-text-secondary transition hover:text-brand"
+            >
+              <ImageDown size={14} className="text-brand" />
+              <span>Poster</span>
+            </a>
+
+            <Link
+              href={`/admin/jobs/${job.id}/edit`}
+              className="inline-flex w-fit shrink-0 items-center gap-1.5 text-sm font-medium text-brand transition-colors hover:text-brand-hover"
+            >
+              Edit job
+              <ArrowUpRight size={15} />
+            </Link>
+          </div>
         </div>
       ))}
     </div>

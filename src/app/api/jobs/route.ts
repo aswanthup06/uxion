@@ -3,6 +3,7 @@
 // Replaces Google Sheets API entirely with PostgreSQL queries.
 
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import {
   getAllJobs,
   getJobById,
@@ -14,6 +15,15 @@ import {
 } from "@/lib/supabase/jobs";
 import type { Job } from "@/app/types/job";
 import { validateEmailDomain } from "@/lib/validation/email";
+
+function purgeJobsCache() {
+  try {
+    revalidatePath("/jobs");
+    revalidatePath("/");
+  } catch (err) {
+    console.error("Cache purge failed:", err);
+  }
+}
 
 /**
  * Helper to verify that the request comes from an authenticated admin session
@@ -229,6 +239,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    purgeJobsCache();
+
     return NextResponse.json(
       { message: "Job added successfully", job: newJob },
       { status: 201 }
@@ -302,6 +314,8 @@ export async function PUT(req: NextRequest) {
       status: body.status,
     });
 
+    purgeJobsCache();
+
     return NextResponse.json(
       { message: "Job updated successfully", job: updatedJob },
       { status: 200 }
@@ -338,6 +352,7 @@ export async function PATCH(req: NextRequest) {
 
     if (action === "approve") {
       const approvedJob = await approveJob(id);
+      purgeJobsCache();
       return NextResponse.json(
         { message: "Job approved and published successfully", job: approvedJob },
         { status: 200 }
@@ -346,6 +361,7 @@ export async function PATCH(req: NextRequest) {
 
     if (action === "reject") {
       await deleteJob(id);
+      purgeJobsCache();
       return NextResponse.json(
         { message: "Submission rejected and deleted" },
         { status: 200 }
@@ -354,6 +370,8 @@ export async function PATCH(req: NextRequest) {
 
     // Generic partial update
     const updatedJob = await updateJob(id, body);
+    purgeJobsCache();
+
     return NextResponse.json(
       { message: "Job updated successfully", job: updatedJob },
       { status: 200 }
@@ -388,6 +406,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     await deleteJob(id);
+    purgeJobsCache();
 
     return NextResponse.json(
       { message: "Job deleted successfully" },

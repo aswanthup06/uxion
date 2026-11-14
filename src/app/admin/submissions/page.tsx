@@ -223,7 +223,12 @@ export default function SubmissionsPage() {
                           </div>
 
                           <h2 className="mt-2 text-lg font-bold text-text-primary sm:text-xl">
-                            {job.title}
+                            <Link
+                              href={`/admin/jobs/${job.id}`}
+                              className="hover:text-brand hover:underline transition"
+                            >
+                              {job.title}
+                            </Link>
                           </h2>
 
                           <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-secondary">
@@ -255,7 +260,7 @@ export default function SubmissionsPage() {
                           </button>
 
                           <Link
-                            href={`/admin/jobs/${job.id}`}
+                            href={`/admin/jobs/${job.id}/edit`}
                             className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 text-xs font-semibold text-text-secondary transition hover:bg-surface-subtle hover:text-text-primary"
                           >
                             <Pencil size={13} />

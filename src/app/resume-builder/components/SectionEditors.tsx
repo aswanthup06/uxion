@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import {
   ArrowDown,
   ArrowUp,
+  Check,
   ChevronDown,
   Loader2,
   Plus,
@@ -29,16 +30,16 @@ import {
   createId,
 } from "@/lib/resume/types";
 import { formatResumeDate } from "@/lib/resume/validation";
+import type { AtsCheckItem, AtsCheckAction } from "@/lib/resume/ats-checker";
 
 const inputBase =
   "mt-1 w-full rounded-control border bg-surface-base px-3 py-2 text-xs text-text-primary outline-none transition-colors placeholder:text-text-muted focus:ring-4 focus:ring-focus-ring";
 
 function inputClass(hasError?: boolean) {
-  return `${inputBase} ${
-    hasError
+  return `${inputBase} ${hasError
       ? "border-status-error focus:border-status-error"
       : "border-border-default hover:border-border-strong focus:border-brand"
-  }`;
+    }`;
 }
 
 function moveItem<T>(items: T[], index: number, direction: -1 | 1): T[] {
@@ -83,6 +84,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        spellCheck={true}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-err` : hint ? `${id}-hint` : undefined}
         className={inputClass(Boolean(error))}
@@ -187,9 +189,8 @@ function SectionWrapper({
         >
           <ChevronDown
             size={15}
-            className={`shrink-0 text-text-muted transition-transform duration-150 ${
-              isOpen ? "" : "-rotate-90"
-            }`}
+            className={`shrink-0 text-text-muted transition-transform duration-150 ${isOpen ? "" : "-rotate-90"
+              }`}
           />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -250,6 +251,8 @@ interface EditorProps {
   onAiImproveSummary: () => void;
   onAiRewriteBullets: (experienceId: string) => void;
   onAiSuggestSkills: () => void;
+  atsChecks?: AtsCheckItem[];
+  onApplyCorrection?: (action: AtsCheckAction) => void;
 }
 
 export function PersonalSectionEditor({
@@ -482,6 +485,8 @@ export function SummarySectionEditor({
   aiConfigured,
   aiLoading,
   onAiImproveSummary,
+  atsChecks,
+  onApplyCorrection,
 }: {
   data: ResumeData;
   onChange: EditorProps["onChange"];
@@ -493,8 +498,15 @@ export function SummarySectionEditor({
   aiConfigured: boolean;
   aiLoading: boolean;
   onAiImproveSummary: () => void;
+  atsChecks?: AtsCheckItem[];
+  onApplyCorrection?: (action: AtsCheckAction) => void;
 }) {
   const words = data.summary.trim() ? data.summary.trim().split(/\s+/).length : 0;
+  const summaryFixes = (atsChecks || []).filter(
+    (c) =>
+      c.action &&
+      (c.action.fieldPath === "summary" || c.action.fieldPath?.startsWith("summary"))
+  );
 
   return (
     <SectionWrapper
@@ -535,6 +547,7 @@ export function SummarySectionEditor({
         rows={4}
         maxLength={2500}
         value={data.summary}
+        spellCheck={true}
         onChange={(e) =>
           onChange((prev) => ({
             ...prev,
@@ -544,6 +557,23 @@ export function SummarySectionEditor({
         placeholder="Summarize your role, core skills, and the types of problems you solve..."
         className={`${inputClass(false)} resize-y leading-relaxed`}
       />
+
+          {summaryFixes.length > 0 && onApplyCorrection && (
+            <button
+              type="button"
+              onClick={() => {
+                summaryFixes.forEach((f) => {
+                  if (f.action) onApplyCorrection(f.action);
+                });
+              }}
+              className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-control border border-amber-500/30 bg-amber-500/10 px-2.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 transition-colors"
+              title={summaryFixes.map((c) => c.action?.label || c.title).join(" · ")}
+            >
+              <Check size={11} />
+              <span>Fix spelling / phrasing</span>
+            </button>
+          )}
+
       <p className="mt-1 text-[11px] text-text-muted">
         Aim for 40–85 words. Leave blank if you prefer not to include a summary.
       </p>
@@ -563,6 +593,8 @@ export function ExperienceSectionEditor({
   aiConfigured,
   aiLoadingKey,
   onAiRewriteBullets,
+  atsChecks,
+  onApplyCorrection,
 }: {
   data: ResumeData;
   onChange: EditorProps["onChange"];
@@ -575,12 +607,63 @@ export function ExperienceSectionEditor({
   aiConfigured: boolean;
   aiLoadingKey: string | null;
   onAiRewriteBullets: (experienceId: string) => void;
+  atsChecks?: AtsCheckItem[];
+  onApplyCorrection?: (action: AtsCheckAction) => void;
 }) {
   const updateExp = (id: string, patch: Partial<ResumeExperienceItem>) => {
     onChange((prev) => ({
       ...prev,
       experience: prev.experience.map((e) => (e.id === id ? { ...e, ...patch } : e)),
     }));
+  };
+
+  const [polishingBullet, setPolishingBullet] = useState<{
+    id: string;
+    idx: number;
+  } | null>(null);
+  const [inlineSuggestion, setInlineSuggestion] = useState<{
+    id: string;
+    idx: number;
+    text: string;
+  } | null>(null);
+
+  const handlePolishSingleBullet = async (
+    expId: string,
+    bIdx: number,
+    text: string
+  ) => {
+    if (!text.trim() || polishingBullet) return;
+    setPolishingBullet({ id: expId, idx: bIdx });
+    try {
+      const res = await fetch("/api/resume/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "copilot-chat",
+          data,
+          experienceId: expId,
+          message: `Sharpen this single bullet point into a strong, action-verb-led achievement without inventing fake numbers: "${text}"`,
+        }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (json.proposedBullets?.bullets?.[0]) {
+        setInlineSuggestion({
+          id: expId,
+          idx: bIdx,
+          text: json.proposedBullets.bullets[0],
+        });
+      } else if (json.reply) {
+        setInlineSuggestion({
+          id: expId,
+          idx: bIdx,
+          text: json.reply,
+        });
+      }
+    } catch {
+      // transient network issue
+    } finally {
+      setPolishingBullet(null);
+    }
   };
 
   return (
@@ -744,64 +827,172 @@ export function ExperienceSectionEditor({
                   </div>
 
                   <div className="mt-2 space-y-2">
-                    {exp.bullets.map((bullet, bIdx) => (
-                      <div key={bIdx} className="flex items-start gap-1.5">
-                        <span className="mt-2.5 text-xs text-text-muted">•</span>
-                        <textarea
-                          rows={2}
-                          value={bullet}
-                          onChange={(e) => {
-                            const next = [...exp.bullets];
-                            next[bIdx] = e.target.value;
-                            updateExp(exp.id, { bullets: next });
-                          }}
-                          aria-label={`Bullet ${bIdx + 1} for ${label}`}
-                          placeholder="Start with an action verb (e.g., Built..., Improved..., Designed...) and describe the outcome."
-                          className="min-h-[38px] flex-1 resize-y rounded-control border border-border-default bg-surface-base px-2.5 py-1.5 text-xs leading-relaxed text-text-primary outline-none placeholder:text-text-muted hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring"
-                        />
-                        <div className="flex flex-col gap-1 pt-0.5">
-                          <button
-                            type="button"
-                            disabled={bIdx === 0}
-                            onClick={() =>
-                              updateExp(exp.id, {
-                                bullets: moveItem(exp.bullets, bIdx, -1),
-                              })
-                            }
-                            aria-label={`Move bullet ${bIdx + 1} up`}
-                            className="grid h-6 w-6 cursor-pointer place-items-center rounded-control border border-border-default bg-surface-card text-text-muted hover:text-text-primary disabled:opacity-40"
-                          >
-                            <ArrowUp size={11} />
-                          </button>
-                          <button
-                            type="button"
-                            disabled={bIdx === exp.bullets.length - 1}
-                            onClick={() =>
-                              updateExp(exp.id, {
-                                bullets: moveItem(exp.bullets, bIdx, 1),
-                              })
-                            }
-                            aria-label={`Move bullet ${bIdx + 1} down`}
-                            className="grid h-6 w-6 cursor-pointer place-items-center rounded-control border border-border-default bg-surface-card text-text-muted hover:text-text-primary disabled:opacity-40"
-                          >
-                            <ArrowDown size={11} />
-                          </button>
+                    {exp.bullets.map((bullet, bIdx) => {
+                      const bulletPath = `experience.${exp.id}.bullets.${bIdx}`;
+                      const bulletFixes = (atsChecks || []).filter(
+                        (c) =>
+                          c.action &&
+                          (c.action.fieldPath === bulletPath ||
+                            c.action.fieldPath?.startsWith(bulletPath))
+                      );
+
+                      return (
+                        <div key={bIdx} className="space-y-1">
+                          <div className="flex items-start gap-1.5">
+                            <span className="mt-2.5 text-xs text-text-muted">•</span>
+                            <textarea
+                              rows={2}
+                              spellCheck={true}
+                              value={bullet}
+                              onChange={(e) => {
+                                const next = [...exp.bullets];
+                                next[bIdx] = e.target.value;
+                                updateExp(exp.id, { bullets: next });
+                              }}
+                              aria-label={`Bullet ${bIdx + 1} for ${label}`}
+                              placeholder="Start with an action verb (e.g., Built..., Improved..., Designed...) and describe the outcome."
+                              className="min-h-[38px] flex-1 resize-y rounded-control border border-border-default bg-surface-base px-2.5 py-1.5 text-xs leading-relaxed text-text-primary outline-none placeholder:text-text-muted hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring"
+                            />
+                            <div className="flex flex-col gap-1 pt-0.5">
+                              {bulletFixes.length > 0 && onApplyCorrection && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    bulletFixes.forEach((f) => {
+                                      if (f.action) onApplyCorrection(f.action);
+                                    });
+                                  }}
+                                  aria-label="Apply quick fix"
+                                  title={bulletFixes.map((c) => c.action?.label || c.title).join(" · ")}
+                                  className="grid h-6 w-6 cursor-pointer place-items-center rounded-control border border-amber-500/40 bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25 shadow-2xs"
+                                >
+                                  <Check size={11} />
+                                </button>
+                              )}
+                              {aiConfigured && (
+                                <button
+                                  type="button"
+                                  disabled={
+                                    (polishingBullet?.id === exp.id &&
+                                      polishingBullet?.idx === bIdx) ||
+                                    !bullet.trim()
+                                  }
+                                  onClick={() =>
+                                    handlePolishSingleBullet(exp.id, bIdx, bullet)
+                                  }
+                                  aria-label={`Polish bullet ${bIdx + 1} with AI`}
+                                  title="Polish this bullet with AI"
+                                  className="grid h-6 w-6 cursor-pointer place-items-center rounded-control border border-border-default bg-brand-soft text-brand hover:bg-brand-soft-hover disabled:cursor-not-allowed disabled:opacity-40"
+                                >
+                                  {polishingBullet?.id === exp.id &&
+                                    polishingBullet?.idx === bIdx ? (
+                                    <Loader2 size={11} className="animate-spin" />
+                                  ) : (
+                                    <Sparkles size={11} />
+                                  )}
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                disabled={bIdx === 0}
+                                onClick={() =>
+                                  updateExp(exp.id, {
+                                    bullets: moveItem(exp.bullets, bIdx, -1),
+                                  })
+                                }
+                                aria-label={`Move bullet ${bIdx + 1} up`}
+                                className="grid h-6 w-6 cursor-pointer place-items-center rounded-control border border-border-default bg-surface-card text-text-muted hover:text-text-primary disabled:opacity-40"
+                              >
+                                <ArrowUp size={11} />
+                              </button>
+                              <button
+                                type="button"
+                                disabled={bIdx === exp.bullets.length - 1}
+                                onClick={() =>
+                                  updateExp(exp.id, {
+                                    bullets: moveItem(exp.bullets, bIdx, 1),
+                                  })
+                                }
+                                aria-label={`Move bullet ${bIdx + 1} down`}
+                                className="grid h-6 w-6 cursor-pointer place-items-center rounded-control border border-border-default bg-surface-card text-text-muted hover:text-text-primary disabled:opacity-40"
+                              >
+                                <ArrowDown size={11} />
+                              </button>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = exp.bullets.filter((_, i) => i !== bIdx);
+                                updateExp(exp.id, {
+                                  bullets: next.length > 0 ? next : [""],
+                                });
+                              }}
+                              aria-label={`Remove bullet ${bIdx + 1}`}
+                              className="mt-0.5 grid h-6 w-6 shrink-0 cursor-pointer place-items-center rounded-control text-text-muted hover:bg-status-error-bg hover:text-status-error"
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
+
+                          {/* Compact Suggestion Chip */}
+                          {bulletFixes.length > 0 && onApplyCorrection && (
+                            <div className="ml-5 flex items-center gap-1.5 text-[11px] text-text-muted">
+                              <span className="font-semibold text-amber-600">Tip:</span>
+                              <span className="truncate max-w-sm text-text-secondary">
+                                {bulletFixes[0].action?.label || bulletFixes[0].title}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  bulletFixes.forEach((f) => {
+                                    if (f.action) onApplyCorrection(f.action);
+                                  });
+                                }}
+                                className="cursor-pointer font-semibold text-brand hover:underline shrink-0"
+                              >
+                                Fix
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Inline AI Polish Suggestion Diff Card */}
+                          {inlineSuggestion?.id === exp.id &&
+                            inlineSuggestion?.idx === bIdx && (
+                              <div className="ml-5 mt-1 rounded-control border border-brand/40 bg-brand-soft/40 p-2.5 text-xs shadow-2xs space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                  <span className="flex items-center gap-1 text-[11px] font-bold text-brand">
+                                    <Sparkles size={12} /> Suggested rewrite:
+                                  </span>
+                                  <div className="flex items-center gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const next = [...exp.bullets];
+                                        next[bIdx] = inlineSuggestion.text;
+                                        updateExp(exp.id, { bullets: next });
+                                        setInlineSuggestion(null);
+                                      }}
+                                      className="inline-flex cursor-pointer items-center gap-1 rounded bg-brand px-2 py-0.5 text-[11px] font-semibold text-text-inverse hover:bg-brand-hover shadow-subtle"
+                                    >
+                                      <Check size={11} /> Accept
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setInlineSuggestion(null)}
+                                      className="cursor-pointer text-[11px] text-text-muted hover:text-text-primary px-1"
+                                    >
+                                      Dismiss
+                                    </button>
+                                  </div>
+                                </div>
+                                <p className="text-text-primary italic leading-relaxed bg-surface-base/80 p-2 rounded border border-brand/20">
+                                  &ldquo;{inlineSuggestion.text}&rdquo;
+                                </p>
+                              </div>
+                            )}
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const next = exp.bullets.filter((_, i) => i !== bIdx);
-                            updateExp(exp.id, {
-                              bullets: next.length > 0 ? next : [""],
-                            });
-                          }}
-                          aria-label={`Remove bullet ${bIdx + 1}`}
-                          className="mt-0.5 grid h-6 w-6 shrink-0 cursor-pointer place-items-center rounded-control text-text-muted hover:bg-status-error-bg hover:text-status-error"
-                        >
-                          <X size={12} />
-                        </button>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   <button
@@ -1293,6 +1484,8 @@ export function ProjectsSectionEditor({
   sectionIndex,
   sectionTotal,
   onMoveSection,
+  atsChecks,
+  onApplyCorrection,
 }: {
   data: ResumeData;
   onChange: EditorProps["onChange"];
@@ -1302,6 +1495,8 @@ export function ProjectsSectionEditor({
   sectionIndex: number;
   sectionTotal: number;
   onMoveSection: (dir: -1 | 1) => void;
+  atsChecks?: AtsCheckItem[];
+  onApplyCorrection?: (action: AtsCheckAction) => void;
 }) {
   const updateProj = (id: string, patch: Partial<ResumeProjectItem>) => {
     onChange((prev) => ({
@@ -1419,12 +1614,44 @@ export function ProjectsSectionEditor({
                     rows={3}
                     maxLength={1000}
                     value={proj.description}
+                    spellCheck={true}
                     onChange={(e) =>
                       updateProj(proj.id, { description: e.target.value })
                     }
                     placeholder="Describe what you built, technologies used, and measurable or user outcomes."
                     className={`${inputClass(false)} resize-y`}
                   />
+                  {(() => {
+                    const descPath = `projects.${proj.id}.description`;
+                    const descFixes = (atsChecks || []).filter(
+                      (c) =>
+                        c.action &&
+                        (c.action.fieldPath === descPath ||
+                          c.action.fieldPath?.startsWith(descPath))
+                    );
+                    if (descFixes.length === 0) return null;
+                    return (
+                      <div className="mt-1 flex items-center justify-between gap-1.5 text-[11px] text-text-muted">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="font-semibold text-amber-600 shrink-0">Tip:</span>
+                          <span className="truncate text-text-secondary">
+                            {descFixes[0].action?.label || descFixes[0].title}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            descFixes.forEach((f) => {
+                              if (f.action && onApplyCorrection) onApplyCorrection(f.action);
+                            });
+                          }}
+                          className="cursor-pointer font-semibold text-brand hover:underline shrink-0 text-xs"
+                        >
+                          {descFixes.length > 1 ? `Fix All (${descFixes.length})` : "Fix"}
+                        </button>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
@@ -1786,6 +2013,8 @@ export function OrderedSectionEditor({
           aiConfigured={props.aiConfigured}
           aiLoading={props.aiLoadingKey === "improve-summary"}
           onAiImproveSummary={props.onAiImproveSummary}
+          atsChecks={props.atsChecks}
+          onApplyCorrection={props.onApplyCorrection}
         />
       );
     case "experience":
@@ -1802,6 +2031,8 @@ export function OrderedSectionEditor({
           aiConfigured={props.aiConfigured}
           aiLoadingKey={props.aiLoadingKey}
           onAiRewriteBullets={props.onAiRewriteBullets}
+          atsChecks={props.atsChecks}
+          onApplyCorrection={props.onApplyCorrection}
         />
       );
     case "education":
@@ -1843,6 +2074,8 @@ export function OrderedSectionEditor({
           sectionIndex={sectionIndex}
           sectionTotal={total}
           onMoveSection={onMove}
+          atsChecks={props.atsChecks}
+          onApplyCorrection={props.onApplyCorrection}
         />
       );
     case "certifications":

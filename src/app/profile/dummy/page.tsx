@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowUpRight,
+  ChevronDown,
   Github,
   Globe,
   Linkedin,
@@ -633,15 +634,18 @@ export default function ProfileDesignPage() {
             </label>
             <label className="text-xs font-medium text-text-secondary">
               Opportunity type
-              <select
-                value={form.offerType}
-                onChange={(e) => setForm({ ...form, offerType: e.target.value })}
-                className={input}
-              >
-                {OFFER_TYPES.map((o) => (
-                  <option key={o}>{o}</option>
-                ))}
-              </select>
+              <div className="relative mt-1">
+                <select
+                  value={form.offerType}
+                  onChange={(e) => setForm({ ...form, offerType: e.target.value })}
+                  className={`${input} cursor-pointer appearance-none pr-9`}
+                >
+                  {OFFER_TYPES.map((o) => (
+                    <option key={o}>{o}</option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+              </div>
             </label>
           </div>
 

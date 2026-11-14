@@ -8,6 +8,7 @@ import { generateResumePdfBytes } from "../src/lib/resume/pdf";
 import {
   analyzeResumeForAts,
   applyAtsCorrectionToResume,
+  applyAllAtsFixes,
 } from "../src/lib/resume/ats-checker";
 import { sanitizeResumeData } from "../src/lib/resume/validation";
 import { PDFDocument, PDFName, PDFDict } from "pdf-lib";
@@ -651,7 +652,197 @@ async function runAuditTests() {
     throw new Error(`Failed to replace 'Desigd' with 'Designed'! Got: "${fixedBullet}"`);
   }
 
-  console.log("\n=== ALL 11 AUDIT & VERIFICATION TESTS PASSED SUCCESSFULLY! ===");
+  // -------------------------------------------------------------
+  // Test 12: Testing 1-Click Batch Fix Engine (applyAllAtsFixes)
+  // -------------------------------------------------------------
+  console.log("\n[Test 12] Testing 1-Click Batch Fix Engine (applyAllAtsFixes)...");
+  const multiFlawResume = { ...userCaseResume };
+  // userCaseResume has:
+  // - "Desigd" typo in bullets
+  // - redundant leading bullet symbol "•"
+  // - "javascript" casing in skills
+  const multiAnalysis = analyzeResumeForAts(multiFlawResume);
+  const fixableChecks = multiAnalysis.checks.filter(
+    (c) => c.action?.type === "replace-text" && Boolean(c.action.replacementText)
+  );
+  console.log(`- Detected ${fixableChecks.length} auto-fixable replacement actions`);
+  if (fixableChecks.length < 2) {
+    throw new Error(`Expected at least 2 auto-fixable replacement actions, found ${fixableChecks.length}`);
+  }
+
+  const { updatedData: allFixedResume, appliedCount } = applyAllAtsFixes(multiFlawResume, fixableChecks);
+  console.log(`- Successfully batch-applied ${appliedCount} fixes in 1 atomic operation`);
+  if (appliedCount !== fixableChecks.length) {
+    throw new Error(`Expected ${fixableChecks.length} fixes applied, but got ${appliedCount}`);
+  }
+
+  const fixedBulletAll = allFixedResume.experience[0].bullets[0];
+  console.log("  ✓ Batch-corrected bullet:", fixedBulletAll);
+  if (!fixedBulletAll.includes("Designed")) {
+    throw new Error("Batch fix failed to replace 'Desigd' with 'Designed'!");
+  }
+
+  // -------------------------------------------------------------
+  // Test 13: Testing Zero False Positives on Valid English Words
+  // -------------------------------------------------------------
+  console.log("\n[Test 13] Testing Zero False Positives on Valid Words ('sales', 'connect', 'removing')...");
+  const candidateTextResume = { ...experienced };
+  candidateTextResume.experience = [
+    {
+      id: "exp-test-13",
+      jobTitle: "UI Developer",
+      company: "Tech Corp",
+      location: "Bengaluru",
+      startDate: "2023-01",
+      endDate: "Present",
+      isCurrent: true,
+      bullets: [
+        "Designed and built the UI for Doctor One (healthcare web platform and admin views, including 30+ mobile screens) and Happy ERP (multi-module inventory, catalog, and sales interface).",
+        "Partnered with backend engineers to connect UI screens to REST APIs while ensuring WCAG accessibility and cross-browser compatibility.",
+      ],
+    },
+  ];
+  candidateTextResume.projects = [
+    {
+      id: "proj-test-13",
+      name: "Zenoway — Design & UI Development",
+      role: "Lead Engineer",
+      link: "https://zenoway.com",
+      startDate: "2023-06",
+      endDate: "2024-01",
+      description: "Direct-apply platform for designers and developers.",
+      highlights: [
+        "Designed and built a direct-apply job portal and admin dashboard end to end, removing mandatory account signups to make applying faster.",
+      ],
+    },
+  ];
+
+  const test13Analysis = analyzeResumeForAts(candidateTextResume);
+  const falseSpellingErrors = test13Analysis.checks.filter(
+    (c) =>
+      c.category === "Spelling & Grammar" &&
+      c.title.includes("Spelling error") &&
+      (c.title.includes("sales") ||
+        c.title.includes("connect") ||
+        c.title.includes("removing") ||
+        c.suggestedCorrection === "scales" ||
+        c.suggestedCorrection === "conduct" ||
+        c.suggestedCorrection === "resolving")
+  );
+
+  if (falseSpellingErrors.length > 0) {
+    throw new Error(
+      `Found false positive spelling errors on valid words: ${falseSpellingErrors.map((c) => c.title).join(", ")}`
+    );
+  }
+  console.log("  ✓ Confirmed 0 false positive typos on 'sales', 'connect', 'removing'");
+
+  // -------------------------------------------------------------
+  // Test 14: Testing 'Architecd' -> 'Architected' Typo Detection
+  // -------------------------------------------------------------
+  console.log("\n[Test 14] Testing 'Architecd' -> 'Architected' Typo Detection & Action...");
+  const architecdResume = { ...experienced };
+  architecdResume.experience = [
+    {
+      id: "exp-test-14",
+      jobTitle: "UI Developer",
+      company: "Chaavie Solutions",
+      location: "Kozhikode",
+      startDate: "2023-01",
+      endDate: "Present",
+      isCurrent: true,
+      bullets: [
+        "Architecd a unified design-token pipeline and reusable React component library across healthcare and ERP platforms to ensure UI consistency.",
+      ],
+    },
+  ];
+
+  const test14Analysis = analyzeResumeForAts(architecdResume);
+  const architecdCheck = test14Analysis.checks.find(
+    (c) =>
+      c.category === "Spelling & Grammar" &&
+      c.title.includes("Architecd") &&
+      c.suggestedCorrection === "Architected"
+  );
+
+  if (!architecdCheck) {
+    throw new Error("Checker failed to flag 'Architecd' as a typo of 'Architected'!");
+  }
+  console.log("  ✓ Successfully caught typo 'Architecd' with correction:", architecdCheck.suggestedCorrection);
+
+  if (!architecdCheck.canAutoFix || !architecdCheck.action) {
+    throw new Error("'Architecd' check must be marked as canAutoFix with an action!");
+  }
+
+  const fixedArchitecdResume = applyAtsCorrectionToResume(architecdResume, architecdCheck.action);
+  const fixedBullet14 = fixedArchitecdResume.experience[0].bullets[0];
+  console.log("  ✓ Corrected Bullet:", fixedBullet14);
+  if (!fixedBullet14.startsWith("Architected")) {
+    throw new Error(`Expected bullet to start with 'Architected', got: "${fixedBullet14}"`);
+  }
+
+  // -------------------------------------------------------------
+  // Test 15: Testing '•Enginred' Redundant Bullet & Verb Typo Detection & 1-Click Fix
+  // -------------------------------------------------------------
+  console.log("\n[Test 15] Testing '•Enginred' Redundant Bullet & Verb Typo Detection & 1-Click Fix...");
+  const rawBullet = "•Enginred responsive, component-driven web interfaces independently using React, Next.js, TypeScript, and Tailwind CSS by translating Figma mockups into production-ready code.";
+  const enginredResume = { ...experienced };
+  enginredResume.experience = [
+    {
+      id: "exp-test-15",
+      jobTitle: "UI Developer",
+      company: "Chaavie Solutions",
+      location: "Kozhikode",
+      startDate: "2023-01",
+      endDate: "Present",
+      isCurrent: true,
+      bullets: [rawBullet],
+    },
+  ];
+
+  const test15Analysis = analyzeResumeForAts(enginredResume);
+  const bulletSymbolCheck15 = test15Analysis.checks.find(
+    (c) => c.id === "redundant-bullet-exp-test-15-0"
+  );
+  const enginredTypoCheck = test15Analysis.checks.find(
+    (c) =>
+      c.category === "Spelling & Grammar" &&
+      c.title.includes("Enginred") &&
+      c.suggestedCorrection === "Engineered"
+  );
+
+  if (!bulletSymbolCheck15) {
+    throw new Error("Checker failed to flag redundant leading bullet '•' in '•Enginred'!");
+  }
+  console.log("  ✓ Successfully caught redundant bullet symbol:", bulletSymbolCheck15.title);
+
+  if (!enginredTypoCheck) {
+    throw new Error("Checker failed to flag 'Enginred' as a typo of 'Engineered'!");
+  }
+  console.log("  ✓ Successfully caught typo 'Enginred' with correction:", enginredTypoCheck.suggestedCorrection);
+
+  // Apply batch auto-fixes
+  const { updatedData: fixedEnginredResume, appliedCount: appliedCount15 } = applyAllAtsFixes(enginredResume, test15Analysis.checks);
+  console.log(`  ✓ Applied ${appliedCount15} auto-fix action(s)`);
+  const fixedBullet15 = fixedEnginredResume.experience[0].bullets[0];
+  console.log("  ✓ Corrected Bullet 15:", fixedBullet15);
+
+  const expectedBullet = "Engineered responsive, component-driven web interfaces independently using React, Next.js, TypeScript, and Tailwind CSS by translating Figma mockups into production-ready code.";
+  if (fixedBullet15 !== expectedBullet) {
+    throw new Error(`Expected corrected bullet to be:\n"${expectedBullet}"\nbut got:\n"${fixedBullet15}"`);
+  }
+
+  // Verify re-audit has 0 errors for this bullet
+  const reaudit15 = analyzeResumeForAts(fixedEnginredResume);
+  const remainingBulletIssues = reaudit15.checks.filter(
+    (c) => c.action?.fieldPath === "experience.exp-test-15.bullets.0"
+  );
+  if (remainingBulletIssues.length > 0) {
+    throw new Error(`Expected 0 remaining issues on bullet, but found: ${remainingBulletIssues.map((c) => c.title).join(", ")}`);
+  }
+  console.log("  ✓ Re-audit verified 0 remaining issues on corrected bullet");
+
+  console.log("\n=== ALL 15 AUDIT & VERIFICATION TESTS PASSED SUCCESSFULLY! ===");
 }
 
 runAuditTests().catch((err) => {
