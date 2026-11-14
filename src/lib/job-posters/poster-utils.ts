@@ -1,9 +1,133 @@
 import type { Job } from "@/app/types/job";
 import { formatLocationLabel, normalizeWorkMode } from "@/lib/supabase/locations-data";
 
-export type PosterTemplateId = "minimal" | "corporate" | "bold" | "compact";
+export type PosterTemplateId =
+  | "bold"
+  | "portrait"
+  | "minimal"
+  | "corporate"
+  | "compact";
 export type PosterFormatId = "feed" | "square" | "story";
 export type PosterQualityScale = 1 | 2;
+export type PosterPortraitId =
+  | "man-1"
+  | "man-2"
+  | "man-3"
+  | "woman-1"
+  | "woman-2"
+  | "woman-3";
+
+export interface PosterPortraitOption {
+  id: PosterPortraitId;
+  name: string;
+  label: string;
+  gender: "male" | "female";
+  src: string;
+  description: string;
+}
+
+export const POSTER_PORTRAITS: PosterPortraitOption[] = [
+  {
+    id: "man-1",
+    name: "Rohan",
+    label: "Glasses & Sweater",
+    gender: "male",
+    src: "/posters/portraits/man-1.jpg",
+    description: "Indian male professional with glasses & knit sweater",
+  },
+  {
+    id: "man-2",
+    name: "Aryan",
+    label: "Tailored Blazer",
+    gender: "male",
+    src: "/posters/portraits/man-2.jpg",
+    description: "Indian male tech lead in modern navy blazer",
+  },
+  {
+    id: "man-3",
+    name: "Kabir",
+    label: "Casual Collar",
+    gender: "male",
+    src: "/posters/portraits/man-3.jpg",
+    description: "Indian male creative lead in charcoal shirt",
+  },
+  {
+    id: "woman-1",
+    name: "Priya",
+    label: "Glasses & Blazer",
+    gender: "female",
+    src: "/posters/portraits/woman-1.jpg",
+    description: "Indian female engineer with stylish glasses",
+  },
+  {
+    id: "woman-2",
+    name: "Aanya",
+    label: "Smart Casual",
+    gender: "female",
+    src: "/posters/portraits/woman-2.jpg",
+    description: "Indian female professional in layered knitwear",
+  },
+  {
+    id: "woman-3",
+    name: "Diya",
+    label: "Olive Knit",
+    gender: "female",
+    src: "/posters/portraits/woman-3.jpg",
+    description: "Indian female designer in modern olive knit",
+  },
+];
+export type PosterFontId =
+  | "manrope"
+  | "space-grotesk"
+  | "plus-jakarta"
+  | "playfair"
+  | "syne";
+
+export interface PosterFontMeta {
+  id: PosterFontId;
+  name: string;
+  category: string;
+  fontFamily: string;
+  previewSample: string;
+}
+
+export const POSTER_FONTS: PosterFontMeta[] = [
+  {
+    id: "manrope",
+    name: "Manrope",
+    category: "Modern Sans",
+    fontFamily: 'var(--font-manrope), "Manrope", sans-serif',
+    previewSample: "Aa · Clean Tech",
+  },
+  {
+    id: "space-grotesk",
+    name: "Space Grotesk",
+    category: "Creative Display",
+    fontFamily: 'var(--font-space-grotesk), "Space Grotesk", sans-serif',
+    previewSample: "Aa · Studio",
+  },
+  {
+    id: "plus-jakarta",
+    name: "Plus Jakarta",
+    category: "Clean Geometric",
+    fontFamily: 'var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif',
+    previewSample: "Aa · Product",
+  },
+  {
+    id: "playfair",
+    name: "Playfair",
+    category: "Editorial Serif",
+    fontFamily: 'var(--font-playfair), "Playfair Display", Georgia, serif',
+    previewSample: "Aa · Executive",
+  },
+  {
+    id: "syne",
+    name: "Syne",
+    category: "Bold Display",
+    fontFamily: 'var(--font-syne), "Syne", sans-serif',
+    previewSample: "Aa · Billboard",
+  },
+];
 
 export interface PosterFormatSpec {
   id: PosterFormatId;
@@ -72,6 +196,12 @@ export const POSTER_FORMATS: Record<PosterFormatId, PosterFormatSpec> = {
 };
 
 export const POSTER_TEMPLATES: PosterTemplateMeta[] = [
+  {
+    id: "portrait",
+    name: "Editorial Portrait",
+    tagline: "Indian model split layout (Men & Women)",
+    bestFor: "LinkedIn, WhatsApp & Social outreach",
+  },
   {
     id: "bold",
     name: "Bold Hiring",
@@ -157,10 +287,78 @@ export function formatOptionalExperience(experience?: string | null): string | n
   const raw = experience?.trim();
   if (!raw) return null;
   const lower = raw.toLowerCase();
-  if (lower === "not specified" || lower === "n/a" || lower === "na") {
+  if (
+    lower === "not specified" ||
+    lower === "n/a" ||
+    lower === "na" ||
+    lower === "none" ||
+    lower === "-" ||
+    lower === "--"
+  ) {
     return null;
   }
-  return raw;
+
+  if (
+    lower === "fresher" ||
+    lower === "freshers" ||
+    lower === "0" ||
+    lower === "0-0" ||
+    lower === "entry level" ||
+    lower === "fresher / entry level"
+  ) {
+    return "Entry Level / Fresher";
+  }
+
+  // Range e.g. "5-6", "5 - 6", "5 to 6", "5–6 yrs", "5–6 years", "2 - 5 years"
+  const rangeMatch = raw.match(
+    /^(\d+)\s*[-–—to]+\s*(\d+)\s*(?:yrs?|years?)?(?:\s*exp(?:erience)?)?$/i
+  );
+  if (rangeMatch) {
+    return `${rangeMatch[1]} – ${rangeMatch[2]} years Experience`;
+  }
+
+  // Plus e.g. "5+", "5 +", "5+ yrs", "5+ years"
+  const plusMatch = raw.match(/^(\d+)\s*\+\s*(?:yrs?|years?)?(?:\s*exp(?:erience)?)?$/i);
+  if (plusMatch) {
+    return `${plusMatch[1]}+ years Experience`;
+  }
+
+  // Single number e.g. "1 year", "2 years", "3"
+  const singleMatch = raw.match(/^(\d+)\s*(?:yrs?|years?)?(?:\s*exp(?:erience)?)?$/i);
+  if (singleMatch) {
+    const count = parseInt(singleMatch[1], 10);
+    return count === 1 ? "1 year Experience" : `${count} years Experience`;
+  }
+
+  if (/exp/i.test(raw)) {
+    return raw
+      .replace(/yrs?\.?/gi, "years")
+      .replace(/exp(?:erience)?\.?/gi, "Experience")
+      .trim();
+  }
+
+  return `${raw} Experience`;
+}
+
+export function cleanPosterLocation(rawLocation?: string | null): string | null {
+  if (!rawLocation || !rawLocation.trim()) return null;
+  let loc = rawLocation.trim();
+
+  // Strip trailing country name (e.g. ", India", ", USA", ", United States")
+  loc = loc.replace(/,\s*(?:India|United States|USA|UK|United Kingdom)$/i, "");
+
+  // Convert "City, State" into "City (State)" if not already parenthesized
+  const cityStateMatch = loc.match(/^([A-Za-z\s]+),\s*([A-Za-z\s]+)$/);
+  if (cityStateMatch) {
+    const city = cityStateMatch[1].trim();
+    const state = cityStateMatch[2].trim();
+    if (city.toLowerCase() === state.toLowerCase()) {
+      return city;
+    }
+    return `${city} (${state})`;
+  }
+
+  return loc;
 }
 
 export function formatOptionalLocation(job: Job): string | null {
@@ -168,7 +366,7 @@ export function formatOptionalLocation(job: Job): string | null {
   if (!formatted || formatted.toLowerCase() === "location not specified") {
     return null;
   }
-  return formatted;
+  return cleanPosterLocation(formatted);
 }
 
 export function formatPostedDateLabel(dateString?: string | null): string | null {
@@ -313,6 +511,90 @@ function stripMarkdownFormatting(line: string): string {
     .trim();
 }
 
+export function cleanPosterJobTitle(rawTitle?: string | null): string {
+  if (!rawTitle || !rawTitle.trim()) return "Open Position";
+  let title = rawTitle.trim();
+
+  // Strip prefixes like "URGENT:", "URGENT HIRING:", "Hiring for:", etc.
+  title = title.replace(
+    /^(?:urgent(?:\s*(?:hiring|requirement|opening))?[:\-\s]*|immediate\s*joiners?[:\-\s]*|hiring\s*(?:for)?[:\-\s]*)/i,
+    ""
+  );
+
+  // Strip parenthetical or bracketed noise tags: (Urgent), [Immediate Joiner], (M/F), [Remote], etc.
+  title = title.replace(
+    /\s*[\(\[](?:urgent|immediate\s*joiners?|m[\/\\]f|immediate|full[\-\s]*time|part[\-\s]*time|remote|onsite|hybrid)[\)\]]\s*/gi,
+    " "
+  );
+
+  // Normalize slashes and spacing
+  title = title.replace(/\s*\/\s*/g, " / ");
+  title = title.replace(/\s+/g, " ");
+
+  // Trim trailing punctuation like colons, dashes, slashes
+  title = title.replace(/[:\-\/\s]+$/, "").replace(/^[:\-\/\s]+/, "");
+
+  return title.trim() || "Open Position";
+}
+
+export function cleanPosterSummaryHook(
+  rawProse?: string | null,
+  maxLen = 130
+): string {
+  if (!rawProse || !rawProse.trim()) {
+    return "Build and maintain high-quality products and websites at scale.";
+  }
+
+  let text = rawProse.replace(/\s+/g, " ").trim();
+
+  // Strip section headers
+  text = text.replace(
+    /^(?:about\s+(?:the\s+|this\s+)?(?:role|job|company)|job\s+summary|overview|role\s+overview):?\s*/i,
+    ""
+  );
+
+  // Strip trailing hanging phrases (e.g. "... In this role", "... In this role you will", "... You will be")
+  text = text.replace(
+    /[\s,;—–-]+(?:in this role|you will(?: be)?|as an?|the ideal candidate|we are seeking|responsibilities include)[\s:.,\-–—]*$/i,
+    ""
+  );
+
+  // Strip redundant experience mentions from within summary hook e.g. "with 5–6 years of experience"
+  text = text.replace(
+    /\s*(?:with|having)\s+\d+(?:\s*[-–—to]+\s*\d+)?\s*(?:years?|yrs?)(?:\s*of)?\s*(?:exp(?:erience)?)?\s*/gi,
+    " "
+  );
+
+  // Clean trailing punctuation
+  text = text.replace(/[\s,;:\-–—]+$/, "").trim();
+
+  // Ensure first sentence or trimmed length is clean
+  if (text.length > maxLen) {
+    const firstSentenceMatch = text.match(/^([^.!?]+[.!?])/);
+    if (
+      firstSentenceMatch &&
+      firstSentenceMatch[1].length <= maxLen &&
+      firstSentenceMatch[1].length >= 35
+    ) {
+      text = firstSentenceMatch[1].trim();
+    } else {
+      const truncated = text.slice(0, maxLen);
+      const lastSpace = truncated.lastIndexOf(" ");
+      text = (lastSpace > 35 ? truncated.slice(0, lastSpace) : truncated).trim();
+    }
+  }
+
+  // Clean trailing hanging words like "to", "and", "or", "for", "with", "in"
+  text = text.replace(/[\s,;:\-–—]+(?:to|and|or|for|with|in|of|as|the|a|an)\s*$/i, "").trim();
+
+  // Ensure proper ending punctuation
+  if (!/[.!?]$/.test(text)) {
+    text += ".";
+  }
+
+  return text;
+}
+
 export function extractDescriptionPreview(
   description?: string | null,
   options?: { maxSummaryLength?: number; maxBullets?: number; maxBulletLength?: number }
@@ -379,19 +661,23 @@ export function normalizePosterJobData(
 ): NormalizedPosterJob {
   const isStory = format === "story";
   const isSquare = format === "square";
-  const { summary, bullets } = extractDescriptionPreview(job.description, {
+  const { summary: rawSummary, bullets } = extractDescriptionPreview(job.description, {
     maxSummaryLength: isStory ? 260 : isSquare ? 150 : 200,
     maxBullets: isStory ? 4 : isSquare ? 2 : 3,
     maxBulletLength: isStory ? 96 : isSquare ? 80 : 92,
   });
 
-  const title = job.title?.trim() || "Open Position";
+  const title = cleanPosterJobTitle(job.title);
   const company = job.company?.trim() || "Hiring Partner";
   const category = job.category?.trim() || null;
   const location = formatOptionalLocation(job);
   const salary = formatOptionalSalary(job.salary);
   const experience = formatOptionalExperience(job.experience);
   const employmentType = formatEmploymentType(job.employmentType);
+  const summary = cleanPosterSummaryHook(
+    rawSummary,
+    isStory ? 170 : isSquare ? 115 : 130
+  );
 
   const fallbackFactBullets = [
     location ? `Location: ${location}` : null,

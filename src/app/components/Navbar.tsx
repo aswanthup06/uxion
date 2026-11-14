@@ -32,6 +32,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const JOBS = "/jobs";
 const POST_JOB = "/post-job";
+const POSTER_STUDIO = "/job-posters";
 const MY_JOBS = "/jobs/manage";
 const LOGIN = "/login";
 const ADMIN_LOGIN = "/admin/login";
@@ -487,6 +488,25 @@ export default function Navbar() {
                         </Link>
 
                         <Link
+                          href={POSTER_STUDIO}
+                          onClick={closeMenus}
+                          className="group flex cursor-pointer items-center gap-3 rounded-control px-2.5 py-2.5 transition-colors hover:bg-surface-subtle"
+                        >
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
+                            <Sparkles size={16} strokeWidth={1.8} />
+                          </span>
+                          <span>
+                            <span className="block text-[13px] font-semibold text-text-primary transition-colors group-hover:text-brand">
+                              Poster Studio
+                            </span>
+                            <span className="mt-0.5 block text-xs text-text-muted">
+                              Create job posters
+                            </span>
+                          </span>
+                        </Link>
+
+                        {/* My jobs (commented out per request)
+                        <Link
                           href={MY_JOBS}
                           onClick={closeMenus}
                           className="group flex cursor-pointer items-center gap-3 rounded-control px-2.5 py-2.5 transition-colors hover:bg-surface-subtle"
@@ -503,6 +523,7 @@ export default function Navbar() {
                             </span>
                           </span>
                         </Link>
+                        */}
                       </div>
                     </motion.div>
                   )}
@@ -965,6 +986,19 @@ export default function Navbar() {
                           </Link>
 
                           <Link
+                            href={POSTER_STUDIO}
+                            onClick={closeMenus}
+                            className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
+                          >
+                            <Sparkles
+                              size={17}
+                              className={`${iconClass} text-brand`}
+                            />
+                            Poster Studio
+                          </Link>
+
+                          {/* My jobs (commented out per request)
+                          <Link
                             href={MY_JOBS}
                             onClick={closeMenus}
                             className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
@@ -975,6 +1009,7 @@ export default function Navbar() {
                             />
                             My jobs
                           </Link>
+                          */}
                         </div>
                       </motion.div>
                     )}

@@ -6,6 +6,7 @@ import {
   Building2,
   Clock3,
   Globe,
+  Laptop,
   MapPin,
   Wallet,
 } from "lucide-react";
@@ -19,6 +20,11 @@ import {
   type PosterTemplateId,
 } from "@/lib/job-posters/poster-utils";
 import { PosterQrCode } from "./PosterQrCode";
+import {
+  ZENOWAY_EMERALD,
+  type QrCornerStyle,
+  type QrDotStyle,
+} from "@/lib/job-posters/qr-generator";
 
 export interface PosterCanvasProps {
   job: Job;
@@ -30,6 +36,11 @@ export interface PosterCanvasProps {
   companyLogoSrc?: string | null;
   fontFamily?: string;
   showHighlights?: boolean;
+  portraitSrc?: string;
+  ctaText?: string;
+  qrWithLogo?: boolean;
+  qrDotStyle?: QrDotStyle;
+  qrCornerStyle?: QrCornerStyle;
 }
 
 interface TemplateRenderProps {
@@ -40,11 +51,18 @@ interface TemplateRenderProps {
   megaphoneSrc: string;
   companyLogoSrc: string | null;
   showHighlights: boolean;
+  portraitSrc?: string;
+  ctaText?: string;
+  qrWithLogo?: boolean;
+  qrDotStyle?: QrDotStyle;
+  qrCornerStyle?: QrCornerStyle;
 }
 
 const DEFAULT_FONT = 'var(--font-manrope), "Manrope", Arial, sans-serif';
 const DEFAULT_WHITE_LOGO = "/posters/logo-white.png";
 const DEFAULT_MEGAPHONE = "/posters/megaphone-cutout.png";
+const DEFAULT_PORTRAIT = "/posters/portraits/man-1.jpg";
+const DEFAULT_CTA_TEXT = "APPLY NOW";
 
 function getAdaptiveTitleSize(title: string, basePx: number): number {
   const len = title.length;
@@ -262,7 +280,7 @@ function CompanyLogoBadge({
       style={{
         width: size,
         height: size,
-        borderRadius: 6,
+        borderRadius: 0,
         border: darkSurface ? "1px solid rgba(255,255,255,0.22)" : "1px solid #D5E4DA",
         backgroundColor: "#FFFFFF",
         display: "flex",
@@ -302,6 +320,9 @@ function BoldHiringPoster({
   megaphoneSrc,
   companyLogoSrc,
   showHighlights,
+  qrWithLogo = false,
+  qrDotStyle = "rounded",
+  qrCornerStyle = "extra-rounded",
 }: TemplateRenderProps) {
   const isStory = format === "story";
   const isSquare = format === "square";
@@ -321,40 +342,40 @@ function BoldHiringPoster({
   const prioritySpecs = [
     data.location
       ? {
-          key: "loc",
-          value: data.location,
-          icon:
-            data.workMode === "Remote"
-              ? Globe
-              : data.workMode === "Hybrid"
-                ? Building2
-                : MapPin,
-          highlight: false,
-        }
+        key: "loc",
+        value: data.location,
+        icon:
+          data.workMode === "Remote"
+            ? Globe
+            : data.workMode === "Hybrid"
+              ? Building2
+              : MapPin,
+        highlight: false,
+      }
       : null,
     data.salary
       ? {
-          key: "sal",
-          value: data.salary,
-          icon: Wallet,
-          highlight: true,
-        }
+        key: "sal",
+        value: data.salary,
+        icon: Wallet,
+        highlight: true,
+      }
       : null,
     data.employmentType
       ? {
-          key: "type",
-          value: data.employmentType,
-          icon: Clock3,
-          highlight: false,
-        }
+        key: "type",
+        value: data.employmentType,
+        icon: Clock3,
+        highlight: false,
+      }
       : null,
     data.experience
       ? {
-          key: "exp",
-          value: data.experience,
-          icon: BriefcaseBusiness,
-          highlight: false,
-        }
+        key: "exp",
+        value: data.experience,
+        icon: BriefcaseBusiness,
+        highlight: false,
+      }
       : null,
   ].filter(Boolean) as Array<{
     key: string;
@@ -688,7 +709,10 @@ function BoldHiringPoster({
             size={isStory ? 132 : isSquare ? 102 : 118}
             borderColor="none"
             padding={isSquare ? 6 : 8}
-            borderRadius={6}
+            borderRadius={0}
+            withLogo={qrWithLogo}
+            dotStyle={qrDotStyle}
+            cornerStyle={qrCornerStyle}
           />
           <div style={{ minWidth: 0 }}>
             <div
@@ -787,6 +811,9 @@ function MinimalPoster({
   logoSrc,
   companyLogoSrc,
   showHighlights,
+  qrWithLogo = false,
+  qrDotStyle = "rounded",
+  qrCornerStyle = "extra-rounded",
 }: TemplateRenderProps) {
   const isStory = format === "story";
   const isSquare = format === "square";
@@ -1106,6 +1133,9 @@ function MinimalPoster({
             size={isStory ? 132 : isSquare ? 104 : 118}
             borderColor="#CFE3D6"
             padding={isSquare ? 6 : 8}
+            withLogo={qrWithLogo}
+            dotStyle={qrDotStyle}
+            cornerStyle={qrCornerStyle}
           />
           <div style={{ minWidth: 0 }}>
             <div
@@ -1173,6 +1203,9 @@ function CorporatePoster({
   whiteLogoSrc,
   companyLogoSrc,
   showHighlights,
+  qrWithLogo = false,
+  qrDotStyle = "rounded",
+  qrCornerStyle = "extra-rounded",
 }: TemplateRenderProps) {
   const isStory = format === "story";
   const isSquare = format === "square";
@@ -1485,7 +1518,7 @@ function CorporatePoster({
                       marginTop: isStory ? 11 : 9,
                       width: 8,
                       height: 8,
-                      borderRadius: 2,
+                      borderRadius: 0,
                       backgroundColor: "#0FA968",
                       flexShrink: 0,
                     }}
@@ -1518,7 +1551,10 @@ function CorporatePoster({
             size={isStory ? 132 : isSquare ? 102 : 116}
             borderColor="#B7D1BE"
             padding={isSquare ? 6 : 8}
-            borderRadius={4}
+            borderRadius={0}
+            withLogo={qrWithLogo}
+            dotStyle={qrDotStyle}
+            cornerStyle={qrCornerStyle}
           />
           <div style={{ minWidth: 0 }}>
             <div
@@ -1586,6 +1622,9 @@ function CompactPoster({
   whiteLogoSrc,
   companyLogoSrc,
   showHighlights,
+  qrWithLogo = false,
+  qrDotStyle = "rounded",
+  qrCornerStyle = "extra-rounded",
 }: TemplateRenderProps) {
   const isStory = format === "story";
   const isSquare = format === "square";
@@ -1600,11 +1639,11 @@ function CompactPoster({
   const infoPills = [
     data.location
       ? {
-          label: "Location",
-          value: data.location,
-          icon: data.workMode === "Remote" ? Globe : data.workMode === "Hybrid" ? Building2 : MapPin,
-          highlight: false,
-        }
+        label: "Location",
+        value: data.location,
+        icon: data.workMode === "Remote" ? Globe : data.workMode === "Hybrid" ? Building2 : MapPin,
+        highlight: false,
+      }
       : null,
     data.salary
       ? { label: "Salary", value: data.salary, icon: Wallet, highlight: true }
@@ -1685,7 +1724,7 @@ function CompactPoster({
               backgroundColor: "#34F09A",
               color: "#053220",
               padding: isSquare ? "6px 14px" : "8px 18px",
-              borderRadius: 4,
+              borderRadius: 0,
               fontSize: isStory ? 18 : isSquare ? 17 : 18,
               fontWeight: 800,
               letterSpacing: "0.08em",
@@ -1914,7 +1953,10 @@ function CompactPoster({
             size={isStory ? 132 : isSquare ? 102 : 114}
             borderColor="#CFE3D6"
             padding={isSquare ? 6 : 7}
-            borderRadius={6}
+            borderRadius={0}
+            withLogo={qrWithLogo}
+            dotStyle={qrDotStyle}
+            cornerStyle={qrCornerStyle}
           />
           <div style={{ minWidth: 0 }}>
             <div
@@ -1973,6 +2015,668 @@ function CompactPoster({
   );
 }
 
+function EditorialPortraitPoster({
+  data,
+  format,
+  logoSrc,
+  portraitSrc = DEFAULT_PORTRAIT,
+  ctaText = DEFAULT_CTA_TEXT,
+  qrWithLogo = false,
+  qrDotStyle = "rounded",
+  qrCornerStyle = "extra-rounded",
+}: TemplateRenderProps) {
+  const isStory = format === "story";
+  const isSquare = format === "square";
+  const spec = POSTER_FORMATS[format];
+
+  const roleTitleSize = getAdaptiveTitleSize(
+    data.title,
+    isStory ? 40 : isSquare ? 24 : 32
+  );
+
+  const displayTitle = data.title.trim();
+
+  const panelBg = "#D8CFCA";
+  const darkInk = "#102B20";
+
+  if (isStory) {
+    // 9:16 Vertical Story Layout (1080 x 1920)
+    // Top 48% (920px) is the editorial text panel, bottom 52% (1000px) is the full-width portrait photo
+    return (
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          overflow: "hidden",
+          backgroundColor: panelBg,
+          display: "flex",
+          flexDirection: "column",
+          boxSizing: "border-box",
+        }}
+      >
+        {/* Top Editorial Panel */}
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            height: 920,
+            flexShrink: 0,
+            backgroundColor: panelBg,
+            color: darkInk,
+            padding: "64px 72px 48px 72px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            boxSizing: "border-box",
+            zIndex: 2,
+          }}
+        >
+          {/* Brand Header */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-start",
+            }}
+          >
+            <span
+              style={{
+                fontSize: 20,
+                fontWeight: 800,
+                letterSpacing: "0.1em",
+                color: darkInk,
+                textTransform: "uppercase",
+              }}
+            >
+              {data.company || "ZENOWAY TECH"}
+            </span>
+          </div>
+
+          {/* Central Editorial Content */}
+          <div style={{ marginTop: "auto", marginBottom: "auto", paddingTop: 20, paddingBottom: 20 }}>
+            {/* Hero Headline: WE ARE / HIRING (Expanded prominent billboard scale) */}
+            <div style={{ display: "flex", flexDirection: "column", marginBottom: 20 }}>
+              <span
+                style={{
+                  fontSize: 34,
+                  fontWeight: 800,
+                  letterSpacing: "0.18em",
+                  color: ZENOWAY_EMERALD,
+                  textTransform: "uppercase",
+                  marginBottom: 8,
+                }}
+              >
+                WE ARE
+              </span>
+              <h1
+                style={{
+                  fontSize: 140,
+                  fontWeight: 900,
+                  lineHeight: 0.9,
+                  letterSpacing: "-0.045em",
+                  color: darkInk,
+                  margin: 0,
+                  marginLeft: -10,
+                  textTransform: "uppercase",
+                }}
+              >
+                HIRING
+              </h1>
+            </div>
+
+            {/* Job Title */}
+            <div
+              style={{
+                fontSize: roleTitleSize,
+                fontWeight: 700,
+                lineHeight: 1.18,
+                letterSpacing: "-0.02em",
+                color: darkInk,
+                margin: "12px 0 18px 0",
+              }}
+            >
+              {displayTitle}
+            </div>
+
+            {/* Job Summary Hook */}
+            <div
+              style={{
+                fontSize: 22,
+                fontWeight: 500,
+                lineHeight: 1.45,
+                color: "#384B40",
+                margin: "0 0 36px 0",
+                maxWidth: 820,
+              }}
+            >
+              {data.summary || "Build and maintain high-quality products and websites at scale."}
+            </div>
+
+            {/* Job Details: Icons with Values */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 24,
+                marginTop: 10,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <BriefcaseBusiness size={28} strokeWidth={2.2} style={{ color: darkInk, flexShrink: 0 }} />
+                <span
+                  style={{
+                    fontSize: 25,
+                    fontWeight: 700,
+                    color: darkInk,
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  {data.experience
+                    ? data.experience.toLowerCase().includes("exp")
+                      ? data.experience
+                      : `${data.experience} Experience`
+                    : "2 – 5 years Experience"}
+                </span>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <MapPin size={28} strokeWidth={2.2} style={{ color: darkInk, flexShrink: 0 }} />
+                <span
+                  style={{
+                    fontSize: 25,
+                    fontWeight: 700,
+                    color: darkInk,
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  {data.location || "India"}
+                </span>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <Laptop size={28} strokeWidth={2.2} style={{ color: darkInk, flexShrink: 0 }} />
+                <span
+                  style={{
+                    fontSize: 25,
+                    fontWeight: 700,
+                    color: darkInk,
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  {data.workMode ? `${data.workMode} Role` : "Onsite Role"}
+                </span>
+              </div>
+
+              {data.salary && (
+                <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                  <Wallet size={28} strokeWidth={2.2} style={{ color: darkInk, flexShrink: 0 }} />
+                  <span
+                    style={{
+                      fontSize: 25,
+                      fontWeight: 700,
+                      color: darkInk,
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    {data.salary}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom: Branded QR Code + Separator + Scan to view job & apply / zenoway.online */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingTop: 16,
+            }}
+          >
+            <div
+              style={{
+                padding: 7,
+                backgroundColor: "#FFFFFF",
+                borderRadius: 16,
+                border: "1.5px solid rgba(6, 78, 59, 0.16)",
+                boxShadow: "0 6px 18px rgba(0, 0, 0, 0.05)",
+                flexShrink: 0,
+              }}
+            >
+              <PosterQrCode
+                value={data.jobUrl}
+                size={124}
+                darkColor={ZENOWAY_EMERALD}
+                borderColor="transparent"
+                padding={2}
+                withLogo={qrWithLogo}
+                dotStyle={qrDotStyle}
+                cornerStyle={qrCornerStyle}
+              />
+            </div>
+
+            {/* Vertical Hairline Separator */}
+            <div
+              style={{
+                width: 2,
+                height: 72,
+                backgroundColor: "rgba(6, 78, 59, 0.2)",
+                margin: "0 22px",
+                flexShrink: 0,
+              }}
+            />
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 26,
+                  fontWeight: 800,
+                  lineHeight: 1.15,
+                  letterSpacing: "-0.01em",
+                  color: ZENOWAY_EMERALD,
+                }}
+              >
+                Scan to view
+                <br />
+                job &amp; apply
+              </div>
+              <div
+                style={{
+                  fontSize: 18,
+                  fontWeight: 600,
+                  letterSpacing: "0.02em",
+                  color: "#6B7C73",
+                  marginTop: 6,
+                }}
+              >
+                zenoway.online
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Portrait Photo */}
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            height: 1000,
+            overflow: "hidden",
+            flexShrink: 0,
+            backgroundColor: "#A8988D",
+          }}
+        >
+          {/* Floating Zenoway Leaf Emblem in top right corner */}
+          <div
+            style={{
+              position: "absolute",
+              top: 36,
+              right: 36,
+              zIndex: 10,
+              filter: "drop-shadow(0 2px 10px rgba(0,0,0,0.25))",
+              pointerEvents: "none",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={logoSrc || "/logo.png"}
+              alt="Zenoway"
+              style={{
+                width: 52,
+                height: "auto",
+                display: "block",
+              }}
+            />
+          </div>
+
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={portraitSrc}
+            alt=""
+            loading="eager"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center 20%",
+              display: "block",
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Feed (4:5, 1080 x 1350) and Square (1:1, 1080 x 1080)
+  // Exact 50% left / 50% right split matching reference image
+  const leftWidth = Math.round(spec.width * 0.5);
+  const rightWidth = spec.width - leftWidth;
+  const padX = isSquare ? 52 : 64;
+  const padY = isSquare ? 48 : 68;
+
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
+        backgroundColor: panelBg,
+        display: "flex",
+        flexDirection: "row",
+        boxSizing: "border-box",
+      }}
+    >
+      {/* Left Column: Warm Sand / Beige Editorial Panel */}
+      <div
+        style={{
+          width: leftWidth,
+          height: "100%",
+          flexShrink: 0,
+          backgroundColor: panelBg,
+          color: darkInk,
+          padding: `${padY}px ${padX - 8}px ${padY}px ${padX}px`,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          boxSizing: "border-box",
+          zIndex: 2,
+        }}
+      >
+        {/* Top Brand / Logo */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-start",
+          }}
+        >
+          <span
+            style={{
+              fontSize: isSquare ? 14 : 17,
+              fontWeight: 800,
+              letterSpacing: "0.1em",
+              color: darkInk,
+              textTransform: "uppercase",
+            }}
+          >
+            {data.company || "ZENOWAY TECH"}
+          </span>
+        </div>
+
+        {/* Central Editorial Content */}
+        <div style={{ marginTop: "auto", marginBottom: "auto", paddingTop: isSquare ? 12 : 20, paddingBottom: isSquare ? 12 : 20 }}>
+          {/* Hero Headline: WE ARE / HIRING (Expanded prominent billboard scale) */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              marginBottom: isSquare ? 12 : 18,
+            }}
+          >
+            <span
+              style={{
+                fontSize: isSquare ? 22 : 28,
+                fontWeight: 800,
+                letterSpacing: "0.18em",
+                color: ZENOWAY_EMERALD,
+                textTransform: "uppercase",
+                marginBottom: isSquare ? 4 : 6,
+              }}
+            >
+              WE ARE
+            </span>
+            <h1
+              style={{
+                fontSize: isSquare ? 84 : 114,
+                fontWeight: 900,
+                lineHeight: 0.9,
+                letterSpacing: isSquare ? "-0.04em" : "-0.045em",
+                color: darkInk,
+                margin: 0,
+                marginLeft: isSquare ? -5 : -8,
+                textTransform: "uppercase",
+              }}
+            >
+              HIRING
+            </h1>
+          </div>
+
+          {/* Job Title */}
+          <div
+            style={{
+              fontSize: roleTitleSize,
+              fontWeight: 700,
+              lineHeight: 1.18,
+              letterSpacing: "-0.02em",
+              color: darkInk,
+              margin: isSquare ? "10px 0 14px 0" : "14px 0 20px 0",
+            }}
+          >
+            {displayTitle}
+          </div>
+
+          {/* Job Summary Hook */}
+          <div
+            style={{
+              fontSize: isSquare ? 15 : 19,
+              fontWeight: 500,
+              lineHeight: 1.45,
+              color: "#384B40",
+              margin: isSquare ? "0 0 20px 0" : "0 0 32px 0",
+              maxWidth: 420,
+            }}
+          >
+            {data.summary || "Build and maintain high-quality products and websites at scale."}
+          </div>
+
+          {/* Job Details: Icons with Values (No Text Labels) */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: isSquare ? 16 : 22,
+              marginBottom: isSquare ? 18 : 28,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: isSquare ? 14 : 16 }}>
+              <BriefcaseBusiness size={isSquare ? 20 : 24} strokeWidth={2.1} style={{ color: darkInk, flexShrink: 0 }} />
+              <span
+                style={{
+                  fontSize: isSquare ? 17 : 20,
+                  fontWeight: 700,
+                  color: darkInk,
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                {data.experience
+                  ? data.experience.toLowerCase().includes("exp")
+                    ? data.experience
+                    : `${data.experience} Experience`
+                  : "2 – 5 years Experience"}
+              </span>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: isSquare ? 14 : 16 }}>
+              <MapPin size={isSquare ? 20 : 24} strokeWidth={2.1} style={{ color: darkInk, flexShrink: 0 }} />
+              <span
+                style={{
+                  fontSize: isSquare ? 17 : 20,
+                  fontWeight: 700,
+                  color: darkInk,
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                {data.location || "India"}
+              </span>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <Laptop size={isSquare ? 20 : 24} strokeWidth={2.1} style={{ color: darkInk, flexShrink: 0 }} />
+              <span
+                style={{
+                  fontSize: isSquare ? 17 : 20,
+                  fontWeight: 700,
+                  color: darkInk,
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                {data.workMode ? `${data.workMode} Role` : "Onsite Role"}
+              </span>
+            </div>
+
+            {data.salary && (
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <Wallet size={isSquare ? 20 : 24} strokeWidth={2.1} style={{ color: darkInk, flexShrink: 0 }} />
+                <span
+                  style={{
+                    fontSize: isSquare ? 17 : 20,
+                    fontWeight: 700,
+                    color: darkInk,
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  {data.salary}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom: Branded QR Code + Separator + Scan to view job & apply / zenoway.online */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            paddingTop: isSquare ? 12 : 20,
+          }}
+        >
+          <div
+            style={{
+              padding: isSquare ? 5 : 7,
+              backgroundColor: "#FFFFFF",
+              borderRadius: 14,
+              border: "1.5px solid rgba(6, 78, 59, 0.16)",
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.04)",
+              flexShrink: 0,
+            }}
+          >
+            <PosterQrCode
+              value={data.jobUrl}
+              size={isSquare ? 96 : 124}
+              darkColor={ZENOWAY_EMERALD}
+              borderColor="transparent"
+              padding={2}
+              withLogo={qrWithLogo}
+              dotStyle={qrDotStyle}
+              cornerStyle={qrCornerStyle}
+            />
+          </div>
+
+          {/* Vertical Hairline Separator */}
+          <div
+            style={{
+              width: 1.5,
+              height: isSquare ? 54 : 68,
+              backgroundColor: "rgba(6, 78, 59, 0.2)",
+              margin: isSquare ? "0 14px" : "0 18px",
+              flexShrink: 0,
+            }}
+          />
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                fontSize: isSquare ? 18 : 23,
+                fontWeight: 800,
+                lineHeight: 1.15,
+                letterSpacing: "-0.01em",
+                color: ZENOWAY_EMERALD,
+              }}
+            >
+              Scan to view
+              <br />
+              job &amp; apply
+            </div>
+            <div
+              style={{
+                fontSize: isSquare ? 13 : 16,
+                fontWeight: 600,
+                letterSpacing: "0.02em",
+                color: "#6B7C73",
+                marginTop: 4,
+              }}
+            >
+              zenoway.online
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Column: Full-Bleed Studio Portrait Photo */}
+      <div
+        style={{
+          width: rightWidth,
+          height: "100%",
+          flexShrink: 0,
+          position: "relative",
+          overflow: "hidden",
+          backgroundColor: "#A8988D",
+        }}
+      >
+        {/* Floating Zenoway Leaf Emblem in top right corner */}
+        <div
+          style={{
+            position: "absolute",
+            top: isSquare ? 24 : 32,
+            right: isSquare ? 24 : 32,
+            zIndex: 10,
+            filter: "drop-shadow(0 2px 10px rgba(0,0,0,0.22))",
+            pointerEvents: "none",
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={logoSrc || "/logo.png"}
+            alt="Zenoway"
+            style={{
+              width: isSquare ? 36 : 44,
+              height: "auto",
+              display: "block",
+            }}
+          />
+        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={portraitSrc}
+          alt=""
+          loading="eager"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center top",
+            display: "block",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 export const PosterCanvas = forwardRef<HTMLDivElement, PosterCanvasProps>(
   function PosterCanvas(
     {
@@ -1985,11 +2689,22 @@ export const PosterCanvas = forwardRef<HTMLDivElement, PosterCanvasProps>(
       companyLogoSrc = null,
       fontFamily,
       showHighlights = true,
+      portraitSrc = DEFAULT_PORTRAIT,
+      ctaText = DEFAULT_CTA_TEXT,
+      qrWithLogo = false,
+      qrDotStyle = "rounded",
+      qrCornerStyle = "extra-rounded",
     },
     ref
   ) {
     const spec = POSTER_FORMATS[format];
     const data = normalizePosterJobData(job, format);
+
+    const commonQrProps = {
+      qrWithLogo,
+      qrDotStyle,
+      qrCornerStyle,
+    };
 
     return (
       <div
@@ -1999,12 +2714,27 @@ export const PosterCanvas = forwardRef<HTMLDivElement, PosterCanvasProps>(
           height: spec.height,
           flexShrink: 0,
           overflow: "hidden",
+          borderRadius: 0,
           boxSizing: "border-box",
           fontFamily: fontFamily || DEFAULT_FONT,
           backgroundColor: "#F6FBF8",
           WebkitFontSmoothing: "antialiased",
         }}
       >
+        {template === "portrait" && (
+          <EditorialPortraitPoster
+            data={data}
+            format={format}
+            logoSrc={logoSrc}
+            whiteLogoSrc={whiteLogoSrc}
+            megaphoneSrc={megaphoneSrc}
+            companyLogoSrc={companyLogoSrc}
+            showHighlights={showHighlights}
+            portraitSrc={portraitSrc}
+            ctaText={ctaText}
+            {...commonQrProps}
+          />
+        )}
         {template === "minimal" && (
           <MinimalPoster
             data={data}
@@ -2014,6 +2744,7 @@ export const PosterCanvas = forwardRef<HTMLDivElement, PosterCanvasProps>(
             megaphoneSrc={megaphoneSrc}
             companyLogoSrc={companyLogoSrc}
             showHighlights={showHighlights}
+            {...commonQrProps}
           />
         )}
         {template === "corporate" && (
@@ -2025,6 +2756,7 @@ export const PosterCanvas = forwardRef<HTMLDivElement, PosterCanvasProps>(
             megaphoneSrc={megaphoneSrc}
             companyLogoSrc={companyLogoSrc}
             showHighlights={showHighlights}
+            {...commonQrProps}
           />
         )}
         {template === "bold" && (
@@ -2036,6 +2768,7 @@ export const PosterCanvas = forwardRef<HTMLDivElement, PosterCanvasProps>(
             megaphoneSrc={megaphoneSrc}
             companyLogoSrc={companyLogoSrc}
             showHighlights={showHighlights}
+            {...commonQrProps}
           />
         )}
         {template === "compact" && (
@@ -2047,6 +2780,7 @@ export const PosterCanvas = forwardRef<HTMLDivElement, PosterCanvasProps>(
             megaphoneSrc={megaphoneSrc}
             companyLogoSrc={companyLogoSrc}
             showHighlights={showHighlights}
+            {...commonQrProps}
           />
         )}
       </div>

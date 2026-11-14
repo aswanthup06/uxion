@@ -15,10 +15,15 @@ import Modal from "@/app/components/Modal";
 import type { Job } from "@/app/types/job";
 import {
   getCompanyLogoUrl,
+  getJobPublicUrl,
   getPosterFilename,
+  POSTER_FONTS,
   POSTER_FORMATS,
+  POSTER_PORTRAITS,
   POSTER_TEMPLATES,
+  type PosterFontId,
   type PosterFormatId,
+  type PosterPortraitId,
   type PosterTemplateId,
 } from "@/lib/job-posters/poster-utils";
 import { PosterCanvas } from "@/components/job-posters/PosterCanvas";
@@ -73,8 +78,10 @@ export default function JobPosterModal({
   isOpen,
   onClose,
 }: JobPosterModalProps) {
-  const [template, setTemplate] = useState<PosterTemplateId>("bold");
+  const [template, setTemplate] = useState<PosterTemplateId>("portrait");
+  const [portraitId, setPortraitId] = useState<PosterPortraitId>("man-1");
   const [format, setFormat] = useState<PosterFormatId>("feed");
+  const [fontId, setFontId] = useState<PosterFontId>("manrope");
   const [exporting, setExporting] = useState(false);
 
   const [logoDataUrl, setLogoDataUrl] = useState<string>("/logo.png");
@@ -90,6 +97,11 @@ export default function JobPosterModal({
   const [resolvedFontFamily, setResolvedFontFamily] = useState<string | undefined>(
     undefined
   );
+
+  const activeFont =
+    POSTER_FONTS.find((f) => f.id === fontId) || POSTER_FONTS[0];
+  const activePortrait =
+    POSTER_PORTRAITS.find((p) => p.id === portraitId) || POSTER_PORTRAITS[0];
 
   const exportNodeRef = useRef<HTMLDivElement>(null);
   const previewStageRef = useRef<HTMLDivElement>(null);
@@ -197,9 +209,9 @@ export default function JobPosterModal({
   const previewScale =
     stageWidth > 0
       ? Math.min(
-          stageWidth / formatSpec.width,
-          maxStageHeight / formatSpec.height
-        )
+        stageWidth / formatSpec.width,
+        maxStageHeight / formatSpec.height
+      )
       : 0.32;
 
   const previewDisplayWidth = Math.round(formatSpec.width * previewScale);
@@ -291,73 +303,134 @@ export default function JobPosterModal({
       isOpen={isOpen}
       onClose={onClose}
       maxWidth="3xl"
-      bodyClassName="p-5 sm:p-6"
+      className="rounded-modal border border-border-default shadow-modal overflow-hidden"
+      headerClassName="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-border-subtle bg-surface-card"
+      bodyClassName="px-5 pb-5 pt-3.5 sm:px-6 sm:pb-6 bg-surface-card"
       title={
-        <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-control bg-brand-soft text-brand">
-            <ImageDown size={15} />
-          </span>
-          <span className="text-base font-bold text-text-primary">
-            Job Poster Preview
-          </span>
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:pr-6">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-control bg-brand-soft text-brand">
+              <Sparkles size={14} />
+            </span>
+            <span className="text-base font-bold text-text-primary">
+              Job Poster
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-text-muted">
+            <span className="font-semibold text-text-primary truncate max-w-[220px]">
+              {job.title}
+            </span>
+            <span>·</span>
+            <span className="truncate max-w-[150px]">{job.company}</span>
+          </div>
         </div>
       }
-      description={
-        <span className="text-xs text-text-muted">
-          Generate shareable social cards for <strong>{job.title}</strong> at {job.company}
-        </span>
-      }
     >
-      <div className="space-y-5">
-        {/* Controls Bar: Template & Format Selectors */}
-        <div className="flex flex-col gap-3 rounded-card border border-border-default bg-surface-subtle p-3 sm:flex-row sm:items-center sm:justify-between">
-          {/* Template pills */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-[11px] font-semibold uppercase tracking-wider text-text-muted">
-              Template:
+      <div className="space-y-4">
+        {/* Sleek Segmented Controls: Small rounded corners (rounded-control) */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5">
+          {/* Template segmented pill group */}
+          <div className="flex flex-wrap items-center gap-1 rounded-control bg-surface-subtle p-1 border border-border-subtle">
+            <span className="px-1.5 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+              Template
             </span>
             {POSTER_TEMPLATES.map((item) => (
               <button
                 key={item.id}
                 type="button"
                 onClick={() => setTemplate(item.id)}
-                className={`rounded-control px-2.5 py-1 text-xs font-semibold transition ${
-                  template === item.id
-                    ? "bg-brand text-text-inverse shadow-subtle"
-                    : "border border-border-default bg-surface-card text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
-                }`}
+                className={`rounded-control px-2.5 py-1 text-xs font-semibold transition-all ${template === item.id
+                  ? "bg-brand text-text-inverse shadow-subtle"
+                  : "text-text-secondary hover:text-text-primary hover:bg-surface-card/80"
+                  }`}
               >
                 {item.name}
               </button>
             ))}
           </div>
 
-          {/* Format pills */}
-          <div className="flex flex-wrap items-center gap-1.5 border-t border-border-subtle pt-2 sm:border-t-0 sm:pt-0">
-            <span className="mr-1 text-[11px] font-semibold uppercase tracking-wider text-text-muted">
-              Format:
+          {/* Font segmented pill group */}
+          <div className="flex flex-wrap items-center gap-1 rounded-control bg-surface-subtle p-1 border border-border-subtle">
+            <span className="px-1.5 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+              Font
+            </span>
+            {POSTER_FONTS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setFontId(item.id)}
+                style={{ fontFamily: item.fontFamily }}
+                className={`rounded-control px-2 py-1 text-xs font-semibold transition-all ${fontId === item.id
+                  ? "bg-brand text-text-inverse shadow-subtle"
+                  : "text-text-secondary hover:text-text-primary hover:bg-surface-card/80"
+                  }`}
+              >
+                {item.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Format segmented pill group */}
+          <div className="flex flex-wrap items-center gap-1 rounded-control bg-surface-subtle p-1 border border-border-subtle">
+            <span className="px-1.5 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+              Format
             </span>
             {(["feed", "square", "story"] as PosterFormatId[]).map((f) => (
               <button
                 key={f}
                 type="button"
                 onClick={() => setFormat(f)}
-                className={`rounded-control px-2.5 py-1 text-xs font-semibold transition ${
-                  format === f
-                    ? "bg-brand text-text-inverse shadow-subtle"
-                    : "border border-border-default bg-surface-card text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
-                }`}
+                className={`rounded-control px-2.5 py-1 text-xs font-semibold transition-all ${format === f
+                  ? "bg-brand text-text-inverse shadow-subtle"
+                  : "text-text-secondary hover:text-text-primary hover:bg-surface-card/80"
+                  }`}
               >
                 {POSTER_FORMATS[f].label}
               </button>
             ))}
           </div>
+
+          {/* Portrait segmented pill group (for Editorial Portrait) */}
+          {template === "portrait" && (
+            <div className="flex flex-wrap items-center gap-1 rounded-control bg-surface-subtle p-1 border border-border-subtle">
+              <span className="px-1.5 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+                Model
+              </span>
+              {POSTER_PORTRAITS.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setPortraitId(p.id)}
+                  className={`flex items-center gap-1.5 rounded-control px-2.5 py-1 text-xs font-semibold transition-all ${portraitId === p.id
+                    ? "bg-brand text-text-inverse shadow-subtle"
+                    : "text-text-secondary hover:text-text-primary hover:bg-surface-card/80"
+                    }`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={p.src}
+                    alt={p.name}
+                    className="h-4 w-4 rounded-full object-cover ring-1 ring-border-subtle"
+                  />
+                  <span>{p.name}</span>
+                  <span
+                    className={`rounded px-1 py-0.5 text-[9px] font-medium uppercase ${portraitId === p.id
+                      ? "bg-white/20 text-text-inverse"
+                      : "bg-surface-muted text-text-muted"
+                      }`}
+                  >
+                    {p.gender === "male" ? "Man" : "Woman"}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Scaled Preview Stage */}
+        {/* Studio Preview Stage: Stage has small rounded corners (rounded-card), POSTER HAS SHARP CORNERS (rounded-none) */}
         <div
           ref={previewStageRef}
-          className="flex min-h-[380px] w-full items-center justify-center rounded-panel border border-border-default bg-surface-subtle/60 p-4 sm:p-5"
+          className="flex min-h-[390px] w-full items-center justify-center rounded-card border border-border-subtle/80 bg-gradient-to-b from-surface-subtle/80 to-surface-muted/30 p-4 sm:p-5"
         >
           {previewDisplayWidth > 0 ? (
             <div
@@ -365,7 +438,7 @@ export default function JobPosterModal({
                 width: previewDisplayWidth,
                 height: previewDisplayHeight,
               }}
-              className="relative overflow-hidden rounded-[6px] border border-border-default bg-white shadow-card"
+              className="relative overflow-hidden rounded-none shadow-[0_20px_45px_rgba(0,0,0,0.18)] ring-1 ring-black/10 bg-white"
             >
               <div
                 style={{
@@ -373,6 +446,7 @@ export default function JobPosterModal({
                   height: formatSpec.height,
                   transform: `scale(${previewScale})`,
                   transformOrigin: "top left",
+                  borderRadius: 0,
                 }}
               >
                 <PosterCanvas
@@ -383,8 +457,9 @@ export default function JobPosterModal({
                   whiteLogoSrc={whiteLogoDataUrl}
                   megaphoneSrc={megaphoneDataUrl}
                   companyLogoSrc={companyLogoDataUrl}
-                  fontFamily={resolvedFontFamily}
+                  fontFamily={activeFont.fontFamily}
                   showHighlights={true}
+                  portraitSrc={activePortrait.src}
                 />
               </div>
             </div>
@@ -396,22 +471,27 @@ export default function JobPosterModal({
         </div>
 
         {/* Modal Footer / Actions */}
-        <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between border-t border-border-subtle">
-          <a
-            href={`/job-posters?jobId=${encodeURIComponent(job.id)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-brand transition"
-          >
-            <span>Open in Full Studio</span>
-            <ExternalLink size={12} className="text-text-muted" />
-          </a>
+        <div className="flex flex-col gap-3 pt-3 sm:flex-row sm:items-center sm:justify-between border-t border-border-subtle">
+          <div className="flex items-center gap-3">
+            <span className="rounded-control bg-surface-subtle border border-border-subtle px-2 py-0.5 text-[11px] font-medium text-text-muted">
+              {formatSpec.width} × {formatSpec.height} px · {formatSpec.ratio}
+            </span>
+            <a
+              href={`/job-posters?jobId=${encodeURIComponent(job.id)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-brand transition-colors"
+            >
+              <span>Full Studio</span>
+              <ExternalLink size={12} className="text-text-muted" />
+            </a>
+          </div>
 
-          <div className="flex items-center justify-end gap-2.5">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-control border border-border-default bg-surface-card px-4 py-2 text-xs font-semibold text-text-secondary transition hover:bg-surface-subtle"
+              className="rounded-control border border-border-default bg-surface-card px-3 py-2 text-xs font-semibold text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary"
             >
               Close
             </button>
@@ -420,7 +500,7 @@ export default function JobPosterModal({
               type="button"
               disabled={exporting}
               onClick={handleDownloadPng}
-              className="inline-flex items-center gap-2 rounded-control bg-brand px-4 py-2 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-control bg-brand px-4 py-2 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover disabled:opacity-50"
             >
               {exporting ? (
                 <>
@@ -461,8 +541,9 @@ export default function JobPosterModal({
           whiteLogoSrc={whiteLogoDataUrl}
           megaphoneSrc={megaphoneDataUrl}
           companyLogoSrc={companyLogoDataUrl}
-          fontFamily={resolvedFontFamily}
+          fontFamily={activeFont.fontFamily}
           showHighlights={true}
+          portraitSrc={activePortrait.src}
         />
       </div>
     </Modal>

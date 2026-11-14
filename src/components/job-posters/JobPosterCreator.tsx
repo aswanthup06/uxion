@@ -23,13 +23,22 @@ import {
 import type { Job } from "@/app/types/job";
 import {
   getCompanyLogoUrl,
+  getJobPublicUrl,
   getPosterFilename,
+  POSTER_FONTS,
   POSTER_FORMATS,
+  POSTER_PORTRAITS,
   POSTER_TEMPLATES,
+  type PosterFontId,
   type PosterFormatId,
+  type PosterPortraitId,
   type PosterQualityScale,
   type PosterTemplateId,
 } from "@/lib/job-posters/poster-utils";
+import {
+  type QrCornerStyle,
+  type QrDotStyle,
+} from "@/lib/job-posters/qr-generator";
 import { PosterCanvas } from "./PosterCanvas";
 import { TemplateThumbnail } from "./TemplateThumbnail";
 import { JobSelector } from "./JobSelector";
@@ -96,10 +105,15 @@ export function JobPosterCreator({
   const [loadError, setLoadError] = useState<boolean>(initialLoadError);
   const [retryingJobs, setRetryingJobs] = useState<boolean>(false);
 
-  const [template, setTemplate] = useState<PosterTemplateId>("bold");
+  const [template, setTemplate] = useState<PosterTemplateId>("portrait");
+  const [portraitId, setPortraitId] = useState<PosterPortraitId>("man-1");
   const [format, setFormat] = useState<PosterFormatId>("feed");
+  const [fontId, setFontId] = useState<PosterFontId>("manrope");
   const [exportScale, setExportScale] = useState<PosterQualityScale>(2);
   const [showHighlights, setShowHighlights] = useState<boolean>(true);
+  const qrDotStyle: QrDotStyle = "rounded";
+  const qrCornerStyle: QrCornerStyle = "extra-rounded";
+  const qrWithLogo = false;
 
   const [logoDataUrl, setLogoDataUrl] = useState<string>("/logo.png");
   const [whiteLogoDataUrl, setWhiteLogoDataUrl] = useState<string>(
@@ -114,11 +128,11 @@ export function JobPosterCreator({
 
   const [exporting, setExporting] = useState<boolean>(false);
   const [exportError, setExportError] = useState<string | null>(null);
-  const [exportSuccess, setExportSuccess] = useState<boolean>(false);
 
   const previewStageRef = useRef<HTMLDivElement>(null);
   const exportNodeRef = useRef<HTMLDivElement>(null);
   const [stageWidth, setStageWidth] = useState<number>(0);
+  const [stageHeight, setStageHeight] = useState<number>(0);
 
   const formatSpec = POSTER_FORMATS[format];
   const activeTemplateMeta = useMemo(
@@ -127,17 +141,24 @@ export function JobPosterCreator({
       POSTER_TEMPLATES[0],
     [template]
   );
+  const activeFontMeta = useMemo(
+    () => POSTER_FONTS.find((f) => f.id === fontId) || POSTER_FONTS[0],
+    [fontId]
+  );
+  const activePortrait = useMemo(
+    () =>
+      POSTER_PORTRAITS.find((p) => p.id === portraitId) || POSTER_PORTRAITS[0],
+    [portraitId]
+  );
 
-  // Measure available preview stage width cleanly on mount & resize
+  // Measure available preview stage width and height cleanly on mount & resize
   useEffect(() => {
     const el = previewStageRef.current;
     if (!el) return;
 
     const measure = () => {
-      const nextWidth = el.clientWidth;
-      if (nextWidth > 0) {
-        setStageWidth(nextWidth);
-      }
+      if (el.clientWidth > 0) setStageWidth(el.clientWidth);
+      if (el.clientHeight > 0) setStageHeight(el.clientHeight);
     };
 
     const rafId = window.requestAnimationFrame(measure);
@@ -149,7 +170,12 @@ export function JobPosterCreator({
       };
     }
 
-    const observer = new ResizeObserver(measure);
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0) setStageWidth(entry.contentRect.width);
+        if (entry.contentRect.height > 0) setStageHeight(entry.contentRect.height);
+      }
+    });
     observer.observe(el);
     return () => {
       window.cancelAnimationFrame(rafId);
@@ -234,7 +260,6 @@ export function JobPosterCreator({
   // Clear temporary export notices when configuration changes
   const resetExportFeedback = useCallback(() => {
     setExportError(null);
-    setExportSuccess(false);
   }, []);
 
   const handleSelectJob = (job: Job) => {
@@ -295,7 +320,6 @@ export function JobPosterCreator({
 
     setExporting(true);
     setExportError(null);
-    setExportSuccess(false);
 
     try {
       if (document.fonts && document.fonts.ready) {
@@ -359,7 +383,6 @@ export function JobPosterCreator({
       document.body.removeChild(link);
       window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
 
-      setExportSuccess(true);
       toast.success("Job poster downloaded", { id: "job-poster-download" });
     } catch (error) {
       console.error("Failed to export job poster PNG:", error);
@@ -372,537 +395,648 @@ export function JobPosterCreator({
     }
   };
 
-  // Compute responsive preview scale keeping Feed (4:5), Square (1:1), and Story (9:16) cleanly framed
-  const maxStageHeight =
-    format === "story" ? 680 : format === "square" ? 600 : 640;
+  // Compute responsive preview scale to fit the viewport stage cleanly
+  const paddingX = 40;
+  const paddingY = 40;
+  const fitWidth = Math.max(0, stageWidth - paddingX);
+  const fitHeight = Math.max(0, stageHeight - paddingY);
+
   const previewScale =
-    stageWidth > 0
-      ? Math.min(stageWidth / formatSpec.width, maxStageHeight / formatSpec.height)
-      : 0;
+    fitWidth > 0 && fitHeight > 0
+      ? Math.min(fitWidth / formatSpec.width, fitHeight / formatSpec.height, 0.95)
+      : fitWidth > 0
+        ? Math.min(fitWidth / formatSpec.width, 0.45)
+        : 0;
 
   const previewDisplayWidth = Math.round(formatSpec.width * previewScale);
   const previewDisplayHeight = Math.round(formatSpec.height * previewScale);
 
   return (
-    <div className="min-h-full overflow-x-hidden bg-surface-base text-text-primary">
-      <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-10 lg:pt-8">
-        {/* Minimal Page Header */}
-        <header className="border-b border-border-subtle pb-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-brand">
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" />
-                <span>Zenoway Poster Studio</span>
-              </div>
-              <h1 className="mt-2 text-2xl font-bold tracking-[-0.03em] text-text-primary sm:text-3xl">
-                Create Job Poster
-              </h1>
-              <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-text-secondary">
-                Generate clean, share-ready job posters from live Zenoway
-                listings for LinkedIn, Instagram Stories, and WhatsApp.
-              </p>
+    <div className="h-full w-full overflow-hidden bg-surface-base text-text-primary flex flex-col lg:flex-row">
+      {/* Left Column: Integrated Header & Customization Controls (No outer box, small corner minimal design) */}
+      <aside className="w-full lg:w-[410px] xl:w-[440px] shrink-0 border-b lg:border-b-0 lg:border-r border-border-subtle bg-surface-base h-full overflow-y-auto p-5 sm:p-6 space-y-6">
+        {/* Minimal Studio Header (Integrated into Left Section) */}
+        <div className="border-b border-border-subtle pb-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-brand">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" />
+              <span>Poster Studio</span>
             </div>
-
-            <div className="flex shrink-0 items-center gap-2.5">
-              {selectedJob ? (
-                <Link
-                  href={`/jobs/${selectedJob.id}`}
-                  className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-primary transition-colors hover:border-border-strong hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-                >
-                  <ArrowLeft size={14} strokeWidth={1.8} />
-                  <span>Back to job</span>
-                </Link>
-              ) : (
-                <Link
-                  href="/jobs"
-                  className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-primary transition-colors hover:border-border-strong hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-                >
-                  <ArrowLeft size={14} strokeWidth={1.8} />
-                  <span>Browse jobs</span>
-                </Link>
-              )}
-            </div>
+            {selectedJob ? (
+              <Link
+                href={`/jobs/${selectedJob.id}`}
+                className="inline-flex h-7 items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 text-[11px] font-semibold text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary"
+              >
+                <ArrowLeft size={12} strokeWidth={2} />
+                <span>Back to job</span>
+              </Link>
+            ) : (
+              <Link
+                href="/jobs"
+                className="inline-flex h-7 items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 text-[11px] font-semibold text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary"
+              >
+                <ArrowLeft size={12} strokeWidth={2} />
+                <span>Browse jobs</span>
+              </Link>
+            )}
           </div>
+
+          <h1 className="mt-2 text-xl font-bold tracking-tight text-text-primary">
+            Create Job Poster
+          </h1>
+          <p className="mt-1 text-xs text-text-secondary leading-relaxed">
+            Generate clean, share-ready social cards from live Zenoway listings.
+          </p>
 
           {missingJobNotice && (
             <div
               role="status"
-              className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-control border border-status-warning-border bg-status-warning-bg px-4 py-3 text-xs text-text-primary"
+              className="mt-3 flex items-start gap-2 rounded-control border border-status-warning-border bg-status-warning-bg p-2.5 text-xs text-text-primary"
             >
-              <div className="flex items-center gap-2">
-                <AlertCircle
-                  size={15}
-                  className="shrink-0 text-status-warning"
-                />
-                <span>
-                  The requested job (<strong className="font-semibold">{missingJobNotice}</strong>) could not be found. Select an active role below to create a poster.
-                </span>
+              <AlertCircle
+                size={14}
+                className="mt-0.5 shrink-0 text-status-warning"
+              />
+              <div className="flex-1">
+                <span>The requested job was not found. Select an active role below.</span>
+                {jobs.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => handleSelectJob(jobs[0])}
+                    className="mt-1 block font-semibold text-brand hover:underline"
+                  >
+                    Load latest job
+                  </button>
+                )}
               </div>
-              {jobs.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => handleSelectJob(jobs[0])}
-                  className="cursor-pointer font-semibold text-brand hover:underline"
-                >
-                  Load latest job
-                </button>
-              )}
             </div>
           )}
-        </header>
+        </div>
 
-        {/* Main Studio Grid */}
         {loadError && jobs.length === 0 ? (
-          <div className="mt-8 rounded-panel border border-dashed border-status-error-border bg-surface-card px-6 py-16 text-center">
-            <div className="mx-auto grid h-12 w-12 place-items-center rounded-pill bg-status-error-bg text-status-error">
-              <AlertCircle size={20} />
+          <div className="rounded-card border border-dashed border-status-error-border bg-surface-card p-6 text-center">
+            <div className="mx-auto grid h-10 w-10 place-items-center rounded-pill bg-status-error-bg text-status-error">
+              <AlertCircle size={18} />
             </div>
-            <h2 className="mt-4 text-base font-semibold text-text-primary">
+            <h2 className="mt-3 text-sm font-semibold text-text-primary">
               Unable to load job listings
             </h2>
-            <p className="mx-auto mt-1 max-w-md text-sm text-text-secondary">
-              Check your connection and try loading the active Zenoway job
-              listings again.
+            <p className="mt-1 text-xs text-text-secondary">
+              Check your connection and try again.
             </p>
             <button
               type="button"
               onClick={handleRetryLoadJobs}
               disabled={retryingJobs}
-              className="mt-5 inline-flex h-10 cursor-pointer items-center gap-2 rounded-control bg-brand px-4 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover disabled:opacity-60"
+              className="mt-4 inline-flex h-8 cursor-pointer items-center gap-2 rounded-control bg-brand px-3 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover disabled:opacity-60"
             >
               {retryingJobs ? (
-                <Loader2 size={14} className="animate-spin" />
+                <Loader2 size={13} className="animate-spin" />
               ) : (
-                <RotateCcw size={14} />
+                <RotateCcw size={13} />
               )}
               <span>{retryingJobs ? "Retrying..." : "Try again"}</span>
             </button>
           </div>
         ) : jobs.length === 0 && !selectedJob ? (
-          <div className="mt-8 rounded-panel border border-dashed border-border-default bg-surface-card px-6 py-16 text-center">
-            <div className="mx-auto grid h-12 w-12 place-items-center rounded-pill bg-surface-muted text-text-muted">
-              <BriefcaseBusiness size={20} />
+          <div className="rounded-card border border-dashed border-border-default bg-surface-card p-6 text-center">
+            <div className="mx-auto grid h-10 w-10 place-items-center rounded-pill bg-surface-muted text-text-muted">
+              <BriefcaseBusiness size={18} />
             </div>
-            <h2 className="mt-4 text-base font-semibold text-text-primary">
+            <h2 className="mt-3 text-sm font-semibold text-text-primary">
               No active jobs available
             </h2>
-            <p className="mx-auto mt-1 max-w-md text-sm text-text-secondary">
-              Publish a job opening first, then return here to generate and
-              download its shareable poster.
+            <p className="mt-1 text-xs text-text-secondary">
+              Publish a job opening first to generate its shareable poster.
             </p>
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
               <Link
                 href="/jobs"
-                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 text-xs font-semibold text-text-primary transition-colors hover:bg-surface-subtle"
+                className="inline-flex h-8 items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 text-xs font-semibold text-text-primary transition-colors hover:bg-surface-subtle"
               >
-                Explore jobs
+                Browse jobs
               </Link>
               <Link
                 href="/post-job"
-                className="inline-flex h-9 items-center gap-1.5 rounded-control bg-brand px-4 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover"
+                className="inline-flex h-8 items-center gap-1.5 rounded-control bg-brand px-3 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover"
               >
-                Post a job
-                <ArrowUpRight size={14} />
+                Post job
+                <ArrowUpRight size={13} />
               </Link>
             </div>
           </div>
         ) : (
-          <div className="mt-7 grid grid-cols-1 gap-8 lg:grid-cols-[410px_minmax(0,1fr)] lg:items-start xl:grid-cols-[440px_minmax(0,1fr)]">
-            {/* Left Column: Studio Controls */}
-            <aside className="space-y-6 rounded-panel border border-border-default bg-surface-card p-5 shadow-subtle sm:p-6">
-              {/* 1. Job Selection */}
-              <section aria-labelledby="job-select-heading">
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <label
-                    id="job-select-heading"
-                    htmlFor="poster-job-selector"
-                    className="text-xs font-semibold uppercase tracking-[0.1em] text-text-muted"
-                  >
-                    1. Select Job
-                  </label>
-                  <span className="text-[11px] text-text-muted">
-                    {jobs.length} active {jobs.length === 1 ? "role" : "roles"}
-                  </span>
-                </div>
+          <div className="space-y-6">
+            {/* 1. Job Selection */}
+            <section aria-labelledby="job-select-heading">
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <label
+                  id="job-select-heading"
+                  htmlFor="poster-job-selector"
+                  className="text-xs font-semibold uppercase tracking-[0.1em] text-text-muted"
+                >
+                  1. Select Job
+                </label>
+                <span className="text-[11px] text-text-muted">
+                  {jobs.length} active {jobs.length === 1 ? "role" : "roles"}
+                </span>
+              </div>
 
-                <JobSelector
-                  jobs={jobs}
-                  selectedJob={selectedJob}
-                  onSelect={handleSelectJob}
-                />
-              </section>
+              <JobSelector
+                jobs={jobs}
+                selectedJob={selectedJob}
+                onSelect={handleSelectJob}
+              />
+            </section>
 
-              {/* 2. Poster Template Selector with Visual Previews */}
+            {/* 2. Poster Template Selector */}
+            <section
+              aria-labelledby="template-select-heading"
+              className="border-t border-border-subtle pt-5"
+            >
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <h2
+                  id="template-select-heading"
+                  className="text-xs font-semibold uppercase tracking-[0.1em] text-text-muted"
+                >
+                  2. Poster Template
+                </h2>
+                <span className="text-[11px] font-semibold text-brand">
+                  {activeTemplateMeta.name}
+                </span>
+              </div>
+
+              <div
+                role="radiogroup"
+                aria-label="Poster template"
+                className="grid grid-cols-1 gap-2.5 sm:grid-cols-2"
+              >
+                {POSTER_TEMPLATES.map((item) => {
+                  const isActive = item.id === template;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={isActive}
+                      onClick={() => handleSelectTemplate(item.id)}
+                      className={`flex cursor-pointer items-center gap-3 rounded-control border p-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${isActive
+                        ? "border-brand bg-brand-soft/70 shadow-subtle"
+                        : "border-border-default/80 bg-surface-card hover:border-border-strong hover:bg-surface-subtle"
+                        }`}
+                    >
+                      <TemplateThumbnail
+                        template={item.id}
+                        active={isActive}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-1">
+                          <span
+                            className={`truncate text-xs font-semibold ${isActive ? "text-brand" : "text-text-primary"
+                              }`}
+                          >
+                            {item.name}
+                          </span>
+                          {isActive && (
+                            <Check
+                              size={13}
+                              strokeWidth={2.5}
+                              className="shrink-0 text-brand"
+                            />
+                          )}
+                        </div>
+                        <p className="mt-0.5 truncate text-[11px] text-text-secondary">
+                          {item.tagline}
+                        </p>
+                        <p className="mt-0.5 truncate text-[10px] text-text-muted">
+                          {item.bestFor}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* 2b. Choose Indian Model (Editorial Portrait Template) */}
+            {template === "portrait" && (
               <section
-                aria-labelledby="template-select-heading"
+                aria-labelledby="portrait-select-heading"
                 className="border-t border-border-subtle pt-5"
               >
                 <div className="mb-3 flex items-center justify-between gap-2">
                   <h2
-                    id="template-select-heading"
+                    id="portrait-select-heading"
                     className="text-xs font-semibold uppercase tracking-[0.1em] text-text-muted"
                   >
-                    2. Poster Template
+                    2b. Indian Model
                   </h2>
                   <span className="text-[11px] font-medium text-brand">
-                    {activeTemplateMeta.name}
+                    {activePortrait.name} ({activePortrait.gender === "male" ? "Man" : "Woman"})
                   </span>
                 </div>
 
-                <div
-                  role="radiogroup"
-                  aria-label="Poster template"
-                  className="grid grid-cols-1 gap-2.5 sm:grid-cols-2"
-                >
-                  {POSTER_TEMPLATES.map((item) => {
-                    const isActive = item.id === template;
+                <div className="grid grid-cols-3 gap-2.5">
+                  {POSTER_PORTRAITS.map((p) => {
+                    const isActive = p.id === portraitId;
                     return (
                       <button
-                        key={item.id}
+                        key={p.id}
                         type="button"
-                        role="radio"
-                        aria-checked={isActive}
-                        onClick={() => handleSelectTemplate(item.id)}
-                        className={`flex cursor-pointer items-center gap-3 rounded-card border p-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
-                          isActive
-                            ? "border-brand bg-brand-soft/60"
-                            : "border-border-default bg-surface-card hover:border-border-strong hover:bg-surface-subtle"
-                        }`}
+                        onClick={() => {
+                          setPortraitId(p.id);
+                          resetExportFeedback();
+                        }}
+                        className={`group relative flex flex-col items-center rounded-control border p-2 text-center transition-all ${isActive
+                          ? "border-brand bg-brand-soft/70 shadow-subtle ring-1 ring-brand/30"
+                          : "border-border-default/80 bg-surface-card hover:border-border-strong hover:bg-surface-subtle"
+                          }`}
                       >
-                        <TemplateThumbnail
-                          template={item.id}
-                          active={isActive}
-                        />
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-1">
-                            <span
-                              className={`truncate text-xs font-semibold ${
-                                isActive ? "text-brand" : "text-text-primary"
-                              }`}
-                            >
-                              {item.name}
-                            </span>
-                            {isActive && (
-                              <Check
-                                size={13}
-                                strokeWidth={2.5}
-                                className="shrink-0 text-brand"
-                              />
-                            )}
-                          </div>
-                          <p className="mt-0.5 truncate text-[11px] text-text-secondary">
-                            {item.tagline}
-                          </p>
-                          <p className="mt-0.5 truncate text-[10px] text-text-muted">
-                            {item.bestFor}
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-
-              {/* 3. Output Format Selector */}
-              <section
-                aria-labelledby="format-select-heading"
-                className="border-t border-border-subtle pt-5"
-              >
-                <div className="mb-3 flex items-center justify-between gap-2">
-                  <h2
-                    id="format-select-heading"
-                    className="text-xs font-semibold uppercase tracking-[0.1em] text-text-muted"
-                  >
-                    3. Output Format
-                  </h2>
-                  <span className="text-[11px] text-text-muted">
-                    {formatSpec.width} × {formatSpec.height} px
-                  </span>
-                </div>
-
-                <div
-                  role="radiogroup"
-                  aria-label="Poster format"
-                  className="grid grid-cols-1 gap-2 sm:grid-cols-3"
-                >
-                  {(["feed", "square", "story"] as PosterFormatId[]).map((id) => {
-                    const spec = POSTER_FORMATS[id];
-                    const isActive = format === id;
-                    const Icon =
-                      id === "feed"
-                        ? RectangleVertical
-                        : id === "square"
-                          ? Square
-                          : Smartphone;
-                    return (
-                      <button
-                        key={id}
-                        type="button"
-                        role="radio"
-                        aria-checked={isActive}
-                        onClick={() => handleSelectFormat(id)}
-                        className={`flex cursor-pointer flex-col justify-between rounded-card border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
-                          isActive
-                            ? "border-brand bg-brand-soft/60"
-                            : "border-border-default bg-surface-card hover:border-border-strong hover:bg-surface-subtle"
-                        }`}
-                      >
-                        <div className="flex w-full items-center gap-1.5">
-                          <Icon
-                            size={13}
-                            strokeWidth={1.9}
-                            className={isActive ? "shrink-0 text-brand" : "shrink-0 text-text-muted"}
+                        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-control bg-surface-subtle">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={p.src}
+                            alt={p.name}
+                            className="h-full w-full object-cover"
                           />
-                          <span
-                            className={`whitespace-nowrap text-xs font-semibold ${
-                              isActive ? "text-brand" : "text-text-primary"
+                          <div className="absolute left-1 bottom-1 rounded bg-black/65 px-1 py-0.5 text-[9px] font-semibold text-white backdrop-blur-[2px]">
+                            {p.gender === "male" ? "Man" : "Woman"}
+                          </div>
+                          {isActive && (
+                            <div className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand text-text-inverse shadow-sm">
+                              <Check size={10} strokeWidth={3} />
+                            </div>
+                          )}
+                        </div>
+                        <span
+                          className={`mt-1.5 block truncate text-[11px] font-semibold ${isActive ? "text-brand" : "text-text-primary"
                             }`}
-                          >
-                            {spec.label}
-                          </span>
-                        </div>
-                        <div className="mt-1.5 flex w-full items-center justify-between gap-1">
-                          <span className="text-[10.5px] font-medium text-text-secondary">
-                            {spec.width}×{spec.height}
-                          </span>
-                          <span className="rounded-control bg-surface-muted px-1.5 py-0.5 text-[10px] font-semibold text-text-secondary">
-                            {spec.ratio}
-                          </span>
-                        </div>
-                        <span className="mt-1 text-[10px] text-text-muted">
-                          {spec.hint}
+                        >
+                          {p.name}
+                        </span>
+                        <span className="block truncate text-[10px] text-text-muted">
+                          {p.label}
                         </span>
                       </button>
                     );
                   })}
                 </div>
               </section>
+            )}
 
-              {/* 4. Poster Content & Export Quality */}
-              <section className="space-y-3.5 border-t border-border-subtle pt-5">
-                <div className="flex items-center justify-between gap-2">
-                  <div>
-                    <span
-                      id="highlights-toggle-label"
-                      className="text-xs font-semibold uppercase tracking-[0.1em] text-text-muted"
-                    >
-                      Role Highlights
-                    </span>
-                    <p className="mt-0.5 text-[11px] text-text-secondary">
-                      Bullet points from job details
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={showHighlights}
-                    aria-labelledby="highlights-toggle-label"
-                    onClick={() => {
-                      setShowHighlights((prev) => !prev);
-                      resetExportFeedback();
-                    }}
-                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-pill border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
-                      showHighlights
-                        ? "border-brand bg-brand"
-                        : "border-border-default bg-surface-muted"
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 rounded-full bg-white shadow-subtle transition-transform ${
-                        showHighlights ? "translate-x-6" : "translate-x-1"
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.1em] text-text-muted">
-                    Export Quality
-                  </span>
-                  <div
-                    role="radiogroup"
-                    aria-label="Export resolution"
-                    className="inline-flex rounded-control border border-border-default bg-surface-subtle p-0.5"
-                  >
-                    {([
-                      { scale: 1 as PosterQualityScale, label: "1× · 1080px" },
-                      { scale: 2 as PosterQualityScale, label: "2× · 2160px" },
-                    ]).map((opt) => {
-                      const active = exportScale === opt.scale;
-                      return (
-                        <button
-                          key={opt.scale}
-                          type="button"
-                          role="radio"
-                          aria-checked={active}
-                          onClick={() => {
-                            setExportScale(opt.scale);
-                            resetExportFeedback();
-                          }}
-                          className={`cursor-pointer rounded-[3px] px-2.5 py-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
-                            active
-                              ? "bg-surface-card text-brand shadow-subtle"
-                              : "text-text-secondary hover:text-text-primary"
-                          }`}
-                        >
-                          {opt.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleDownloadPng}
-                  disabled={!selectedJob || exporting}
-                  className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-4 text-sm font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {exporting ? (
-                    <>
-                      <Loader2 size={16} className="animate-spin" />
-                      <span>Exporting PNG...</span>
-                    </>
-                  ) : (
-                    <>
-                      <ImageDown size={16} strokeWidth={2} />
-                      <span>Download PNG</span>
-                    </>
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleCycleTemplate}
-                  disabled={!selectedJob || exporting}
-                  className="flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-4 text-xs font-semibold text-text-primary transition-colors hover:border-border-strong hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <RefreshCw size={14} strokeWidth={1.85} />
-                  <span>Choose another template</span>
-                </button>
-
-                {exportError && (
-                  <div
-                    role="alert"
-                    className="flex items-start gap-2 rounded-control border border-status-error-border bg-status-error-bg px-3 py-2.5 text-xs text-status-error"
-                  >
-                    <AlertCircle size={14} className="mt-0.5 shrink-0" />
-                    <span>{exportError}</span>
-                  </div>
-                )}
-
-                {exportSuccess && !exportError && selectedJob && (
-                  <p
-                    role="status"
-                    className="flex items-center gap-1.5 text-xs font-medium text-brand"
-                  >
-                    <Check size={14} strokeWidth={2.3} />
-                    <span>
-                      Downloaded {getPosterFilename(selectedJob, format, template)}
-                    </span>
-                  </p>
-                )}
-              </section>
-            </aside>
-
-            {/* Right Column: Live Poster Preview Stage */}
+            {/* 3. Output Format Selector */}
             <section
-              aria-labelledby="preview-stage-heading"
-              className="min-w-0 rounded-panel border border-border-default bg-surface-subtle p-4 sm:p-6 lg:p-7"
+              aria-labelledby="format-select-heading"
+              className="border-t border-border-subtle pt-5"
             >
-              {/* Preview Top Metadata Bar */}
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-border-subtle pb-3.5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span
-                    id="preview-stage-heading"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-text-primary"
-                  >
-                    <Layers size={14} className="text-brand" />
-                    Live Preview
-                  </span>
-                  <span className="text-border-strong">·</span>
-                  <span className="text-xs font-medium text-text-secondary">
-                    {activeTemplateMeta.name}
-                  </span>
-                  <span className="rounded-control border border-border-default bg-surface-card px-2 py-0.5 text-[11px] font-medium text-text-secondary">
-                    {formatSpec.width * exportScale} × {formatSpec.height * exportScale} ({formatSpec.ratio})
-                  </span>
-                </div>
-
-                {selectedJob && (
-                  <Link
-                    href={`/jobs/${selectedJob.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-brand transition-colors hover:underline"
-                  >
-                    <span>Open job page</span>
-                    <ArrowUpRight size={13} />
-                  </Link>
-                )}
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <h2
+                  id="format-select-heading"
+                  className="text-xs font-semibold uppercase tracking-[0.1em] text-text-muted"
+                >
+                  3. Output Format
+                </h2>
+                <span className="text-[11px] text-text-muted">
+                  {formatSpec.width} × {formatSpec.height} px
+                </span>
               </div>
 
-              {/* Scaled Preview Container */}
               <div
-                ref={previewStageRef}
-                className="flex w-full items-center justify-center py-2"
+                role="radiogroup"
+                aria-label="Poster format"
+                className="grid grid-cols-1 gap-2 sm:grid-cols-3"
               >
-                {!selectedJob ? (
-                  <div className="flex w-full max-w-md flex-col items-center justify-center rounded-card border border-dashed border-border-default bg-surface-card px-6 py-16 text-center">
-                    <div className="grid h-11 w-11 place-items-center rounded-pill bg-brand-soft text-brand">
-                      <ImageDown size={19} />
-                    </div>
-                    <h3 className="mt-3.5 text-sm font-semibold text-text-primary">
-                      Select a job to preview its poster
-                    </h3>
-                    <p className="mt-1 text-xs text-text-secondary">
-                      Choose any active role from the selector to render all
-                      four poster templates.
-                    </p>
-                  </div>
-                ) : previewScale <= 0 ? (
-                  <div
-                    className={`w-full max-w-[440px] animate-pulse rounded-control border border-border-default bg-surface-card ${
-                      format === "story"
-                        ? "aspect-[9/16] max-h-[680px]"
-                        : format === "square"
-                          ? "aspect-square max-h-[600px]"
-                          : "aspect-[4/5] max-h-[640px]"
-                    }`}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: previewDisplayWidth,
-                      height: previewDisplayHeight,
-                    }}
-                    className="relative overflow-hidden rounded-[4px] border border-border-default bg-white shadow-card"
-                  >
-                    <div
-                      style={{
-                        width: formatSpec.width,
-                        height: formatSpec.height,
-                        transform: `scale(${previewScale})`,
-                        transformOrigin: "top left",
-                      }}
+                {(["feed", "square", "story"] as PosterFormatId[]).map((id) => {
+                  const spec = POSTER_FORMATS[id];
+                  const isActive = format === id;
+                  const Icon =
+                    id === "feed"
+                      ? RectangleVertical
+                      : id === "square"
+                        ? Square
+                        : Smartphone;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      role="radio"
+                      aria-checked={isActive}
+                      onClick={() => handleSelectFormat(id)}
+                      className={`flex cursor-pointer flex-col justify-between rounded-control border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${isActive
+                        ? "border-brand bg-brand-soft/70 shadow-subtle"
+                        : "border-border-default/80 bg-surface-card hover:border-border-strong hover:bg-surface-subtle"
+                        }`}
                     >
-                      <PosterCanvas
-                        job={selectedJob}
-                        template={template}
-                        format={format}
-                        logoSrc={logoDataUrl}
-                        whiteLogoSrc={whiteLogoDataUrl}
-                        megaphoneSrc={megaphoneDataUrl}
-                        companyLogoSrc={companyLogoDataUrl}
-                        fontFamily={resolvedFontFamily}
-                        showHighlights={showHighlights}
-                      />
-                    </div>
-                  </div>
-                )}
+                      <div className="flex w-full items-center gap-1.5">
+                        <Icon
+                          size={13}
+                          strokeWidth={1.9}
+                          className={isActive ? "shrink-0 text-brand" : "shrink-0 text-text-muted"}
+                        />
+                        <span
+                          className={`whitespace-nowrap text-xs font-semibold ${isActive ? "text-brand" : "text-text-primary"
+                            }`}
+                        >
+                          {spec.label}
+                        </span>
+                      </div>
+                      <div className="mt-1.5 flex w-full items-center justify-between gap-1">
+                        <span className="text-[10.5px] font-medium text-text-secondary">
+                          {spec.width}×{spec.height}
+                        </span>
+                        <span className="rounded-control bg-surface-muted px-1.5 py-0.5 text-[10px] font-semibold text-text-secondary">
+                          {spec.ratio}
+                        </span>
+                      </div>
+                      <span className="mt-1 text-[10px] text-text-muted">
+                        {spec.hint}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
+            </section>
+
+            {/* 4. Typography & Font Style Selector */}
+            <section
+              aria-labelledby="font-select-heading"
+              className="border-t border-border-subtle pt-5"
+            >
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <h2
+                  id="font-select-heading"
+                  className="text-xs font-semibold uppercase tracking-[0.1em] text-text-muted"
+                >
+                  4. Font Style
+                </h2>
+                <span className="text-[11px] font-semibold text-brand">
+                  {activeFontMeta.name}
+                </span>
+              </div>
+
+              <div
+                role="radiogroup"
+                aria-label="Poster font style"
+                className="grid grid-cols-1 gap-2 sm:grid-cols-2"
+              >
+                {POSTER_FONTS.map((font) => {
+                  const isActive = font.id === fontId;
+                  return (
+                    <button
+                      key={font.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={isActive}
+                      onClick={() => setFontId(font.id)}
+                      className={`flex cursor-pointer items-center justify-between rounded-control border px-3 py-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${isActive
+                        ? "border-brand bg-brand-soft/70 shadow-subtle"
+                        : "border-border-default/80 bg-surface-card hover:border-border-strong hover:bg-surface-subtle"
+                        }`}
+                    >
+                      <div className="min-w-0">
+                        <span
+                          style={{ fontFamily: font.fontFamily }}
+                          className={`block truncate text-xs font-bold ${isActive ? "text-brand" : "text-text-primary"
+                            }`}
+                        >
+                          {font.name}
+                        </span>
+                        <span className="mt-0.5 block truncate text-[10px] text-text-muted">
+                          {font.category}
+                        </span>
+                      </div>
+                      <span
+                        style={{ fontFamily: font.fontFamily }}
+                        className={`text-sm font-bold shrink-0 ml-2 ${isActive ? "text-brand" : "text-text-muted"
+                          }`}
+                      >
+                        Aa
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* 5. Content & Customization Options */}
+            <section className="space-y-4 border-t border-border-subtle pt-5">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <span
+                    id="highlights-toggle-label"
+                    className="text-xs font-semibold uppercase tracking-[0.1em] text-text-muted"
+                  >
+                    Role Highlights
+                  </span>
+                  <p className="mt-0.5 text-[11px] text-text-secondary">
+                    Bullet points from job details
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={showHighlights}
+                  aria-labelledby="highlights-toggle-label"
+                  onClick={() => {
+                    setShowHighlights((prev) => !prev);
+                    resetExportFeedback();
+                  }}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-pill border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${showHighlights
+                    ? "border-brand bg-brand"
+                    : "border-border-default bg-surface-muted"
+                    }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 rounded-full bg-white shadow-subtle transition-transform ${showHighlights ? "translate-x-6" : "translate-x-1"
+                      }`}
+                  />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-semibold uppercase tracking-[0.1em] text-text-muted">
+                  Export Resolution
+                </span>
+                <div
+                  role="radiogroup"
+                  aria-label="Export resolution"
+                  className="inline-flex rounded-control border border-border-default bg-surface-subtle p-0.5"
+                >
+                  {([
+                    { scale: 1 as PosterQualityScale, label: "1× · Standard" },
+                    { scale: 2 as PosterQualityScale, label: "2× · High-Res" },
+                  ]).map((opt) => {
+                    const active = exportScale === opt.scale;
+                    return (
+                      <button
+                        key={opt.scale}
+                        type="button"
+                        role="radio"
+                        aria-checked={active}
+                        onClick={() => {
+                          setExportScale(opt.scale);
+                          resetExportFeedback();
+                        }}
+                        className={`cursor-pointer rounded-[3px] px-2.5 py-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${active
+                          ? "bg-surface-card text-brand shadow-subtle"
+                          : "text-text-secondary hover:text-text-primary"
+                          }`}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleCycleTemplate}
+                disabled={!selectedJob || exporting}
+                className="flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-4 text-xs font-semibold text-text-primary transition-colors hover:border-border-strong hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <RefreshCw size={14} strokeWidth={1.85} />
+                <span>Shuffle template</span>
+              </button>
             </section>
           </div>
         )}
-      </div>
+      </aside>
+
+      {/* Right Section: Full Viewport Live Preview Stage with Download Button Above */}
+      <section
+        aria-labelledby="preview-stage-heading"
+        className="flex-1 h-full min-w-0 flex flex-col bg-surface-subtle overflow-hidden"
+      >
+        {/* Action Bar Above Preview */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle bg-surface-card px-4 py-3 sm:px-6 shrink-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              id="preview-stage-heading"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-text-primary"
+            >
+              <Layers size={14} className="text-brand" />
+              Poster Preview
+            </span>
+            <span className="text-border-strong">·</span>
+            <span className="rounded-control bg-surface-subtle border border-border-subtle px-2 py-0.5 text-[11px] font-semibold text-text-secondary">
+              {activeTemplateMeta.name}
+            </span>
+            <span className="rounded-control bg-surface-subtle border border-border-subtle px-2 py-0.5 text-[11px] font-medium text-text-secondary">
+              {formatSpec.label} ({formatSpec.ratio})
+            </span>
+            <span className="hidden sm:inline-block text-[11px] text-text-muted">
+              {formatSpec.width * exportScale} × {formatSpec.height * exportScale} px
+            </span>
+            {selectedJob && (
+              <Link
+                href={`/jobs/${selectedJob.id}`}
+                target="_blank"
+                className="hidden md:inline-flex items-center gap-1 text-[11px] font-medium text-text-muted hover:text-brand transition-colors ml-1"
+              >
+                <span>View job</span>
+                <ArrowUpRight size={11} />
+              </Link>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleDownloadPng}
+              disabled={!selectedJob || exporting}
+              className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-4 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {exporting ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  <span>Exporting PNG...</span>
+                </>
+              ) : (
+                <>
+                  <ImageDown size={14} strokeWidth={2} />
+                  <span>Download Poster PNG</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Feedback Notifications */}
+        {exportError && (
+          <div
+            role="alert"
+            className="mx-4 mt-3 shrink-0 flex items-start gap-2 rounded-control border border-status-error-border bg-status-error-bg px-3.5 py-2 text-xs text-status-error"
+          >
+            <AlertCircle size={14} className="mt-0.5 shrink-0" />
+            <span>{exportError}</span>
+          </div>
+        )}
+
+        {/* Full Viewport Canvas Stage: Centered, Sharp Corner Poster */}
+        <div
+          ref={previewStageRef}
+          className="flex-1 min-h-0 w-full overflow-hidden flex items-center justify-center p-4 sm:p-6 lg:p-8"
+        >
+          {!selectedJob ? (
+            <div className="flex w-full max-w-md flex-col items-center justify-center rounded-card border border-dashed border-border-default bg-surface-card px-6 py-16 text-center">
+              <div className="grid h-11 w-11 place-items-center rounded-pill bg-brand-soft text-brand">
+                <ImageDown size={19} />
+              </div>
+              <h3 className="mt-3.5 text-sm font-semibold text-text-primary">
+                Select a job to preview its poster
+              </h3>
+              <p className="mt-1 text-xs text-text-secondary">
+                Choose any active role from the selector to render all
+                four poster templates.
+              </p>
+            </div>
+          ) : previewScale <= 0 ? (
+            <div
+              className={`w-full max-w-[440px] animate-pulse rounded-control border border-border-default bg-surface-card ${format === "story"
+                ? "aspect-[9/16] max-h-[680px]"
+                : format === "square"
+                  ? "aspect-square max-h-[600px]"
+                  : "aspect-[4/5] max-h-[640px]"
+                }`}
+            />
+          ) : (
+            <div
+              style={{
+                width: previewDisplayWidth,
+                height: previewDisplayHeight,
+              }}
+              className="relative overflow-hidden rounded-none shadow-[0_24px_50px_rgba(0,0,0,0.18)] ring-1 ring-black/10 bg-white"
+            >
+              <div
+                style={{
+                  width: formatSpec.width,
+                  height: formatSpec.height,
+                  transform: `scale(${previewScale})`,
+                  transformOrigin: "top left",
+                  borderRadius: 0,
+                }}
+              >
+                <PosterCanvas
+                  job={selectedJob}
+                  template={template}
+                  format={format}
+                  logoSrc={logoDataUrl}
+                  whiteLogoSrc={whiteLogoDataUrl}
+                  megaphoneSrc={megaphoneDataUrl}
+                  companyLogoSrc={companyLogoDataUrl}
+                  fontFamily={activeFontMeta.fontFamily}
+                  showHighlights={showHighlights}
+                  portraitSrc={activePortrait.src}
+                  qrWithLogo={qrWithLogo}
+                  qrDotStyle={qrDotStyle}
+                  qrCornerStyle={qrCornerStyle}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Dedicated Unscaled 1080px Export Surface (never visible, never scaled) */}
       {selectedJob && (
@@ -928,8 +1062,12 @@ export function JobPosterCreator({
             whiteLogoSrc={whiteLogoDataUrl}
             megaphoneSrc={megaphoneDataUrl}
             companyLogoSrc={companyLogoDataUrl}
-            fontFamily={resolvedFontFamily}
+            fontFamily={activeFontMeta.fontFamily}
             showHighlights={showHighlights}
+            portraitSrc={activePortrait.src}
+            qrWithLogo={qrWithLogo}
+            qrDotStyle={qrDotStyle}
+            qrCornerStyle={qrCornerStyle}
           />
         </div>
       )}

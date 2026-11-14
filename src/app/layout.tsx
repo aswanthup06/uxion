@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Manrope } from "next/font/google";
+import {
+  Manrope,
+  Space_Grotesk,
+  Plus_Jakarta_Sans,
+  Playfair_Display,
+  Syne,
+} from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ZenowayToaster from "./components/ZenowayToaster";
@@ -12,6 +18,30 @@ const manrope = Manrope({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-manrope",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-space-grotesk",
+});
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-plus-jakarta",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-playfair",
+});
+
+const syne = Syne({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-syne",
 });
 
 // Must be the host that serves the site and og-image.png directly (HTTP 200, no redirect).
@@ -93,7 +123,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={manrope.variable}>
+    <html
+      lang="en"
+      className={`${manrope.variable} ${spaceGrotesk.variable} ${plusJakarta.variable} ${playfair.variable} ${syne.variable}`}
+    >
       <head>
         <meta
           name="google-adsense-account"

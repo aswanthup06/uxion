@@ -9,7 +9,7 @@ export function TemplateThumbnail({
   template: PosterTemplateId;
   active: boolean;
 }) {
-  const frameClass = `relative aspect-[4/5] w-11 shrink-0 overflow-hidden rounded-[4px] border bg-white ${
+  const frameClass = `relative aspect-[4/5] w-11 shrink-0 overflow-hidden rounded-none border bg-white ${
     active ? "border-brand ring-1 ring-brand/30" : "border-border-default"
   }`;
 
@@ -41,6 +41,35 @@ export function TemplateThumbnail({
               <span className="h-1 w-2.5 rounded-[1px] bg-[#B8FF3B]" />
             </div>
             <span className="h-1 w-2 rounded-[1px] bg-white/70" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (template === "portrait") {
+    return (
+      <div className={`${frameClass} bg-[#D8CFCA]`} aria-hidden="true">
+        <div className="flex h-full w-full">
+          {/* Left: Warm editorial text column */}
+          <div className="flex w-1/2 h-full flex-col justify-between p-1 border-r border-[#C5BCB6]">
+            <div>
+              <span className="block h-1 w-2.5 rounded-[1px] bg-[#102B20]" />
+              <span className="mt-1 block h-0.5 w-3 bg-[#064E3B]" />
+            </div>
+            <div className="space-y-0.5">
+              <span className="block h-1.5 w-4 rounded-[1px] bg-[#102B20]" />
+              <span className="block h-1.5 w-3.5 rounded-[1px] bg-[#102B20]" />
+              <span className="block h-0.5 w-4 bg-[#384B40]" />
+            </div>
+            <div>
+              <span className="block h-1 w-3.5 rounded-full bg-[#064E3B]" />
+            </div>
+          </div>
+          {/* Right: Studio portrait representation */}
+          <div className="relative w-1/2 h-full bg-[#9B8C82] flex items-center justify-center overflow-hidden">
+            <div className="h-3.5 w-3.5 rounded-full bg-[#DFD6CE]/80" />
+            <div className="absolute -bottom-1 h-3.5 w-5 rounded-t-full bg-[#064E3B]" />
           </div>
         </div>
       </div>
