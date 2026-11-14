@@ -26,7 +26,9 @@ import {
   ChevronDown,
   Zap,
   MapPin,
+  HelpCircle,
 } from "lucide-react";
+import Modal from "@/app/components/Modal";
 import { State, City } from "country-state-city";
 import { JOB_CATEGORIES, matchJobCategory } from "@/data/categories";
 import {
@@ -167,11 +169,10 @@ function Field({
       <div className="group relative">
         {Icon && (
           <Icon
-            className={`pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors ${
-              error
+            className={`pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors ${error
                 ? "text-status-error"
                 : "text-text-muted group-focus-within:text-brand"
-            }`}
+              }`}
             strokeWidth={1.8}
           />
         )}
@@ -188,11 +189,10 @@ function Field({
           min={min}
           max={max}
           step={step}
-          className={`${inputClass} ${Icon ? "pl-10" : ""} ${
-            error
+          className={`${inputClass} ${Icon ? "pl-10" : ""} ${error
               ? "border-status-error ring-1 ring-status-error/30 focus:border-status-error focus:ring-status-error/40"
               : ""
-          }`}
+            }`}
         />
       </div>
 
@@ -564,6 +564,77 @@ Requirements:
 - Strong knowledge of modern CSS, Tailwind, state management, and web performance.
 - Passion for great developer experience, automated testing, and semantic HTML.`;
 
+const applicants = [
+  { initials: "AR", name: "Anjali R.", role: "React Developer", time: "just now" },
+  { initials: "RM", name: "Rahul M.", role: "Product Designer", time: "2m ago" },
+  { initials: "SK", name: "Sneha K.", role: "Backend Engineer", time: "5m ago" },
+];
+
+function HeroVisual() {
+  return (
+    <div aria-hidden className="relative hidden h-[380px] lg:block">
+      {/* Soft brand glow */}
+      <div className="absolute left-1/2 top-1/2 -z-10 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/15 blur-3xl" />
+
+      {/* Dot grid, faded at edges. If the --border-default token is not an RGB triplet, use rgba(120,120,120,0.35) instead. */}
+      <div
+        className="absolute inset-0 -z-10 opacity-60 [mask-image:radial-gradient(closest-side,black,transparent)]"
+        style={{
+          backgroundImage: "radial-gradient(circle, rgba(120,120,120,0.35) 1px, transparent 1px)",
+          backgroundSize: "20px 20px",
+        }}
+      />
+
+      {/* Floating job card */}
+      <div className="hero-anim absolute right-4 top-4 w-[300px] animate-[float_7s_ease-in-out_infinite] rounded-2xl border border-border-default/50 bg-surface-card/80 p-4 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.25)] backdrop-blur">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-text-muted">New opening</span>
+          <span className="flex items-center gap-1.5 text-[10px] font-medium text-brand">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-60" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand" />
+            </span>
+            Live
+          </span>
+        </div>
+        <h3 className="mt-3 text-sm font-semibold text-text-primary">Senior UI Developer</h3>
+        <p className="mt-0.5 text-xs text-text-muted">Kochi · Hybrid · ₹18–26 LPA</p>
+        <div className="mt-3 flex gap-1.5">
+          {["React", "Next.js", "Tailwind"].map((t) => (
+            <span key={t} className="rounded-full border border-border-default/50 px-2 py-0.5 text-[10px] text-text-secondary">{t}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Applicants sliding in */}
+      <div className="absolute bottom-6 left-0 w-[290px] space-y-2.5">
+        {applicants.map((a, i) => (
+          <div
+            key={a.name}
+            className="hero-anim flex animate-[slide-in_0.6s_ease-out_both] items-center gap-3 rounded-xl border border-border-default/50 bg-surface-card/90 p-2.5 shadow-subtle backdrop-blur"
+            style={{ animationDelay: `${0.5 + i * 0.35}s` }}
+          >
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand/10 text-[11px] font-semibold text-brand">{a.initials}</div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-medium text-text-primary">{a.name}</p>
+              <p className="truncate text-[11px] text-text-muted">{a.role}</p>
+            </div>
+            <span className="text-[10px] text-text-muted">{a.time}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Commission chip */}
+      <div
+        className="hero-anim absolute bottom-0 right-6 animate-[slide-in_0.6s_ease-out_both] rounded-full border border-border-default/50 bg-surface-card px-3 py-1.5 text-[11px] font-medium text-text-primary shadow-subtle"
+        style={{ animationDelay: "1.8s" }}
+      >
+        ₹0 <span className="text-text-muted">commission</span>
+      </div>
+    </div>
+  );
+}
+
 export default function JobFormWizard({
   mode,
   jobId,
@@ -614,6 +685,7 @@ export default function JobFormWizard({
   const lastVerifiedEmailRef = useRef<string>("");
   const isNavigatingRef = useRef<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(1);
+  const [showHowItWorksModal, setShowHowItWorksModal] = useState(false);
 
   // AI Tools State
   const [showAiModal, setShowAiModal] = useState(false);
@@ -1802,66 +1874,65 @@ export default function JobFormWizard({
         {/* Public Hero vs Admin Header */}
         {mode === "public" ? (
           currentStep === 1 ? (
-            <div className="mb-8 border-b border-border-default/40 pb-8">
-              {/* Eyebrow */}
-              <div className="flex items-center gap-2 text-xs text-text-muted">
-                <span className="font-semibold text-brand">Zenoway Hiring Portal</span>
-                <span>•</span>
-                <span className="text-text-secondary">Direct & Zero Brokerage</span>
+            <div className="mb-10 border-b border-border-default/40 pb-10">
+              <div className="grid items-start gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+                <div className="lg:pt-2">
+                  {/* Eyebrow */}
+                  <div className="flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-text-muted">
+                    <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+                    <span>Zenoway for Employers</span>
+                    <span className="text-border-default">/</span>
+                    <span>Direct · Zero brokerage</span>
+                  </div>
+
+                  {/* Headline */}
+                  <h1 className="mt-5 max-w-3xl text-3xl font-semibold leading-[1.1] tracking-tight text-text-primary sm:text-4xl lg:text-5xl">
+                    Hire India&apos;s best tech & design talent.{" "}
+                    <span className="text-brand">Without the middlemen.</span>
+                  </h1>
+
+                  {/* Subtitle */}
+                  <p className="mt-4 max-w-2xl text-sm leading-relaxed text-text-secondary sm:text-base">
+                    Publish openings to verified engineers, designers and tech leads. Candidates
+                    apply straight to your official HR email. No agency fees, no delays.
+                  </p>
+
+                  {/* How it works button */}
+                  <div className="mt-6 flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowHowItWorksModal(true)}
+                      className="group inline-flex items-center gap-2 rounded-control bg-brand px-4 py-2.5 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                    >
+                      <span>How it works</span>
+                      <ArrowUpRight
+                        size={14}
+                        className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                <HeroVisual />
               </div>
 
-              {/* Main Headline */}
-              <h1 className="mt-4 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl lg:text-4xl">
-                Hire India’s Top Tech & Design Talent. <span className="text-brand">Fast.</span>
-              </h1>
-
-              {/* Subtitle */}
-              <p className="mt-2.5 max-w-3xl text-xs leading-relaxed text-text-secondary sm:text-sm">
-                Publish your openings to verified software engineers, UI/UX designers, and tech leaders across India. Candidates apply directly to your company inbox or ATS — zero agency commissions, zero middleman delays.
-              </p>
-
-              {/* 4 Feature Highlights Grid */}
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-3.5">
-                <div className="rounded-control border border-border-default/60 bg-surface-card p-3 shadow-subtle transition hover:border-brand/40">
-                  <div className="flex items-center gap-1.5 text-brand mb-1">
-                    <Mail size={14} className="shrink-0" />
-                    <span className="text-xs font-bold text-text-primary">Direct Applications</span>
+              {/* Feature row, full width */}
+              <dl className="mt-10 grid grid-cols-2 gap-x-8 gap-y-8 border-t border-border-default/40 pt-8 sm:grid-cols-4 sm:gap-x-0 sm:divide-x sm:divide-border-default/40">
+                {[
+                  { icon: Mail, title: "Direct applications", body: "Resumes land directly in your official HR email." },
+                  { icon: Sparkles, title: "AI auto-fill", body: "Paste a draft JD and Gemini fills every step." },
+                  { icon: MapPin, title: "Pan-India & remote", body: "Target Bengaluru, NCR, Kochi, or go remote." },
+                  { icon: Zap, title: "Live in 2 minutes", body: "Four-step wizard with live markdown preview." },
+                ].map(({ icon: Icon, title, body }) => (
+                  <div key={title} className="sm:px-6 sm:first:pl-0 sm:last:pr-0">
+                    <dt className="flex items-center gap-2 text-sm font-medium text-text-primary">
+                      <Icon size={15} strokeWidth={1.75} className="shrink-0 text-brand" />
+                      {title}
+                    </dt>
+                    <dd className="mt-1.5 text-xs leading-relaxed text-text-muted">{body}</dd>
                   </div>
-                  <p className="text-[11px] text-text-muted leading-snug">
-                    Resumes arrive directly to your verified HR email or ATS link.
-                  </p>
-                </div>
-
-                <div className="rounded-control border border-border-default/60 bg-surface-card p-3 shadow-subtle transition hover:border-brand/40">
-                  <div className="flex items-center gap-1.5 text-brand mb-1">
-                    <Sparkles size={14} className="shrink-0" />
-                    <span className="text-xs font-bold text-text-primary">Gemini AI Auto-Fill</span>
-                  </div>
-                  <p className="text-[11px] text-text-muted leading-snug">
-                    Paste any draft JD — Gemini extracts and fills all 4 steps in seconds.
-                  </p>
-                </div>
-
-                <div className="rounded-control border border-border-default/60 bg-surface-card p-3 shadow-subtle transition hover:border-brand/40">
-                  <div className="flex items-center gap-1.5 text-brand mb-1">
-                    <MapPin size={14} className="shrink-0" />
-                    <span className="text-xs font-bold text-text-primary">Pan-India & Remote</span>
-                  </div>
-                  <p className="text-[11px] text-text-muted leading-snug">
-                    Target office hubs (Bengaluru, NCR, Kochi) or hire remote talent.
-                  </p>
-                </div>
-
-                <div className="rounded-control border border-border-default/60 bg-surface-card p-3 shadow-subtle transition hover:border-brand/40">
-                  <div className="flex items-center gap-1.5 text-brand mb-1">
-                    <Zap size={14} className="shrink-0" />
-                    <span className="text-xs font-bold text-text-primary">Fast 4-Step Publish</span>
-                  </div>
-                  <p className="text-[11px] text-text-muted leading-snug">
-                    Simple wizard with live markdown preview. Live in under 2 minutes.
-                  </p>
-                </div>
-              </div>
+                ))}
+              </dl>
             </div>
           ) : (
             <header className="mb-6 flex flex-col gap-1 border-b border-border-default/40 pb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -2078,47 +2149,43 @@ export default function JobFormWizard({
                       key={step.num}
                       type="button"
                       onClick={() => handleStepClick(step.num)}
-                      className={`group flex w-full items-center justify-between gap-3 rounded-control border p-3.5 text-left transition-all duration-150 ${
-                        isPast
+                      className={`group flex w-full items-center justify-between gap-3 rounded-control border p-3.5 text-left transition-all duration-150 ${isPast
                           ? "border-brand/30 bg-brand-soft/40 text-brand shadow-subtle hover:bg-brand-soft/60"
                           : isActive
                             ? "border-brand/40 bg-white shadow-subtle ring-1 ring-brand/20"
                             : "border-border-default/50 bg-white/70 text-text-muted hover:border-border-strong hover:bg-white hover:text-text-secondary"
-                      }`}
+                        }`}
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span
-                            className={`font-mono text-xs font-bold ${
-                              isPast
+                            className={`font-mono text-xs font-bold ${isPast
                                 ? "text-brand"
                                 : isActive
                                   ? "text-brand"
                                   : "text-text-muted"
-                            }`}
+                              }`}
                           >
                             {step.tag}
                           </span>
                           <span
-                            className={`text-sm font-bold tracking-tight ${
-                              isPast
+                            className={`text-sm font-bold tracking-tight ${isPast
                                 ? "text-brand"
                                 : isActive
                                   ? "text-text-primary"
                                   : "text-text-muted group-hover:text-text-secondary"
-                            }`}
+                              }`}
                           >
                             {step.label}
                           </span>
                         </div>
                         <p
-                          className={`mt-0.5 text-xs truncate ${
-                            isPast
+                          className={`mt-0.5 text-xs truncate ${isPast
                               ? "text-brand/80"
                               : isActive
                                 ? "text-text-secondary"
                                 : "text-text-muted/70 group-hover:text-text-muted"
-                          }`}
+                            }`}
                         >
                           {step.brief}
                         </p>
@@ -2146,748 +2213,857 @@ export default function JobFormWizard({
           {/* Right Form Content */}
           <div className="flex-1 min-w-0">
             <form onSubmit={handleSubmit} noValidate>
-          {error && (
-            <div className="mb-6 flex items-start gap-2.5 rounded-control border border-status-error/30 bg-status-error/10 p-3.5 text-xs text-status-error">
-              <AlertCircle size={15} className="mt-0.5 shrink-0" />
-              <p className="font-medium">{error}</p>
-            </div>
-          )}
+              {error && (
+                <div className="mb-6 flex items-start gap-2.5 rounded-control border border-status-error/30 bg-status-error/10 p-3.5 text-xs text-status-error">
+                  <AlertCircle size={15} className="mt-0.5 shrink-0" />
+                  <p className="font-medium">{error}</p>
+                </div>
+              )}
 
-          {/* STEP 1: ROLE */}
-          {currentStep === 1 && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <Field
-                  label="Job Title"
-                  name="title"
-                  value={form.title}
-                  onChange={handleChange}
-                  placeholder="e.g. Senior Frontend Engineer"
-                  icon={BriefcaseBusiness}
-                  error={fieldErrors.title}
-                  required
-                />
-
-                <Field
-                  label="Company Name"
-                  name="company"
-                  value={form.company}
-                  onChange={handleChange}
-                  placeholder="e.g. Acme Inc."
-                  icon={Building2}
-                  error={fieldErrors.company}
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <div>
-                  <label htmlFor="category" className={labelClass}>
-                    Job Category
-                    <span className="ml-1 text-status-error">*</span>
-                  </label>
-                  <div className="group relative">
-                    <select
-                      id="category"
-                      name="category"
-                      value={form.category}
+              {/* STEP 1: ROLE */}
+              {currentStep === 1 && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <Field
+                      label="Job Title"
+                      name="title"
+                      value={form.title}
                       onChange={handleChange}
-                      className={`${inputClass} cursor-pointer appearance-none pr-10`}
+                      placeholder="e.g. Senior Frontend Engineer"
+                      icon={BriefcaseBusiness}
+                      error={fieldErrors.title}
                       required
-                    >
-                      {JOB_CATEGORIES.map((cat) => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown
-                      size={15}
-                      strokeWidth={1.8}
-                      className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand"
                     />
-                  </div>
-                </div>
 
-                <div>
-                  <label htmlFor="employmentType" className={labelClass}>
-                    Employment Type
-                  </label>
-                  <div className="group relative">
-                    <select
-                      id="employmentType"
-                      name="employmentType"
-                      value={form.employmentType}
+                    <Field
+                      label="Company Name"
+                      name="company"
+                      value={form.company}
                       onChange={handleChange}
-                      className={`${inputClass} cursor-pointer appearance-none pr-10`}
+                      placeholder="e.g. Acme Inc."
+                      icon={Building2}
+                      error={fieldErrors.company}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="category" className={labelClass}>
+                        Job Category
+                        <span className="ml-1 text-status-error">*</span>
+                      </label>
+                      <div className="group relative">
+                        <select
+                          id="category"
+                          name="category"
+                          value={form.category}
+                          onChange={handleChange}
+                          className={`${inputClass} cursor-pointer appearance-none pr-10`}
+                          required
+                        >
+                          {JOB_CATEGORIES.map((cat) => (
+                            <option key={cat} value={cat}>
+                              {cat}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown
+                          size={15}
+                          strokeWidth={1.8}
+                          className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="employmentType" className={labelClass}>
+                        Employment Type
+                      </label>
+                      <div className="group relative">
+                        <select
+                          id="employmentType"
+                          name="employmentType"
+                          value={form.employmentType}
+                          onChange={handleChange}
+                          className={`${inputClass} cursor-pointer appearance-none pr-10`}
+                        >
+                          <option value="FULL_TIME">Full-time</option>
+                          <option value="PART_TIME">Part-time</option>
+                          <option value="CONTRACTOR">Contract</option>
+                          <option value="INTERN">Internship</option>
+                        </select>
+                        <ChevronDown
+                          size={15}
+                          strokeWidth={1.8}
+                          className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <Field
+                    label="Company Website (Optional)"
+                    name="companyLink"
+                    value={form.companyLink}
+                    onChange={handleChange}
+                    placeholder="https://company.com"
+                    icon={Globe}
+                    type="url"
+                  />
+
+                  <div className="flex items-center justify-end pt-4">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => {
+                        isNavigatingRef.current = true;
+                        e.preventDefault();
+                      }}
+                      onClick={handleNext}
+                      className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover"
                     >
-                      <option value="FULL_TIME">Full-time</option>
-                      <option value="PART_TIME">Part-time</option>
-                      <option value="CONTRACTOR">Contract</option>
-                      <option value="INTERN">Internship</option>
-                    </select>
-                    <ChevronDown
-                      size={15}
-                      strokeWidth={1.8}
-                      className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand"
-                    />
+                      <span>Continue to Location</span>
+                      <ArrowUpRight size={14} />
+                    </button>
                   </div>
                 </div>
-              </div>
+              )}
 
-              <Field
-                label="Company Website (Optional)"
-                name="companyLink"
-                value={form.companyLink}
-                onChange={handleChange}
-                placeholder="https://company.com"
-                icon={Globe}
-                type="url"
-              />
-
-              <div className="flex items-center justify-end pt-4">
-                <button
-                  type="button"
-                  onMouseDown={(e) => {
-                    isNavigatingRef.current = true;
-                    e.preventDefault();
-                  }}
-                  onClick={handleNext}
-                  className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover"
-                >
-                  <span>Continue to Location</span>
-                  <ArrowUpRight size={14} />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 2: LOCATION */}
-          {currentStep === 2 && (
-            <div className="space-y-6">
-              {/* Work Mode Toggle */}
-              <div>
-                <label className={labelClass}>Work Mode</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {(["Onsite", "Hybrid", "Remote"] as const).map((modeOption) => {
-                    const isSelected = form.workMode === modeOption;
-                    return (
-                      <button
-                        key={modeOption}
-                        type="button"
-                        onClick={() => {
-                          setForm((prev) => ({
-                            ...prev,
-                            workMode: modeOption,
-                          }));
-                          if (error) setError("");
-                        }}
-                        className={`flex items-center justify-center gap-2 rounded-control border py-2.5 text-xs font-semibold transition-all ${isSelected
-                          ? "border-brand bg-brand-soft text-brand"
-                          : "border-border-default bg-surface-card text-text-secondary hover:border-border-strong hover:text-text-primary"
-                          }`}
-                      >
-                        {modeOption === "Onsite" && <Building2 size={13} />}
-                        {modeOption === "Hybrid" && <Building2 size={13} />}
-                        {modeOption === "Remote" && <Globe size={13} />}
-                        <span>{modeOption === "Onsite" ? "On-site" : modeOption}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* 1. Company Office / Branches Picker */}
-              <div className="space-y-3">
-                <label className={labelClass}>
-                  Company Office Locations / Hubs
-                  <span className="ml-1 text-status-error">*</span>
-                </label>
-
-                <CompanyCitySelector
-                  onSelect={handleAddOffice}
-                  placeholder="Search city (e.g. Bengaluru, Kochi, Mumbai)..."
-                />
-                {fieldErrors.selectedOffices && (
-                  <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
-                    <AlertCircle size={12} className="shrink-0" />
-                    <span>{fieldErrors.selectedOffices}</span>
-                  </p>
-                )}
-
-                {/* Selected office chips */}
-                {form.selectedOffices.length > 0 && (
-                  <div className="flex flex-wrap items-center gap-2 pt-1">
-                    {form.selectedOffices.map((office) => (
-                      <span
-                        key={office.city}
-                        className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-subtle px-2.5 py-1 text-xs font-medium text-text-primary"
-                      >
-                        <span className="font-semibold">{office.city}</span>
-                        {office.state && (
-                          <span className="text-[11px] text-text-muted">
-                            ({office.state})
-                          </span>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveOffice(office.city)}
-                          className="ml-1 text-text-muted hover:text-status-error"
-                          aria-label={`Remove ${office.city}`}
-                        >
-                          <X size={12} />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* 2. Candidate Residency / Eligibility Scope */}
-              <div className="space-y-3 border-t border-border-default/40 pt-5">
-                <label className={labelClass}>Candidate Residency & Eligibility</label>
-
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {(() => {
-                    const officeStates = getOfficeStates(form.selectedOffices);
-                    const stateDesc = officeStates.join(", ");
-                    const officeCities = form.selectedOffices.map((o) => o.city);
-                    const officeSummary = officeCities.join(", ");
-
-                    const residencyOptions: Array<{
-                      id: CandidatePreference;
-                      title: string;
-                      desc: string;
-                      fullWidth?: boolean;
-                    }> = [
-                      {
-                        id: "COMPANY_STATE",
-                        title: "Company State",
-                        desc: stateDesc
-                          ? (form.workMode === "Remote" ? `Remote, within ${stateDesc}` : `Candidates in ${stateDesc} only`)
-                          : (form.workMode === "Remote" ? "Remote, within company state" : "Candidates in company's state only"),
-                      },
-                      {
-                        id: "ALL_INDIA",
-                        title: "Pan-India",
-                        desc: form.workMode === "Remote"
-                          ? "Anywhere in India (Remote · Pan-India)"
-                          : "Anywhere in India",
-                      },
-                      {
-                        id: "EXACT_LOCATION",
-                        title: "Office Location Only",
-                        desc: officeSummary
-                          ? (form.workMode === "Remote" ? `Remote, within ${officeSummary}` : `Local candidates in ${officeSummary} only`)
-                          : (form.workMode === "Remote" ? "Remote, but candidate must reside in office city" : "Local candidates only"),
-                      },
-                      {
-                        id: "SPECIFIC_LOCATION",
-                        title: "Specific States / Cities",
-                        desc: "Limit eligible applicants to chosen regions or cities",
-                      },
-                      {
-                        id: "WORLDWIDE",
-                        title: "Worldwide",
-                        desc: form.workMode === "Remote"
-                          ? "Open to global international candidates"
-                          : "International applicants",
-                        fullWidth: true,
-                      },
-                    ];
-
-                    return residencyOptions.map((pref) => {
-                      const isSelected = form.candidatePreference === pref.id;
-                      return (
-                        <button
-                          key={pref.id}
-                          type="button"
-                          onClick={() => {
-                            setForm((prev) => ({
-                              ...prev,
-                              candidatePreference: pref.id,
-                            }));
-                            setFieldErrors((prev) => {
-                              if (!prev.preferredTargets) return prev;
-                              const copy = { ...prev };
-                              delete copy.preferredTargets;
-                              return copy;
-                            });
-                            if (error) setError("");
-                          }}
-                          className={`flex flex-col rounded-control border p-3 text-left transition-all ${
-                            pref.fullWidth ? "sm:col-span-2" : ""
-                          } ${
-                            isSelected
-                              ? "border-brand bg-brand-soft/60 ring-1 ring-brand/30"
-                              : "border-border-default bg-surface-card hover:border-border-strong"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span
-                              className={`text-xs font-semibold ${
-                                isSelected ? "text-brand" : "text-text-primary"
-                              }`}
-                            >
-                              {pref.title}
-                            </span>
-                            {isSelected && <Check size={14} className="text-brand" />}
-                          </div>
-                          <span className="mt-1 text-[11px] leading-4 text-text-muted">
-                            {pref.desc}
-                          </span>
-                        </button>
-                      );
-                    });
-                  })()}
-                </div>
-
-                {/* Feedback helper when COMPANY_STATE is selected */}
-                {form.candidatePreference === "COMPANY_STATE" && (
-                  <div className="rounded-control border border-border-default/60 bg-surface-subtle/50 px-3 py-2 text-xs text-text-secondary">
-                    {(() => {
-                      const states = getOfficeStates(form.selectedOffices);
-                      if (states.length > 0) {
+              {/* STEP 2: LOCATION */}
+              {currentStep === 2 && (
+                <div className="space-y-6">
+                  {/* Work Mode Toggle */}
+                  <div>
+                    <label className={labelClass}>Work Mode</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(["Onsite", "Hybrid", "Remote"] as const).map((modeOption) => {
+                        const isSelected = form.workMode === modeOption;
                         return (
-                          <span className="flex items-center gap-1.5">
-                            <CheckCircle2 size={13} className="shrink-0 text-brand" />
-                            <span>
-                              Candidates residing in <strong className="text-text-primary">{states.join(", ")}</strong> will be eligible to apply.
-                            </span>
-                          </span>
+                          <button
+                            key={modeOption}
+                            type="button"
+                            onClick={() => {
+                              setForm((prev) => ({
+                                ...prev,
+                                workMode: modeOption,
+                              }));
+                              if (error) setError("");
+                            }}
+                            className={`flex items-center justify-center gap-2 rounded-control border py-2.5 text-xs font-semibold transition-all ${isSelected
+                              ? "border-brand bg-brand-soft text-brand"
+                              : "border-border-default bg-surface-card text-text-secondary hover:border-border-strong hover:text-text-primary"
+                              }`}
+                          >
+                            {modeOption === "Onsite" && <Building2 size={13} />}
+                            {modeOption === "Hybrid" && <Building2 size={13} />}
+                            {modeOption === "Remote" && <Globe size={13} />}
+                            <span>{modeOption === "Onsite" ? "On-site" : modeOption}</span>
+                          </button>
                         );
-                      }
-                      return (
-                        <span className="text-[11px] text-text-muted">
-                          Add your company office location above to automatically limit applicant eligibility to your company&apos;s state.
-                        </span>
-                      );
-                    })()}
+                      })}
+                    </div>
                   </div>
-                )}
 
-                {/* Feedback helper when EXACT_LOCATION is selected */}
-                {form.candidatePreference === "EXACT_LOCATION" && (
-                  <div className="rounded-control border border-border-default/60 bg-surface-subtle/50 px-3 py-2 text-xs text-text-secondary">
-                    {form.selectedOffices.length > 0 ? (
-                      <span className="flex items-center gap-1.5">
-                        <CheckCircle2 size={13} className="shrink-0 text-brand" />
-                        <span>
-                          Only candidates residing in <strong className="text-text-primary">{form.selectedOffices.map((o) => o.city).join(", ")}</strong> will be eligible to apply.
-                        </span>
-                      </span>
-                    ) : (
-                      <span className="text-[11px] text-text-muted">
-                        Add your company office location above to automatically limit applicant eligibility to your office city.
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {/* Specific targets selector if chosen */}
-                {form.candidatePreference === "SPECIFIC_LOCATION" && (
-                  <div className="mt-3 space-y-2 rounded-control border border-border-default bg-surface-subtle/40 p-3.5">
+                  {/* 1. Company Office / Branches Picker */}
+                  <div className="space-y-3">
                     <label className={labelClass}>
-                      Add Allowed Cities or States
+                      Company Office Locations / Hubs
+                      <span className="ml-1 text-status-error">*</span>
                     </label>
-                    <CandidateScopeSelector
-                      onAdd={handleAddPreferredTarget}
-                      placeholder="Search allowed city or state..."
+
+                    <CompanyCitySelector
+                      onSelect={handleAddOffice}
+                      placeholder="Search city (e.g. Bengaluru, Kochi, Mumbai)..."
                     />
-                    {fieldErrors.preferredTargets && (
+                    {fieldErrors.selectedOffices && (
                       <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
                         <AlertCircle size={12} className="shrink-0" />
-                        <span>{fieldErrors.preferredTargets}</span>
+                        <span>{fieldErrors.selectedOffices}</span>
                       </p>
                     )}
 
-                    {form.preferredTargets.length > 0 && (
-                      <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                        {form.preferredTargets.map((target) => (
+                    {/* Selected office chips */}
+                    {form.selectedOffices.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-2 pt-1">
+                        {form.selectedOffices.map((office) => (
                           <span
-                            key={target.name}
-                            className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-card px-2 py-0.5 text-xs text-text-primary"
+                            key={office.city}
+                            className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-subtle px-2.5 py-1 text-xs font-medium text-text-primary"
                           >
-                            <span>{target.name}</span>
-                            <span className="text-[10px] text-text-muted">
-                              ({target.type})
-                            </span>
+                            <span className="font-semibold">{office.city}</span>
+                            {office.state && (
+                              <span className="text-[11px] text-text-muted">
+                                ({office.state})
+                              </span>
+                            )}
                             <button
                               type="button"
-                              onClick={() => handleRemovePreferredTarget(target.name)}
+                              onClick={() => handleRemoveOffice(office.city)}
                               className="ml-1 text-text-muted hover:text-status-error"
+                              aria-label={`Remove ${office.city}`}
                             >
-                              <X size={11} />
+                              <X size={12} />
                             </button>
                           </span>
                         ))}
                       </div>
                     )}
                   </div>
-                )}
-              </div>
 
-              {/* Navigation */}
-              <div className="flex items-center justify-between pt-4">
-                <button
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={handleBack}
-                  className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
-                >
-                  <ArrowLeft size={13} />
-                  <span>Back</span>
-                </button>
-                <button
-                  type="button"
-                  onMouseDown={(e) => {
-                    isNavigatingRef.current = true;
-                    e.preventDefault();
-                  }}
-                  onClick={handleNext}
-                  className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover"
-                >
-                  <span>Continue to Compensation</span>
-                  <ArrowUpRight size={14} />
-                </button>
-              </div>
-            </div>
-          )}
+                  {/* 2. Candidate Residency / Eligibility Scope */}
+                  <div className="space-y-3 border-t border-border-default/40 pt-5">
+                    <label className={labelClass}>Candidate Residency & Eligibility</label>
 
-          {/* STEP 3: COMPENSATION */}
-          {currentStep === 3 && (
-            <div className="space-y-6">
-              {/* Experience fields */}
-              <div>
-                <label className={labelClass}>
-                  Experience Requirement (Years)
-                  <span className="ml-1 text-status-error">*</span>
-                </label>
-                <div className="grid grid-cols-2 gap-4">
-                  <Field
-                    label="Minimum (0 for Fresher)"
-                    name="experienceMin"
-                    value={form.experienceMin}
-                    onChange={handleChange}
-                    placeholder="0"
-                    type="number"
-                    min="0"
-                    max="30"
-                    error={fieldErrors.experienceMin}
-                    required
-                  />
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {(() => {
+                        const officeStates = getOfficeStates(form.selectedOffices);
+                        const stateDesc = officeStates.join(", ");
+                        const officeCities = form.selectedOffices.map((o) => o.city);
+                        const officeSummary = officeCities.join(", ");
 
-                  <Field
-                    label="Maximum (Optional)"
-                    name="experienceMax"
-                    value={form.experienceMax}
-                    onChange={handleChange}
-                    placeholder="e.g. 3"
-                    type="number"
-                    min="0"
-                    max="30"
-                    error={fieldErrors.experienceMax}
-                  />
-                </div>
+                        const residencyOptions: Array<{
+                          id: CandidatePreference;
+                          title: string;
+                          desc: string;
+                          fullWidth?: boolean;
+                        }> = [
+                            {
+                              id: "COMPANY_STATE",
+                              title: "Company State",
+                              desc: stateDesc
+                                ? (form.workMode === "Remote" ? `Remote, within ${stateDesc}` : `Candidates in ${stateDesc} only`)
+                                : (form.workMode === "Remote" ? "Remote, within company state" : "Candidates in company's state only"),
+                            },
+                            {
+                              id: "ALL_INDIA",
+                              title: "Pan-India",
+                              desc: form.workMode === "Remote"
+                                ? "Anywhere in India (Remote · Pan-India)"
+                                : "Anywhere in India",
+                            },
+                            {
+                              id: "EXACT_LOCATION",
+                              title: "Office Location Only",
+                              desc: officeSummary
+                                ? (form.workMode === "Remote" ? `Remote, within ${officeSummary}` : `Local candidates in ${officeSummary} only`)
+                                : (form.workMode === "Remote" ? "Remote, but candidate must reside in office city" : "Local candidates only"),
+                            },
+                            {
+                              id: "SPECIFIC_LOCATION",
+                              title: "Specific States / Cities",
+                              desc: "Limit eligible applicants to chosen regions or cities",
+                            },
+                            {
+                              id: "WORLDWIDE",
+                              title: "Worldwide",
+                              desc: form.workMode === "Remote"
+                                ? "Open to global international candidates"
+                                : "International applicants",
+                              fullWidth: true,
+                            },
+                          ];
 
-                <div className="mt-2 flex items-center gap-2 text-xs text-text-muted">
-                  <span>Formatted display:</span>
-                  <span className="rounded-control bg-surface-subtle px-2 py-0.5 font-semibold text-text-primary">
-                    {previewExperience}
-                  </span>
-                </div>
-              </div>
+                        return residencyOptions.map((pref) => {
+                          const isSelected = form.candidatePreference === pref.id;
+                          return (
+                            <button
+                              key={pref.id}
+                              type="button"
+                              onClick={() => {
+                                setForm((prev) => ({
+                                  ...prev,
+                                  candidatePreference: pref.id,
+                                }));
+                                setFieldErrors((prev) => {
+                                  if (!prev.preferredTargets) return prev;
+                                  const copy = { ...prev };
+                                  delete copy.preferredTargets;
+                                  return copy;
+                                });
+                                if (error) setError("");
+                              }}
+                              className={`flex flex-col rounded-control border p-3 text-left transition-all ${pref.fullWidth ? "sm:col-span-2" : ""
+                                } ${isSelected
+                                  ? "border-brand bg-brand-soft/60 ring-1 ring-brand/30"
+                                  : "border-border-default bg-surface-card hover:border-border-strong"
+                                }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className={`text-xs font-semibold ${isSelected ? "text-brand" : "text-text-primary"
+                                    }`}
+                                >
+                                  {pref.title}
+                                </span>
+                                {isSelected && <Check size={14} className="text-brand" />}
+                              </div>
+                              <span className="mt-1 text-[11px] leading-4 text-text-muted">
+                                {pref.desc}
+                              </span>
+                            </button>
+                          );
+                        });
+                      })()}
+                    </div>
 
-              {/* Salary & Application Email */}
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <Field
-                  label="Compensation / Salary"
-                  name="salary"
-                  value={form.salary}
-                  onChange={handleChange}
-                  placeholder="e.g. ₹12–18 LPA or Not Disclosed"
-                  icon={Banknote}
-                />
-
-                <div>
-                  <Field
-                    label="Application Email"
-                    name="mail"
-                    value={form.mail}
-                    onChange={handleChange}
-                    onBlur={handleEmailBlur}
-                    placeholder="careers@company.com"
-                    icon={Mail}
-                    type="email"
-                    error={fieldErrors.mail}
-                    required
-                  />
-                  <div className="min-h-[22px]">
-                    {isValidatingEmail && (
-                      <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-text-muted animate-in fade-in duration-150">
-                        <LoaderCircle size={12} className="animate-spin text-brand shrink-0" />
-                        <span>Verifying mail server & MX records...</span>
-                      </p>
+                    {/* Feedback helper when COMPANY_STATE is selected */}
+                    {form.candidatePreference === "COMPANY_STATE" && (
+                      <div className="rounded-control border border-border-default/60 bg-surface-subtle/50 px-3 py-2 text-xs text-text-secondary">
+                        {(() => {
+                          const states = getOfficeStates(form.selectedOffices);
+                          if (states.length > 0) {
+                            return (
+                              <span className="flex items-center gap-1.5">
+                                <CheckCircle2 size={13} className="shrink-0 text-brand" />
+                                <span>
+                                  Candidates residing in <strong className="text-text-primary">{states.join(", ")}</strong> will be eligible to apply.
+                                </span>
+                              </span>
+                            );
+                          }
+                          return (
+                            <span className="text-[11px] text-text-muted">
+                              Add your company office location above to automatically limit applicant eligibility to your company&apos;s state.
+                            </span>
+                          );
+                        })()}
+                      </div>
                     )}
-                    {!isValidatingEmail && !fieldErrors.mail && emailVerifiedDomain && (
-                      <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-text-muted animate-in fade-in duration-150">
-                        <CheckCircle2 size={12} className="shrink-0 text-brand" />
-                        <span>Active email domain (@{emailVerifiedDomain})</span>
-                      </p>
+
+                    {/* Feedback helper when EXACT_LOCATION is selected */}
+                    {form.candidatePreference === "EXACT_LOCATION" && (
+                      <div className="rounded-control border border-border-default/60 bg-surface-subtle/50 px-3 py-2 text-xs text-text-secondary">
+                        {form.selectedOffices.length > 0 ? (
+                          <span className="flex items-center gap-1.5">
+                            <CheckCircle2 size={13} className="shrink-0 text-brand" />
+                            <span>
+                              Only candidates residing in <strong className="text-text-primary">{form.selectedOffices.map((o) => o.city).join(", ")}</strong> will be eligible to apply.
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="text-[11px] text-text-muted">
+                            Add your company office location above to automatically limit applicant eligibility to your office city.
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Specific targets selector if chosen */}
+                    {form.candidatePreference === "SPECIFIC_LOCATION" && (
+                      <div className="mt-3 space-y-2 rounded-control border border-border-default bg-surface-subtle/40 p-3.5">
+                        <label className={labelClass}>
+                          Add Allowed Cities or States
+                        </label>
+                        <CandidateScopeSelector
+                          onAdd={handleAddPreferredTarget}
+                          placeholder="Search allowed city or state..."
+                        />
+                        {fieldErrors.preferredTargets && (
+                          <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
+                            <AlertCircle size={12} className="shrink-0" />
+                            <span>{fieldErrors.preferredTargets}</span>
+                          </p>
+                        )}
+
+                        {form.preferredTargets.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                            {form.preferredTargets.map((target) => (
+                              <span
+                                key={target.name}
+                                className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-card px-2 py-0.5 text-xs text-text-primary"
+                              >
+                                <span>{target.name}</span>
+                                <span className="text-[10px] text-text-muted">
+                                  ({target.type})
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemovePreferredTarget(target.name)}
+                                  className="ml-1 text-text-muted hover:text-status-error"
+                                >
+                                  <X size={11} />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
-                </div>
-              </div>
 
-              {/* Posting Date */}
-              <div className="max-w-xs">
-                <Field
-                  label="Posting Date"
-                  name="postedDate"
-                  value={form.postedDate}
-                  onChange={handleChange}
-                  placeholder="YYYY-MM-DD"
-                  type="date"
-                  icon={CalendarDays}
-                  required
-                />
-              </div>
-
-              {/* Navigation */}
-              <div className="flex items-center justify-between pt-4">
-                <button
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={handleBack}
-                  className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
-                >
-                  <ArrowLeft size={13} />
-                  <span>Back</span>
-                </button>
-                <button
-                  type="button"
-                  onMouseDown={(e) => {
-                    isNavigatingRef.current = true;
-                    e.preventDefault();
-                  }}
-                  onClick={handleNext}
-                  disabled={isCheckingNext}
-                  className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isCheckingNext ? (
-                    <>
-                      <LoaderCircle size={14} className="animate-spin" />
-                      <span>Verifying & Continuing...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Continue to Review</span>
+                  {/* Navigation */}
+                  <div className="flex items-center justify-between pt-4">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={handleBack}
+                      className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
+                    >
+                      <ArrowLeft size={13} />
+                      <span>Back</span>
+                    </button>
+                    <button
+                      type="button"
+                      onMouseDown={(e) => {
+                        isNavigatingRef.current = true;
+                        e.preventDefault();
+                      }}
+                      onClick={handleNext}
+                      className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover"
+                    >
+                      <span>Continue to Compensation</span>
                       <ArrowUpRight size={14} />
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 4: REVIEW */}
-          {currentStep === 4 && (
-            <div className="space-y-6">
-              {/* Description */}
-              <div>
-                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                  <label htmlFor="description" className={`${labelClass} mb-0`}>
-                    Job Description & Requirements
-                    <span className="ml-1 text-status-error">*</span>
-                  </label>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      disabled={isGeneratingDesc}
-                      onClick={handleGenerateDescription}
-                      title="Generate a structured job description from role details"
-                      className="inline-flex items-center gap-1.5 rounded-control border border-brand/30 bg-brand-soft/50 px-2.5 py-1 text-xs font-semibold text-brand transition hover:bg-brand-soft disabled:opacity-50"
-                    >
-                      {isGeneratingDesc ? (
-                        <>
-                          <LoaderCircle size={12} className="animate-spin" />
-                          <span>Generating...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles size={12} />
-                          <span>Generate Description</span>
-                        </>
-                      )}
-                    </button>
-
-                    <button
-                      type="button"
-                      disabled={isEnhancingDesc || !form.description.trim()}
-                      onClick={handleEnhanceDescription}
-                      title="Polish, format and add bullet points to existing text"
-                      className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-subtle px-2.5 py-1 text-xs font-medium text-text-secondary transition hover:bg-surface-base hover:text-text-primary disabled:opacity-40"
-                    >
-                      {isEnhancingDesc ? (
-                        <>
-                          <LoaderCircle size={12} className="animate-spin" />
-                          <span>Polishing...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Wand2 size={12} />
-                          <span>Enhance & Polish</span>
-                        </>
-                      )}
                     </button>
                   </div>
                 </div>
+              )}
 
-                <textarea
-                  ref={descriptionTextareaRef}
-                  id="description"
-                  name="description"
-                  value={form.description}
-                  onChange={(e) => {
-                    handleChange(e);
-                    adjustDescriptionHeight();
-                  }}
-                  onInput={adjustDescriptionHeight}
-                  placeholder="Paste or write the complete role description, responsibilities, and requirements..."
-                  style={{
-                    minHeight: "220px",
-                    overflow: "hidden",
-                    resize: "none",
-                  }}
-                  className={`${inputClass} leading-relaxed transition-[border-color,box-shadow] ${
-                    fieldErrors.description
-                      ? "border-status-error ring-1 ring-status-error/30 focus:border-status-error focus:ring-status-error/40"
-                      : ""
-                  }`}
-                  required
-                />
-                {fieldErrors.description && (
-                  <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
-                    <AlertCircle size={12} className="shrink-0" />
-                    <span>{fieldErrors.description}</span>
-                  </p>
-                )}
-              </div>
-
-              {/* Live Preview Summary Card */}
-              <div className="rounded-card border border-border-default bg-surface-subtle/50 p-5">
-                <div className="flex items-center justify-between border-b border-border-default/50 pb-3">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
-                    Listing Preview
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="rounded-control bg-surface-subtle px-2 py-0.5 text-[11px] font-medium text-text-secondary border border-border-default/40">
-                      {form.category || "UI/UX & Product Design"}
-                    </span>
-                    <span className="rounded-control bg-brand-soft px-2 py-0.5 text-[11px] font-semibold text-brand">
-                      {form.workMode}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-3">
-                  <h3 className="text-lg font-bold text-text-primary">
-                    {form.title || "Untitled Role"}
-                  </h3>
-                  <p className="mt-0.5 text-xs font-medium text-text-secondary">
-                    {form.company || "Company not specified"}
-                  </p>
-                </div>
-
-                <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border-default/40 pt-3 text-xs sm:grid-cols-4">
+              {/* STEP 3: COMPENSATION */}
+              {currentStep === 3 && (
+                <div className="space-y-6">
+                  {/* Experience fields */}
                   <div>
-                    <span className="text-text-muted block text-[10px] uppercase font-semibold">
-                      Location
-                    </span>
-                    <span className="mt-0.5 font-medium text-text-primary truncate block">
-                      {previewLocation}
-                    </span>
-                  </div>
+                    <label className={labelClass}>
+                      Experience Requirement (Years)
+                      <span className="ml-1 text-status-error">*</span>
+                    </label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Field
+                        label="Minimum (0 for Fresher)"
+                        name="experienceMin"
+                        value={form.experienceMin}
+                        onChange={handleChange}
+                        placeholder="0"
+                        type="number"
+                        min="0"
+                        max="30"
+                        error={fieldErrors.experienceMin}
+                        required
+                      />
 
-                  <div>
-                    <span className="text-text-muted block text-[10px] uppercase font-semibold">
-                      Experience
-                    </span>
-                    <span className="mt-0.5 font-medium text-text-primary block">
-                      {previewExperience}
-                    </span>
-                  </div>
+                      <Field
+                        label="Maximum (Optional)"
+                        name="experienceMax"
+                        value={form.experienceMax}
+                        onChange={handleChange}
+                        placeholder="e.g. 3"
+                        type="number"
+                        min="0"
+                        max="30"
+                        error={fieldErrors.experienceMax}
+                      />
+                    </div>
 
-                  <div>
-                    <span className="text-text-muted block text-[10px] uppercase font-semibold">
-                      Salary
-                    </span>
-                    <span className="mt-0.5 font-semibold text-brand block">
-                      {form.salary || "Not Disclosed"}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-text-muted block text-[10px] uppercase font-semibold">
-                      Contact
-                    </span>
-                    <span className="mt-0.5 font-medium text-text-primary truncate block">
-                      {form.mail || "—"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Final Submit Buttons */}
-              <div className="flex items-center justify-between pt-4">
-                <button
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={handleBack}
-                  disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary disabled:opacity-50"
-                >
-                  <ArrowLeft size={13} />
-                  <span>Back</span>
-                </button>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-control bg-brand px-6 text-sm font-semibold text-text-inverse transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60 shadow-subtle"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <LoaderCircle size={15} className="animate-spin" />
-                      <span>
-                        {mode === "edit"
-                          ? "Saving..."
-                          : mode === "public"
-                            ? "Submitting..."
-                            : "Publishing..."}
+                    <div className="mt-2 flex items-center gap-2 text-xs text-text-muted">
+                      <span>Formatted display:</span>
+                      <span className="rounded-control bg-surface-subtle px-2 py-0.5 font-semibold text-text-primary">
+                        {previewExperience}
                       </span>
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 size={16} />
-                      <span>
-                        {mode === "edit"
-                          ? "Save Changes"
-                          : mode === "public"
-                            ? "Submit for Review"
-                            : "Publish Job Listing"}
+                    </div>
+                  </div>
+
+                  {/* Salary & Application Email */}
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <Field
+                      label="Compensation / Salary"
+                      name="salary"
+                      value={form.salary}
+                      onChange={handleChange}
+                      placeholder="e.g. ₹12–18 LPA or Not Disclosed"
+                      icon={Banknote}
+                    />
+
+                    <div>
+                      <Field
+                        label="Application Email"
+                        name="mail"
+                        value={form.mail}
+                        onChange={handleChange}
+                        onBlur={handleEmailBlur}
+                        placeholder="careers@company.com"
+                        icon={Mail}
+                        type="email"
+                        error={fieldErrors.mail}
+                        required
+                      />
+                      <div className="min-h-[22px]">
+                        {isValidatingEmail && (
+                          <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-text-muted animate-in fade-in duration-150">
+                            <LoaderCircle size={12} className="animate-spin text-brand shrink-0" />
+                            <span>Verifying mail server & MX records...</span>
+                          </p>
+                        )}
+                        {!isValidatingEmail && !fieldErrors.mail && emailVerifiedDomain && (
+                          <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-text-muted animate-in fade-in duration-150">
+                            <CheckCircle2 size={12} className="shrink-0 text-brand" />
+                            <span>Active email domain (@{emailVerifiedDomain})</span>
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Posting Date */}
+                  <div className="max-w-xs">
+                    <Field
+                      label="Posting Date"
+                      name="postedDate"
+                      value={form.postedDate}
+                      onChange={handleChange}
+                      placeholder="YYYY-MM-DD"
+                      type="date"
+                      icon={CalendarDays}
+                      required
+                    />
+                  </div>
+
+                  {/* Navigation */}
+                  <div className="flex items-center justify-between pt-4">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={handleBack}
+                      className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
+                    >
+                      <ArrowLeft size={13} />
+                      <span>Back</span>
+                    </button>
+                    <button
+                      type="button"
+                      onMouseDown={(e) => {
+                        isNavigatingRef.current = true;
+                        e.preventDefault();
+                      }}
+                      onClick={handleNext}
+                      disabled={isCheckingNext}
+                      className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {isCheckingNext ? (
+                        <>
+                          <LoaderCircle size={14} className="animate-spin" />
+                          <span>Verifying & Continuing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Continue to Review</span>
+                          <ArrowUpRight size={14} />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 4: REVIEW */}
+              {currentStep === 4 && (
+                <div className="space-y-6">
+                  {/* Description */}
+                  <div>
+                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                      <label htmlFor="description" className={`${labelClass} mb-0`}>
+                        Job Description & Requirements
+                        <span className="ml-1 text-status-error">*</span>
+                      </label>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={isGeneratingDesc}
+                          onClick={handleGenerateDescription}
+                          title="Generate a structured job description from role details"
+                          className="inline-flex items-center gap-1.5 rounded-control border border-brand/30 bg-brand-soft/50 px-2.5 py-1 text-xs font-semibold text-brand transition hover:bg-brand-soft disabled:opacity-50"
+                        >
+                          {isGeneratingDesc ? (
+                            <>
+                              <LoaderCircle size={12} className="animate-spin" />
+                              <span>Generating...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles size={12} />
+                              <span>Generate Description</span>
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={isEnhancingDesc || !form.description.trim()}
+                          onClick={handleEnhanceDescription}
+                          title="Polish, format and add bullet points to existing text"
+                          className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-subtle px-2.5 py-1 text-xs font-medium text-text-secondary transition hover:bg-surface-base hover:text-text-primary disabled:opacity-40"
+                        >
+                          {isEnhancingDesc ? (
+                            <>
+                              <LoaderCircle size={12} className="animate-spin" />
+                              <span>Polishing...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Wand2 size={12} />
+                              <span>Enhance & Polish</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    <textarea
+                      ref={descriptionTextareaRef}
+                      id="description"
+                      name="description"
+                      value={form.description}
+                      onChange={(e) => {
+                        handleChange(e);
+                        adjustDescriptionHeight();
+                      }}
+                      onInput={adjustDescriptionHeight}
+                      placeholder="Paste or write the complete role description, responsibilities, and requirements..."
+                      style={{
+                        minHeight: "220px",
+                        overflow: "hidden",
+                        resize: "none",
+                      }}
+                      className={`${inputClass} leading-relaxed transition-[border-color,box-shadow] ${fieldErrors.description
+                          ? "border-status-error ring-1 ring-status-error/30 focus:border-status-error focus:ring-status-error/40"
+                          : ""
+                        }`}
+                      required
+                    />
+                    {fieldErrors.description && (
+                      <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
+                        <AlertCircle size={12} className="shrink-0" />
+                        <span>{fieldErrors.description}</span>
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Live Preview Summary Card */}
+                  <div className="rounded-card border border-border-default bg-surface-subtle/50 p-5">
+                    <div className="flex items-center justify-between border-b border-border-default/50 pb-3">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+                        Listing Preview
                       </span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-        </form>
+                      <div className="flex items-center gap-1.5">
+                        <span className="rounded-control bg-surface-subtle px-2 py-0.5 text-[11px] font-medium text-text-secondary border border-border-default/40">
+                          {form.category || "UI/UX & Product Design"}
+                        </span>
+                        <span className="rounded-control bg-brand-soft px-2 py-0.5 text-[11px] font-semibold text-brand">
+                          {form.workMode}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="mt-3">
+                      <h3 className="text-lg font-bold text-text-primary">
+                        {form.title || "Untitled Role"}
+                      </h3>
+                      <p className="mt-0.5 text-xs font-medium text-text-secondary">
+                        {form.company || "Company not specified"}
+                      </p>
+                    </div>
+
+                    <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border-default/40 pt-3 text-xs sm:grid-cols-4">
+                      <div>
+                        <span className="text-text-muted block text-[10px] uppercase font-semibold">
+                          Location
+                        </span>
+                        <span className="mt-0.5 font-medium text-text-primary truncate block">
+                          {previewLocation}
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-text-muted block text-[10px] uppercase font-semibold">
+                          Experience
+                        </span>
+                        <span className="mt-0.5 font-medium text-text-primary block">
+                          {previewExperience}
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-text-muted block text-[10px] uppercase font-semibold">
+                          Salary
+                        </span>
+                        <span className="mt-0.5 font-semibold text-brand block">
+                          {form.salary || "Not Disclosed"}
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-text-muted block text-[10px] uppercase font-semibold">
+                          Contact
+                        </span>
+                        <span className="mt-0.5 font-medium text-text-primary truncate block">
+                          {form.mail || "—"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Final Submit Buttons */}
+                  <div className="flex items-center justify-between pt-4">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={handleBack}
+                      disabled={isSubmitting}
+                      className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary disabled:opacity-50"
+                    >
+                      <ArrowLeft size={13} />
+                      <span>Back</span>
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="inline-flex min-h-10 items-center justify-center gap-2 rounded-control bg-brand px-6 text-sm font-semibold text-text-inverse transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60 shadow-subtle"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <LoaderCircle size={15} className="animate-spin" />
+                          <span>
+                            {mode === "edit"
+                              ? "Saving..."
+                              : mode === "public"
+                                ? "Submitting..."
+                                : "Publishing..."}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 size={16} />
+                          <span>
+                            {mode === "edit"
+                              ? "Save Changes"
+                              : mode === "public"
+                                ? "Submit for Review"
+                                : "Publish Job Listing"}
+                          </span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </form>
           </div>
         </div>
       </div>
+
+      {/* How It Works Modal */}
+      <Modal
+        isOpen={showHowItWorksModal}
+        onClose={() => setShowHowItWorksModal(false)}
+        maxWidth="2xl"
+        bodyClassName="p-5 sm:p-6"
+        title={
+          <div className="flex items-center gap-2">
+            <span className="text-base font-semibold text-text-primary sm:text-lg">
+              How Posting Works
+            </span>
+            <span className="rounded-control bg-brand-soft px-2 py-0.5 text-[10px] font-semibold text-brand">
+              4 Quick Steps
+            </span>
+          </div>
+        }
+        description="Direct candidate reach to your HR email. Zero agency fees, zero middlemen."
+      >
+        <div className="space-y-4">
+          {/* Step list */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-control border border-border-default/60 bg-surface-subtle p-3.5">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-control bg-brand/10 text-xs font-bold text-brand">
+                  1
+                </span>
+                <h3 className="text-xs font-semibold text-text-primary">
+                  Role & AI Auto-Fill
+                </h3>
+              </div>
+              <p className="text-[11px] leading-relaxed text-text-muted">
+                Add job title and role type, or paste raw notes and let Gemini AI fill all 4 steps.
+              </p>
+            </div>
+
+            <div className="rounded-control border border-border-default/60 bg-surface-subtle p-3.5">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-control bg-brand/10 text-xs font-bold text-brand">
+                  2
+                </span>
+                <h3 className="text-xs font-semibold text-text-primary">
+                  Work Mode & City
+                </h3>
+              </div>
+              <p className="text-[11px] leading-relaxed text-text-muted">
+                Select Onsite, Hybrid, or Remote and pick your office branch or pan-India.
+              </p>
+            </div>
+
+            <div className="rounded-control border border-border-default/60 bg-surface-subtle p-3.5">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-control bg-brand/10 text-xs font-bold text-brand">
+                  3
+                </span>
+                <h3 className="text-xs font-semibold text-text-primary">
+                  Salary & Direct HR Email
+                </h3>
+              </div>
+              <p className="text-[11px] leading-relaxed text-text-muted">
+                Set salary and your official HR email. Candidate resumes land straight in your inbox.
+              </p>
+            </div>
+
+            <div className="rounded-control border border-border-default/60 bg-surface-subtle p-3.5">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-control bg-brand/10 text-xs font-bold text-brand">
+                  4
+                </span>
+                <h3 className="text-xs font-semibold text-text-primary">
+                  Review & Go Live
+                </h3>
+              </div>
+              <p className="text-[11px] leading-relaxed text-text-muted">
+                Quick preview and publish. Your opening goes live immediately with ₹0 commission.
+              </p>
+            </div>
+          </div>
+
+          {/* Key Advantages Banner */}
+          <div className="rounded-control border border-brand/20 bg-brand-soft/40 p-3">
+            <h4 className="text-xs font-bold text-text-primary mb-1.5 flex items-center gap-2">
+              <Sparkles size={13} className="text-brand" />
+              <span>Direct Employer Benefits</span>
+            </h4>
+            <div className="grid gap-2 text-[11px] text-text-secondary sm:grid-cols-3">
+              <div className="flex items-center gap-1.5">
+                <Check size={12} className="text-brand shrink-0" />
+                <span>Direct to your HR email</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Check size={12} className="text-brand shrink-0" />
+                <span>₹0 Commission & no hidden fees</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Check size={12} className="text-brand shrink-0" />
+                <span>Top tech & design talent</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Modal Footer */}
+          <div className="flex items-center justify-end pt-1">
+            <button
+              type="button"
+              onClick={() => setShowHowItWorksModal(false)}
+              className="rounded-control bg-brand px-5 py-2 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover"
+            >
+              Got it, let's post
+            </button>
+          </div>
+        </div>
+      </Modal>
     </main>
   );
 }
