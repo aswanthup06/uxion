@@ -2505,7 +2505,7 @@ export default function JobFormWizard({
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
             <Link
               href="/jobs"
-              className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-control bg-brand px-6 text-xs font-medium text-text-inverse transition hover:bg-brand-hover shadow-subtle"
+              className="inline-flex items-center justify-center gap-1.5 rounded-control bg-brand px-4 py-2.5 text-xs font-medium text-text-inverse transition hover:bg-brand-hover shadow-subtle"
             >
               <span>Browse Job Listings</span>
               <ArrowUpRight size={14} />
@@ -2541,7 +2541,7 @@ export default function JobFormWizard({
                 lastVerifiedEmailRef.current = "";
                 setIsCheckingNext(false);
               }}
-              className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-5 text-xs font-medium text-text-secondary transition hover:bg-surface-subtle hover:text-text-primary"
+              className="inline-flex items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-medium text-text-secondary transition hover:bg-surface-subtle hover:text-text-primary"
             >
               <span>Post Another Job</span>
             </button>
@@ -2554,36 +2554,6 @@ export default function JobFormWizard({
   return (
     <main className="min-h-full bg-surface-base text-text-primary">
       <div className="mx-auto max-w-7xl px-5 pb-16 pt-6 sm:px-8 sm:pt-8 lg:px-12">
-        {/* Breadcrumb (Admin only) */}
-        {mode !== "public" && (
-          <nav className="mb-6 flex items-center gap-2 text-xs text-text-muted">
-            <Link href="/admin" className="transition hover:text-brand">
-              Dashboard
-            </Link>
-            <span>/</span>
-            <Link href="/admin/jobs" className="transition hover:text-brand">
-              Job listings
-            </Link>
-            <span>/</span>
-            {mode === "edit" && jobId ? (
-              <>
-                <Link
-                  href={`/admin/jobs/${jobId}`}
-                  className="transition hover:text-brand"
-                >
-                  Job details
-                </Link>
-                <span>/</span>
-                <span className="font-medium text-text-primary">Edit</span>
-              </>
-            ) : (
-              <span className="font-medium text-text-primary">
-                Add job
-              </span>
-            )}
-          </nav>
-        )}
-
         {/* Public Hero vs Admin Header */}
         {mode === "public" ? (
           currentStep === 1 && !hasStartedWizard ? (
@@ -3127,7 +3097,7 @@ export default function JobFormWizard({
                         e.preventDefault();
                       }}
                       onClick={handleNext}
-                      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-control px-5 sm:px-6 text-xs sm:text-sm font-medium transition-all duration-200 ${isCurrentStepValid
+                      className={`inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-xs font-medium transition-all duration-200 ${isCurrentStepValid
                           ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30"
                           : "bg-brand/50 text-text-inverse/80 hover:bg-brand/70 hover:text-text-inverse shadow-none"
                         }`}
@@ -3473,7 +3443,7 @@ export default function JobFormWizard({
                       type="button"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={handleBack}
-                      className="inline-flex min-h-10 items-center justify-center rounded-control border border-border-default bg-surface-card px-5 sm:px-6 text-xs sm:text-sm font-medium text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary cursor-pointer"
+                      className="inline-flex items-center justify-center rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-medium text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary cursor-pointer"
                     >
                       <span>Back</span>
                     </button>
@@ -3484,7 +3454,7 @@ export default function JobFormWizard({
                         e.preventDefault();
                       }}
                       onClick={handleNext}
-                      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-control px-5 sm:px-6 text-xs sm:text-sm font-medium transition-all duration-200 ${isCurrentStepValid
+                      className={`inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-xs font-medium transition-all duration-200 ${isCurrentStepValid
                           ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30"
                           : "bg-brand/50 text-text-inverse/80 hover:bg-brand/70 hover:text-text-inverse shadow-none"
                         }`}
@@ -3601,7 +3571,7 @@ export default function JobFormWizard({
                       type="button"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={handleBack}
-                      className="inline-flex min-h-10 items-center justify-center rounded-control border border-border-default bg-surface-card px-5 sm:px-6 text-xs sm:text-sm font-medium text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary cursor-pointer"
+                      className="inline-flex items-center justify-center rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-medium text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary cursor-pointer"
                     >
                       <span>Back</span>
                     </button>
@@ -3613,7 +3583,7 @@ export default function JobFormWizard({
                       }}
                       onClick={handleNext}
                       disabled={isCheckingNext}
-                      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-control px-5 sm:px-6 text-xs sm:text-sm font-medium transition-all duration-200 ${isCheckingNext
+                      className={`inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-xs font-medium transition-all duration-200 ${isCheckingNext
                           ? "cursor-wait opacity-70 bg-brand text-text-inverse"
                           : isCurrentStepValid
                             ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30"
@@ -3994,7 +3964,7 @@ export default function JobFormWizard({
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={handleBack}
                       disabled={isSubmitting}
-                      className="inline-flex min-h-10 items-center justify-center rounded-control border border-border-default bg-surface-card px-5 sm:px-6 text-xs sm:text-sm font-medium text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary disabled:opacity-50 cursor-pointer"
+                      className="inline-flex items-center justify-center rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-medium text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary disabled:opacity-50 cursor-pointer"
                     >
                       <span>Back</span>
                     </button>
@@ -4003,7 +3973,7 @@ export default function JobFormWizard({
                       <button
                         type="button"
                         onClick={handleSaveDraftAndRedirectToLogin}
-                        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-control bg-brand px-5 sm:px-6 text-xs sm:text-sm font-medium text-text-inverse shadow-subtle transition-all duration-200 hover:bg-brand-hover ring-1 ring-brand/30 cursor-pointer"
+                        className="inline-flex items-center justify-center gap-2 rounded-control bg-brand px-4 py-2.5 text-xs font-medium text-text-inverse shadow-subtle transition-all duration-200 hover:bg-brand-hover ring-1 ring-brand/30 cursor-pointer"
                         title="Log in to submit your job listing"
                       >
                         <LogIn size={15} />
@@ -4013,7 +3983,7 @@ export default function JobFormWizard({
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-control px-5 sm:px-6 text-xs sm:text-sm font-medium transition-all duration-200 ${isSubmitting
+                        className={`inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-xs font-medium transition-all duration-200 ${isSubmitting
                             ? "cursor-wait opacity-70 bg-brand text-text-inverse"
                             : isCurrentStepValid
                               ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30"
