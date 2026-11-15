@@ -4052,47 +4052,6 @@ export default function JobFormWizard({
                 </div>
               )}
             </form>
-
-            {/* Keyboard-first quick navigation strip */}
-            <div className="mt-4 flex items-center justify-between border-t border-border-default/40 pt-3 text-[11px] text-text-muted">
-              {/* Keyboard-first quick navigation strip (no border, no bg) */}
-              <div className="mt-3 flex items-center justify-between text-[11px] text-text-muted">
-                <div className="hidden sm:flex items-center gap-2.5">
-                  <span className="inline-flex items-center gap-1">
-                    <kbd className="rounded border border-border-default bg-surface-subtle px-1.5 py-0.5 font-mono text-[10px] text-text-secondary">↓ / ↑</kbd>
-                    <kbd className="font-mono text-[11px] font-semibold text-text-secondary">↓ / ↑</kbd>
-                    <span>switch fields</span>
-                  </span>
-                  <span>·</span>
-                  <span className="inline-flex items-center gap-1">
-                    <kbd className="rounded border border-border-default bg-surface-subtle px-1.5 py-0.5 font-mono text-[10px] text-text-secondary">↵ Enter</kbd>
-                    <kbd className="font-mono text-[11px] font-semibold text-text-secondary">↵ Enter</kbd>
-                    <span>continue / OK</span>
-                  </span>
-                  <span>·</span>
-                  <span className="inline-flex items-center gap-1">
-                    <kbd className="rounded border border-border-default bg-surface-subtle px-1.5 py-0.5 font-mono text-[10px] text-text-secondary">Alt + 1..4</kbd>
-                    <kbd className="font-mono text-[11px] font-semibold text-text-secondary">Alt + 1..4</kbd>
-                    <span>switch tabs</span>
-                  </span>
-                  <span>·</span>
-                  <span className="inline-flex items-center gap-1">
-                    <kbd className="rounded border border-border-default bg-surface-subtle px-1.5 py-0.5 font-mono text-[10px] text-text-secondary">Alt + ← / →</kbd>
-                    <kbd className="font-mono text-[11px] font-semibold text-text-secondary">Alt + ← / →</kbd>
-                    <span>back / next</span>
-                  </span>
-                  <span>·</span>
-                  <span className="inline-flex items-center gap-1">
-                    <kbd className="rounded border border-border-default bg-surface-subtle px-1.5 py-0.5 font-mono text-[10px] text-text-secondary">⌘ + ↵</kbd>
-                    <kbd className="font-mono text-[11px] font-semibold text-text-secondary">⌘ + ↵</kbd>
-                    <span>submit</span>
-                  </span>
-                </div>
-                <span className="font-mono text-[11px] text-text-muted ml-auto">
-                  Step {currentStep} of 4
-                </span>
-              </div>
-            </div>
           </div>
         </div>
 
