@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -108,10 +108,57 @@ export default function Navbar() {
   const [dropdown, setDropdown] = useState<DropdownName>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [returnPath, setReturnPath] = useState("");
   const { user, profile, signOut } = useAuth();
 
   const isAdminRoute = pathname.startsWith("/admin");
   const isAdminLogin = pathname === ADMIN_LOGIN;
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const updateReturnPath = () => {
+      const fullPath = window.location.pathname + window.location.search;
+      if (
+        fullPath &&
+        !fullPath.startsWith("/login") &&
+        !fullPath.startsWith("/admin")
+      ) {
+        setReturnPath(fullPath);
+      }
+    };
+
+    updateReturnPath();
+    window.addEventListener("popstate", updateReturnPath);
+    return () => window.removeEventListener("popstate", updateReturnPath);
+  }, [pathname]);
+
+  const currentTarget =
+    returnPath ||
+    (pathname && !pathname.startsWith("/login") && !pathname.startsWith("/admin")
+      ? pathname
+      : "");
+
+  const loginHref = currentTarget
+    ? `${LOGIN}?redirect=${encodeURIComponent(currentTarget)}`
+    : LOGIN;
+
+  const handleSignInClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (typeof window !== "undefined") {
+      const fullPath = window.location.pathname + window.location.search;
+      if (
+        fullPath &&
+        !fullPath.startsWith("/login") &&
+        !fullPath.startsWith("/admin")
+      ) {
+        e.preventDefault();
+        closeMenus();
+        router.push(`${LOGIN}?redirect=${encodeURIComponent(fullPath)}`);
+        return;
+      }
+    }
+    closeMenus();
+  };
 
   const closeMenus = () => {
     setDropdown(null);
@@ -665,7 +712,8 @@ export default function Navbar() {
               </div>
             ) : (
               <Link
-                href={LOGIN}
+                href={loginHref}
+                onClick={handleSignInClick}
                 className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-secondary transition-colors duration-200 hover:border-brand hover:bg-brand-soft hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
               >
                 Sign in
@@ -1038,8 +1086,8 @@ export default function Navbar() {
                       </Link>
                     ) : (
                       <Link
-                        href={LOGIN}
-                        onClick={closeMenus}
+                        href={loginHref}
+                        onClick={handleSignInClick}
                         className="flex h-11 cursor-pointer items-center justify-center rounded-control bg-brand px-3 text-sm font-semibold text-text-inverse transition-colors hover:bg-brand-hover"
                       >
                         Sign in

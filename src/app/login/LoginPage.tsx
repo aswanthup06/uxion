@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { ArrowUpRight, AlertCircle, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/context/AuthContext";
 
 declare global {
   interface Window {
@@ -47,6 +48,22 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
   const isSignin = mode === "signin";
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user, isLoading: authLoading } = useAuth();
+
+  const rawDestination =
+    searchParams.get("redirect") ||
+    searchParams.get("next") ||
+    "/jobs";
+  const nextDestination =
+    rawDestination.startsWith("/") && !rawDestination.startsWith("//")
+      ? rawDestination
+      : "/jobs";
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace(nextDestination);
+    }
+  }, [user, authLoading, nextDestination, router]);
 
   const [isLoading, setIsLoading] = useState(false);
   const errorParam = searchParams.get("error");
@@ -106,10 +123,6 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
             console.warn("Could not sync profile in background:", syncErr);
           }
 
-          const nextDestination =
-            searchParams.get("redirect") ||
-            searchParams.get("next") ||
-            "/jobs";
           router.push(nextDestination);
           router.refresh();
         }
@@ -120,7 +133,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
         setIsLoading(false);
       }
     },
-    [router, searchParams]
+    [router, nextDestination]
   );
 
   // Initialize and render Google Identity Services button
@@ -181,8 +194,6 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
 
     try {
       const supabase = createClient();
-      const nextDestination =
-        searchParams.get("redirect") || searchParams.get("next") || "/jobs";
       const origin =
         typeof window !== "undefined" ? window.location.origin : "";
       const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(
