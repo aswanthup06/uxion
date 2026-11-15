@@ -981,6 +981,42 @@ export default function JobFormWizard({
   const [showHowItWorksModal, setShowHowItWorksModal] = useState(false);
   const { user } = useAuth();
 
+  // Daily posting limit tracking (anti-spam quota)
+  const [userLimitInfo, setUserLimitInfo] = useState<{
+    dailyLimit: number;
+    used: number;
+    remaining: number;
+    canPost: boolean;
+  } | null>(null);
+
+  const fetchUserPostingLimit = useCallback(async () => {
+    if (mode !== "public" || !user) {
+      setUserLimitInfo(null);
+      return;
+    }
+    try {
+      const authHeaders: Record<string, string> = {};
+      const supabase = createClient();
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData.session?.access_token) {
+        authHeaders["Authorization"] = `Bearer ${sessionData.session.access_token}`;
+      }
+      const res = await fetch("/api/jobs?user_limit=true", {
+        headers: authHeaders,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUserLimitInfo(data);
+      }
+    } catch (e) {
+      console.warn("Could not check user job post limit:", e);
+    }
+  }, [mode, user]);
+
+  useEffect(() => {
+    fetchUserPostingLimit();
+  }, [fetchUserPostingLimit]);
+
   // Clear any existing legacy saved draft on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -2099,6 +2135,14 @@ export default function JobFormWizard({
       return;
     }
 
+    if (mode === "public" && userLimitInfo && userLimitInfo.remaining <= 0) {
+      const limitMsg = `Daily limit reached: You can submit up to ${userLimitInfo.dailyLimit} jobs per day. Please try again tomorrow.`;
+      setError(limitMsg);
+      toast.error(limitMsg);
+      scrollToForm();
+      return;
+    }
+
     if (!validateStep(1, formRefState.current)) {
       setCurrentStep(1);
       scrollToForm();
@@ -2348,6 +2392,20 @@ export default function JobFormWizard({
             localStorage.removeItem("zenoway_post_job_draft");
           }
         } catch { }
+
+        if (typeof data?.remainingDailyPosts === "number") {
+          setUserLimitInfo((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  used: prev.dailyLimit - data.remainingDailyPosts,
+                  remaining: data.remainingDailyPosts,
+                  canPost: data.remainingDailyPosts > 0,
+                }
+              : null
+          );
+        }
+
         setSubmittedJobData(data?.job || payload);
         setIsSubmittedSuccess(true);
         setIsSubmitting(false);
@@ -2373,6 +2431,7 @@ export default function JobFormWizard({
       console.error(err);
       const errMsg = err instanceof Error ? err.message : "Something went wrong.";
       setError(errMsg);
+      toast.error(errMsg);
       if (
         errMsg.toLowerCase().includes("mail") ||
         errMsg.toLowerCase().includes("email") ||
@@ -2631,6 +2690,14 @@ export default function JobFormWizard({
                 </p>
               </div>
               <div className="hidden sm:inline-flex items-center gap-1.5 text-xs text-text-muted">
+                {user && userLimitInfo && (
+                  <>
+                    <span className={userLimitInfo.remaining <= 3 ? "font-semibold text-amber-600 dark:text-amber-400" : "text-text-secondary"}>
+                      {userLimitInfo.remaining} of {userLimitInfo.dailyLimit} posts left today
+                    </span>
+                    <span>•</span>
+                  </>
+                )}
                 <span className="font-semibold text-brand">Direct Applications</span>
                 <span>•</span>
                 <span className="text-text-secondary">Zero Brokerage</span>
@@ -2678,6 +2745,20 @@ export default function JobFormWizard({
               <LogIn size={14} className="text-brand" />
               <span>Log in</span>
             </button>
+          </div>
+        )}
+
+        {/* Daily Post Limit Warning for Public Logged-in User */}
+        {mode === "public" && user && userLimitInfo && userLimitInfo.remaining <= 0 && (
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 rounded-control border border-amber-500/30 bg-amber-500/10 p-3.5 sm:px-4 shadow-subtle">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                <AlertCircle size={15} />
+              </span>
+              <p className="text-xs text-text-secondary leading-normal">
+                <strong className="font-semibold text-text-primary">Daily posting limit reached:</strong> You have submitted {userLimitInfo.dailyLimit}/{userLimitInfo.dailyLimit} jobs today. You can prepare drafts now, but new submissions will reopen tomorrow.
+              </p>
+            </div>
           </div>
         )}
 
@@ -3964,6 +4045,23 @@ export default function JobFormWizard({
                     </div>
                   )}
 
+                  {/* Daily limit reached notice on Step 4 */}
+                  {mode === "public" && user && userLimitInfo && userLimitInfo.remaining <= 0 && (
+                    <div className="mt-4 rounded-control border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-700 dark:text-amber-400">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle size={16} className="mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                        <div>
+                          <p className="font-semibold text-text-primary">
+                            Daily posting limit reached (20/20 jobs posted today)
+                          </p>
+                          <p className="mt-0.5 text-text-secondary leading-relaxed">
+                            To ensure platform quality and prevent spam, users can submit up to 20 job listings per 24 hours. Your entries remain saved, and submissions will reopen tomorrow.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Final Submit Buttons */}
                   <div className="flex items-center justify-between pt-4">
                     <button
@@ -3989,14 +4087,23 @@ export default function JobFormWizard({
                     ) : (
                       <button
                         type="submit"
-                        disabled={isSubmitting}
-                        className={`inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-xs font-medium transition-all duration-200 ${isSubmitting
+                        disabled={isSubmitting || (mode === "public" && Boolean(userLimitInfo && userLimitInfo.remaining <= 0))}
+                        className={`inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-xs font-medium transition-all duration-200 ${
+                          isSubmitting
                             ? "cursor-wait opacity-70 bg-brand text-text-inverse"
+                            : mode === "public" && userLimitInfo && userLimitInfo.remaining <= 0
+                              ? "cursor-not-allowed opacity-50 bg-border-strong text-text-muted shadow-none"
+                              : isCurrentStepValid
+                                ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30 cursor-pointer"
+                                : "bg-brand/50 text-text-inverse/80 hover:bg-brand/70 hover:text-text-inverse shadow-none cursor-pointer"
+                        }`}
+                        title={
+                          mode === "public" && userLimitInfo && userLimitInfo.remaining <= 0
+                            ? "Daily posting limit of 20 jobs reached. Submissions reopen tomorrow."
                             : isCurrentStepValid
-                              ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30"
-                              : "bg-brand/50 text-text-inverse/80 hover:bg-brand/70 hover:text-text-inverse shadow-none"
-                          }`}
-                        title={isCurrentStepValid ? "Publish job listing" : "Enter job description to publish"}
+                              ? "Publish job listing"
+                              : "Enter job description to publish"
+                        }
                       >
                         {isSubmitting ? (
                           <>

@@ -12,9 +12,11 @@ import {
   createJob,
   updateJob,
   deleteJob,
+  getRecentJobCountByUser,
 } from "@/lib/supabase/jobs";
 import type { Job } from "@/app/types/job";
 import { validateEmailDomain } from "@/lib/validation/email";
+import { checkRateLimit } from "@/lib/security/rate-limit";
 import {
   createServerAuthClient,
   getServiceSupabase,
@@ -39,12 +41,61 @@ const MAX_SALARY_LEN = 80;
 const MAX_EMAIL_LEN = 120;
 const MAX_DESCRIPTION_LEN = 35000;
 
+// Maximum job postings allowed per user per 24-hour rolling window
+export const MAX_DAILY_JOBS_PER_USER = 20;
+
 // ✅ GET → Fetch jobs (public gets published jobs; admin can pass ?status=pending or ?status=all)
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
+
+    // Check user posting limit quota for anti-spam tracking
+    const checkLimitParam = searchParams.get("check_limit") || searchParams.get("user_limit");
+    if (checkLimitParam === "true") {
+      let userId: string | null = null;
+      if (isSupabaseConfigured()) {
+        try {
+          const supabase = await createServerAuthClient();
+          const { data } = await supabase.auth.getUser();
+          if (data.user) userId = data.user.id;
+        } catch {}
+      }
+      if (!userId) {
+        const authHeader = req.headers.get("authorization");
+        if (authHeader?.startsWith("Bearer ")) {
+          try {
+            const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+            const service = getServiceSupabase();
+            const { data } = await service.auth.getUser(token);
+            if (data.user) userId = data.user.id;
+          } catch {}
+        }
+      }
+      if (!userId) {
+        return NextResponse.json(
+          { error: "Authentication required to check user posting limit" },
+          { status: 401 }
+        );
+      }
+      const used = await getRecentJobCountByUser(userId, 24);
+      const remaining = Math.max(0, MAX_DAILY_JOBS_PER_USER - used);
+      return NextResponse.json(
+        {
+          dailyLimit: MAX_DAILY_JOBS_PER_USER,
+          used,
+          remaining,
+          canPost: remaining > 0,
+        },
+        {
+          headers: {
+            "Cache-Control": "no-store, max-age=0",
+          },
+        }
+      );
+    }
+
     const idParam = searchParams.get("id");
 
     if (idParam) {
@@ -122,8 +173,9 @@ export async function POST(req: NextRequest) {
   try {
     const isAdmin = await isAuthorizedAdminRequest(req);
     let posterUserId: string | null = null;
+    let userDailyJobCount = 0;
 
-    // Enforce authentication for public job postings:
+    // Enforce authentication & posting quotas for public job postings:
     // Only authenticated users or authorized admins can post jobs.
     if (!isAdmin) {
       if (isSupabaseConfigured()) {
@@ -156,6 +208,43 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(
           { error: "Authentication required. Please log in to post a job." },
           { status: 401 }
+        );
+      }
+
+      // Anti-spam burst limiter (stops automated spam scripts firing dozens of requests concurrently)
+      const burstLimit = checkRateLimit("post-job-burst", posterUserId, {
+        windowMs: 10 * 1000,
+        maxRequests: 3,
+      });
+      if (!burstLimit.allowed) {
+        return NextResponse.json(
+          {
+            error: `You are submitting too fast. Please wait ${burstLimit.retryAfterSec} seconds before submitting again.`,
+          },
+          {
+            status: 429,
+            headers: { "Retry-After": String(burstLimit.retryAfterSec) },
+          }
+        );
+      }
+
+      // Anti-spam daily limit per logged-in user: max 20 jobs per 24-hour rolling window
+      userDailyJobCount = await getRecentJobCountByUser(posterUserId, 24);
+      if (userDailyJobCount >= MAX_DAILY_JOBS_PER_USER) {
+        return NextResponse.json(
+          {
+            error: `Daily posting limit reached. You can submit up to ${MAX_DAILY_JOBS_PER_USER} jobs per day. Please try again tomorrow.`,
+            dailyLimit: MAX_DAILY_JOBS_PER_USER,
+            currentCount: userDailyJobCount,
+            remaining: 0,
+          },
+          {
+            status: 429,
+            headers: {
+              "X-RateLimit-Limit": String(MAX_DAILY_JOBS_PER_USER),
+              "X-RateLimit-Remaining": "0",
+            },
+          }
         );
       }
     }
@@ -300,13 +389,22 @@ export async function POST(req: NextRequest) {
     });
 
     if (!isAdmin) {
+      const remainingPosts = Math.max(0, MAX_DAILY_JOBS_PER_USER - (userDailyJobCount + 1));
       return NextResponse.json(
         {
           message: "Job submitted successfully! It is pending review and will be published once approved.",
           job: newJob,
           pendingReview: true,
+          dailyLimit: MAX_DAILY_JOBS_PER_USER,
+          remainingDailyPosts: remainingPosts,
         },
-        { status: 201 }
+        {
+          status: 201,
+          headers: {
+            "X-RateLimit-Limit": String(MAX_DAILY_JOBS_PER_USER),
+            "X-RateLimit-Remaining": String(remainingPosts),
+          },
+        }
       );
     }
 

@@ -621,3 +621,42 @@ export async function incrementJobViews(id: string): Promise<void> {
 export async function incrementJobEmailCopyCount(id: string): Promise<void> {
   await incrementJobCounter(id, "email_copy_count");
 }
+
+/**
+ * Count how many jobs have been created by a specific user within the last `hours` (default 24h).
+ * Used to enforce daily job posting limits (e.g. 20 posts/day) and protect against spam.
+ */
+export async function getRecentJobCountByUser(
+  userId: string,
+  hours: number = 24
+): Promise<number> {
+  if (!userId) return 0;
+  if (!isSupabaseConfigured()) return 0;
+
+  try {
+    const supabase = getServiceSupabase();
+    const cutoffDate = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+
+    const { count, error } = await supabase
+      .from("jobs")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .gte("created_at", cutoffDate);
+
+    if (error) {
+      console.warn("getRecentJobCountByUser created_at query error:", error.message);
+      // Fallback: If created_at filtering fails, try posted_date
+      const fallback = await supabase
+        .from("jobs")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .gte("posted_date", cutoffDate);
+      return fallback.count ?? 0;
+    }
+
+    return count ?? 0;
+  } catch (err) {
+    console.error("Failed to query user job count:", err);
+    return 0;
+  }
+}
