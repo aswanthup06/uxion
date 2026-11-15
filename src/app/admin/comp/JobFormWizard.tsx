@@ -978,71 +978,16 @@ export default function JobFormWizard({
   const [showHowItWorksModal, setShowHowItWorksModal] = useState(false);
   const { user } = useAuth();
 
-  // Restore saved draft on mount for public post-job
+  // Clear any existing legacy saved draft on mount
   useEffect(() => {
-    if (mode !== "public") return;
-    if (typeof window === "undefined") return;
-    try {
-      const rawDraft = localStorage.getItem("zenoway_post_job_draft");
-      if (rawDraft) {
-        const parsed = JSON.parse(rawDraft);
-        if (parsed?.form && typeof parsed.form === "object") {
-          setForm((prev) => ({
-            ...prev,
-            ...parsed.form,
-          }));
-          if (parsed.currentStep) {
-            setCurrentStep(parsed.currentStep);
-          }
-          if (parsed.hasStartedWizard) {
-            setHasStartedWizard(true);
-          }
-          toast.success("Saved job draft restored.");
-        }
-      }
-    } catch (err) {
-      console.warn("Could not restore post job draft:", err);
-    }
-  }, [mode]);
-
-  // Auto-save draft to localStorage whenever form data changes in public mode
-  useEffect(() => {
-    if (mode !== "public") return;
-    if (typeof window === "undefined") return;
-    if (form.title || form.company || form.description) {
-      try {
-        localStorage.setItem(
-          "zenoway_post_job_draft",
-          JSON.stringify({
-            form,
-            currentStep,
-            hasStartedWizard,
-            savedAt: new Date().toISOString(),
-          })
-        );
-      } catch {
-        // Ignore quota/private mode errors
-      }
-    }
-  }, [mode, form, currentStep, hasStartedWizard]);
-
-  const handleSaveDraftAndRedirectToLogin = useCallback(() => {
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem(
-          "zenoway_post_job_draft",
-          JSON.stringify({
-            form: formRefState.current,
-            currentStep: 4,
-            hasStartedWizard: true,
-            savedAt: new Date().toISOString(),
-          })
-        );
-      } catch (err) {
-        console.warn("Could not save post job draft:", err);
-      }
+        localStorage.removeItem("zenoway_post_job_draft");
+      } catch {}
     }
-    toast("Draft saved. Please log in to complete posting.", { icon: "ℹ️" });
+  }, []);
+
+  const handleSaveDraftAndRedirectToLogin = useCallback(() => {
     router.push("/login?redirect=/post-job");
   }, [router]);
 
