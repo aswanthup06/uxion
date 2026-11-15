@@ -8,10 +8,12 @@ export async function POST(request: NextRequest) {
     let fullName: string = "Candidate";
     let avatarUrl: string = "";
 
-    // 1. Try to read user from authenticated session cookies
+    // 1. Authenticate user from session cookies
     try {
       const supabase = await createServerAuthClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         userId = user.id;
         email = user.email || null;
@@ -26,26 +28,44 @@ export async function POST(request: NextRequest) {
           "";
       }
     } catch {
-      // Fall through to body parsing if cookies aren't set yet
+      // Cookies not yet established or SSR client error
     }
 
-    // 2. Fallback to payload body if session wasn't found in cookies immediately
+    // 2. Alternatively authenticate via verified Bearer token
     if (!userId) {
-      try {
-        const body = await request.json();
-        if (body?.id && body?.email) {
-          userId = body.id;
-          email = body.email;
-          if (body.full_name) fullName = body.full_name;
-          if (body.avatar_url) avatarUrl = body.avatar_url;
+      const authHeader = request.headers.get("authorization");
+      if (authHeader?.startsWith("Bearer ")) {
+        try {
+          const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+          const service = getServiceSupabase();
+          const {
+            data: { user },
+          } = await service.auth.getUser(token);
+          if (user) {
+            userId = user.id;
+            email = user.email || null;
+            fullName =
+              user.user_metadata?.full_name ||
+              user.user_metadata?.name ||
+              user.email?.split("@")[0] ||
+              "Candidate";
+            avatarUrl =
+              user.user_metadata?.avatar_url ||
+              user.user_metadata?.picture ||
+              "";
+          }
+        } catch {
+          // Token invalid
         }
-      } catch {
-        // Body was empty or invalid
       }
     }
 
+    // Strictly reject unauthenticated requests to prevent IDOR / arbitrary profile overwrite
     if (!userId || !email) {
-      return NextResponse.json({ error: "Missing user information" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Unauthorized. Valid user authentication session is required." },
+        { status: 401 }
+      );
     }
 
     const serviceSupabase = getServiceSupabase();
@@ -54,8 +74,8 @@ export async function POST(request: NextRequest) {
       {
         id: userId,
         email: email,
-        full_name: fullName,
-        avatar_url: avatarUrl,
+        full_name: fullName.slice(0, 100),
+        avatar_url: avatarUrl.slice(0, 500),
         role: "candidate",
         updated_at: new Date().toISOString(),
       },
@@ -69,9 +89,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Unexpected error syncing profile";
-    console.error("Profile sync exception:", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const msg = err instanceof Error ? err.message : "Internal server error";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
-

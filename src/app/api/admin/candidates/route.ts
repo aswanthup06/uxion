@@ -1,23 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServiceSupabase } from "@/lib/supabase/server";
-
-function isAuthorizedAdmin(req: NextRequest): boolean {
-  const adminCookie = req.cookies.get("admin-auth");
-  if (adminCookie?.value === "true") return true;
-
-  const authHeader = req.headers.get("authorization");
-  if (authHeader) {
-    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
-    if (token && (token === process.env.ADMIN_KEY || token === process.env.SUPABASE_SERVICE_ROLE_KEY)) {
-      return true;
-    }
-  }
-
-  return false;
-}
+import { isAuthorizedAdminRequest } from "@/lib/auth/admin";
 
 export async function GET(req: NextRequest) {
-  if (!isAuthorizedAdmin(req)) {
+  const isAuthorized = await isAuthorizedAdminRequest(req);
+  if (!isAuthorized) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -42,4 +29,3 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
-

@@ -10,6 +10,10 @@ export interface EmailValidationResult {
 const EMAIL_REGEX =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
 
+// In-memory cache for validated domains (1 hour TTL) to prevent DNS flood
+const DOMAIN_CACHE_TTL_MS = 60 * 60 * 1000;
+const domainMxCache = new Map<string, { result: EmailValidationResult; expiresAt: number }>();
+
 // Timeout wrapper for DNS calls
 async function withTimeout<T>(promise: Promise<T>, ms: number = 3500): Promise<T> {
   let timer: NodeJS.Timeout;
@@ -50,20 +54,38 @@ export async function validateEmailDomain(email: string): Promise<EmailValidatio
     return { valid: false, reason: `The domain '${domain}' is not a valid domain name.` };
   }
 
+  // Check cache
+  const cached = domainMxCache.get(domain);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.result;
+  }
+
+  const cacheAndReturn = (res: EmailValidationResult) => {
+    domainMxCache.set(domain, { result: res, expiresAt: Date.now() + DOMAIN_CACHE_TTL_MS });
+    // Keep cache size bounded
+    if (domainMxCache.size > 2000) {
+      const now = Date.now();
+      for (const [k, v] of domainMxCache.entries()) {
+        if (v.expiresAt <= now) domainMxCache.delete(k);
+      }
+    }
+    return res;
+  };
+
   try {
     const mxRecords = await withTimeout(dns.resolveMx(domain), 3500);
     if (mxRecords && mxRecords.length > 0) {
-      return { valid: true, domain, hasMx: true };
+      return cacheAndReturn({ valid: true, domain, hasMx: true });
     }
   } catch (err: unknown) {
     const dnsErr = err as { code?: string };
     if (dnsErr?.code === "ENOTFOUND") {
-      return {
+      return cacheAndReturn({
         valid: false,
         domain,
         hasMx: false,
         reason: `The domain '${domain}' does not exist. Please check for typos.`,
-      };
+      });
     }
 
     if (dnsErr?.code === "ENODATA") {
@@ -72,15 +94,15 @@ export async function validateEmailDomain(email: string): Promise<EmailValidatio
       try {
         const aRecords = await withTimeout(dns.resolve4(domain), 2000);
         if (aRecords && aRecords.length > 0) {
-          return { valid: true, domain, hasMx: false };
+          return cacheAndReturn({ valid: true, domain, hasMx: false });
         }
       } catch {
-        return {
+        return cacheAndReturn({
           valid: false,
           domain,
           hasMx: false,
           reason: `The domain '${domain}' has no active mail server (MX records). Emails sent here will bounce.`,
-        };
+        });
       }
     }
 

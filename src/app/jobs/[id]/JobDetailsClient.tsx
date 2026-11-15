@@ -15,9 +15,14 @@ import {
   MapPin,
   Share2,
   Wallet,
+  CheckCircle2,
 } from "lucide-react";
 
 import ApplyModal from "./ApplyModal";
+import SiteFooter from "@/app/components/home/SiteFooter";
+import JobCard from "@/app/components/JobCard";
+import { FaWhatsapp } from "react-icons/fa";
+import type { MatchedCommunityGroup } from "@/lib/community/match-group";
 import FormattedDescription from "@/app/components/jobs/FormattedDescription";
 import type { Job } from "@/app/types/job";
 import {
@@ -30,6 +35,8 @@ export type { Job };
 
 type JobDetailsClientProps = {
   job: Job;
+  relatedJobs?: Job[];
+  matchedGroup?: MatchedCommunityGroup | null;
 };
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -155,7 +162,11 @@ function ActionButton({
 }
 
 
-export default function JobDetailsClient({ job }: JobDetailsClientProps) {
+export default function JobDetailsClient({
+  job,
+  relatedJobs = [],
+  matchedGroup = null,
+}: JobDetailsClientProps) {
   const reduceMotion = useReducedMotion();
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -732,55 +743,127 @@ export default function JobDetailsClient({ job }: JobDetailsClientProps) {
             <div>
               <FormattedDescription content={description} />
             </div>
-
-            {companyUrl && (
-              <div className="mt-8 border-t border-border-subtle pt-6">
-                <ActionButton href={companyUrl} external>
-                  <Globe size={15} strokeWidth={1.75} />
-                  Company website
-                  <ArrowUpRight size={14} strokeWidth={1.75} />
-                </ActionButton>
-              </div>
-            )}
           </motion.section>
         </div>
 
-        <footer className="mt-14 border-t border-border-subtle pt-6">
-          <div className="flex flex-wrap gap-x-5 gap-y-3 text-xs text-text-muted">
-            <Link
-              href="/about"
-              className="cursor-pointer transition-colors hover:text-brand"
-            >
-              About
-            </Link>
+        {/* WhatsApp Community Group Callout */}
+        {matchedGroup && (
+          <motion.section
+            {...rise(0.1)}
+            aria-label="Job community group"
+            className="mt-12 rounded-panel border border-border-default bg-surface-card p-6 sm:p-7 shadow-subtle relative overflow-hidden"
+          >
+            {/* Ambient brand glow */}
+            <div
+              className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-brand/5 blur-3xl"
+              aria-hidden="true"
+            />
 
-            <Link
-              href="/privacy-policy"
-              className="cursor-pointer transition-colors hover:text-brand"
-            >
-              Privacy
-            </Link>
+            <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0 flex-1">
+                {/* Eyebrow */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand">
+                    <FaWhatsapp size={14} className="shrink-0" />
+                    Verified WhatsApp Group
+                  </span>
+                  <span className="text-xs text-border-strong select-none">·</span>
+                  <span className="text-xs font-medium text-text-muted">
+                    {matchedGroup.regionName}
+                  </span>
+                </div>
 
-            <Link
-              href="/terms"
-              className="cursor-pointer transition-colors hover:text-brand"
-            >
-              Terms
-            </Link>
+                {/* Title */}
+                <h3 className="mt-2.5 text-lg font-bold tracking-tight text-text-primary sm:text-xl">
+                  Join our {matchedGroup.categoryName} WhatsApp Group
+                </h3>
 
-            <Link
-              href="/contact"
-              className="cursor-pointer transition-colors hover:text-brand"
-            >
-              Contact
-            </Link>
-          </div>
+                {/* Description */}
+                <p className="mt-1.5 text-xs sm:text-sm text-text-secondary leading-relaxed max-w-xl">
+                  Never miss an opening. Get instant alerts for verified{" "}
+                  <span className="font-medium text-text-primary">
+                    {matchedGroup.categoryName}
+                  </span>{" "}
+                  roles in {matchedGroup.regionName} delivered straight to your WhatsApp.
+                </p>
 
-          <p className="mt-4 text-[11px] text-text-muted">
-            © {new Date().getFullYear()} Zenoway
-          </p>
-        </footer>
+                {/* Benefits */}
+                <div className="mt-3.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-text-muted">
+                  <span className="inline-flex items-center gap-1.5 text-[11.5px]">
+                    <CheckCircle2 size={13} className="text-brand shrink-0" />
+                    Instant job notifications
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-[11.5px]">
+                    <CheckCircle2 size={13} className="text-brand shrink-0" />
+                    Direct recruiter openings
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-[11.5px]">
+                    <CheckCircle2 size={13} className="text-brand shrink-0" />
+                    Free to join
+                  </span>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex shrink-0 flex-col sm:items-end gap-2.5">
+                <a
+                  href={matchedGroup.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 py-2 text-xs font-semibold text-text-inverse shadow-subtle transition-colors duration-normal hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                >
+                  <FaWhatsapp size={16} />
+                  Join WhatsApp Group
+                  <ArrowUpRight size={14} strokeWidth={2} />
+                </a>
+
+                <Link
+                  href="/join"
+                  className="text-[11.5px] font-medium text-text-muted hover:text-brand transition-colors text-center sm:text-right"
+                >
+                  Explore all 100+ state & domain groups →
+                </Link>
+              </div>
+            </div>
+          </motion.section>
+        )}
+
+        {/* Related Jobs Section */}
+        {relatedJobs && relatedJobs.length > 0 && (
+          <motion.section
+            {...rise(0.14)}
+            aria-label="Related opportunities"
+            className="mt-12"
+          >
+            <div className="mb-6 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="text-xl font-bold tracking-tight text-text-primary">
+                  Related Jobs
+                </h2>
+                <p className="mt-1 text-xs text-text-muted">
+                  Similar opportunities in {matchedGroup?.categoryName || "this field"} you might be interested in
+                </p>
+              </div>
+
+              <Link
+                href="/jobs"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-brand transition-colors hover:underline"
+              >
+                <span>View all jobs</span>
+                <ArrowUpRight size={13} strokeWidth={2} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedJobs.map((relatedJob) => (
+                <JobCard key={relatedJob.id} job={relatedJob} />
+              ))}
+            </div>
+          </motion.section>
+        )}
       </div>
+
+      <SiteFooter />
 
       <ApplyModal
         open={applyOpen}

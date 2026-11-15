@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useRef, useMemo, useEffect, useCallback } from "react";
+import { useState, useRef, useMemo, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import {
@@ -27,8 +27,17 @@ import {
   Zap,
   MapPin,
   HelpCircle,
+  RotateCcw,
+  Pencil,
+  Eye,
+  LogIn,
+  UserRound,
+  Eraser,
 } from "lucide-react";
+import FormattedDescription from "@/app/components/jobs/FormattedDescription";
 import Modal from "@/app/components/Modal";
+import { useAuth } from "@/context/AuthContext";
+import { createClient } from "@/lib/supabase/client";
 import { State, City } from "country-state-city";
 import { JOB_CATEGORIES, matchJobCategory } from "@/data/categories";
 import {
@@ -98,7 +107,7 @@ export interface JobFormState {
   title: string;
   company: string;
   category?: string;
-  employmentType: "FULL_TIME" | "PART_TIME" | "CONTRACTOR" | "INTERN";
+  employmentType: "FULL_TIME" | "PART_TIME" | "CONTRACTOR" | "INTERN" | "OTHER";
   workMode: "Onsite" | "Hybrid" | "Remote";
   location: string;
   selectedOffices: OfficeLocation[];
@@ -140,6 +149,7 @@ function Field({
   required = false,
   min,
   max,
+  maxLength = 150,
   step,
   error,
 }: {
@@ -156,6 +166,7 @@ function Field({
   required?: boolean;
   min?: string;
   max?: string;
+  maxLength?: number;
   step?: string;
   error?: string;
 }) {
@@ -170,8 +181,8 @@ function Field({
         {Icon && (
           <Icon
             className={`pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors ${error
-                ? "text-status-error"
-                : "text-text-muted group-focus-within:text-brand"
+              ? "text-status-error"
+              : "text-text-muted group-focus-within:text-brand"
               }`}
             strokeWidth={1.8}
           />
@@ -188,10 +199,11 @@ function Field({
           required={required}
           min={min}
           max={max}
+          maxLength={maxLength}
           step={step}
           className={`${inputClass} ${Icon ? "pl-10" : ""} ${error
-              ? "border-status-error ring-1 ring-status-error/30 focus:border-status-error focus:ring-status-error/40"
-              : ""
+            ? "border-status-error ring-1 ring-status-error/30 focus:border-status-error focus:ring-status-error/40"
+            : ""
             }`}
         />
       </div>
@@ -206,26 +218,27 @@ function Field({
   );
 }
 
-function CompanyCitySelector({
-  onSelect,
-  placeholder = "Type city name (e.g. Bengaluru, Kochi, Mumbai)...",
-}: {
-  onSelect: (office: OfficeLocation) => void;
-  placeholder?: string;
-}) {
+export interface CompanyCitySelectorHandle {
+  commit: () => OfficeLocation | null;
+}
+
+const CompanyCitySelector = forwardRef<
+  CompanyCitySelectorHandle,
+  {
+    onSelect: (office: OfficeLocation) => void;
+    placeholder?: string;
+  }
+>(function CompanyCitySelector(
+  {
+    onSelect,
+    placeholder = "Type city name (e.g. Bengaluru, Kochi, Mumbai)...",
+  },
+  ref
+) {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -269,6 +282,127 @@ function CompanyCitySelector({
     return results;
   }, [query]);
 
+  const hasCustomOption = Boolean(
+    query.trim() && !suggestions.some((s) => s.city.toLowerCase() === query.trim().toLowerCase())
+  );
+  const totalOptions = suggestions.length + (hasCustomOption ? 1 : 0);
+
+  useEffect(() => {
+    setHighlightedIndex(0);
+  }, [suggestions]);
+
+  const commitQuery = useCallback((): OfficeLocation | null => {
+    const trimmed = query.trim();
+    if (!trimmed) return null;
+
+    const qLower = trimmed.toLowerCase();
+    const matchedCanonical = CANONICAL_CITIES.find(
+      (c) => c.name.toLowerCase() === qLower || c.aliases?.some((a) => a.toLowerCase() === qLower)
+    );
+    const matchedCsc = CSC_CITIES.find((c) => c.name.toLowerCase() === qLower);
+    const matchedSuggestion = suggestions.find((s) => s.city.toLowerCase() === qLower);
+
+    let office: OfficeLocation;
+    if (matchedSuggestion) {
+      office = matchedSuggestion;
+    } else if (matchedCanonical) {
+      office = {
+        city: matchedCanonical.name,
+        state: matchedCanonical.state,
+        country: "India",
+        countryCode: "IN",
+      };
+    } else if (matchedCsc) {
+      office = {
+        city: matchedCsc.name,
+        state: matchedCsc.state,
+        country: "India",
+        countryCode: "IN",
+      };
+    } else {
+      office = {
+        city: trimmed,
+        state: resolveOfficeState(trimmed),
+        country: "India",
+        countryCode: "IN",
+      };
+    }
+
+    onSelect(office);
+    setQuery("");
+    setIsOpen(false);
+    return office;
+  }, [query, suggestions, onSelect]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      commit: commitQuery,
+    }),
+    [commitQuery]
+  );
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        if (query.trim()) {
+          commitQuery();
+        } else {
+          setIsOpen(false);
+        }
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [query, commitQuery]);
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!isOpen) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsOpen(true);
+        return;
+      }
+      if (e.key === "Enter") {
+        if (query.trim()) {
+          e.preventDefault();
+          e.stopPropagation();
+          commitQuery();
+          return;
+        }
+        // Let empty query bubble so Enter continues to next step
+        return;
+      }
+    }
+
+    if (isOpen) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        e.stopPropagation();
+        setHighlightedIndex((prev) => (totalOptions === 0 ? 0 : (prev + 1) % totalOptions));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        e.stopPropagation();
+        setHighlightedIndex((prev) => (totalOptions === 0 ? 0 : (prev - 1 + totalOptions) % totalOptions));
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (highlightedIndex < suggestions.length && suggestions[highlightedIndex]) {
+          onSelect(suggestions[highlightedIndex]);
+          setQuery("");
+          setIsOpen(false);
+        } else {
+          commitQuery();
+        }
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsOpen(false);
+      }
+    }
+  };
+
   return (
     <div ref={containerRef} className="relative">
       <div className="relative">
@@ -279,11 +413,18 @@ function CompanyCitySelector({
         <input
           type="text"
           value={query}
+          maxLength={100}
           onChange={(e) => {
             setQuery(e.target.value);
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
+          onBlur={() => {
+            if (query.trim()) {
+              commitQuery();
+            }
+          }}
+          onKeyDown={handleInputKeyDown}
           placeholder={placeholder}
           className={`${inputClass} pl-10`}
         />
@@ -295,32 +436,34 @@ function CompanyCitySelector({
             <button
               key={`${item.city}-${item.state}-${idx}`}
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onMouseEnter={() => setHighlightedIndex(idx)}
               onClick={() => {
                 onSelect(item);
                 setQuery("");
                 setIsOpen(false);
               }}
-              className="flex w-full items-center justify-between px-3.5 py-2 text-left text-xs transition-colors hover:bg-surface-subtle"
+              className={`flex w-full items-center justify-between px-3.5 py-2 text-left text-xs transition-colors ${highlightedIndex === idx
+                  ? "bg-brand-soft text-brand font-semibold"
+                  : "hover:bg-surface-subtle"
+                }`}
             >
               <span className="font-semibold text-text-primary">{item.city}</span>
               <span className="text-[11px] text-text-muted">{item.state}, India</span>
             </button>
           ))}
-          {query.trim() && !suggestions.some((s) => s.city.toLowerCase() === query.trim().toLowerCase()) && (
+          {hasCustomOption && (
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onMouseEnter={() => setHighlightedIndex(suggestions.length)}
               onClick={() => {
-                const trimmedCity = query.trim();
-                onSelect({
-                  city: trimmedCity,
-                  state: resolveOfficeState(trimmedCity),
-                  country: "India",
-                  countryCode: "IN",
-                });
-                setQuery("");
-                setIsOpen(false);
+                commitQuery();
               }}
-              className="flex w-full items-center gap-1.5 border-t border-border-default px-3.5 py-2 text-left text-xs text-brand hover:bg-brand-soft"
+              className={`flex w-full items-center gap-1.5 border-t border-border-default px-3.5 py-2 text-left text-xs transition-colors ${highlightedIndex === suggestions.length
+                  ? "bg-brand-soft text-brand font-semibold"
+                  : "text-brand hover:bg-brand-soft"
+                }`}
             >
               <Plus size={13} />
               <span>Add &quot;{query.trim()}&quot; as custom city</span>
@@ -330,28 +473,29 @@ function CompanyCitySelector({
       )}
     </div>
   );
+});
+
+export interface CandidateScopeSelectorHandle {
+  commit: () => PreferredTarget | null;
 }
 
-function CandidateScopeSelector({
-  onAdd,
-  placeholder = "Search candidate city or state...",
-}: {
-  onAdd: (target: PreferredTarget) => void;
-  placeholder?: string;
-}) {
+const CandidateScopeSelector = forwardRef<
+  CandidateScopeSelectorHandle,
+  {
+    onAdd: (target: PreferredTarget) => void;
+    placeholder?: string;
+  }
+>(function CandidateScopeSelector(
+  {
+    onAdd,
+    placeholder = "Search candidate city or state...",
+  },
+  ref
+) {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -392,6 +536,86 @@ function CandidateScopeSelector({
     return items.slice(0, 15);
   }, [query]);
 
+  const commitQuery = useCallback((): PreferredTarget | null => {
+    const trimmed = query.trim();
+    if (!trimmed) return null;
+
+    const matched = results[highlightedIndex] || results[0];
+    if (matched) {
+      onAdd(matched);
+      setQuery("");
+      setIsOpen(false);
+      return matched;
+    }
+    return null;
+  }, [query, results, highlightedIndex, onAdd]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      commit: commitQuery,
+    }),
+    [commitQuery]
+  );
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        if (query.trim()) {
+          commitQuery();
+        } else {
+          setIsOpen(false);
+        }
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [query, commitQuery]);
+
+  useEffect(() => {
+    setHighlightedIndex(0);
+  }, [results]);
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!isOpen) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsOpen(true);
+        return;
+      }
+      if (e.key === "Enter") {
+        if (query.trim()) {
+          e.preventDefault();
+          e.stopPropagation();
+          commitQuery();
+          return;
+        }
+        return;
+      }
+    }
+
+    if (isOpen) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        e.stopPropagation();
+        setHighlightedIndex((prev) => (results.length === 0 ? 0 : (prev + 1) % results.length));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        e.stopPropagation();
+        setHighlightedIndex((prev) => (results.length === 0 ? 0 : (prev - 1 + results.length) % results.length));
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        e.stopPropagation();
+        commitQuery();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsOpen(false);
+      }
+    }
+  };
+
   return (
     <div ref={containerRef} className="relative">
       <div className="relative">
@@ -402,11 +626,18 @@ function CandidateScopeSelector({
         <input
           type="text"
           value={query}
+          maxLength={100}
           onChange={(e) => {
             setQuery(e.target.value);
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
+          onBlur={() => {
+            if (query.trim()) {
+              commitQuery();
+            }
+          }}
+          onKeyDown={handleInputKeyDown}
           placeholder={placeholder}
           className={`${inputClass} pl-10`}
         />
@@ -418,12 +649,17 @@ function CandidateScopeSelector({
             <button
               key={`${item.name}-${item.type}-${idx}`}
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onMouseEnter={() => setHighlightedIndex(idx)}
               onClick={() => {
                 onAdd(item);
                 setQuery("");
                 setIsOpen(false);
               }}
-              className="flex w-full items-center justify-between px-3.5 py-2 text-left text-xs transition-colors hover:bg-surface-subtle"
+              className={`flex w-full items-center justify-between px-3.5 py-2 text-left text-xs transition-colors ${highlightedIndex === idx
+                  ? "bg-brand-soft text-brand font-semibold"
+                  : "hover:bg-surface-subtle"
+                }`}
             >
               <span className="font-semibold text-text-primary">{item.name}</span>
               <span className="text-[11px] text-text-muted">
@@ -435,7 +671,7 @@ function CandidateScopeSelector({
       )}
     </div>
   );
-}
+});
 
 function formatExperienceLabel(minVal: string, maxVal: string): string {
   const minNum = minVal.trim() === "" ? 0 : Number(minVal);
@@ -542,6 +778,54 @@ const WIZARD_STEPS = [
     brief: "Job description & publish",
   },
 ];
+
+export function cleanDescriptionText(raw: string): string {
+  if (!raw) return "";
+  let text = raw;
+
+  // 1. Remove leading metadata block if any (Role Title:, Company:, etc.)
+  const lines = text.split("\n");
+  let startIdx = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i].trim();
+    if (!l) {
+      if (startIdx === i) startIdx = i + 1;
+      continue;
+    }
+    if (
+      /^(role(\s+title)?|job\s+title|company(\s+name)?|category|experience(\s+level)?|work\s+mode|location|workplace|employment\s+type)\s*[:–—\-]/i.test(
+        l
+      )
+    ) {
+      startIdx = i + 1;
+      continue;
+    }
+    break;
+  }
+  text = lines.slice(startIdx).join("\n");
+
+  // 2. Remove emojis and symbol icons
+  text = text.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}]/gu, "");
+
+  // 3. Remove markdown headers like ### Heading -> Heading
+  text = text.replace(/^#{1,6}\s+/gm, "");
+
+  // 4. Remove bold/italic markdown like **word** -> word, __word__ -> word
+  text = text.replace(/\*\*([^*]+)\*\*/g, "$1");
+  text = text.replace(/__([^_]+)__/g, "$1");
+  text = text.replace(/(^|[^\*])\*([^\*]+)\*([^\*]|$)/g, "$1$2$3");
+
+  // 5. Standardize bullet points (*, -, >, › -> •)
+  text = text.replace(/^[\s]*[\*\-›\>✓✔]\s+/gm, "• ");
+
+  // 6. Remove recruiter hashtags (#hiring, #job, etc.)
+  text = text.replace(/#[a-zA-Z0-9_]+/g, "");
+
+  // 7. Normalize excessive line breaks
+  text = text.replace(/\n{3,}/g, "\n\n");
+
+  return text.trim();
+}
 
 const SAMPLE_JOB_DESCRIPTION = `Role: Senior Frontend Engineer
 Company: Zenoway Tech
@@ -682,10 +966,95 @@ export default function JobFormWizard({
   const [isValidatingEmail, setIsValidatingEmail] = useState(false);
   const [emailVerifiedDomain, setEmailVerifiedDomain] = useState<string | null>(null);
   const [isCheckingNext, setIsCheckingNext] = useState(false);
+  const formRef = useRef<HTMLFormElement | null>(null);
+  const formRefState = useRef<JobFormState>(form);
+  formRefState.current = form;
   const lastVerifiedEmailRef = useRef<string>("");
   const isNavigatingRef = useRef<boolean>(false);
+  const citySelectorRef = useRef<CompanyCitySelectorHandle | null>(null);
+  const scopeSelectorRef = useRef<CandidateScopeSelectorHandle | null>(null);
   const [currentStep, setCurrentStep] = useState<number>(1);
+  const [hasStartedWizard, setHasStartedWizard] = useState(false);
   const [showHowItWorksModal, setShowHowItWorksModal] = useState(false);
+  const { user } = useAuth();
+
+  // Restore saved draft on mount for public post-job
+  useEffect(() => {
+    if (mode !== "public") return;
+    if (typeof window === "undefined") return;
+    try {
+      const rawDraft = localStorage.getItem("zenoway_post_job_draft");
+      if (rawDraft) {
+        const parsed = JSON.parse(rawDraft);
+        if (parsed?.form && typeof parsed.form === "object") {
+          setForm((prev) => ({
+            ...prev,
+            ...parsed.form,
+          }));
+          if (parsed.currentStep) {
+            setCurrentStep(parsed.currentStep);
+          }
+          if (parsed.hasStartedWizard) {
+            setHasStartedWizard(true);
+          }
+          toast.success("Saved job draft restored.");
+        }
+      }
+    } catch (err) {
+      console.warn("Could not restore post job draft:", err);
+    }
+  }, [mode]);
+
+  // Auto-save draft to localStorage whenever form data changes in public mode
+  useEffect(() => {
+    if (mode !== "public") return;
+    if (typeof window === "undefined") return;
+    if (form.title || form.company || form.description) {
+      try {
+        localStorage.setItem(
+          "zenoway_post_job_draft",
+          JSON.stringify({
+            form,
+            currentStep,
+            hasStartedWizard,
+            savedAt: new Date().toISOString(),
+          })
+        );
+      } catch {
+        // Ignore quota/private mode errors
+      }
+    }
+  }, [mode, form, currentStep, hasStartedWizard]);
+
+  const handleSaveDraftAndRedirectToLogin = useCallback(() => {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(
+          "zenoway_post_job_draft",
+          JSON.stringify({
+            form: formRefState.current,
+            currentStep: 4,
+            hasStartedWizard: true,
+            savedAt: new Date().toISOString(),
+          })
+        );
+      } catch (err) {
+        console.warn("Could not save post job draft:", err);
+      }
+    }
+    toast("Draft saved. Please log in to complete posting.", { icon: "ℹ️" });
+    router.push("/login?redirect=/post-job");
+  }, [router]);
+
+  const scrollToForm = useCallback(() => {
+    if (typeof window === "undefined") return;
+    if (formRef.current) {
+      const topOffset = formRef.current.getBoundingClientRect().top + window.scrollY - 30;
+      window.scrollTo({ top: Math.max(0, topOffset), behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, []);
 
   // AI Tools State
   const [showAiModal, setShowAiModal] = useState(false);
@@ -693,6 +1062,10 @@ export default function JobFormWizard({
   const [isParsingAi, setIsParsingAi] = useState(false);
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [isEnhancingDesc, setIsEnhancingDesc] = useState(false);
+  const [previousDescription, setPreviousDescription] = useState<string | null>(null);
+  const [descriptionTab, setDescriptionTab] = useState<"edit" | "preview">("edit");
+  const [showAiDescDrawer, setShowAiDescDrawer] = useState(false);
+  const [aiCustomInstruction, setAiCustomInstruction] = useState("");
 
   // Auto-resizing refs for content-height textareas
   const descriptionTextareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -704,6 +1077,41 @@ export default function JobFormWizard({
     el.style.height = "auto";
     el.style.height = `${Math.max(el.scrollHeight, 220)}px`;
   }, []);
+
+  const handleDescriptionKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      const textarea = e.currentTarget;
+      const selStart = textarea.selectionStart;
+      const textBeforeCursor = textarea.value.slice(0, selStart);
+      const currentLine = textBeforeCursor.split("\n").pop() || "";
+
+      // Match bullet point prefixes like "• " or "- "
+      const bulletMatch = currentLine.match(/^([•\-\*]\s*)/);
+      if (bulletMatch) {
+        if (currentLine.trim() === "•" || currentLine.trim() === "-" || currentLine.trim() === "*") {
+          e.preventDefault();
+          const lineStart = selStart - currentLine.length;
+          const newText = textarea.value.slice(0, lineStart) + textarea.value.slice(selStart);
+          setForm((prev) => ({ ...prev, description: newText }));
+          requestAnimationFrame(() => {
+            textarea.selectionStart = textarea.selectionEnd = lineStart;
+            adjustDescriptionHeight();
+          });
+          return;
+        }
+
+        e.preventDefault();
+        const nextBullet = "\n• ";
+        const newText = textarea.value.slice(0, selStart) + nextBullet + textarea.value.slice(textarea.selectionEnd);
+        setForm((prev) => ({ ...prev, description: newText }));
+        requestAnimationFrame(() => {
+          const newCursor = selStart + nextBullet.length;
+          textarea.selectionStart = textarea.selectionEnd = newCursor;
+          adjustDescriptionHeight();
+        });
+      }
+    }
+  };
 
   const adjustAiTextareaHeight = useCallback(() => {
     const el = aiTextareaRef.current;
@@ -787,6 +1195,7 @@ export default function JobFormWizard({
       if (empUpper.includes("PART")) empType = "PART_TIME";
       else if (empUpper.includes("INTERN")) empType = "INTERN";
       else if (empUpper.includes("CONTRACT")) empType = "CONTRACTOR";
+      else if (empUpper.includes("OTHER")) empType = "OTHER";
 
       // Resolve office location
       const extractedCity = (parsed.city || parsed.location || "").trim();
@@ -844,12 +1253,16 @@ export default function JobFormWizard({
     }
   };
 
-  const handleGenerateDescription = async () => {
+  const handleGenerateDescription = async (overrideInstruction?: string) => {
     if (!form.title.trim()) {
       toast.error("Please enter a Job Title in Step 1 first.");
       return;
     }
+    if (form.description.trim()) {
+      setPreviousDescription(form.description);
+    }
     setIsGeneratingDesc(true);
+    const instructionToSend = overrideInstruction !== undefined ? overrideInstruction : aiCustomInstruction;
     try {
       const res = await fetch("/api/ai-job", {
         method: "POST",
@@ -862,6 +1275,8 @@ export default function JobFormWizard({
           experience: form.experienceMin
             ? `${form.experienceMin}-${form.experienceMax || form.experienceMin} years`
             : undefined,
+          workMode: form.workMode,
+          instruction: instructionToSend.trim() || undefined,
         }),
       });
       const data = await res.json();
@@ -875,6 +1290,7 @@ export default function JobFormWizard({
         delete cp.description;
         return cp;
       });
+      setShowAiDescDrawer(false);
       toast.success(data.isAiPowered ? "AI description generated!" : "Professional description generated!");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to generate description");
@@ -883,12 +1299,14 @@ export default function JobFormWizard({
     }
   };
 
-  const handleEnhanceDescription = async () => {
+  const handleEnhanceDescription = async (overrideInstruction?: string) => {
     if (!form.description.trim()) {
       toast.error("Please write or paste a description first to enhance it.");
       return;
     }
+    setPreviousDescription(form.description);
     setIsEnhancingDesc(true);
+    const instructionToSend = overrideInstruction !== undefined ? overrideInstruction : aiCustomInstruction;
     try {
       const res = await fetch("/api/ai-job", {
         method: "POST",
@@ -896,6 +1314,12 @@ export default function JobFormWizard({
         body: JSON.stringify({
           action: "enhance-description",
           currentDescription: form.description,
+          title: form.title,
+          company: form.company,
+          category: form.category,
+          experience: formatExperienceLabel(form.experienceMin, form.experienceMax),
+          workMode: form.workMode,
+          instruction: instructionToSend.trim() || undefined,
         }),
       });
       const data = await res.json();
@@ -909,12 +1333,40 @@ export default function JobFormWizard({
         delete cp.description;
         return cp;
       });
-      toast.success(data.isAiPowered ? "Description enhanced by AI!" : "Description formatted and polished!");
+      setShowAiDescDrawer(false);
+      toast.success(
+        data.isAiPowered
+          ? "Description enhanced & structured! You can revert anytime."
+          : "Description structured and polished! You can revert anytime."
+      );
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to enhance description");
     } finally {
       setIsEnhancingDesc(false);
     }
+  };
+
+  const handleCleanDescription = () => {
+    if (!form.description.trim()) {
+      toast.error("No description text to clean.");
+      return;
+    }
+    const cleaned = cleanDescriptionText(form.description);
+    if (cleaned === form.description.trim()) {
+      toast.success("Description is already clean!");
+      return;
+    }
+    setPreviousDescription(form.description);
+    setForm((prev) => ({ ...prev, description: cleaned }));
+    toast.success("Cleaned! Icons, * and # formatting removed.");
+  };
+
+  const handleRevertDescription = () => {
+    if (previousDescription === null) return;
+    const current = form.description;
+    setForm((prev) => ({ ...prev, description: previousDescription }));
+    setPreviousDescription(current);
+    toast.success("Restored previous description.");
   };
 
   const populateFromJob = useCallback((job: Job) => {
@@ -1012,14 +1464,16 @@ export default function JobFormWizard({
     const exp = parseExperienceFromJob(job);
 
     const empType = (job.employmentType || "FULL_TIME").toUpperCase();
-    const validEmpType: "FULL_TIME" | "PART_TIME" | "CONTRACTOR" | "INTERN" =
+    const validEmpType: JobFormState["employmentType"] =
       empType === "PART_TIME"
         ? "PART_TIME"
         : empType === "CONTRACTOR"
           ? "CONTRACTOR"
           : empType === "INTERN"
             ? "INTERN"
-            : "FULL_TIME";
+            : empType === "OTHER"
+              ? "OTHER"
+              : "FULL_TIME";
 
     setForm({
       title: job.title || "",
@@ -1081,45 +1535,49 @@ export default function JobFormWizard({
     }
   }, [mode, jobId, initialJob, populateFromJob]);
 
-  const validateStep = (stepNumber: number): boolean => {
+  const validateStep = (
+    stepNumber: number,
+    currentForm: JobFormState = formRefState.current,
+    shouldSetErrors = true
+  ): boolean => {
     const errors: Record<string, string> = {};
 
     if (stepNumber === 1) {
-      if (!form.title.trim()) {
+      if (!currentForm.title.trim()) {
         errors.title = "Please enter a job title.";
       }
-      if (!form.company.trim()) {
+      if (!currentForm.company.trim()) {
         errors.company = "Please enter the company name.";
       }
     } else if (stepNumber === 2) {
-      if (form.selectedOffices.length === 0) {
+      if (currentForm.selectedOffices.length === 0) {
         errors.selectedOffices = "Please add at least one company office location.";
       }
       if (
-        form.candidatePreference === "SPECIFIC_LOCATION" &&
-        form.preferredTargets.length === 0
+        currentForm.candidatePreference === "SPECIFIC_LOCATION" &&
+        currentForm.preferredTargets.length === 0
       ) {
         errors.preferredTargets = "Please select at least one allowed candidate city or state.";
       }
-      if (form.candidatePreference === "COMPANY_STATE" && form.selectedOffices.length > 0) {
-        const states = getOfficeStates(form.selectedOffices);
+      if (currentForm.candidatePreference === "COMPANY_STATE" && currentForm.selectedOffices.length > 0) {
+        const states = getOfficeStates(currentForm.selectedOffices);
         if (states.length === 0) {
           errors.selectedOffices = "Please choose a recognized city with an identifiable state.";
         }
       }
     } else if (stepNumber === 3) {
-      if (!form.experienceMin.trim()) {
+      if (!currentForm.experienceMin.trim()) {
         errors.experienceMin = "Please enter minimum experience required (0 for fresher).";
       } else {
-        const min = Number(form.experienceMin);
+        const min = Number(currentForm.experienceMin);
         if (isNaN(min) || min < 0) {
           errors.experienceMin = "Please enter a valid minimum experience (0 or higher).";
         }
       }
 
-      if (form.experienceMax.trim() !== "") {
-        const max = Number(form.experienceMax);
-        const min = Number(form.experienceMin) || 0;
+      if (currentForm.experienceMax.trim() !== "") {
+        const max = Number(currentForm.experienceMax);
+        const min = Number(currentForm.experienceMin) || 0;
         if (isNaN(max) || max < 0) {
           errors.experienceMax = "Please enter a valid maximum experience.";
         } else if (max < min) {
@@ -1127,7 +1585,7 @@ export default function JobFormWizard({
         }
       }
 
-      const trimmedMail = form.mail.trim();
+      const trimmedMail = currentForm.mail.trim();
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!trimmedMail) {
         errors.mail = "Please enter an application email.";
@@ -1135,19 +1593,21 @@ export default function JobFormWizard({
         errors.mail = "Please enter a valid email address (e.g. hr@company.com).";
       }
     } else if (stepNumber === 4) {
-      if (!form.description.trim()) {
+      if (!currentForm.description.trim()) {
         errors.description = "Please provide a job description.";
       }
     }
 
-    setFieldErrors(errors);
+    if (shouldSetErrors) {
+      setFieldErrors(errors);
+    }
 
     if (Object.keys(errors).length > 0) {
-      setError("");
+      if (shouldSetErrors) setError("");
       return false;
     }
 
-    setError("");
+    if (shouldSetErrors) setError("");
     return true;
   };
 
@@ -1228,15 +1688,27 @@ export default function JobFormWizard({
     verifyEmailDomain(trimmed);
   };
 
+  const isCurrentStepValid = useMemo(() => {
+    return validateStep(currentStep, form, false);
+  }, [currentStep, form]);
+
   const handleNext = async () => {
     if (isCheckingNext) return;
-    if (!validateStep(currentStep)) {
+
+    if (currentStep === 2) {
+      citySelectorRef.current?.commit();
+      if (formRefState.current.candidatePreference === "SPECIFIC_LOCATION") {
+        scopeSelectorRef.current?.commit();
+      }
+    }
+
+    if (!validateStep(currentStep, formRefState.current)) {
       isNavigatingRef.current = false;
       return;
     }
 
     if (currentStep === 3) {
-      const trimmed = form.mail.trim();
+      const trimmed = formRefState.current.mail.trim();
       const domain = trimmed.split("@")[1]?.toLowerCase();
       const alreadyValid =
         lastVerifiedEmailRef.current.toLowerCase() === trimmed.toLowerCase() ||
@@ -1245,7 +1717,7 @@ export default function JobFormWizard({
       if (!alreadyValid) {
         setIsCheckingNext(true);
         try {
-          const isDomainValid = await verifyEmailDomain(form.mail);
+          const isDomainValid = await verifyEmailDomain(formRefState.current.mail);
           if (!isDomainValid) {
             isNavigatingRef.current = false;
             return;
@@ -1257,38 +1729,315 @@ export default function JobFormWizard({
     }
 
     isNavigatingRef.current = false;
+    setHasStartedWizard(true);
     setCurrentStep((prev) => Math.min(prev + 1, 4));
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    scrollToForm();
   };
 
   const handleBack = () => {
     isNavigatingRef.current = false;
     setError("");
+    setHasStartedWizard(true);
     setCurrentStep((prev) => Math.max(prev - 1, 1));
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    scrollToForm();
   };
 
   const handleStepClick = (targetStep: number) => {
     isNavigatingRef.current = false;
     if (targetStep < currentStep) {
       setError("");
+      setHasStartedWizard(true);
       setCurrentStep(targetStep);
-      if (typeof window !== "undefined") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
+      scrollToForm();
     } else if (targetStep > currentStep) {
-      if (validateStep(currentStep)) {
-        setCurrentStep(targetStep);
-        if (typeof window !== "undefined") {
-          window.scrollTo({ top: 0, behavior: "smooth" });
+      for (let s = currentStep; s < targetStep; s++) {
+        if (s === 2) {
+          citySelectorRef.current?.commit();
+          if (formRefState.current.candidatePreference === "SPECIFIC_LOCATION") {
+            scopeSelectorRef.current?.commit();
+          }
+        }
+        if (!validateStep(s, formRefState.current)) {
+          setCurrentStep(s);
+          scrollToForm();
+          return;
+        }
+      }
+      setHasStartedWizard(true);
+      setCurrentStep(targetStep);
+      scrollToForm();
+    }
+  };
+
+  const getStepFocusableElements = (): HTMLElement[] => {
+    if (!formRef.current) return [];
+    const selector = 'input:not([type="hidden"]):not([disabled]), select:not([disabled])';
+    const elements = Array.from(formRef.current.querySelectorAll<HTMLElement>(selector));
+    return elements.filter((el) => {
+      return el.offsetParent !== null && !el.classList.contains("pointer-events-none");
+    });
+  };
+
+  const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    const target = e.target as HTMLElement;
+    const tagName = target.tagName.toLowerCase();
+
+    // 1. ArrowDown: Move to NEXT input field in 2D grid or linear
+    if (e.key === "ArrowDown" && !e.altKey) {
+      if (tagName === "textarea") return;
+
+      if (tagName === "input" || tagName === "select") {
+        const inputName = target.getAttribute("name");
+
+        // Step 1 2D navigation:
+        if (currentStep === 1) {
+          if (inputName === "title") {
+            const catEl = formRef.current?.querySelector<HTMLElement>('[name="category"]');
+            if (catEl) { e.preventDefault(); catEl.focus(); return; }
+          } else if (inputName === "company") {
+            const linkEl = formRef.current?.querySelector<HTMLElement>('[name="companyLink"]');
+            if (linkEl) { e.preventDefault(); linkEl.focus(); return; }
+          } else if (inputName === "category" || inputName === "companyLink") {
+            const empGroup = formRef.current?.querySelector<HTMLElement>('[aria-label="Employment Type"]');
+            if (empGroup) { e.preventDefault(); empGroup.focus(); return; }
+          }
+        }
+
+        // Step 3 2D navigation:
+        if (currentStep === 3) {
+          if (inputName === "experienceMin") {
+            const salMin = formRef.current?.querySelector<HTMLElement>('[name="salaryMin"]');
+            if (salMin) { e.preventDefault(); salMin.focus(); return; }
+          } else if (inputName === "experienceMax") {
+            const salMax = formRef.current?.querySelector<HTMLElement>('[name="salaryMax"]');
+            if (salMax) { e.preventDefault(); salMax.focus(); return; }
+          } else if (inputName === "salaryMin" || inputName === "salaryMax") {
+            const mailEl = formRef.current?.querySelector<HTMLElement>('[name="mail"]');
+            if (mailEl) { e.preventDefault(); mailEl.focus(); return; }
+          }
+        }
+
+        const focusables = getStepFocusableElements();
+        const currentIndex = focusables.indexOf(target);
+        if (currentIndex !== -1 && currentIndex < focusables.length - 1) {
+          e.preventDefault();
+          const nextEl = focusables[currentIndex + 1];
+          nextEl.focus();
+          if (nextEl instanceof HTMLInputElement && nextEl.type !== "select-one") {
+            nextEl.select();
+          }
+          return;
+        }
+      }
+    }
+
+    // 2. ArrowUp: Move to PREVIOUS input field in 2D grid or linear
+    if (e.key === "ArrowUp" && !e.altKey) {
+      if (tagName === "textarea") return;
+
+      if (tagName === "input" || tagName === "select") {
+        const inputName = target.getAttribute("name");
+
+        // Step 1 2D navigation:
+        if (currentStep === 1) {
+          if (inputName === "category") {
+            const titleEl = formRef.current?.querySelector<HTMLElement>('[name="title"]');
+            if (titleEl) { e.preventDefault(); titleEl.focus(); return; }
+          } else if (inputName === "companyLink") {
+            const compEl = formRef.current?.querySelector<HTMLElement>('[name="company"]');
+            if (compEl) { e.preventDefault(); compEl.focus(); return; }
+          }
+        }
+
+        // Step 3 2D navigation:
+        if (currentStep === 3) {
+          if (inputName === "salaryMin") {
+            const expMin = formRef.current?.querySelector<HTMLElement>('[name="experienceMin"]');
+            if (expMin) { e.preventDefault(); expMin.focus(); return; }
+          } else if (inputName === "salaryMax") {
+            const expMax = formRef.current?.querySelector<HTMLElement>('[name="experienceMax"]');
+            if (expMax) { e.preventDefault(); expMax.focus(); return; }
+          } else if (inputName === "mail") {
+            const salMin = formRef.current?.querySelector<HTMLElement>('[name="salaryMin"]');
+            if (salMin) { e.preventDefault(); salMin.focus(); return; }
+          }
+        }
+
+        const focusables = getStepFocusableElements();
+        const currentIndex = focusables.indexOf(target);
+        if (currentIndex > 0) {
+          e.preventDefault();
+          const prevEl = focusables[currentIndex - 1];
+          prevEl.focus();
+          if (prevEl instanceof HTMLInputElement && prevEl.type !== "select-one") {
+            prevEl.select();
+          }
+          return;
+        }
+      }
+    }
+
+    // 3. Enter key: Acts as "OK / Continue to next step" (or moves to next field if current step not yet valid)
+    if (e.key === "Enter") {
+      // In textarea:
+      if (tagName === "textarea") {
+        if ((e.metaKey || e.ctrlKey) && currentStep === 4) {
+          e.preventDefault();
+          handleSubmit();
+        }
+        return;
+      }
+
+      // If user is inside an action button (Back, Remove chip, Modal button), let native click proceed
+      if (tagName === "button") {
+        const btn = target as HTMLButtonElement;
+        const ariaLabel = btn.getAttribute("aria-label") || "";
+        const text = btn.textContent || "";
+        if (
+          ariaLabel.startsWith("Remove") ||
+          text.includes("Back") ||
+          text.includes("How it works") ||
+          text.includes("Revert")
+        ) {
+          return;
+        }
+      }
+
+      // Inside an input or select:
+      if (tagName === "input" || tagName === "select") {
+        const isStepValid = validateStep(currentStep, formRefState.current, false);
+        if (isStepValid) {
+          e.preventDefault();
+          if (currentStep < 4) {
+            handleNext();
+          } else if (currentStep === 4) {
+            handleSubmit();
+          }
+          return;
+        }
+
+        // If not fully valid yet, advance to next empty/needed input field
+        const focusables = getStepFocusableElements();
+        const currentIndex = focusables.indexOf(target);
+        if (currentIndex !== -1 && currentIndex < focusables.length - 1) {
+          e.preventDefault();
+          e.stopPropagation();
+          const nextEl = focusables[currentIndex + 1];
+          nextEl.focus();
+          if (nextEl instanceof HTMLInputElement && nextEl.type !== "select-one") {
+            nextEl.select();
+          }
+          return;
+        }
+      }
+
+      // Inside any other element (card button, radiogroup, etc.):
+      e.preventDefault();
+      if (currentStep < 4) {
+        handleNext();
+      } else if (currentStep === 4) {
+        handleSubmit();
+      }
+      return;
+    }
+
+    // 4. Alt + Arrow Left/Right to jump steps
+    if (e.altKey) {
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        if (currentStep < 4) handleNext();
+        return;
+      }
+      if (e.key === "ArrowLeft") {
+        if (currentStep > 1) {
+          e.preventDefault();
+          handleBack();
+          return;
         }
       }
     }
   };
+
+  const handleNextRef = useRef(handleNext);
+  handleNextRef.current = handleNext;
+  const handleBackRef = useRef(handleBack);
+  handleBackRef.current = handleBack;
+  const handleStepClickRef = useRef(handleStepClick);
+  handleStepClickRef.current = handleStepClick;
+  const handleSubmitRef = useRef<(() => Promise<void>) | null>(null);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (showAiModal || showHowItWorksModal) return;
+
+      // Direct Step Switching: Alt + 1, 2, 3, 4
+      if (e.altKey && ["1", "2", "3", "4"].includes(e.key)) {
+        e.preventDefault();
+        const targetStep = parseInt(e.key, 10);
+        handleStepClickRef.current(targetStep);
+        return;
+      }
+
+      // Ctrl + Enter or Cmd + Enter: submit / continue anywhere
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        if (currentStep < 4) {
+          handleNextRef.current();
+        } else if (currentStep === 4) {
+          handleSubmitRef.current?.();
+        }
+        return;
+      }
+
+      // Alt + ArrowLeft / ArrowRight
+      if (e.altKey) {
+        if (e.key === "ArrowRight") {
+          e.preventDefault();
+          if (currentStep < 4) handleNextRef.current();
+          return;
+        }
+        if (e.key === "ArrowLeft") {
+          if (currentStep > 1) {
+            e.preventDefault();
+            handleBackRef.current();
+            return;
+          }
+        }
+      }
+
+      const isTextarea = target.tagName === "TEXTAREA";
+      if (isTextarea) return;
+
+      // Enter key globally acts as Continue / Submit
+      if (e.key === "Enter") {
+        if (target.tagName === "BUTTON") {
+          const btn = target as HTMLButtonElement;
+          const ariaLabel = btn.getAttribute("aria-label") || "";
+          const text = btn.textContent || "";
+          if (
+            ariaLabel.startsWith("Remove") ||
+            text.includes("Back") ||
+            text.includes("How it works") ||
+            text.includes("Revert")
+          ) {
+            return;
+          }
+        }
+        e.preventDefault();
+        if (currentStep < 4) {
+          handleNextRef.current();
+        } else if (currentStep === 4) {
+          handleSubmitRef.current?.();
+        }
+        return;
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [currentStep, showAiModal, showHowItWorksModal]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -1333,21 +2082,27 @@ export default function JobFormWizard({
         (o) => o.city.toLowerCase() === enrichedOffice.city.toLowerCase()
       );
       if (exists) return prev;
-      return {
+      const updated = {
         ...prev,
         selectedOffices: [...prev.selectedOffices, enrichedOffice],
       };
+      formRefState.current = updated;
+      return updated;
     });
     if (error) setError("");
   };
 
   const handleRemoveOffice = (cityName: string) => {
-    setForm((prev) => ({
-      ...prev,
-      selectedOffices: prev.selectedOffices.filter(
-        (o) => o.city.toLowerCase() !== cityName.toLowerCase()
-      ),
-    }));
+    setForm((prev) => {
+      const updated = {
+        ...prev,
+        selectedOffices: prev.selectedOffices.filter(
+          (o) => o.city.toLowerCase() !== cityName.toLowerCase()
+        ),
+      };
+      formRefState.current = updated;
+      return updated;
+    });
   };
 
   const handleAddPreferredTarget = (target: PreferredTarget) => {
@@ -1362,45 +2117,56 @@ export default function JobFormWizard({
         (t) => t.name.toLowerCase() === target.name.toLowerCase()
       );
       if (exists) return prev;
-      return {
+      const updated = {
         ...prev,
         preferredTargets: [...prev.preferredTargets, target],
       };
+      formRefState.current = updated;
+      return updated;
     });
     if (error) setError("");
   };
 
   const handleRemovePreferredTarget = (targetName: string) => {
-    setForm((prev) => ({
-      ...prev,
-      preferredTargets: prev.preferredTargets.filter(
-        (t) => t.name.toLowerCase() !== targetName.toLowerCase()
-      ),
-    }));
+    setForm((prev) => {
+      const updated = {
+        ...prev,
+        preferredTargets: prev.preferredTargets.filter(
+          (t) => t.name.toLowerCase() !== targetName.toLowerCase()
+        ),
+      };
+      formRefState.current = updated;
+      return updated;
+    });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
+    if (e) e.preventDefault();
     if (isSubmitting) return;
 
-    if (!validateStep(1)) {
+    if (mode === "public" && !user) {
+      handleSaveDraftAndRedirectToLogin();
+      return;
+    }
+
+    if (!validateStep(1, formRefState.current)) {
       setCurrentStep(1);
-      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollToForm();
       return;
     }
-    if (!validateStep(2)) {
+    if (!validateStep(2, formRefState.current)) {
       setCurrentStep(2);
-      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollToForm();
       return;
     }
-    if (!validateStep(3)) {
+    if (!validateStep(3, formRefState.current)) {
       setCurrentStep(3);
-      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollToForm();
       return;
     }
-    if (!validateStep(4)) {
+    if (!validateStep(4, formRefState.current)) {
       setCurrentStep(4);
-      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollToForm();
       return;
     }
 
@@ -1576,7 +2342,7 @@ export default function JobFormWizard({
         salary: form.salary.trim() || "Not Disclosed",
         mail: form.mail.trim(),
         companyLink: form.companyLink.trim(),
-        description: form.description.trim(),
+        description: cleanDescriptionText(form.description),
         workModeNotes: workModeNotes || undefined,
         remoteEligibilityType: remoteEligibilityType || (isRemote ? "COUNTRIES" : undefined),
         remoteEligibilityCountries: remoteEligibilityCountries || (isRemote ? ["IN"] : undefined),
@@ -1604,9 +2370,20 @@ export default function JobFormWizard({
         payload.status = "draft";
         payload.requiresReview = true;
 
+        let authHeaders: Record<string, string> = { "Content-Type": "application/json" };
+        try {
+          const supabase = createClient();
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.access_token) {
+            authHeaders["Authorization"] = `Bearer ${session.access_token}`;
+          }
+        } catch (e) {
+          console.warn("Could not retrieve session token:", e);
+        }
+
         const res = await fetch("/api/jobs", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: authHeaders,
           body: JSON.stringify(payload),
         });
 
@@ -1616,6 +2393,11 @@ export default function JobFormWizard({
         }
 
         const data = await res.json().catch(() => null);
+        try {
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("zenoway_post_job_draft");
+          }
+        } catch { }
         setSubmittedJobData(data?.job || payload);
         setIsSubmittedSuccess(true);
         setIsSubmitting(false);
@@ -1648,13 +2430,13 @@ export default function JobFormWizard({
       ) {
         setFieldErrors((prev) => ({ ...prev, mail: errMsg }));
         setCurrentStep(3);
-        if (typeof window !== "undefined") {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
+        scrollToForm();
       }
       setIsSubmitting(false);
     }
   };
+
+  handleSubmitRef.current = handleSubmit;
 
   const previewExperience = formatExperienceLabel(
     form.experienceMin,
@@ -1829,20 +2611,8 @@ export default function JobFormWizard({
   return (
     <main className="min-h-full bg-surface-base text-text-primary">
       <div className="mx-auto max-w-7xl px-5 pb-16 pt-6 sm:px-8 sm:pt-8 lg:px-12">
-        {/* Breadcrumb */}
-        {mode === "public" ? (
-          <nav className="mb-6 flex items-center gap-2 text-xs text-text-muted">
-            <Link href="/" className="transition hover:text-brand">
-              Zenoway
-            </Link>
-            <span>/</span>
-            <Link href="/jobs" className="transition hover:text-brand">
-              Jobs
-            </Link>
-            <span>/</span>
-            <span className="font-medium text-text-primary">Post a Job</span>
-          </nav>
-        ) : (
+        {/* Breadcrumb (Admin only) */}
+        {mode !== "public" && (
           <nav className="mb-6 flex items-center gap-2 text-xs text-text-muted">
             <Link href="/admin" className="transition hover:text-brand">
               Dashboard
@@ -1873,7 +2643,7 @@ export default function JobFormWizard({
 
         {/* Public Hero vs Admin Header */}
         {mode === "public" ? (
-          currentStep === 1 ? (
+          currentStep === 1 && !hasStartedWizard ? (
             <div className="mb-10 border-b border-border-default/40 pb-10">
               <div className="grid items-start gap-12 lg:grid-cols-[1.1fr_0.9fr]">
                 <div className="lg:pt-2">
@@ -1905,10 +2675,6 @@ export default function JobFormWizard({
                       className="group inline-flex items-center gap-2 rounded-control bg-brand px-4 py-2.5 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                     >
                       <span>How it works</span>
-                      <ArrowUpRight
-                        size={14}
-                        className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                      />
                     </button>
                   </div>
                 </div>
@@ -1938,7 +2704,7 @@ export default function JobFormWizard({
             <header className="mb-6 flex flex-col gap-1 border-b border-border-default/40 pb-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h1 className="text-lg font-bold tracking-tight text-text-primary sm:text-xl">
-                  Post an IT Job
+                  Post a Tech Opening
                 </h1>
                 <p className="text-xs text-text-muted">
                   Step {currentStep} of 4 • {WIZARD_STEPS[currentStep - 1]?.label}: {WIZARD_STEPS[currentStep - 1]?.brief}
@@ -1965,13 +2731,43 @@ export default function JobFormWizard({
           </header>
         )}
 
+        {/* Guest Reminder Banner for Public Mode */}
+        {mode === "public" && !user && (
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 rounded-control border border-border-default bg-surface-card p-3.5 sm:px-4 shadow-subtle">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control bg-brand-soft text-brand">
+                <UserRound size={15} />
+              </span>
+              <p className="text-xs text-text-secondary leading-normal">
+                You can fill out all job details now. Please{" "}
+                <button
+                  type="button"
+                  onClick={handleSaveDraftAndRedirectToLogin}
+                  className="font-semibold text-brand underline decoration-brand/30 underline-offset-2 hover:decoration-brand cursor-pointer"
+                >
+                  log in
+                </button>{" "}
+                to submit and publish your job listing.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleSaveDraftAndRedirectToLogin}
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold text-text-primary shadow-subtle transition hover:border-brand hover:bg-brand-soft hover:text-brand cursor-pointer"
+            >
+              <LogIn size={14} className="text-brand" />
+              <span>Log in</span>
+            </button>
+          </div>
+        )}
+
         {/* Upgraded AI Auto-Fill Section */}
         {currentStep === 1 && (
           <div className="mb-8 rounded-control border border-brand/25 bg-gradient-to-br from-brand-soft/60 via-surface-card to-brand-soft/20 p-4 sm:p-5 shadow-subtle transition-all">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start sm:items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-brand text-text-inverse shadow-subtle">
-                  <Sparkles size={17} />
+                  <Sparkles size={17} fill="currentColor" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
@@ -1988,25 +2784,25 @@ export default function JobFormWizard({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                {!showAiModal && (
+              {!showAiModal && (
+                <div className="flex items-center gap-2 shrink-0">
                   <button
                     type="button"
                     onClick={handleLoadSample}
-                    className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 py-1.5 text-xs font-semibold text-text-secondary shadow-subtle transition hover:border-brand/40 hover:text-text-primary"
+                    className="inline-flex items-center gap-2 rounded-control border border-border-default bg-surface-card px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold text-text-secondary shadow-subtle transition hover:border-brand/40 hover:text-text-primary cursor-pointer"
                   >
                     <span>Try Sample JD</span>
                   </button>
-                )}
-                <button
-                  type="button"
-                  onClick={handleToggleAiModal}
-                  className="inline-flex items-center justify-center gap-1.5 rounded-control bg-brand px-3.5 py-1.5 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover shrink-0"
-                >
-                  <Wand2 size={13} />
-                  <span>{showAiModal ? "Close AI Importer" : "Paste Draft with AI"}</span>
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    onClick={handleToggleAiModal}
+                    className="inline-flex items-center justify-center gap-2 rounded-control bg-brand px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover shrink-0 cursor-pointer"
+                  >
+                    <Wand2 size={14} fill="currentColor" />
+                    <span>Paste Draft with AI</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             {showAiModal && (
@@ -2028,6 +2824,7 @@ export default function JobFormWizard({
                     ref={aiTextareaRef}
                     value={rawAiText}
                     disabled={isParsingAi}
+                    maxLength={25000}
                     onChange={(e) => {
                       setRawAiText(e.target.value);
                       adjustAiTextareaHeight();
@@ -2085,16 +2882,16 @@ export default function JobFormWizard({
                       type="button"
                       disabled={isParsingAi || !rawAiText.trim()}
                       onClick={handleParseWithAi}
-                      className="inline-flex items-center gap-1.5 rounded-control bg-brand px-4 py-1.5 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex items-center gap-2 rounded-control bg-brand px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {isParsingAi ? (
                         <>
-                          <LoaderCircle size={13} className="animate-spin" />
+                          <LoaderCircle size={14} className="animate-spin" />
                           <span>Extracting & Auto-Filling...</span>
                         </>
                       ) : (
                         <>
-                          <Sparkles size={13} />
+                          <Sparkles size={14} fill="currentColor" />
                           <span>Auto-Fill All Steps</span>
                         </>
                       )}
@@ -2150,30 +2947,30 @@ export default function JobFormWizard({
                       type="button"
                       onClick={() => handleStepClick(step.num)}
                       className={`group flex w-full items-center justify-between gap-3 rounded-control border p-3.5 text-left transition-all duration-150 ${isPast
-                          ? "border-brand/30 bg-brand-soft/40 text-brand shadow-subtle hover:bg-brand-soft/60"
-                          : isActive
-                            ? "border-brand/40 bg-white shadow-subtle ring-1 ring-brand/20"
-                            : "border-border-default/50 bg-white/70 text-text-muted hover:border-border-strong hover:bg-white hover:text-text-secondary"
+                        ? "border-brand/30 bg-brand-soft/40 text-brand shadow-subtle hover:bg-brand-soft/60"
+                        : isActive
+                          ? "border-brand/40 bg-white shadow-subtle ring-1 ring-brand/20"
+                          : "border-border-default/50 bg-white/70 text-text-muted hover:border-border-strong hover:bg-white hover:text-text-secondary"
                         }`}
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span
                             className={`font-mono text-xs font-bold ${isPast
+                              ? "text-brand"
+                              : isActive
                                 ? "text-brand"
-                                : isActive
-                                  ? "text-brand"
-                                  : "text-text-muted"
+                                : "text-text-muted"
                               }`}
                           >
                             {step.tag}
                           </span>
                           <span
                             className={`text-sm font-bold tracking-tight ${isPast
-                                ? "text-brand"
-                                : isActive
-                                  ? "text-text-primary"
-                                  : "text-text-muted group-hover:text-text-secondary"
+                              ? "text-brand"
+                              : isActive
+                                ? "text-text-primary"
+                                : "text-text-muted group-hover:text-text-secondary"
                               }`}
                           >
                             {step.label}
@@ -2181,10 +2978,10 @@ export default function JobFormWizard({
                         </div>
                         <p
                           className={`mt-0.5 text-xs truncate ${isPast
-                              ? "text-brand/80"
-                              : isActive
-                                ? "text-text-secondary"
-                                : "text-text-muted/70 group-hover:text-text-muted"
+                            ? "text-brand/80"
+                            : isActive
+                              ? "text-text-secondary"
+                              : "text-text-muted/70 group-hover:text-text-muted"
                             }`}
                         >
                           {step.brief}
@@ -2193,8 +2990,8 @@ export default function JobFormWizard({
 
                       {/* Right side tick mark for completed tasks */}
                       {isPast ? (
-                        <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
-                          <Check size={13} className="stroke-[2.5]" />
+                        <div className="flex h-5 w-5 shrink-0 items-center justify-center text-brand">
+                          <Check size={14} className="stroke-[2.5]" />
                         </div>
                       ) : isActive ? (
                         <div className="flex h-5 w-5 shrink-0 items-center justify-center">
@@ -2212,7 +3009,7 @@ export default function JobFormWizard({
 
           {/* Right Form Content */}
           <div className="flex-1 min-w-0">
-            <form onSubmit={handleSubmit} noValidate>
+            <form ref={formRef} onSubmit={handleSubmit} onKeyDown={handleFormKeyDown} noValidate>
               {error && (
                 <div className="mb-6 flex items-start gap-2.5 rounded-control border border-status-error/30 bg-status-error/10 p-3.5 text-xs text-status-error">
                   <AlertCircle size={15} className="mt-0.5 shrink-0" />
@@ -2276,41 +3073,108 @@ export default function JobFormWizard({
                       </div>
                     </div>
 
-                    <div>
-                      <label htmlFor="employmentType" className={labelClass}>
-                        Employment Type
-                      </label>
-                      <div className="group relative">
-                        <select
-                          id="employmentType"
-                          name="employmentType"
-                          value={form.employmentType}
-                          onChange={handleChange}
-                          className={`${inputClass} cursor-pointer appearance-none pr-10`}
-                        >
-                          <option value="FULL_TIME">Full-time</option>
-                          <option value="PART_TIME">Part-time</option>
-                          <option value="CONTRACTOR">Contract</option>
-                          <option value="INTERN">Internship</option>
-                        </select>
-                        <ChevronDown
-                          size={15}
-                          strokeWidth={1.8}
-                          className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand"
-                        />
-                      </div>
-                    </div>
+                    <Field
+                      label="Company Website (Optional)"
+                      name="companyLink"
+                      value={form.companyLink}
+                      onChange={handleChange}
+                      placeholder="https://company.com"
+                      icon={Globe}
+                      type="url"
+                    />
                   </div>
 
-                  <Field
-                    label="Company Website (Optional)"
-                    name="companyLink"
-                    value={form.companyLink}
-                    onChange={handleChange}
-                    placeholder="https://company.com"
-                    icon={Globe}
-                    type="url"
-                  />
+                  {/* Employment Type Toggle */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className={`${labelClass} mb-0`}>Employment Type</label>
+                      <span className="hidden sm:inline-flex text-[10px] text-text-muted font-mono">1-5 or ← / → to switch</span>
+                    </div>
+                    <div
+                      role="radiogroup"
+                      aria-label="Employment Type"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        const types: JobFormState["employmentType"][] = [
+                          "FULL_TIME",
+                          "PART_TIME",
+                          "CONTRACTOR",
+                          "INTERN",
+                          "OTHER",
+                        ];
+                        const currentIdx = types.indexOf(form.employmentType);
+                        if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                          e.preventDefault();
+                          const nextType = types[(currentIdx + 1) % types.length];
+                          setForm((prev) => {
+                            const updated = { ...prev, employmentType: nextType };
+                            formRefState.current = updated;
+                            return updated;
+                          });
+                        } else if (e.key === "ArrowLeft") {
+                          e.preventDefault();
+                          const prevType = types[(currentIdx - 1 + types.length) % types.length];
+                          setForm((prev) => {
+                            const updated = { ...prev, employmentType: prevType };
+                            formRefState.current = updated;
+                            return updated;
+                          });
+                        } else if (e.key === "ArrowUp") {
+                          e.preventDefault();
+                          const catEl = formRef.current?.querySelector<HTMLElement>('[name="category"]');
+                          if (catEl) {
+                            catEl.focus();
+                            return;
+                          }
+                        } else if (["1", "2", "3", "4", "5"].includes(e.key)) {
+                          e.preventDefault();
+                          const selectedType = types[parseInt(e.key, 10) - 1];
+                          if (selectedType) {
+                            setForm((prev) => {
+                              const updated = { ...prev, employmentType: selectedType };
+                              formRefState.current = updated;
+                              return updated;
+                            });
+                          }
+                        }
+                      }}
+                      className="grid grid-cols-2 sm:grid-cols-5 gap-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-brand/30 rounded-control"
+                    >
+                      {(
+                        [
+                          { id: "FULL_TIME" as const, label: "Full-time" },
+                          { id: "PART_TIME" as const, label: "Part-time" },
+                          { id: "CONTRACTOR" as const, label: "Contract" },
+                          { id: "INTERN" as const, label: "Internship" },
+                          { id: "OTHER" as const, label: "Other" },
+                        ] as const
+                      ).map((typeOption) => {
+                        const isSelected = form.employmentType === typeOption.id;
+                        return (
+                          <button
+                            key={typeOption.id}
+                            type="button"
+                            role="radio"
+                            aria-checked={isSelected}
+                            onClick={() => {
+                              setForm((prev) => {
+                                const updated = { ...prev, employmentType: typeOption.id };
+                                formRefState.current = updated;
+                                return updated;
+                              });
+                              if (error) setError("");
+                            }}
+                            className={`flex items-center justify-center gap-1.5 rounded-control border py-2.5 text-xs font-semibold transition-all focus:outline-none ${isSelected
+                                ? "border-brand bg-brand-soft text-brand shadow-subtle ring-1 ring-brand/30"
+                                : "border-transparent bg-surface-subtle/70 text-text-secondary hover:bg-surface-subtle hover:text-text-primary focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/30"
+                              }`}
+                          >
+                            <span>{typeOption.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
 
                   <div className="flex items-center justify-end pt-4">
                     <button
@@ -2320,10 +3184,13 @@ export default function JobFormWizard({
                         e.preventDefault();
                       }}
                       onClick={handleNext}
-                      className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover"
+                      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-control px-5 sm:px-6 text-xs sm:text-sm font-semibold transition-all duration-200 ${isCurrentStepValid
+                          ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30"
+                          : "bg-brand/50 text-text-inverse/80 hover:bg-brand/70 hover:text-text-inverse shadow-none"
+                        }`}
+                      title={isCurrentStepValid ? "Continue to Location" : "Fill required fields to continue"}
                     >
                       <span>Continue to Location</span>
-                      <ArrowUpRight size={14} />
                     </button>
                   </div>
                 </div>
@@ -2334,14 +3201,43 @@ export default function JobFormWizard({
                 <div className="space-y-6">
                   {/* Work Mode Toggle */}
                   <div>
-                    <label className={labelClass}>Work Mode</label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className={`${labelClass} mb-0`}>Work Mode</label>
+                      <span className="hidden sm:inline-flex text-[10px] text-text-muted font-mono">1-3 or ← / → to switch</span>
+                    </div>
+                    <div
+                      role="radiogroup"
+                      aria-label="Work Mode"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        const modes: JobFormState["workMode"][] = ["Onsite", "Hybrid", "Remote"];
+                        const currentIdx = modes.indexOf(form.workMode);
+                        if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                          e.preventDefault();
+                          const nextMode = modes[(currentIdx + 1) % modes.length];
+                          setForm((prev) => ({ ...prev, workMode: nextMode }));
+                        } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                          e.preventDefault();
+                          const prevMode = modes[(currentIdx - 1 + modes.length) % modes.length];
+                          setForm((prev) => ({ ...prev, workMode: prevMode }));
+                        } else if (["1", "2", "3"].includes(e.key)) {
+                          e.preventDefault();
+                          const nextMode = modes[parseInt(e.key, 10) - 1];
+                          if (nextMode) {
+                            setForm((prev) => ({ ...prev, workMode: nextMode }));
+                          }
+                        }
+                      }}
+                      className="grid grid-cols-3 gap-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-brand/30 rounded-control"
+                    >
                       {(["Onsite", "Hybrid", "Remote"] as const).map((modeOption) => {
                         const isSelected = form.workMode === modeOption;
                         return (
                           <button
                             key={modeOption}
                             type="button"
+                            role="radio"
+                            aria-checked={isSelected}
                             onClick={() => {
                               setForm((prev) => ({
                                 ...prev,
@@ -2349,9 +3245,9 @@ export default function JobFormWizard({
                               }));
                               if (error) setError("");
                             }}
-                            className={`flex items-center justify-center gap-2 rounded-control border py-2.5 text-xs font-semibold transition-all ${isSelected
-                              ? "border-brand bg-brand-soft text-brand"
-                              : "border-border-default bg-surface-card text-text-secondary hover:border-border-strong hover:text-text-primary"
+                            className={`flex items-center justify-center gap-2 rounded-control border py-2.5 text-xs font-semibold transition-all focus:outline-none ${isSelected
+                              ? "border-brand bg-brand-soft text-brand shadow-subtle ring-1 ring-brand/30"
+                              : "border-transparent bg-surface-subtle/70 text-text-secondary hover:bg-surface-subtle hover:text-text-primary focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/30"
                               }`}
                           >
                             {modeOption === "Onsite" && <Building2 size={13} />}
@@ -2372,6 +3268,7 @@ export default function JobFormWizard({
                     </label>
 
                     <CompanyCitySelector
+                      ref={citySelectorRef}
                       onSelect={handleAddOffice}
                       placeholder="Search city (e.g. Bengaluru, Kochi, Mumbai)..."
                     />
@@ -2412,9 +3309,42 @@ export default function JobFormWizard({
 
                   {/* 2. Candidate Residency / Eligibility Scope */}
                   <div className="space-y-3 border-t border-border-default/40 pt-5">
-                    <label className={labelClass}>Candidate Residency & Eligibility</label>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className={`${labelClass} mb-0`}>Candidate Residency & Eligibility</label>
+                      <span className="hidden sm:inline-flex text-[10px] text-text-muted font-mono">1-5 or ← / → to switch</span>
+                    </div>
 
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <div
+                      role="radiogroup"
+                      aria-label="Candidate Residency & Eligibility"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        const prefs: CandidatePreference[] = [
+                          "COMPANY_STATE",
+                          "ALL_INDIA",
+                          "EXACT_LOCATION",
+                          "SPECIFIC_LOCATION",
+                          "WORLDWIDE",
+                        ];
+                        const currentIdx = prefs.indexOf(form.candidatePreference);
+                        if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                          e.preventDefault();
+                          const nextPref = prefs[(currentIdx + 1) % prefs.length];
+                          setForm((prev) => ({ ...prev, candidatePreference: nextPref }));
+                        } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                          e.preventDefault();
+                          const prevPref = prefs[(currentIdx - 1 + prefs.length) % prefs.length];
+                          setForm((prev) => ({ ...prev, candidatePreference: prevPref }));
+                        } else if (["1", "2", "3", "4", "5"].includes(e.key)) {
+                          e.preventDefault();
+                          const nextPref = prefs[parseInt(e.key, 10) - 1];
+                          if (nextPref) {
+                            setForm((prev) => ({ ...prev, candidatePreference: nextPref }));
+                          }
+                        }
+                      }}
+                      className="grid grid-cols-1 gap-2 sm:grid-cols-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-brand/30 rounded-control"
+                    >
                       {(() => {
                         const officeStates = getOfficeStates(form.selectedOffices);
                         const stateDesc = officeStates.join(", ");
@@ -2469,6 +3399,8 @@ export default function JobFormWizard({
                             <button
                               key={pref.id}
                               type="button"
+                              role="radio"
+                              aria-checked={isSelected}
                               onClick={() => {
                                 setForm((prev) => ({
                                   ...prev,
@@ -2484,7 +3416,7 @@ export default function JobFormWizard({
                               }}
                               className={`flex flex-col rounded-control border p-3 text-left transition-all ${pref.fullWidth ? "sm:col-span-2" : ""
                                 } ${isSelected
-                                  ? "border-brand bg-brand-soft/60 ring-1 ring-brand/30"
+                                  ? "border-brand bg-brand-soft/60 shadow-subtle ring-1 ring-brand/30"
                                   : "border-border-default bg-surface-card hover:border-border-strong"
                                 }`}
                             >
@@ -2555,6 +3487,7 @@ export default function JobFormWizard({
                           Add Allowed Cities or States
                         </label>
                         <CandidateScopeSelector
+                          ref={scopeSelectorRef}
                           onAdd={handleAddPreferredTarget}
                           placeholder="Search allowed city or state..."
                         />
@@ -2597,9 +3530,8 @@ export default function JobFormWizard({
                       type="button"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={handleBack}
-                      className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
+                      className="inline-flex min-h-10 items-center justify-center rounded-control border border-border-default bg-surface-card px-5 sm:px-6 text-xs sm:text-sm font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary cursor-pointer"
                     >
-                      <ArrowLeft size={13} />
                       <span>Back</span>
                     </button>
                     <button
@@ -2609,10 +3541,13 @@ export default function JobFormWizard({
                         e.preventDefault();
                       }}
                       onClick={handleNext}
-                      className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover"
+                      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-control px-5 sm:px-6 text-xs sm:text-sm font-semibold transition-all duration-200 ${isCurrentStepValid
+                          ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30"
+                          : "bg-brand/50 text-text-inverse/80 hover:bg-brand/70 hover:text-text-inverse shadow-none"
+                        }`}
+                      title={isCurrentStepValid ? "Continue to Compensation" : "Add office location to continue"}
                     >
                       <span>Continue to Compensation</span>
-                      <ArrowUpRight size={14} />
                     </button>
                   </div>
                 </div>
@@ -2723,9 +3658,8 @@ export default function JobFormWizard({
                       type="button"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={handleBack}
-                      className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
+                      className="inline-flex min-h-10 items-center justify-center rounded-control border border-border-default bg-surface-card px-5 sm:px-6 text-xs sm:text-sm font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary cursor-pointer"
                     >
-                      <ArrowLeft size={13} />
                       <span>Back</span>
                     </button>
                     <button
@@ -2736,18 +3670,21 @@ export default function JobFormWizard({
                       }}
                       onClick={handleNext}
                       disabled={isCheckingNext}
-                      className="inline-flex items-center gap-1.5 rounded-control bg-brand px-5 py-2.5 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+                      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-control px-5 sm:px-6 text-xs sm:text-sm font-semibold transition-all duration-200 ${isCheckingNext
+                          ? "cursor-wait opacity-70 bg-brand text-text-inverse"
+                          : isCurrentStepValid
+                            ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30"
+                            : "bg-brand/50 text-text-inverse/80 hover:bg-brand/70 hover:text-text-inverse shadow-none"
+                        }`}
+                      title={isCurrentStepValid ? "Continue to Review" : "Fill experience and valid email to continue"}
                     >
                       {isCheckingNext ? (
                         <>
-                          <LoaderCircle size={14} className="animate-spin" />
+                          <LoaderCircle size={15} className="animate-spin" />
                           <span>Verifying & Continuing...</span>
                         </>
                       ) : (
-                        <>
-                          <span>Continue to Review</span>
-                          <ArrowUpRight size={14} />
-                        </>
+                        <span>Continue to Review</span>
                       )}
                     </button>
                   </div>
@@ -2758,78 +3695,254 @@ export default function JobFormWizard({
               {currentStep === 4 && (
                 <div className="space-y-6">
                   {/* Description */}
-                  <div>
-                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                      <label htmlFor="description" className={`${labelClass} mb-0`}>
-                        Job Description & Requirements
-                        <span className="ml-1 text-status-error">*</span>
-                      </label>
+                  <div className="space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <label htmlFor="description" className={`${labelClass} mb-0`}>
+                          Job Description & Requirements
+                          <span className="ml-1 text-status-error">*</span>
+                        </label>
+                      </div>
 
-                      <div className="flex items-center gap-2">
+                      {/* Top Action Buttons: Revert, Clean Text, AI Assistant */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {previousDescription !== null && previousDescription !== form.description && (
+                          <button
+                            type="button"
+                            onClick={handleRevertDescription}
+                            title="Revert to previous description"
+                            className="inline-flex items-center gap-2 rounded-control border border-border-default bg-surface-card px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold text-text-secondary transition hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary shadow-subtle cursor-pointer"
+                          >
+                            <RotateCcw size={14} />
+                            <span>Revert</span>
+                          </button>
+                        )}
+
                         <button
                           type="button"
-                          disabled={isGeneratingDesc}
-                          onClick={handleGenerateDescription}
-                          title="Generate a structured job description from role details"
-                          className="inline-flex items-center gap-1.5 rounded-control border border-brand/30 bg-brand-soft/50 px-2.5 py-1 text-xs font-semibold text-brand transition hover:bg-brand-soft disabled:opacity-50"
+                          disabled={!form.description.trim()}
+                          onClick={handleCleanDescription}
+                          title="Remove icons, emojis, and raw markdown (*, #) without changing your words"
+                          className="inline-flex items-center gap-2 rounded-control border border-border-default bg-surface-card px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold text-text-secondary transition hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary shadow-subtle disabled:opacity-40 cursor-pointer"
                         >
-                          {isGeneratingDesc ? (
-                            <>
-                              <LoaderCircle size={12} className="animate-spin" />
-                              <span>Generating...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles size={12} />
-                              <span>Generate Description</span>
-                            </>
-                          )}
+                          <Eraser size={14} />
+                          <span>Clean Text</span>
                         </button>
 
                         <button
                           type="button"
-                          disabled={isEnhancingDesc || !form.description.trim()}
-                          onClick={handleEnhanceDescription}
-                          title="Polish, format and add bullet points to existing text"
-                          className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-subtle px-2.5 py-1 text-xs font-medium text-text-secondary transition hover:bg-surface-base hover:text-text-primary disabled:opacity-40"
+                          onClick={() => setShowAiDescDrawer((prev) => !prev)}
+                          className={`inline-flex items-center gap-2 rounded-control px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold transition shadow-subtle cursor-pointer ${showAiDescDrawer
+                              ? "bg-brand text-text-inverse ring-1 ring-brand/30"
+                              : "border border-brand/30 bg-brand-soft/60 text-brand hover:bg-brand-soft"
+                            }`}
                         >
-                          {isEnhancingDesc ? (
-                            <>
-                              <LoaderCircle size={12} className="animate-spin" />
-                              <span>Polishing...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Wand2 size={12} />
-                              <span>Enhance & Polish</span>
-                            </>
-                          )}
+                          <Sparkles size={14} fill="currentColor" />
+                          <span>AI Assistant & Prompt</span>
                         </button>
                       </div>
                     </div>
 
-                    <textarea
-                      ref={descriptionTextareaRef}
-                      id="description"
-                      name="description"
-                      value={form.description}
-                      onChange={(e) => {
-                        handleChange(e);
-                        adjustDescriptionHeight();
-                      }}
-                      onInput={adjustDescriptionHeight}
-                      placeholder="Paste or write the complete role description, responsibilities, and requirements..."
-                      style={{
-                        minHeight: "220px",
-                        overflow: "hidden",
-                        resize: "none",
-                      }}
-                      className={`${inputClass} leading-relaxed transition-[border-color,box-shadow] ${fieldErrors.description
-                          ? "border-status-error ring-1 ring-status-error/30 focus:border-status-error focus:ring-status-error/40"
-                          : ""
+                    {/* AI Assistant Drawer for custom instructions & expansion */}
+                    {showAiDescDrawer && (
+                      <div className="rounded-control border border-brand/25 bg-gradient-to-br from-brand-soft/60 via-surface-card to-brand-soft/25 p-3.5 sm:p-4 shadow-subtle animate-in fade-in duration-150">
+                        <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-brand/15">
+                          <div className="flex items-center gap-2">
+                            <span className="flex h-5 w-5 items-center justify-center rounded-control bg-brand text-text-inverse">
+                              <Sparkles size={11} fill="currentColor" />
+                            </span>
+                            <span className="text-xs font-bold text-text-primary">
+                              AI Description Assistant
+                            </span>
+                            <span className="text-[10px] text-text-muted">
+                              • Custom prompts, expansion &amp; polishing
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setShowAiDescDrawer(false)}
+                            className="text-text-muted hover:text-text-primary transition p-0.5 cursor-pointer"
+                            title="Close AI Assistant"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+
+                        <div className="space-y-2.5">
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={aiCustomInstruction}
+                              maxLength={1000}
+                              onChange={(e) => setAiCustomInstruction(e.target.value)}
+                              placeholder="Give instructions (e.g. 'Expand with 8 responsibilities', 'Focus on Figma & mobile design', 'Make it detailed')..."
+                              className="w-full rounded-control border border-border-default bg-surface-card px-3 py-2 text-xs text-text-primary placeholder:text-text-muted/70 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand shadow-subtle"
+                            />
+                          </div>
+
+                          {/* Preset Instruction Chips */}
+                          <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+                            <span className="text-[10px] font-semibold text-text-muted mr-0.5">Quick chips:</span>
+                            {[
+                              "Expand into full detailed JD",
+                              "Add 6-8 key responsibilities",
+                              "Focus on design systems & Figma",
+                              "Structure with clean bullet points",
+                              "Add tech requirements & nice-to-haves",
+                            ].map((chip) => (
+                              <button
+                                key={chip}
+                                type="button"
+                                onClick={() => setAiCustomInstruction(chip)}
+                                className="rounded-control border border-border-default/80 bg-surface-card px-2 py-0.5 text-[10.5px] font-medium text-text-secondary hover:border-brand/40 hover:bg-brand-soft hover:text-brand transition cursor-pointer"
+                              >
+                                + {chip}
+                              </button>
+                            ))}
+                          </div>
+
+                          {/* Actions inside Drawer */}
+                          <div className="flex flex-wrap items-center justify-end gap-2.5 pt-2 border-t border-brand/15">
+                            <button
+                              type="button"
+                              disabled={isGeneratingDesc || !form.title.trim()}
+                              onClick={() => handleGenerateDescription()}
+                              className="inline-flex items-center gap-2 rounded-control border border-border-default bg-surface-card px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold text-text-secondary hover:bg-surface-subtle hover:text-text-primary transition shadow-subtle disabled:opacity-40 cursor-pointer"
+                            >
+                              {isGeneratingDesc ? (
+                                <>
+                                  <LoaderCircle size={14} className="animate-spin" />
+                                  <span>Generating...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles size={14} fill="currentColor" />
+                                  <span>Generate From Title</span>
+                                </>
+                              )}
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={isEnhancingDesc || !form.description.trim()}
+                              onClick={() => handleEnhanceDescription()}
+                              className="inline-flex items-center gap-2 rounded-control bg-brand px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold text-text-inverse hover:bg-brand-hover shadow-subtle transition disabled:opacity-40 cursor-pointer"
+                            >
+                              {isEnhancingDesc ? (
+                                <>
+                                  <LoaderCircle size={14} className="animate-spin" />
+                                  <span>Processing...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Wand2 size={14} fill="currentColor" />
+                                  <span>
+                                    {aiCustomInstruction.trim()
+                                      ? "Apply Custom Instructions"
+                                      : form.description.trim().length < 150
+                                        ? "Expand & Polish Draft"
+                                        : "Enhance & Polish Draft"}
+                                  </span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Unified Description Editor / Preview Container */}
+                    <div
+                      className={`rounded-control border bg-surface-card p-4 sm:p-5 shadow-subtle min-h-[260px] transition-[border-color,box-shadow] ${fieldErrors.description
+                          ? "border-status-error ring-1 ring-status-error/30"
+                          : "border-border-default focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/20"
                         }`}
-                      required
-                    />
+                    >
+                      {/* Fixed Header: Title on Left, Edit & Preview on Right */}
+                      <div className="mb-3.5 flex items-center justify-between border-b border-border-default/60 pb-2.5">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block h-2 w-2 rounded-full bg-brand" />
+                          <span className="text-xs font-semibold uppercase tracking-wider text-text-primary">
+                            {descriptionTab === "edit" ? "Edit Description" : "Live Candidate View"}
+                          </span>
+                        </div>
+
+                        {/* Edit & Preview Toggle (Stays fixed on the right, no border, no total bg) */}
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDescriptionTab("edit");
+                              requestAnimationFrame(() => {
+                                adjustDescriptionHeight();
+                                descriptionTextareaRef.current?.focus();
+                              });
+                            }}
+                            className={`inline-flex items-center gap-1.5 rounded-control px-2.5 py-1 text-xs font-semibold transition cursor-pointer bg-transparent ${descriptionTab === "edit"
+                                ? "text-brand"
+                                : "text-text-muted hover:text-text-primary"
+                              }`}
+                          >
+                            <Pencil size={12} />
+                            <span>Edit</span>
+                          </button>
+                          <span className="text-border-default/60 text-xs select-none">/</span>
+                          <button
+                            type="button"
+                            onClick={() => setDescriptionTab("preview")}
+                            className={`inline-flex items-center gap-1.5 rounded-control px-2.5 py-1 text-xs font-semibold transition cursor-pointer bg-transparent ${descriptionTab === "preview"
+                                ? "text-brand"
+                                : "text-text-muted hover:text-text-primary"
+                              }`}
+                          >
+                            <Eye size={12} />
+                            <span>Preview</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      {descriptionTab === "edit" ? (
+                        <div>
+                          <textarea
+                            ref={descriptionTextareaRef}
+                            id="description"
+                            name="description"
+                            value={form.description}
+                            maxLength={35000}
+                            onChange={(e) => {
+                              handleChange(e);
+                              adjustDescriptionHeight();
+                            }}
+                            onKeyDown={handleDescriptionKeyDown}
+                            onInput={adjustDescriptionHeight}
+                            placeholder="Paste or write the complete role description, responsibilities, and requirements..."
+                            style={{
+                              minHeight: "220px",
+                              overflow: "hidden",
+                              resize: "none",
+                            }}
+                            className="w-full bg-transparent p-0 text-sm leading-relaxed text-text-primary placeholder:text-text-muted/70 outline-none border-0 ring-0 focus:outline-none focus:ring-0"
+                            required
+                          />
+                          <div className="mt-2 flex flex-wrap items-center justify-between gap-1 border-t border-border-default/30 pt-2 text-[11px] text-text-muted">
+                            <span>
+                              Tip: Press Enter on a bullet (<code className="rounded bg-surface-subtle px-1 py-0.5 text-text-secondary font-mono">•</code>) to automatically insert the next one.
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          {form.description.trim() ? (
+                            <FormattedDescription content={form.description} hideInitialHeading={false} />
+                          ) : (
+                            <div className="py-8 text-center text-xs text-text-muted">
+                              No description entered yet. Switch back to Edit or click &ldquo;Generate Description&rdquo;.
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                     {fieldErrors.description && (
                       <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
                         <AlertCircle size={12} className="shrink-0" />
@@ -2902,6 +4015,35 @@ export default function JobFormWizard({
                     </div>
                   </div>
 
+                  {/* Account required notice on Step 4 */}
+                  {mode === "public" && !user && (
+                    <div className="mt-4 rounded-control border border-brand/25 bg-brand-soft/25 p-4 sm:p-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex items-start gap-3">
+                          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-brand text-text-inverse shadow-subtle">
+                            <LogIn size={16} />
+                          </span>
+                          <div>
+                            <h4 className="text-sm font-bold text-text-primary">
+                              Log in required to submit
+                            </h4>
+                            <p className="mt-0.5 text-xs text-text-secondary leading-relaxed">
+                              Your job details are ready! Sign in to submit this job for review. Your entered details will be preserved.
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleSaveDraftAndRedirectToLogin}
+                          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-control bg-brand px-4 py-2 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover cursor-pointer"
+                        >
+                          <LogIn size={14} />
+                          <span>Log in to Post Job</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Final Submit Buttons */}
                   <div className="flex items-center justify-between pt-4">
                     <button
@@ -2909,161 +4051,219 @@ export default function JobFormWizard({
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={handleBack}
                       disabled={isSubmitting}
-                      className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary disabled:opacity-50"
+                      className="inline-flex min-h-10 items-center justify-center rounded-control border border-border-default bg-surface-card px-5 sm:px-6 text-xs sm:text-sm font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary disabled:opacity-50 cursor-pointer"
                     >
-                      <ArrowLeft size={13} />
                       <span>Back</span>
                     </button>
 
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="inline-flex min-h-10 items-center justify-center gap-2 rounded-control bg-brand px-6 text-sm font-semibold text-text-inverse transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60 shadow-subtle"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <LoaderCircle size={15} className="animate-spin" />
-                          <span>
-                            {mode === "edit"
-                              ? "Saving..."
-                              : mode === "public"
-                                ? "Submitting..."
-                                : "Publishing..."}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle2 size={16} />
-                          <span>
-                            {mode === "edit"
-                              ? "Save Changes"
-                              : mode === "public"
-                                ? "Submit for Review"
-                                : "Publish Job Listing"}
-                          </span>
-                        </>
-                      )}
-                    </button>
+                    {mode === "public" && !user ? (
+                      <button
+                        type="button"
+                        onClick={handleSaveDraftAndRedirectToLogin}
+                        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-control bg-brand px-5 sm:px-6 text-xs sm:text-sm font-semibold text-text-inverse shadow-subtle transition-all duration-200 hover:bg-brand-hover ring-1 ring-brand/30 cursor-pointer"
+                        title="Log in to submit your job listing"
+                      >
+                        <LogIn size={15} />
+                        <span>Log In to Post Job</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-control px-5 sm:px-6 text-xs sm:text-sm font-semibold transition-all duration-200 ${isSubmitting
+                            ? "cursor-wait opacity-70 bg-brand text-text-inverse"
+                            : isCurrentStepValid
+                              ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30"
+                              : "bg-brand/50 text-text-inverse/80 hover:bg-brand/70 hover:text-text-inverse shadow-none"
+                          }`}
+                        title={isCurrentStepValid ? "Publish job listing" : "Enter job description to publish"}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <LoaderCircle size={15} className="animate-spin" />
+                            <span>
+                              {mode === "edit"
+                                ? "Saving..."
+                                : mode === "public"
+                                  ? "Submitting..."
+                                  : "Publishing..."}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 size={16} />
+                            <span>
+                              {mode === "edit"
+                                ? "Save Changes"
+                                : mode === "public"
+                                  ? "Submit for Review"
+                                  : "Publish Job Listing"}
+                            </span>
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
             </form>
+
+            {/* Keyboard-first quick navigation strip */}
+            <div className="mt-4 flex items-center justify-between border-t border-border-default/40 pt-3 text-[11px] text-text-muted">
+              {/* Keyboard-first quick navigation strip (no border, no bg) */}
+              <div className="mt-3 flex items-center justify-between text-[11px] text-text-muted">
+                <div className="hidden sm:flex items-center gap-2.5">
+                  <span className="inline-flex items-center gap-1">
+                    <kbd className="rounded border border-border-default bg-surface-subtle px-1.5 py-0.5 font-mono text-[10px] text-text-secondary">↓ / ↑</kbd>
+                    <kbd className="font-mono text-[11px] font-semibold text-text-secondary">↓ / ↑</kbd>
+                    <span>switch fields</span>
+                  </span>
+                  <span>·</span>
+                  <span className="inline-flex items-center gap-1">
+                    <kbd className="rounded border border-border-default bg-surface-subtle px-1.5 py-0.5 font-mono text-[10px] text-text-secondary">↵ Enter</kbd>
+                    <kbd className="font-mono text-[11px] font-semibold text-text-secondary">↵ Enter</kbd>
+                    <span>continue / OK</span>
+                  </span>
+                  <span>·</span>
+                  <span className="inline-flex items-center gap-1">
+                    <kbd className="rounded border border-border-default bg-surface-subtle px-1.5 py-0.5 font-mono text-[10px] text-text-secondary">Alt + 1..4</kbd>
+                    <kbd className="font-mono text-[11px] font-semibold text-text-secondary">Alt + 1..4</kbd>
+                    <span>switch tabs</span>
+                  </span>
+                  <span>·</span>
+                  <span className="inline-flex items-center gap-1">
+                    <kbd className="rounded border border-border-default bg-surface-subtle px-1.5 py-0.5 font-mono text-[10px] text-text-secondary">Alt + ← / →</kbd>
+                    <kbd className="font-mono text-[11px] font-semibold text-text-secondary">Alt + ← / →</kbd>
+                    <span>back / next</span>
+                  </span>
+                  <span>·</span>
+                  <span className="inline-flex items-center gap-1">
+                    <kbd className="rounded border border-border-default bg-surface-subtle px-1.5 py-0.5 font-mono text-[10px] text-text-secondary">⌘ + ↵</kbd>
+                    <kbd className="font-mono text-[11px] font-semibold text-text-secondary">⌘ + ↵</kbd>
+                    <span>submit</span>
+                  </span>
+                </div>
+                <span className="font-mono text-[11px] text-text-muted ml-auto">
+                  Step {currentStep} of 4
+                </span>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* How It Works Modal */}
+        <Modal
+          isOpen={showHowItWorksModal}
+          onClose={() => setShowHowItWorksModal(false)}
+          maxWidth="2xl"
+          bodyClassName="p-5 sm:p-6"
+          title={
+            <div className="flex items-center gap-2">
+              <span className="text-base font-semibold text-text-primary sm:text-lg">
+                How Posting Works
+              </span>
+              <span className="rounded-control bg-brand-soft px-2 py-0.5 text-[10px] font-semibold text-brand">
+                4 Quick Steps
+              </span>
+            </div>
+          }
+          description="Direct candidate reach to your HR email. Zero agency fees, zero middlemen."
+        >
+          <div className="space-y-4">
+            {/* Step list */}
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-control border border-border-default/60 bg-surface-subtle p-3.5">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-control bg-brand/10 text-xs font-bold text-brand">
+                    1
+                  </span>
+                  <h3 className="text-xs font-semibold text-text-primary">
+                    Role & AI Auto-Fill
+                  </h3>
+                </div>
+                <p className="text-[11px] leading-relaxed text-text-muted">
+                  Add job title and role type, or paste raw notes and let Gemini AI fill all 4 steps.
+                </p>
+              </div>
+
+              <div className="rounded-control border border-border-default/60 bg-surface-subtle p-3.5">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-control bg-brand/10 text-xs font-bold text-brand">
+                    2
+                  </span>
+                  <h3 className="text-xs font-semibold text-text-primary">
+                    Work Mode & City
+                  </h3>
+                </div>
+                <p className="text-[11px] leading-relaxed text-text-muted">
+                  Select Onsite, Hybrid, or Remote and pick your office branch or pan-India.
+                </p>
+              </div>
+
+              <div className="rounded-control border border-border-default/60 bg-surface-subtle p-3.5">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-control bg-brand/10 text-xs font-bold text-brand">
+                    3
+                  </span>
+                  <h3 className="text-xs font-semibold text-text-primary">
+                    Salary & Direct HR Email
+                  </h3>
+                </div>
+                <p className="text-[11px] leading-relaxed text-text-muted">
+                  Set salary and your official HR email. Candidate resumes land straight in your inbox.
+                </p>
+              </div>
+
+              <div className="rounded-control border border-border-default/60 bg-surface-subtle p-3.5">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-control bg-brand/10 text-xs font-bold text-brand">
+                    4
+                  </span>
+                  <h3 className="text-xs font-semibold text-text-primary">
+                    Review & Go Live
+                  </h3>
+                </div>
+                <p className="text-[11px] leading-relaxed text-text-muted">
+                  Quick preview and publish. Your opening goes live immediately with ₹0 commission.
+                </p>
+              </div>
+            </div>
+
+            {/* Key Advantages Banner */}
+            <div className="rounded-control border border-brand/20 bg-brand-soft/40 p-3">
+              <h4 className="text-xs font-bold text-text-primary mb-1.5 flex items-center gap-2">
+                <Sparkles size={13} className="text-brand" />
+                <span>Direct Employer Benefits</span>
+              </h4>
+              <div className="grid gap-2 text-[11px] text-text-secondary sm:grid-cols-3">
+                <div className="flex items-center gap-1.5">
+                  <Check size={12} className="text-brand shrink-0" />
+                  <span>Direct to your HR email</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Check size={12} className="text-brand shrink-0" />
+                  <span>₹0 Commission & no hidden fees</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Check size={12} className="text-brand shrink-0" />
+                  <span>Top tech & design talent</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-end pt-1">
+              <button
+                type="button"
+                onClick={() => setShowHowItWorksModal(false)}
+                className="rounded-control bg-brand px-5 py-2 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover"
+              >
+                Got it, let's post
+              </button>
+            </div>
+          </div>
+        </Modal>
       </div>
-
-      {/* How It Works Modal */}
-      <Modal
-        isOpen={showHowItWorksModal}
-        onClose={() => setShowHowItWorksModal(false)}
-        maxWidth="2xl"
-        bodyClassName="p-5 sm:p-6"
-        title={
-          <div className="flex items-center gap-2">
-            <span className="text-base font-semibold text-text-primary sm:text-lg">
-              How Posting Works
-            </span>
-            <span className="rounded-control bg-brand-soft px-2 py-0.5 text-[10px] font-semibold text-brand">
-              4 Quick Steps
-            </span>
-          </div>
-        }
-        description="Direct candidate reach to your HR email. Zero agency fees, zero middlemen."
-      >
-        <div className="space-y-4">
-          {/* Step list */}
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-control border border-border-default/60 bg-surface-subtle p-3.5">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-control bg-brand/10 text-xs font-bold text-brand">
-                  1
-                </span>
-                <h3 className="text-xs font-semibold text-text-primary">
-                  Role & AI Auto-Fill
-                </h3>
-              </div>
-              <p className="text-[11px] leading-relaxed text-text-muted">
-                Add job title and role type, or paste raw notes and let Gemini AI fill all 4 steps.
-              </p>
-            </div>
-
-            <div className="rounded-control border border-border-default/60 bg-surface-subtle p-3.5">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-control bg-brand/10 text-xs font-bold text-brand">
-                  2
-                </span>
-                <h3 className="text-xs font-semibold text-text-primary">
-                  Work Mode & City
-                </h3>
-              </div>
-              <p className="text-[11px] leading-relaxed text-text-muted">
-                Select Onsite, Hybrid, or Remote and pick your office branch or pan-India.
-              </p>
-            </div>
-
-            <div className="rounded-control border border-border-default/60 bg-surface-subtle p-3.5">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-control bg-brand/10 text-xs font-bold text-brand">
-                  3
-                </span>
-                <h3 className="text-xs font-semibold text-text-primary">
-                  Salary & Direct HR Email
-                </h3>
-              </div>
-              <p className="text-[11px] leading-relaxed text-text-muted">
-                Set salary and your official HR email. Candidate resumes land straight in your inbox.
-              </p>
-            </div>
-
-            <div className="rounded-control border border-border-default/60 bg-surface-subtle p-3.5">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-control bg-brand/10 text-xs font-bold text-brand">
-                  4
-                </span>
-                <h3 className="text-xs font-semibold text-text-primary">
-                  Review & Go Live
-                </h3>
-              </div>
-              <p className="text-[11px] leading-relaxed text-text-muted">
-                Quick preview and publish. Your opening goes live immediately with ₹0 commission.
-              </p>
-            </div>
-          </div>
-
-          {/* Key Advantages Banner */}
-          <div className="rounded-control border border-brand/20 bg-brand-soft/40 p-3">
-            <h4 className="text-xs font-bold text-text-primary mb-1.5 flex items-center gap-2">
-              <Sparkles size={13} className="text-brand" />
-              <span>Direct Employer Benefits</span>
-            </h4>
-            <div className="grid gap-2 text-[11px] text-text-secondary sm:grid-cols-3">
-              <div className="flex items-center gap-1.5">
-                <Check size={12} className="text-brand shrink-0" />
-                <span>Direct to your HR email</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Check size={12} className="text-brand shrink-0" />
-                <span>₹0 Commission & no hidden fees</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Check size={12} className="text-brand shrink-0" />
-                <span>Top tech & design talent</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Modal Footer */}
-          <div className="flex items-center justify-end pt-1">
-            <button
-              type="button"
-              onClick={() => setShowHowItWorksModal(false)}
-              className="rounded-control bg-brand px-5 py-2 text-xs font-semibold text-text-inverse shadow-subtle transition hover:bg-brand-hover"
-            >
-              Got it, let's post
-            </button>
-          </div>
-        </div>
-      </Modal>
     </main>
   );
 }

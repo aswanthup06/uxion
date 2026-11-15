@@ -1,19 +1,91 @@
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
+import { isAuthorizedAdminRequest } from "@/lib/auth/admin";
+import { checkRateLimit, getClientIp } from "@/lib/security/rate-limit";
+
+const ALLOWED_HOSTS = new Set([
+  "zenoway.com",
+  "www.zenoway.com",
+  "localhost",
+  "127.0.0.1",
+]);
 
 export async function POST(request: Request) {
   try {
-    const { jobUrl, action } = await request.json(); 
-    // action should be either "URL_UPDATED" (new/edited) or "URL_DELETED" (expired)
-
-    if (!jobUrl || !action) {
-      return NextResponse.json({ error: "Missing jobUrl or action" }, { status: 400 });
+    // 1. Enforce admin authentication
+    const isAuthorized = await isAuthorizedAdminRequest(request);
+    if (!isAuthorized) {
+      return NextResponse.json(
+        { error: "Unauthorized. Admin authentication required." },
+        { status: 401 }
+      );
     }
 
-    // 1. Authenticate with Google's Indexing API safely using the config object
+    // 2. IP rate limiting to avoid exceeding Google Indexing API quotas
+    const clientIp = getClientIp(request);
+    const limit = checkRateLimit("index-job", clientIp, {
+      windowMs: 60 * 1000,
+      maxRequests: 10,
+    });
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: "Too many indexing requests. Please wait a minute." },
+        { status: 429, headers: { "Retry-After": String(limit.retryAfterSec) } }
+      );
+    }
+
+    const { jobUrl, action } = await request.json().catch(() => ({}));
+
+    if (!jobUrl || typeof jobUrl !== "string" || !action || typeof action !== "string") {
+      return NextResponse.json(
+        { error: "Valid jobUrl and action are required." },
+        { status: 400 }
+      );
+    }
+
+    if (action !== "URL_UPDATED" && action !== "URL_DELETED") {
+      return NextResponse.json(
+        { error: "Invalid action. Must be 'URL_UPDATED' or 'URL_DELETED'." },
+        { status: 400 }
+      );
+    }
+
+    // 3. Domain validation: prevent indexing third-party or arbitrary URLs
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(jobUrl);
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid jobUrl format." },
+        { status: 400 }
+      );
+    }
+
+    const hostname = parsedUrl.hostname.toLowerCase();
+    const isAllowedHost =
+      ALLOWED_HOSTS.has(hostname) ||
+      hostname.endsWith(".zenoway.com") ||
+      (process.env.NEXT_PUBLIC_SITE_URL &&
+        hostname === new URL(process.env.NEXT_PUBLIC_SITE_URL).hostname.toLowerCase());
+
+    if (!isAllowedHost) {
+      return NextResponse.json(
+        { error: `Unauthorized URL host '${hostname}'. Only official site domains are permitted.` },
+        { status: 400 }
+      );
+    }
+
+    if (!process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
+      return NextResponse.json(
+        { error: "Google Indexing credentials are not configured on this server." },
+        { status: 503 }
+      );
+    }
+
+    // 4. Authenticate with Google's Indexing API
     const auth = new google.auth.JWT({
       email: process.env.GOOGLE_CLIENT_EMAIL,
-      key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"), // Parses newline characters correctly
+      key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
       scopes: ["https://www.googleapis.com/auth/indexing"],
     });
 
@@ -22,7 +94,7 @@ export async function POST(request: Request) {
       auth: auth,
     });
 
-    // 2. Publish the indexing request notification
+    // 5. Publish the indexing request notification
     const response = await indexer.urlNotifications.publish({
       requestBody: {
         url: jobUrl,
@@ -30,20 +102,18 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      message: "Google Jobs notified successfully!", 
-      data: response.data 
+    return NextResponse.json({
+      success: true,
+      message: "Google Jobs notified successfully!",
+      data: response.data,
     });
   } catch (error) {
     console.error("Google Indexing API Error:", error);
-    
-    // Safely extract the error message without using 'any'
-    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
-
-    return NextResponse.json({ 
-      success: false, 
-      error: errorMessage 
-    }, { status: 500 });
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    return NextResponse.json(
+      { success: false, error: errorMessage },
+      { status: 500 }
+    );
   }
 }

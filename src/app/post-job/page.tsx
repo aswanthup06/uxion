@@ -3,9 +3,9 @@ import JobFormWizard from "@/app/admin/comp/JobFormWizard";
 import SiteFooter from "@/app/components/home/SiteFooter";
 
 export const metadata: Metadata = {
-  title: "Post an IT Job | Zenoway",
+  title: "Post a Tech Opening | Hire Top Talent on Zenoway",
   description:
-    "Post tech, software engineering, and IT job openings on Zenoway. Reach top tech talent across India and worldwide.",
+    "Post tech, design, and software engineering job openings on Zenoway. Reach top verified talent across India with direct candidate applications.",
   alternates: {
     canonical: "https://www.zenoway.online/post-job",
   },

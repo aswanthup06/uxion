@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import JobDetailsClient from "./JobDetailsClient";
 import { getJobById } from "@/lib/supabase/jobs";
 import { formatLocationLabel } from "@/lib/supabase/locations-data";
+import { getRelatedJobs } from "@/lib/jobs/related";
+import { matchCommunityGroup } from "@/lib/community/match-group";
 
 interface JobDetailsPageProps {
   params: Promise<{ id: string }>;
@@ -70,5 +72,16 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
     notFound();
   }
 
-  return <JobDetailsClient job={job} />;
+  const [relatedJobs, matchedGroup] = await Promise.all([
+    getRelatedJobs(job, 3),
+    Promise.resolve(matchCommunityGroup(job)),
+  ]);
+
+  return (
+    <JobDetailsClient
+      job={job}
+      relatedJobs={relatedJobs}
+      matchedGroup={matchedGroup}
+    />
+  );
 }

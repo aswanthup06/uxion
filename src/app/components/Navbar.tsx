@@ -573,6 +573,15 @@ export default function Navbar() {
         {/* Desktop actions */}
         {!isAdminRoute ? (
           <div className="hidden shrink-0 h-full items-center gap-3 md:flex lg:gap-3">
+            <Link
+              href={POST_JOB}
+              onClick={closeMenus}
+              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control bg-brand px-3.5 text-xs font-semibold text-text-inverse shadow-subtle transition-all duration-200 hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+            >
+              <Plus size={14} />
+              <span>Post Job</span>
+            </Link>
+
             {user ? (
               <div className="relative flex h-full items-center">
                 <button
@@ -657,7 +666,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href={LOGIN}
-                className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control bg-brand px-4 text-xs font-semibold text-text-inverse shadow-subtle transition-colors duration-200 hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+                className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-secondary transition-colors duration-200 hover:border-brand hover:bg-brand-soft hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
               >
                 Sign in
               </Link>
@@ -690,11 +699,12 @@ export default function Navbar() {
         <div className="flex shrink-0 items-center gap-2.5 md:hidden">
           {!isAdminRoute && (
             <Link
-              href={JOBS}
+              href={POST_JOB}
               onClick={closeMenus}
-              className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control bg-brand-soft px-3 text-xs font-semibold text-brand transition-colors duration-200 hover:bg-brand-soft-hover hover:text-brand-dark"
+              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1 rounded-control bg-brand-soft px-3 text-xs font-semibold text-brand transition-colors duration-200 hover:bg-brand-soft-hover hover:text-brand-dark"
             >
-              Explore Jobs
+              <Plus size={13} />
+              <span>Post Job</span>
             </Link>
           )}
 

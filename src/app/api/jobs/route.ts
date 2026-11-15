@@ -15,6 +15,12 @@ import {
 } from "@/lib/supabase/jobs";
 import type { Job } from "@/app/types/job";
 import { validateEmailDomain } from "@/lib/validation/email";
+import {
+  createServerAuthClient,
+  getServiceSupabase,
+  isSupabaseConfigured,
+} from "@/lib/supabase/server";
+import { isAuthorizedAdminRequest } from "@/lib/auth/admin";
 
 function purgeJobsCache() {
   try {
@@ -25,25 +31,13 @@ function purgeJobsCache() {
   }
 }
 
-/**
- * Helper to verify that the request comes from an authenticated admin session
- * via the admin-auth HTTP-only cookie or valid authorization header.
- */
-function isAuthorizedAdmin(req: NextRequest): boolean {
-  const adminCookie = req.cookies.get("admin-auth");
-  if (adminCookie?.value === "true") return true;
-
-  // Optional: Allow service key or admin key via Authorization header for machine-to-machine calls
-  const authHeader = req.headers.get("authorization");
-  if (authHeader) {
-    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
-    if (token && (token === process.env.ADMIN_KEY || token === process.env.SUPABASE_SERVICE_ROLE_KEY)) {
-      return true;
-    }
-  }
-
-  return false;
-}
+// Length constraints for database hygiene and DoS defense
+const MAX_TITLE_LEN = 120;
+const MAX_COMPANY_LEN = 100;
+const MAX_LOCATION_LEN = 200;
+const MAX_SALARY_LEN = 80;
+const MAX_EMAIL_LEN = 120;
+const MAX_DESCRIPTION_LEN = 35000;
 
 // ✅ GET → Fetch jobs (public gets published jobs; admin can pass ?status=pending or ?status=all)
 export const dynamic = "force-dynamic";
@@ -65,7 +59,7 @@ export async function GET(req: NextRequest) {
 
     // Pending review queue: restricted to authorized admins
     if (statusParam === "pending") {
-      if (!isAuthorizedAdmin(req)) {
+      if (!(await isAuthorizedAdminRequest(req))) {
         return NextResponse.json(
           { error: "Unauthorized: Admin authentication required" },
           { status: 401 }
@@ -80,7 +74,7 @@ export async function GET(req: NextRequest) {
 
     // All jobs including drafts: restricted to authorized admins
     if (statusParam === "all") {
-      if (!isAuthorizedAdmin(req)) {
+      if (!(await isAuthorizedAdminRequest(req))) {
         return NextResponse.json(
           { error: "Unauthorized: Admin authentication required" },
           { status: 401 }
@@ -126,12 +120,89 @@ export async function GET(req: NextRequest) {
 // - Authenticated admin submissions default to "published" status
 export async function POST(req: NextRequest) {
   try {
-    const isAdmin = isAuthorizedAdmin(req);
+    const isAdmin = await isAuthorizedAdminRequest(req);
+
+    // Enforce authentication for public job postings:
+    // Only authenticated users or authorized admins can post jobs.
+    if (!isAdmin) {
+      let isUserLoggedIn = false;
+
+      if (isSupabaseConfigured()) {
+        try {
+          const supabase = await createServerAuthClient();
+          const { data } = await supabase.auth.getUser();
+          if (data.user) {
+            isUserLoggedIn = true;
+          }
+        } catch {
+          // Continue to check Authorization header
+        }
+      }
+
+      if (!isUserLoggedIn) {
+        const authHeader = req.headers.get("authorization");
+        if (authHeader?.startsWith("Bearer ")) {
+          try {
+            const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+            const service = getServiceSupabase();
+            const { data } = await service.auth.getUser(token);
+            if (data.user) {
+              isUserLoggedIn = true;
+            }
+          } catch {}
+        }
+      }
+
+      if (!isUserLoggedIn) {
+        return NextResponse.json(
+          { error: "Authentication required. Please log in to post a job." },
+          { status: 401 }
+        );
+      }
+    }
+
     const body: Partial<Job> = await req.json();
 
     if (!body.title?.trim() || !body.company?.trim() || !body.description?.trim()) {
       return NextResponse.json(
         { error: "Missing required fields (title, company, description)" },
+        { status: 400 }
+      );
+    }
+
+    if (body.title.length > MAX_TITLE_LEN) {
+      return NextResponse.json(
+        { error: `Job title cannot exceed ${MAX_TITLE_LEN} characters.` },
+        { status: 400 }
+      );
+    }
+    if (body.company.length > MAX_COMPANY_LEN) {
+      return NextResponse.json(
+        { error: `Company name cannot exceed ${MAX_COMPANY_LEN} characters.` },
+        { status: 400 }
+      );
+    }
+    if (body.description.length > MAX_DESCRIPTION_LEN) {
+      return NextResponse.json(
+        { error: `Job description cannot exceed ${MAX_DESCRIPTION_LEN} characters.` },
+        { status: 400 }
+      );
+    }
+    if (body.mail && body.mail.length > MAX_EMAIL_LEN) {
+      return NextResponse.json(
+        { error: `Application email cannot exceed ${MAX_EMAIL_LEN} characters.` },
+        { status: 400 }
+      );
+    }
+    if (body.location && body.location.length > MAX_LOCATION_LEN) {
+      return NextResponse.json(
+        { error: `Location cannot exceed ${MAX_LOCATION_LEN} characters.` },
+        { status: 400 }
+      );
+    }
+    if (body.salary && body.salary.length > MAX_SALARY_LEN) {
+      return NextResponse.json(
+        { error: `Salary cannot exceed ${MAX_SALARY_LEN} characters.` },
         { status: 400 }
       );
     }
@@ -258,7 +329,7 @@ export async function POST(req: NextRequest) {
 // ✅ PUT → Update existing job (admin only)
 export async function PUT(req: NextRequest) {
   try {
-    if (!isAuthorizedAdmin(req)) {
+    if (!(await isAuthorizedAdminRequest(req))) {
       return NextResponse.json(
         { error: "Unauthorized: Admin authentication required" },
         { status: 401 }
@@ -333,7 +404,7 @@ export async function PUT(req: NextRequest) {
 // ✅ PATCH → Quick 1-click admin actions (approve, reject, status toggle)
 export async function PATCH(req: NextRequest) {
   try {
-    if (!isAuthorizedAdmin(req)) {
+    if (!(await isAuthorizedAdminRequest(req))) {
       return NextResponse.json(
         { error: "Unauthorized: Admin authentication required" },
         { status: 401 }
@@ -389,7 +460,7 @@ export async function PATCH(req: NextRequest) {
 // ✅ DELETE → Remove a job (admin only)
 export async function DELETE(req: NextRequest) {
   try {
-    if (!isAuthorizedAdmin(req)) {
+    if (!(await isAuthorizedAdminRequest(req))) {
       return NextResponse.json(
         { error: "Unauthorized: Admin authentication required" },
         { status: 401 }

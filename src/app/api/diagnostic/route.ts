@@ -1,12 +1,21 @@
 // src/app/api/diagnostic/route.ts
-// Temporary server-side diagnostic endpoint to verify environment variable presence.
-// Strictly returns boolean presence flags. NEVER prints or exposes variable values.
+// Server-side diagnostic endpoint to verify environment variable presence.
+// In production, strictly requires authenticated admin session.
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { isAuthorizedAdminRequest } from "@/lib/auth/admin";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // In production, require admin credentials to prevent reconnaissance
+  if (process.env.NODE_ENV === "production") {
+    const isAuthorized = await isAuthorizedAdminRequest(req);
+    if (!isAuthorized) {
+      return NextResponse.json({ error: "Not Found" }, { status: 404 });
+    }
+  }
+
   const projectRoot = process.cwd();
   const envLocalPath = path.join(projectRoot, ".env.local");
   const envPath = path.join(projectRoot, ".env");
@@ -30,7 +39,6 @@ export async function GET() {
 
   const diagnostic = {
     status: "ok",
-    projectRoot,
     files: {
       hasEnvLocal: envLocalExists,
       envLocalSizeBytes: envLocalSizeBytes,

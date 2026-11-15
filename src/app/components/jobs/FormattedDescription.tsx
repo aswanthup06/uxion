@@ -9,6 +9,24 @@ interface FormattedDescriptionProps {
   hideInitialHeading?: boolean;
 }
 
+function renderInlineFormatting(text: string): React.ReactNode {
+  const parts = text.split(/(\*\*[^*]+\*\*|__[^_]+__)/g);
+  if (parts.length === 1) return text;
+  return parts.map((part, i) => {
+    if (
+      (part.startsWith("**") && part.endsWith("**") && part.length > 4) ||
+      (part.startsWith("__") && part.endsWith("__") && part.length > 4)
+    ) {
+      return (
+        <strong key={i} className="font-semibold text-text-primary">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
+}
+
 /**
  * Renders job descriptions with clear typography hierarchy:
  * - Bold headings for sections (e.g. Responsibilities, Requirements)
@@ -47,7 +65,7 @@ export default function FormattedDescription({
                 className="mt-1 h-3.5 w-3.5 shrink-0 text-brand"
                 strokeWidth={2.4}
               />
-              <span className="flex-1">{item}</span>
+              <span className="flex-1">{renderInlineFormatting(item)}</span>
             </li>
           ))}
         </ul>
@@ -124,7 +142,7 @@ export default function FormattedDescription({
         key={`p-${index}`}
         className="my-2 text-sm sm:text-[14.5px] leading-relaxed text-text-secondary"
       >
-        {line}
+        {renderInlineFormatting(line)}
       </p>
     );
   });
