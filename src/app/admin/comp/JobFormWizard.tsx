@@ -2450,103 +2450,101 @@ export default function JobFormWizard({
   if (mode === "public" && isSubmittedSuccess) {
     return (
       <main className="min-h-full bg-surface-base text-text-primary">
-        <div className="mx-auto max-w-2xl px-5 py-16 sm:px-8">
-          <div className="rounded-card border border-border-default bg-surface-card p-6 sm:p-10 text-center shadow-subtle">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-soft text-brand">
-              <CheckCircle2 size={32} strokeWidth={2} />
-            </div>
+        <div className="mx-auto max-w-2xl px-5 py-16 sm:px-8 text-center">
+          <div className="mx-auto flex items-center justify-center text-brand">
+            <CheckCircle2 size={40} strokeWidth={2} />
+          </div>
 
-            <div className="mt-4 flex justify-center">
-              <span className="inline-flex items-center gap-1.5 rounded-control bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                Submitted · Pending Review
+          <div className="mt-4 flex justify-center">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+              Submitted · Pending Review
+            </span>
+          </div>
+
+          <h1 className="mt-3 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
+            Job Submitted for Review!
+          </h1>
+
+          <p className="mt-2 text-sm leading-6 text-text-muted">
+            Thank you for posting on Zenoway. To maintain high listing quality and ensure compensation transparency, all public submissions undergo a quick editorial review. Your listing will go live once approved by our moderation team.
+          </p>
+
+          {/* Submitted Job Overview Card */}
+          <div className="mt-8 rounded-card border border-border-default bg-surface-card p-5 text-left shadow-subtle">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold text-text-primary">
+                  {submittedJobData?.title || form.title}
+                </h3>
+                <p className="text-xs font-medium text-text-secondary">
+                  {submittedJobData?.company || form.company}
+                </p>
+              </div>
+              <span className="rounded-control bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand">
+                {submittedJobData?.workMode || form.workMode}
               </span>
             </div>
 
-            <h1 className="mt-3 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
-              Job Submitted for Review!
-            </h1>
-
-            <p className="mt-2 text-sm leading-6 text-text-muted">
-              Thank you for posting on Zenoway. To maintain high listing quality and ensure compensation transparency, all public submissions undergo a quick editorial review. Your listing will go live once approved by our moderation team.
-            </p>
-
-            {/* Submitted Job Overview Card */}
-            <div className="mt-6 rounded-card border border-border-default bg-surface-subtle/50 p-5 text-left">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-text-primary">
-                    {submittedJobData?.title || form.title}
-                  </h3>
-                  <p className="text-xs font-medium text-text-secondary">
-                    {submittedJobData?.company || form.company}
-                  </p>
-                </div>
-                <span className="rounded-control bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand">
-                  {submittedJobData?.workMode || form.workMode}
-                </span>
+            <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border-default/40 pt-3 text-xs sm:grid-cols-3">
+              <div>
+                <span className="text-[10px] font-semibold uppercase text-text-muted">Location</span>
+                <p className="mt-0.5 truncate font-medium text-text-primary">{previewLocation}</p>
               </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border-default/40 pt-3 text-xs sm:grid-cols-3">
-                <div>
-                  <span className="text-[10px] font-semibold uppercase text-text-muted">Location</span>
-                  <p className="mt-0.5 truncate font-medium text-text-primary">{previewLocation}</p>
-                </div>
-                <div>
-                  <span className="text-[10px] font-semibold uppercase text-text-muted">Salary</span>
-                  <p className="mt-0.5 font-semibold text-brand">{form.salary || "Not Disclosed"}</p>
-                </div>
-                <div>
-                  <span className="text-[10px] font-semibold uppercase text-text-muted">Contact Email</span>
-                  <p className="mt-0.5 truncate font-medium text-text-primary">{form.mail || "—"}</p>
-                </div>
+              <div>
+                <span className="text-[10px] font-semibold uppercase text-text-muted">Salary</span>
+                <p className="mt-0.5 font-semibold text-brand">{form.salary || "Not Disclosed"}</p>
+              </div>
+              <div>
+                <span className="text-[10px] font-semibold uppercase text-text-muted">Contact Email</span>
+                <p className="mt-0.5 truncate font-medium text-text-primary">{form.mail || "—"}</p>
               </div>
             </div>
+          </div>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
-              <Link
-                href="/jobs"
-                className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-control bg-brand px-6 text-xs font-medium text-text-inverse transition hover:bg-brand-hover shadow-subtle"
-              >
-                <span>Browse Job Listings</span>
-                <ArrowUpRight size={14} />
-              </Link>
-              <button
-                type="button"
-                onClick={() => {
-                  setForm({
-                    title: "",
-                    company: "",
-                    category: "UI/UX & Product Design",
-                    employmentType: "FULL_TIME",
-                    workMode: "Onsite",
-                    location: "",
-                    selectedOffices: [],
-                    candidatePreference: "COMPANY_STATE",
-                    preferredTargets: [],
-                    remoteEligibilityType: "COUNTRIES",
-                    remoteEligibilityCountries: ["IN"],
-                    hqLocation: "",
-                    experienceMin: "",
-                    experienceMax: "",
-                    postedDate: getToday(),
-                    salary: "",
-                    mail: "",
-                    companyLink: "",
-                    description: "",
-                  });
-                  setCurrentStep(1);
-                  setIsSubmittedSuccess(false);
-                  setSubmittedJobData(null);
-                  setEmailVerifiedDomain(null);
-                  lastVerifiedEmailRef.current = "";
-                  setIsCheckingNext(false);
-                }}
-                className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-5 text-xs font-medium text-text-secondary transition hover:bg-surface-subtle hover:text-text-primary"
-              >
-                <span>Post Another Job</span>
-              </button>
-            </div>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
+            <Link
+              href="/jobs"
+              className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-control bg-brand px-6 text-xs font-medium text-text-inverse transition hover:bg-brand-hover shadow-subtle"
+            >
+              <span>Browse Job Listings</span>
+              <ArrowUpRight size={14} />
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setForm({
+                  title: "",
+                  company: "",
+                  category: "UI/UX & Product Design",
+                  employmentType: "FULL_TIME",
+                  workMode: "Onsite",
+                  location: "",
+                  selectedOffices: [],
+                  candidatePreference: "COMPANY_STATE",
+                  preferredTargets: [],
+                  remoteEligibilityType: "COUNTRIES",
+                  remoteEligibilityCountries: ["IN"],
+                  hqLocation: "",
+                  experienceMin: "",
+                  experienceMax: "",
+                  postedDate: getToday(),
+                  salary: "",
+                  mail: "",
+                  companyLink: "",
+                  description: "",
+                });
+                setCurrentStep(1);
+                setIsSubmittedSuccess(false);
+                setSubmittedJobData(null);
+                setEmailVerifiedDomain(null);
+                lastVerifiedEmailRef.current = "";
+                setIsCheckingNext(false);
+              }}
+              className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-5 text-xs font-medium text-text-secondary transition hover:bg-surface-subtle hover:text-text-primary"
+            >
+              <span>Post Another Job</span>
+            </button>
           </div>
         </div>
       </main>
