@@ -541,7 +541,9 @@ function BoldHiringPoster({
         </div>
 
         {/* Crisp Regular-Weight Editorial Job Title Contrast */}
-        <h1
+        <div
+          role="heading"
+          aria-level={2}
           style={{
             margin: 0,
             marginTop: isStory ? 34 : isSquare ? 18 : 24,
@@ -554,7 +556,7 @@ function BoldHiringPoster({
           }}
         >
           {truncateText(data.title, 68)}
-        </h1>
+        </div>
 
         {/* Clean Company Attribution */}
         <div
@@ -958,7 +960,9 @@ function MinimalPoster({
         </div>
 
         {/* Contrast Regular-Weight Job Title */}
-        <h1
+        <div
+          role="heading"
+          aria-level={2}
           style={{
             margin: 0,
             marginTop: isStory ? 32 : isSquare ? 16 : 22,
@@ -971,7 +975,7 @@ function MinimalPoster({
           }}
         >
           {truncateText(data.title, 74)}
-        </h1>
+        </div>
 
         {/* Clean Company Lockup */}
         <div
@@ -1415,7 +1419,9 @@ function CorporatePoster({
             <div>Hiring!</div>
           </div>
 
-          <h1
+          <div
+            role="heading"
+            aria-level={2}
             style={{
               margin: 0,
               marginTop: isStory ? 28 : isSquare ? 14 : 20,
@@ -1427,7 +1433,7 @@ function CorporatePoster({
             }}
           >
             {truncateText(data.title, 74)}
-          </h1>
+          </div>
         </div>
 
         {/* Full-Row Balanced Hairline Metric Bar */}
@@ -1781,7 +1787,9 @@ function CompactPoster({
             <div>Hiring!</div>
           </div>
 
-          <h1
+          <div
+            role="heading"
+            aria-level={2}
             style={{
               margin: 0,
               marginTop: isStory ? 26 : isSquare ? 14 : 18,
@@ -1793,7 +1801,7 @@ function CompactPoster({
             }}
           >
             {truncateText(data.title, 70)}
-          </h1>
+          </div>
 
           <div
             style={{
@@ -2109,7 +2117,9 @@ function EditorialPortraitPoster({
               >
                 WE ARE
               </span>
-              <h1
+              <div
+                role="heading"
+                aria-level={2}
                 style={{
                   fontSize: 140,
                   fontWeight: 900,
@@ -2122,7 +2132,7 @@ function EditorialPortraitPoster({
                 }}
               >
                 HIRING
-              </h1>
+              </div>
             </div>
 
             {/* Job Title */}
@@ -2433,7 +2443,9 @@ function EditorialPortraitPoster({
             >
               WE ARE
             </span>
-            <h1
+            <div
+              role="heading"
+              aria-level={2}
               style={{
                 fontSize: isSquare ? 84 : 114,
                 fontWeight: 900,
@@ -2446,7 +2458,7 @@ function EditorialPortraitPoster({
               }}
             >
               HIRING
-            </h1>
+            </div>
           </div>
 
           {/* Job Title */}

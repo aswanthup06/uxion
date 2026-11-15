@@ -119,8 +119,8 @@ export default function HappyWork() {
 
           {/* Happy work message */}
           <motion.div
-            initial={reduce ? false : { opacity: 0, x: 18 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={reduce ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.55 }}
             className="min-w-0"
@@ -145,8 +145,8 @@ export default function HappyWork() {
               {benefits.map((benefit, index) => (
                 <motion.div
                   key={benefit}
-                  initial={reduce ? false : { opacity: 0, x: 10 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  initial={reduce ? false : { opacity: 0, y: 8 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{
                     duration: 0.35,

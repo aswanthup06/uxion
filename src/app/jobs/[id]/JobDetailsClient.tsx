@@ -755,7 +755,7 @@ export default function JobDetailsClient({
           >
             {/* Ambient brand glow */}
             <div
-              className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-brand/5 blur-3xl"
+              className="pointer-events-none absolute right-0 top-0 h-36 w-36 rounded-full bg-brand/5 blur-2xl"
               aria-hidden="true"
             />
 

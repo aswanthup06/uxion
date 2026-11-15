@@ -44,24 +44,24 @@ const categories = [
     icon: Palette,
   },
   {
-    label: "Full Stack Development",
-    href: `${JOBS}?category=${encodeURIComponent("Full Stack Development")}`,
+    label: "Frontend & UI Engineering",
+    href: `${JOBS}?category=${encodeURIComponent("Frontend & UI Engineering")}`,
     icon: Code2,
   },
   {
-    label: "DevOps & Cloud",
-    href: `${JOBS}?category=${encodeURIComponent("DevOps, Cloud & Infrastructure")}`,
-    icon: Cloud,
-  },
-  {
-    label: "Data Science & AI",
-    href: `${JOBS}?category=${encodeURIComponent("Data Science & AI / ML")}`,
+    label: "Full Stack Development",
+    href: `${JOBS}?category=${encodeURIComponent("Full Stack Development")}`,
     icon: Database,
   },
   {
-    label: "QA & Testing",
-    href: `${JOBS}?category=${encodeURIComponent("QA & Automation Testing")}`,
-    icon: Bug,
+    label: "Graphic & Visual Design",
+    href: `${JOBS}?category=${encodeURIComponent("Graphic & Visual Design")}`,
+    icon: Sparkles,
+  },
+  {
+    label: "Marketing, SEO & Growth",
+    href: `${JOBS}?category=${encodeURIComponent("Marketing, SEO & Growth")}`,
+    icon: ArrowUpRight,
   },
 ];
 
@@ -237,7 +237,7 @@ export default function Navbar() {
       className="relative z-50 shrink-0 border-b border-border-default bg-surface-card"
       onMouseLeave={() => setDropdown(null)}
     >
-      <div className="mx-auto flex h-[68px] items-center px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-[68px] w-full items-center justify-between px-3.5 sm:px-6 lg:px-8">
         {/* Brand */}
         <Link
           href="/"
@@ -744,12 +744,12 @@ export default function Navbar() {
         )}
 
         {/* Mobile menu toggle & quick action */}
-        <div className="flex shrink-0 items-center gap-2.5 md:hidden">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2.5 md:hidden">
           {!isAdminRoute && (
             <Link
               href={POST_JOB}
               onClick={closeMenus}
-              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1 rounded-control bg-brand-soft px-3 text-xs font-semibold text-brand transition-colors duration-200 hover:bg-brand-soft-hover hover:text-brand-dark"
+              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1 rounded-control bg-brand-soft px-2.5 sm:px-3 text-xs font-semibold text-brand transition-colors duration-200 hover:bg-brand-soft-hover hover:text-brand-dark"
             >
               <Plus size={13} />
               <span>Post Job</span>

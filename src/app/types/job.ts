@@ -63,5 +63,6 @@ export type Job = {
   rawLocation?: string;
   workModeNotes?: string;
   requiresReview?: boolean;
+  userId?: string;
   status?: "published" | "draft" | "archived";
 };

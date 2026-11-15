@@ -968,11 +968,14 @@ export default function JobFormWizard({
   const [isCheckingNext, setIsCheckingNext] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
   const formRefState = useRef<JobFormState>(form);
-  formRefState.current = form;
+  useEffect(() => {
+    formRefState.current = form;
+  }, [form]);
   const lastVerifiedEmailRef = useRef<string>("");
   const isNavigatingRef = useRef<boolean>(false);
   const citySelectorRef = useRef<CompanyCitySelectorHandle | null>(null);
   const scopeSelectorRef = useRef<CandidateScopeSelectorHandle | null>(null);
+  const handleSubmitRef = useRef<((e?: React.FormEvent<HTMLFormElement>) => Promise<void>) | null>(null);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [hasStartedWizard, setHasStartedWizard] = useState(false);
   const [showHowItWorksModal, setShowHowItWorksModal] = useState(false);
@@ -1828,7 +1831,7 @@ export default function JobFormWizard({
       if (tagName === "textarea") {
         if ((e.metaKey || e.ctrlKey) && currentStep === 4) {
           e.preventDefault();
-          handleSubmit();
+          handleSubmitRef.current?.();
         }
         return;
       }
@@ -1856,7 +1859,7 @@ export default function JobFormWizard({
           if (currentStep < 4) {
             handleNext();
           } else if (currentStep === 4) {
-            handleSubmit();
+            handleSubmitRef.current?.();
           }
           return;
         }
@@ -1881,7 +1884,7 @@ export default function JobFormWizard({
       if (currentStep < 4) {
         handleNext();
       } else if (currentStep === 4) {
-        handleSubmit();
+        handleSubmitRef.current?.();
       }
       return;
     }
@@ -1904,12 +1907,14 @@ export default function JobFormWizard({
   };
 
   const handleNextRef = useRef(handleNext);
-  handleNextRef.current = handleNext;
   const handleBackRef = useRef(handleBack);
-  handleBackRef.current = handleBack;
   const handleStepClickRef = useRef(handleStepClick);
-  handleStepClickRef.current = handleStepClick;
-  const handleSubmitRef = useRef<(() => Promise<void>) | null>(null);
+
+  useEffect(() => {
+    handleNextRef.current = handleNext;
+    handleBackRef.current = handleBack;
+    handleStepClickRef.current = handleStepClick;
+  });
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -2315,7 +2320,7 @@ export default function JobFormWizard({
         payload.status = "draft";
         payload.requiresReview = true;
 
-        let authHeaders: Record<string, string> = { "Content-Type": "application/json" };
+        const authHeaders: Record<string, string> = { "Content-Type": "application/json" };
         try {
           const supabase = createClient();
           const { data: { session } } = await supabase.auth.getSession();
@@ -2381,7 +2386,9 @@ export default function JobFormWizard({
     }
   };
 
-  handleSubmitRef.current = handleSubmit;
+  useEffect(() => {
+    handleSubmitRef.current = handleSubmit;
+  });
 
   const previewExperience = formatExperienceLabel(
     form.experienceMin,

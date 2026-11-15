@@ -23,13 +23,13 @@
   /* Typography / Text Colors */
   --color-text-primary: #17251f;
   --color-text-secondary: #536258;
-  --color-text-muted: #849087;
+  --color-text-muted: #596b5e;
   --color-text-inverse: #ffffff;
 
   /* Typography Direct Aliases (allows both text-primary and text-text-primary) */
   --color-primary: #17251f;
   --color-secondary: #536258;
-  --color-muted: #849087;
+  --color-muted: #596b5e;
   --color-inverse: #ffffff;
 
   /* Borders & Focus Rings */

@@ -121,25 +121,24 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const isAdmin = await isAuthorizedAdminRequest(req);
+    let posterUserId: string | null = null;
 
     // Enforce authentication for public job postings:
     // Only authenticated users or authorized admins can post jobs.
     if (!isAdmin) {
-      let isUserLoggedIn = false;
-
       if (isSupabaseConfigured()) {
         try {
           const supabase = await createServerAuthClient();
           const { data } = await supabase.auth.getUser();
           if (data.user) {
-            isUserLoggedIn = true;
+            posterUserId = data.user.id;
           }
         } catch {
           // Continue to check Authorization header
         }
       }
 
-      if (!isUserLoggedIn) {
+      if (!posterUserId) {
         const authHeader = req.headers.get("authorization");
         if (authHeader?.startsWith("Bearer ")) {
           try {
@@ -147,13 +146,13 @@ export async function POST(req: NextRequest) {
             const service = getServiceSupabase();
             const { data } = await service.auth.getUser(token);
             if (data.user) {
-              isUserLoggedIn = true;
+              posterUserId = data.user.id;
             }
           } catch {}
         }
       }
 
-      if (!isUserLoggedIn) {
+      if (!posterUserId) {
         return NextResponse.json(
           { error: "Authentication required. Please log in to post a job." },
           { status: 401 }
@@ -297,6 +296,7 @@ export async function POST(req: NextRequest) {
       rawLocation: body.rawLocation || canonicalLocation,
       status,
       requiresReview,
+      userId: isAdmin ? undefined : (posterUserId || undefined),
     });
 
     if (!isAdmin) {

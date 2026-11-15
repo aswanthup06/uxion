@@ -217,6 +217,15 @@ export default function SubmissionsPage() {
                                 {job.employmentType.replace("_", " ")}
                               </span>
                             )}
+                            {job.userId ? (
+                              <span className="rounded-control bg-purple-500/10 px-2 py-0.5 text-[11px] font-semibold text-purple-600 dark:text-purple-400">
+                                User Post
+                              </span>
+                            ) : (
+                              <span className="rounded-control bg-blue-500/10 px-2 py-0.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                                Admin Post
+                              </span>
+                            )}
                             <span className="font-mono text-[11px] text-text-muted">
                               ID: {job.id}
                             </span>

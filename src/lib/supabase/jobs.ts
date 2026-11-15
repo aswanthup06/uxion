@@ -49,6 +49,7 @@ export function mapDbJobToJob(row: DbJob): Job {
     workModeNotes: row.work_mode_notes || undefined,
     requiresReview: Boolean(row.requires_review),
     status: row.status || "published",
+    userId: row.user_id || undefined,
   };
 }
 
@@ -129,6 +130,7 @@ export function mapJobToDbInsert(job: Partial<Job>): DbJobInsert {
   if (job.rawLocation !== undefined) insert.raw_location = job.rawLocation;
   if (job.workModeNotes !== undefined) insert.work_mode_notes = job.workModeNotes;
   if (job.requiresReview !== undefined) insert.requires_review = job.requiresReview;
+  if (job.userId !== undefined) insert.user_id = job.userId || null;
 
   return insert;
 }
@@ -438,6 +440,7 @@ export async function createJob(jobData: Partial<Job>): Promise<Job> {
     if (dbPayload.is_test_data !== undefined) corePayload.is_test_data = dbPayload.is_test_data;
     if (dbPayload.status) corePayload.status = dbPayload.status;
     if (dbPayload.requires_review !== undefined) corePayload.requires_review = dbPayload.requires_review;
+    if (dbPayload.user_id !== undefined) corePayload.user_id = dbPayload.user_id;
 
     const retry = await supabase
       .from("jobs")
@@ -504,6 +507,7 @@ export async function updateJob(id: string, jobData: Partial<Job>): Promise<Job>
   if (jobData.rawLocation !== undefined) dbPayload.raw_location = jobData.rawLocation;
   if (jobData.workModeNotes !== undefined) dbPayload.work_mode_notes = jobData.workModeNotes;
   if (jobData.requiresReview !== undefined) dbPayload.requires_review = jobData.requiresReview;
+  if (jobData.userId !== undefined) dbPayload.user_id = jobData.userId || null;
 
   let { data, error } = await supabase
     .from("jobs")

@@ -132,6 +132,9 @@ export default function RootLayout({
           name="google-adsense-account"
           content="ca-pub-8853112000993716"
         />
+      </head>
+
+      <body className={`${manrope.className} ${manrope.variable} antialiased`}>
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8853112000993716"
@@ -153,9 +156,7 @@ export default function RootLayout({
             gtag('config', 'G-TKZQD3T9PD');
           `}
         </Script>
-      </head>
 
-      <body className={`${manrope.className} ${manrope.variable} antialiased`}>
         <MainLayout>{children}</MainLayout>
 
         <ZenowayToaster />

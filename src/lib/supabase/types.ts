@@ -80,6 +80,7 @@ export interface DbJob {
   raw_location?: string | null;
   work_mode_notes?: string | null;
   requires_review?: boolean;
+  user_id?: string | null;
 
   created_at: string;
   updated_at: string;

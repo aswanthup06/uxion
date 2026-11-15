@@ -137,21 +137,9 @@ export function JobPosterCreator({
   const previewStageRef = useRef<HTMLDivElement>(null);
   const exportNodeRef = useRef<HTMLDivElement>(null);
 
-  // Initialize stage dimensions intelligently to avoid any 0-scale flash on mount
-  const [stageWidth, setStageWidth] = useState<number>(() => {
-    if (typeof window !== "undefined") {
-      return window.innerWidth < 1024
-        ? window.innerWidth
-        : Math.max(380, window.innerWidth - 440);
-    }
-    return 600;
-  });
-  const [stageHeight, setStageHeight] = useState<number>(() => {
-    if (typeof window !== "undefined") {
-      return Math.max(380, window.innerHeight - 150);
-    }
-    return 750;
-  });
+  // Initialize stage dimensions consistently for SSR and initial hydration
+  const [stageWidth, setStageWidth] = useState<number>(600);
+  const [stageHeight, setStageHeight] = useState<number>(750);
 
   const formatSpec = POSTER_FORMATS[format];
   const activeTemplateMeta = useMemo(

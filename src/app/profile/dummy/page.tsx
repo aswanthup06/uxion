@@ -235,7 +235,7 @@ export default function ProfileDesignPage() {
     "mt-1 w-full rounded-control border border-border-default bg-surface-card px-3 py-2 text-xs text-text-primary outline-none focus:border-brand";
 
   return (
-    <div className="min-h-screen bg-surface-base text-text-primary antialiased selection:bg-brand-soft selection:text-brand">
+    <div className="min-h-screen overflow-x-hidden bg-surface-base text-text-primary antialiased selection:bg-brand-soft selection:text-brand">
       <style>{`
         @keyframes hero-in {
           from { opacity: 0; transform: translateY(10px); }
@@ -277,7 +277,7 @@ export default function ProfileDesignPage() {
               {/* rings, centred on the avatar, fading out toward the edges */}
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute left-1/2 top-1/2 h-[56rem] w-[56rem] -translate-x-1/2 -translate-y-1/2 text-brand"
+                className="pointer-events-none absolute left-1/2 top-1/2 h-[min(56rem,90vw)] w-[min(56rem,90vw)] -translate-x-1/2 -translate-y-1/2 text-brand"
                 style={{
                   WebkitMaskImage:
                     "radial-gradient(circle closest-side, black 20%, transparent 100%)",

@@ -912,9 +912,9 @@ function JobsViewContent({
         </header>
 
         {/* Work Mode Switcher (1-Click Mode Filter) */}
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <div className="w-full sm:w-auto overflow-x-auto no-scrollbar">
-            <div className="inline-flex min-w-full sm:min-w-0 items-center gap-1 rounded-control border border-border-default bg-surface-card p-1 shadow-xs">
+        <div className="mt-5 flex min-w-0 max-w-full flex-wrap items-center justify-between gap-3">
+          <div className="w-full min-w-0 max-w-full overflow-x-auto overscroll-x-contain no-scrollbar sm:w-auto">
+            <div className="inline-flex min-w-max items-center gap-1 rounded-control border border-border-default bg-surface-card p-1 shadow-xs">
               {[
                 { id: "All work modes", label: "All modes", count: jobs.length },
                 { id: "Remote", label: "Remote", icon: Globe, count: modeCounts["Remote"] },
@@ -1166,7 +1166,7 @@ function JobsViewContent({
         </div>
 
         {/* Quick Location Filter Pills */}
-        <div className="mt-3 hidden sm:flex items-center gap-1.5 overflow-x-auto pb-1 text-xs [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mt-3 hidden sm:flex max-w-full min-w-0 items-center gap-1.5 overflow-x-auto overscroll-x-contain pb-1 text-xs no-scrollbar">
           <span className="mr-1 shrink-0 font-medium text-text-muted">Quick location:</span>
           {POPULAR_LOCATIONS.map((loc) => {
             const isActive = location.toLowerCase() === loc.toLowerCase();

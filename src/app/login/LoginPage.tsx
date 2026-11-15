@@ -158,9 +158,16 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
       // Clear any prior renders
       googleButtonRef.current.innerHTML = "";
 
+      // Google GSI button width: between 200 and 400
+      const availableWidth =
+        googleButtonRef.current.offsetWidth > 0
+          ? googleButtonRef.current.offsetWidth
+          : typeof window !== "undefined"
+            ? Math.max(200, window.innerWidth - 64)
+            : 320;
       const buttonWidth = Math.min(
         390,
-        Math.max(240, Math.floor(googleButtonRef.current.offsetWidth || 350))
+        Math.max(200, Math.floor(availableWidth))
       );
 
       window.google.accounts.id.renderButton(googleButtonRef.current, {
@@ -336,10 +343,10 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
               )}
 
               {/* Native Google Sign In Button Container */}
-              <div className="w-full">
+              <div className="w-full min-w-0 max-w-full overflow-hidden">
                 <div
                   ref={googleButtonRef}
-                  className={`w-full flex justify-center min-h-[44px] ${
+                  className={`w-full flex justify-center min-h-[44px] overflow-hidden ${
                     isGsiRendered && !isLoading ? "block" : "hidden"
                   }`}
                 />

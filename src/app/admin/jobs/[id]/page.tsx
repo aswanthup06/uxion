@@ -257,6 +257,16 @@ export default function AdminJobDetailsPage() {
                   Pending Review
                 </span>
               )}
+
+              {job.userId ? (
+                <span className="inline-flex items-center gap-1 rounded-full border border-purple-200 bg-purple-50/70 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
+                  User Submission
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
+                  Zenoway Official
+                </span>
+              )}
             </div>
 
             {/* Title */}
@@ -630,6 +640,21 @@ export default function AdminJobDetailsPage() {
                         <Copy size={13} />
                       )}
                     </button>
+                  </dd>
+                </div>
+
+                <div>
+                  <dt className="text-xs text-text-muted">Posted By</dt>
+                  <dd className="mt-0.5 text-xs font-medium text-text-primary">
+                    {job.userId ? (
+                      <span className="font-mono text-purple-600 dark:text-purple-400">
+                        User ({job.userId})
+                      </span>
+                    ) : (
+                      <span className="font-medium text-blue-600 dark:text-blue-400">
+                        Admin / Zenoway Official
+                      </span>
+                    )}
                   </dd>
                 </div>
 

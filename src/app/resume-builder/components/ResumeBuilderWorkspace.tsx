@@ -834,6 +834,7 @@ export default function ResumeBuilderWorkspace() {
 
   return (
     <div className="min-h-full bg-surface-page text-text-primary lg:flex lg:h-full lg:min-h-0 lg:flex-col lg:overflow-hidden">
+      <h1 className="sr-only">Zenoway ATS Resume Builder & Recruiter Studio</h1>
       {/* Top Workspace Toolbar */}
       <div className="shrink-0 border-b border-border-default bg-surface-card px-4 py-3 sm:px-6">
         <div className="mx-auto flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -1062,10 +1063,10 @@ export default function ResumeBuilderWorkspace() {
         <div
           className={`${
             mobileTab === "preview" ? "hidden lg:flex" : "flex"
-          } min-h-0 flex-col border-border-default bg-surface-base lg:border-r`}
+          } min-h-0 min-w-0 max-w-full flex-col border-border-default bg-surface-base lg:border-r`}
         >
           {/* Desktop Sub-Tabs & Progress Header */}
-          <div className="shrink-0 border-b border-border-subtle bg-surface-card px-4 py-3 sm:px-6">
+          <div className="min-w-0 max-w-full shrink-0 border-b border-border-subtle bg-surface-card px-4 py-3 sm:px-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               {/* Desktop Tabs */}
               <div className="hidden items-center gap-1 rounded-control border border-border-default bg-surface-subtle p-0.5 lg:inline-flex">
@@ -1158,7 +1159,7 @@ export default function ResumeBuilderWorkspace() {
             {(desktopTab === "build" || mobileTab === "build") && (
               <nav
                 aria-label="Resume sections"
-                className={`mt-3 flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar ${
+                className={`mt-3 flex w-full min-w-0 max-w-full items-center gap-1.5 overflow-x-auto overscroll-x-contain pb-1 no-scrollbar ${
                   mobileTab === "ats" ? "hidden lg:flex" : ""
                 } ${desktopTab === "ats" ? "lg:hidden" : ""}`}
               >
