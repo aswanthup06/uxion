@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -83,7 +84,7 @@ export default function AdminLoginPage() {
     return (
       <main className="fixed inset-0 flex h-dvh w-full items-center justify-center overflow-hidden bg-surface-base">
         <div className="flex flex-col items-center gap-4">
-          <img src="/logo.png" alt="Zenoway" className="h-12 w-auto object-contain" />
+          <Image src="/logo.png" alt="Zenoway" width={140} height={48} priority className="h-12 w-auto object-contain" />
           <span className="h-1 w-20 overflow-hidden rounded-pill bg-brand-soft">
             <span className="block h-full w-1/2 animate-pulse rounded-pill bg-brand" />
           </span>
@@ -112,7 +113,7 @@ export default function AdminLoginPage() {
         <div className="pointer-events-none absolute bottom-14 right-14 h-36 w-36 rounded-full bg-brand-soft" />
 
         <Link href="/" className="relative z-10 inline-flex w-fit items-center">
-          <img src="/logo.png" alt="Zenoway" className="h-10 w-auto object-contain" />
+          <Image src="/logo.png" alt="Zenoway" width={120} height={40} className="h-10 w-auto object-contain" />
         </Link>
 
         <div className="relative z-10 -mt-8 max-w-lg">
@@ -153,7 +154,7 @@ export default function AdminLoginPage() {
         <div className="relative w-full max-w-[390px]">
           <div className="mb-9 lg:hidden">
             <Link href="/" aria-label="Zenoway home" className="inline-flex cursor-pointer items-center">
-              <img src="/logo.png" alt="Zenoway" className="h-10 w-auto object-contain" />
+              <Image src="/logo.png" alt="Zenoway" width={120} height={40} className="h-10 w-auto object-contain" />
             </Link>
           </div>
 

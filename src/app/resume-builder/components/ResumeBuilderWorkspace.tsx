@@ -825,7 +825,6 @@ export default function ResumeBuilderWorkspace() {
     }
   };
 
-  const atsBadgeCount = atsAnalysis.counts.errors + atsAnalysis.counts.warnings;
   const autoFixCount = atsAnalysis.checks.filter(
     (c) =>
       c.action?.type === "replace-text" &&

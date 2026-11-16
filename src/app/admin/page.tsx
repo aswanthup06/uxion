@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -11,7 +11,6 @@ import {
   ChevronDown,
   ChevronRight,
   ImageDown,
-  Layers3,
   MapPin,
   Pencil,
   Plus,
@@ -237,59 +236,55 @@ export default function AdminDashboard() {
   const [timeframe, setTimeframe] = useState<Timeframe>("today");
   const [tableDateFilter, setTableDateFilter] = useState<"all" | Timeframe>("all");
 
-  const loadJobs = useCallback(async (signal: AbortSignal) => {
-    setLoading(true);
-    setError("");
-
-    try {
-      const [response, pendingResponse] = await Promise.all([
-        fetch("/api/jobs", { cache: "no-store", signal }),
-        fetch("/api/jobs?status=pending", { cache: "no-store", signal }).catch(() => null),
-      ]);
-
-      if (!response.ok) {
-        throw new Error("Unable to load jobs. Please try again.");
-      }
-
-      const data: unknown = await response.json();
-
-      if (!Array.isArray(data)) {
-        throw new Error("The jobs API returned an unexpected response.");
-      }
-
-      if (pendingResponse && pendingResponse.ok) {
-        const pendingData = await pendingResponse.json().catch(() => []);
-        setPendingCount(Array.isArray(pendingData) ? pendingData.length : 0);
-      }
-
-      const validJobs = data.filter(isJob);
-
-      validJobs.sort((a, b) => {
-        const dateA = parseDate(a.postedDate)?.getTime() ?? 0;
-        const dateB = parseDate(b.postedDate)?.getTime() ?? 0;
-        return dateB - dateA;
-      });
-
-      setJobs(validJobs);
-    } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") return;
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong while loading jobs."
-      );
-    } finally {
-      if (!signal.aborted) setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
     const controller = new AbortController();
-    void loadJobs(controller.signal);
+    async function fetchAdminJobs() {
+      try {
+        const [response, pendingResponse] = await Promise.all([
+          fetch("/api/jobs", { cache: "no-store", signal: controller.signal }),
+          fetch("/api/jobs?status=pending", { cache: "no-store", signal: controller.signal }).catch(() => null),
+        ]);
 
+        if (!response.ok) {
+          throw new Error("Unable to load jobs. Please try again.");
+        }
+
+        const data: unknown = await response.json();
+
+        if (!Array.isArray(data)) {
+          throw new Error("The jobs API returned an unexpected response.");
+        }
+
+        if (pendingResponse && pendingResponse.ok) {
+          const pendingData = await pendingResponse.json().catch(() => []);
+          setPendingCount(Array.isArray(pendingData) ? pendingData.length : 0);
+        }
+
+        const validJobs = data.filter(isJob);
+
+        validJobs.sort((a, b) => {
+          const dateA = parseDate(a.postedDate)?.getTime() ?? 0;
+          const dateB = parseDate(b.postedDate)?.getTime() ?? 0;
+          return dateB - dateA;
+        });
+
+        setJobs(validJobs);
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") return;
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Something went wrong while loading jobs."
+        );
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    }
+
+    void fetchAdminJobs();
     return () => controller.abort();
-  }, [loadJobs, retryKey]);
+  }, [retryKey]);
 
   const timeframeCounts = useMemo<Record<Timeframe, number>>(() => {
     const now = new Date();

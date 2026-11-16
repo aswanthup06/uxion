@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
@@ -6,10 +7,8 @@ import {
   CheckCircle2,
   Download,
   ExternalLink,
-  FileText,
   Mail,
   MapPin,
-  UserRound,
 } from "lucide-react";
 import { getServiceSupabase } from "@/lib/supabase/server";
 import type { CandidateProfile } from "@/context/AuthContext";
@@ -64,9 +63,12 @@ export default async function CandidatePublicProfilePage({
                 <div className="-mt-12 flex flex-col gap-4 sm:-mt-14 sm:flex-row sm:items-end sm:justify-between">
                   <div className="flex items-end gap-4">
                     {candidate.avatar_url ? (
-                      <img
+                      <Image
                         src={candidate.avatar_url}
                         alt={name}
+                        width={112}
+                        height={112}
+                        unoptimized
                         className="h-24 w-24 rounded-card border-4 border-surface-card bg-surface-muted object-cover shadow-subtle sm:h-28 sm:w-28"
                       />
                     ) : (

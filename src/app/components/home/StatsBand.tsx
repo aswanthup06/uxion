@@ -21,15 +21,10 @@ function CountUp({
     margin: "-60px",
   });
   const reduceMotion = useReducedMotion();
-  const [n, setN] = useState(0);
+  const [n, setN] = useState(() => (reduceMotion ? to : 0));
 
   useEffect(() => {
-    if (!inView) return;
-
-    if (reduceMotion) {
-      setN(to);
-      return;
-    }
+    if (!inView || reduceMotion) return;
 
     const controls = animate(0, to, {
       duration: 1.4,

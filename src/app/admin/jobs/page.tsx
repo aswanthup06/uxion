@@ -23,7 +23,6 @@ export default function JobListPage() {
 
   const loadJobs = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
-    else setLoading(true);
 
     try {
       const res = await fetch("/api/jobs", { cache: "no-store" });
@@ -41,7 +40,25 @@ export default function JobListPage() {
   };
 
   useEffect(() => {
-    void loadJobs();
+    let ignore = false;
+    async function fetchJobs() {
+      try {
+        const res = await fetch("/api/jobs", { cache: "no-store" });
+        if (!res.ok) throw new Error("Failed to fetch jobs");
+
+        const data: Job[] = await res.json();
+        if (!ignore) setJobs(data);
+      } catch (error) {
+        console.error(error);
+        if (!ignore) toast.error("Failed to load jobs.");
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+    void fetchJobs();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const handleDelete = async (id: string) => {

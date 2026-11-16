@@ -2028,7 +2028,6 @@ function EditorialPortraitPoster({
   format,
   logoSrc,
   portraitSrc = DEFAULT_PORTRAIT,
-  ctaText = DEFAULT_CTA_TEXT,
   qrWithLogo = false,
   qrDotStyle = "rounded",
   qrCornerStyle = "extra-rounded",

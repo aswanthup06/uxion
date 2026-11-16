@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Job } from "../../types/job";
 import JobRow from "./JobRow";
 import JobEmptyState from "./JobEmptyState";
@@ -57,13 +57,19 @@ export default function JobTable({ jobs, onDelete, onViewPoster }: Props) {
     Math.ceil(filteredJobs.length / PAGE_SIZE)
   );
 
-  useEffect(() => {
+  const [prevSearch, setPrevSearch] = useState(search);
+  if (search !== prevSearch) {
+    setPrevSearch(search);
     setPage(1);
-  }, [search]);
+  }
 
-  useEffect(() => {
-    setPage((current) => Math.min(current, totalPages));
-  }, [totalPages]);
+  const [prevTotalPages, setPrevTotalPages] = useState(totalPages);
+  if (totalPages !== prevTotalPages) {
+    setPrevTotalPages(totalPages);
+    if (page > totalPages) {
+      setPage(Math.max(1, totalPages));
+    }
+  }
 
   const startIndex = (page - 1) * PAGE_SIZE;
   const visibleJobs = filteredJobs.slice(

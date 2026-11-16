@@ -12,15 +12,12 @@ import {
   Building2,
   CalendarDays,
   Check,
-  CheckCircle2,
-  Clock,
   Copy,
   ExternalLink,
   Eye,
   FileText,
   Globe,
   ImageDown,
-  Mail,
   MapPin,
   Pencil,
   RefreshCw,
@@ -29,7 +26,6 @@ import {
   Sparkles,
   Tag,
   Trash2,
-  Wallet,
 } from "lucide-react";
 
 import { Job } from "@/app/types/job";
@@ -64,7 +60,6 @@ export default function AdminJobDetailsPage() {
 
   const fetchJob = useCallback(async () => {
     if (!jobId) return;
-    setLoading(true);
     setError(null);
 
     try {
@@ -91,8 +86,38 @@ export default function AdminJobDetailsPage() {
   }, [jobId]);
 
   useEffect(() => {
-    void fetchJob();
-  }, [fetchJob]);
+    let ignore = false;
+    async function load() {
+      if (!jobId) return;
+      try {
+        const res = await fetch(`/api/jobs?id=${encodeURIComponent(jobId)}`, {
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          if (res.status === 404) {
+            throw new Error("Job not found");
+          }
+          throw new Error("Failed to fetch job details");
+        }
+
+        const data: Job = await res.json();
+        if (!ignore) setJob(data);
+      } catch (err: unknown) {
+        if (!ignore) {
+          const message =
+            err instanceof Error ? err.message : "Failed to load job details";
+          setError(message);
+        }
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+    void load();
+    return () => {
+      ignore = true;
+    };
+  }, [jobId]);
 
   const handleCopy = async (key: string, text: string) => {
     try {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -235,6 +235,38 @@ const navCls = (active: boolean) =>
 const selectCls =
   "mt-2 h-10 w-full cursor-pointer appearance-none rounded-control border border-border-default bg-surface-card pl-3 pr-9 text-sm text-text-primary outline-none transition-colors hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring";
 
+const EMPTY_SAVED: string[] = [];
+let cachedRaw: string | null = null;
+let cachedParsed: string[] = EMPTY_SAVED;
+
+function subscribeSavedJobs(onStoreChange: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener("zenoway_saved_changed", onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener("zenoway_saved_changed", onStoreChange);
+  };
+}
+
+function getSavedJobsSnapshot(): string[] {
+  if (typeof window === "undefined") return EMPTY_SAVED;
+  try {
+    const raw = localStorage.getItem("zenoway_saved_jobs");
+    if (raw !== cachedRaw) {
+      cachedRaw = raw;
+      cachedParsed = raw ? JSON.parse(raw) : EMPTY_SAVED;
+    }
+    return cachedParsed;
+  } catch {
+    return EMPTY_SAVED;
+  }
+}
+
+function getSavedJobsServerSnapshot(): string[] {
+  return EMPTY_SAVED;
+}
+
 function JobsViewContent({
   initialJobs,
   initialCategory,
@@ -266,7 +298,11 @@ function JobsViewContent({
   const [experience, setExperience] = useState<string>("Any experience");
   const [salaryFloor, setSalaryFloor] = useState<string>("0");
   const [sortBy, setSortBy] = useState<string>("recent");
-  const [saved, setSaved] = useState<string[]>([]);
+  const saved = useSyncExternalStore(
+    subscribeSavedJobs,
+    getSavedJobsSnapshot,
+    getSavedJobsServerSnapshot
+  );
   const [savedOnly, setSavedOnly] = useState(false);
   const [activeJob, setActiveJob] = useState<Job | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -275,38 +311,27 @@ function JobsViewContent({
   const mainRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  // Load saved job IDs from localStorage
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("zenoway_saved_jobs");
-      if (raw) {
-        setSaved(JSON.parse(raw));
-      }
-    } catch {
-      // Local storage unavailable
-    }
-  }, []);
-
-  // Sync category if URL search param changes
-  useEffect(() => {
+  // Sync category if URL search param changes during render
+  const [prevUrlCategory, setPrevUrlCategory] = useState(urlCategory);
+  if (urlCategory !== prevUrlCategory) {
+    setPrevUrlCategory(urlCategory);
     if (urlCategory) {
       const match = categories.find((c) => c.toLowerCase().includes(urlCategory.toLowerCase()));
       if (match) {
         setCategory(match);
       }
     }
-  }, [urlCategory]);
+  }
 
   const toggleSaved = (id: string) => {
-    setSaved((current) => {
-      const next = current.includes(id) ? current.filter((x) => x !== id) : [...current, id];
-      try {
-        localStorage.setItem("zenoway_saved_jobs", JSON.stringify(next));
-      } catch {
-        // Local storage unavailable
-      }
-      return next;
-    });
+    const current = getSavedJobsSnapshot();
+    const next = current.includes(id) ? current.filter((x) => x !== id) : [...current, id];
+    try {
+      localStorage.setItem("zenoway_saved_jobs", JSON.stringify(next));
+      window.dispatchEvent(new Event("zenoway_saved_changed"));
+    } catch {
+      // Local storage unavailable
+    }
   };
 
   const loadJobs = useCallback(async () => {
@@ -326,10 +351,26 @@ function JobsViewContent({
   }, [setLoading, setError, setJobs]);
 
   useEffect(() => {
-    if (!initialJobs || initialJobs.length === 0) {
-      loadJobs();
+    if (initialJobs && initialJobs.length > 0) return;
+    let ignore = false;
+    async function fetchJobs() {
+      try {
+        const res = await fetch("/api/jobs");
+        if (!res.ok) throw new Error(String(res.status));
+        const data: Job[] = await res.json();
+        if (!ignore) setJobs(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error("Error fetching jobs:", e);
+        if (!ignore) setError(true);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
     }
-  }, [loadJobs, initialJobs]);
+    fetchJobs();
+    return () => {
+      ignore = true;
+    };
+  }, [initialJobs]);
 
   // Derived category counts
   const categoryCounts = useMemo(() => {
@@ -631,10 +672,16 @@ function JobsViewContent({
   const hasMore = visibleCount < filteredJobs.length;
 
   // Reset paging when filters change
-  useEffect(() => {
+  const filterKey = `${search}|${location}|${type}|${mode}|${category}|${experience}|${salaryFloor}|${sortBy}|${savedOnly}`;
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey);
     setVisibleCount(PAGE_SIZE);
+  }
+
+  useEffect(() => {
     mainRef.current?.scrollTo({ top: 0 });
-  }, [search, location, type, mode, category, experience, salaryFloor, sortBy, savedOnly]);
+  }, [filterKey]);
 
   // Infinite scroll sentinel
   useEffect(() => {

@@ -6,7 +6,7 @@ import Link from "next/link";
 import Script from "next/script";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
-import { ArrowUpRight, AlertCircle, Loader2 } from "lucide-react";
+import { ArrowUpRight, AlertCircle } from "lucide-react";
 import { Button } from "@/app/components/Button";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/context/AuthContext";

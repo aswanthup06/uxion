@@ -3,7 +3,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
   Check,
@@ -66,7 +65,6 @@ export default function ApplyModal({
   jobTitle = "the role",
   company = "the hiring company",
 }: ApplyModalProps) {
-  const reduceMotion = useReducedMotion();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [emailCopied, setEmailCopied] = useState(false);
   const [subjectCopied, setSubjectCopied] = useState(false);

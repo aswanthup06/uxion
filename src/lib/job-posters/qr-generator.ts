@@ -1,4 +1,4 @@
-import { toSVGString, buildQR } from "@ttsalpha/qrcode/core";
+import { toSVGString } from "@ttsalpha/qrcode/core";
 
 export const ZENOWAY_EMERALD = "#064E3B";
 export const ZENOWAY_EMERALD_DEEP = "#04382A";

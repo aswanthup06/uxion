@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import {
-  BriefcaseBusiness,
   CheckCircle2,
   XCircle,
   Pencil,
@@ -46,7 +45,6 @@ export default function SubmissionsPage() {
 
   const loadSubmissions = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
-    else setLoading(true);
 
     try {
       const res = await fetch("/api/jobs?status=pending", {
@@ -69,8 +67,25 @@ export default function SubmissionsPage() {
   }, []);
 
   useEffect(() => {
-    void loadSubmissions();
-  }, [loadSubmissions]);
+    let ignore = false;
+    async function fetchSubmissions() {
+      try {
+        const res = await fetch("/api/jobs?status=pending", { cache: "no-store" });
+        if (!res.ok) throw new Error("Failed to load pending submissions");
+        const data: Job[] = await res.json();
+        if (!ignore) setSubmissions(data);
+      } catch (error) {
+        console.error(error);
+        if (!ignore) toast.error("Failed to load pending submissions.");
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+    void fetchSubmissions();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const handleApprove = async (id: string, title: string) => {
     setActionInProgress(id);

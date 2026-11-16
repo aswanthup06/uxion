@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Users,
@@ -10,7 +11,6 @@ import {
   MapPin,
   FileText,
   ArrowUpRight,
-  ShieldCheck,
   CheckCircle2,
   AlertCircle,
   ExternalLink,
@@ -26,9 +26,10 @@ export default function AdminCandidatesPage() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchCandidates = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setRefreshing(true);
-    else setLoading(true);
-    setError(null);
+    if (isRefresh) {
+      setRefreshing(true);
+      setError(null);
+    }
 
     try {
       const res = await fetch("/api/admin/candidates", {
@@ -51,8 +52,27 @@ export default function AdminCandidatesPage() {
   }, []);
 
   useEffect(() => {
-    fetchCandidates();
-  }, [fetchCandidates]);
+    let ignore = false;
+    async function load() {
+      try {
+        const res = await fetch("/api/admin/candidates", { cache: "no-store" });
+        if (!res.ok) throw new Error("Failed to load candidate profiles");
+        const data = await res.json();
+        if (!ignore) setCandidates(data.candidates || []);
+      } catch (err: unknown) {
+        if (!ignore) {
+          const msg = err instanceof Error ? err.message : "Unable to load candidates";
+          setError(msg);
+        }
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const filteredCandidates = candidates.filter((c) => {
     const query = searchQuery.toLowerCase().trim();
@@ -170,9 +190,12 @@ export default function AdminCandidatesPage() {
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
                           {candidate.avatar_url ? (
-                            <img
+                            <Image
                               src={candidate.avatar_url}
                               alt={candidate.full_name || "Avatar"}
+                              width={32}
+                              height={32}
+                              unoptimized
                               className="h-8 w-8 rounded-full object-cover border border-border-default"
                             />
                           ) : (

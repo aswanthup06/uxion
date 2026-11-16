@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createServerAuthClient, getServiceSupabase } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE() {
   try {
     // 1. Authenticate user from session cookies
     const supabase = await createServerAuthClient();

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { FaWhatsapp } from "react-icons/fa";
 import { HiOutlineSpeakerphone } from "react-icons/hi";
 import { IoCheckmark, IoShareSocial } from "react-icons/io5";
@@ -18,7 +18,6 @@ import {
   FiMapPin,
   FiSearch,
   FiUsers,
-  FiX,
 } from "react-icons/fi";
 import { CATEGORIES } from "./job-communities";
 import SiteFooter from "../components/home/SiteFooter";
@@ -186,10 +185,10 @@ export default function SharePage() {
   const [copied, setCopied] = useState<string | null>(null);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const selectedCategoryData = categories.find(
-    (category) => category.name === selectedCategory,
-  );
-  const availableGroups = selectedCategoryData?.groups ?? [];
+  const availableGroups = useMemo(() => {
+    return categories.find((c) => c.name === selectedCategory)?.groups ?? [];
+  }, [categories, selectedCategory]);
+
   const selectedGroup = availableGroups.find(
     (group) => group.name === selectedGroupName,
   );

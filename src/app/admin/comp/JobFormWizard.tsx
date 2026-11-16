@@ -11,7 +11,6 @@ import {
   Banknote,
   Mail,
   Globe,
-  FileText,
   CheckCircle2,
   AlertCircle,
   LoaderCircle,
@@ -26,7 +25,6 @@ import {
   ChevronDown,
   Zap,
   MapPin,
-  HelpCircle,
   RotateCcw,
   Pencil,
   Eye,
@@ -315,9 +313,11 @@ const CompanyCitySelector = forwardRef<
   );
   const totalOptions = suggestions.length + (hasCustomOption ? 1 : 0);
 
-  useEffect(() => {
+  const [prevSuggestions, setPrevSuggestions] = useState(suggestions);
+  if (suggestions !== prevSuggestions) {
+    setPrevSuggestions(suggestions);
     setHighlightedIndex(0);
-  }, [suggestions]);
+  }
 
   const commitQuery = useCallback((): OfficeLocation | null => {
     const trimmed = query.trim();
@@ -360,7 +360,7 @@ const CompanyCitySelector = forwardRef<
     setQuery("");
     setIsOpen(false);
     return office;
-  }, [query, suggestions, onSelect]);
+  }, [query, suggestions, onSelect, cscCities]);
 
   useImperativeHandle(
     ref,
@@ -600,9 +600,11 @@ const CandidateScopeSelector = forwardRef<
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [query, commitQuery]);
 
-  useEffect(() => {
+  const [prevResults, setPrevResults] = useState(results);
+  if (results !== prevResults) {
+    setPrevResults(results);
     setHighlightedIndex(0);
-  }, [results]);
+  }
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!isOpen) {
@@ -1022,33 +1024,33 @@ export default function JobFormWizard({
     canPost: boolean;
   } | null>(null);
 
-  const fetchUserPostingLimit = useCallback(async () => {
-    if (mode !== "public" || !user) {
-      setUserLimitInfo(null);
-      return;
-    }
-    try {
-      const authHeaders: Record<string, string> = {};
-      const supabase = createClient();
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (sessionData.session?.access_token) {
-        authHeaders["Authorization"] = `Bearer ${sessionData.session.access_token}`;
-      }
-      const res = await fetch("/api/jobs?user_limit=true", {
-        headers: authHeaders,
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUserLimitInfo(data);
-      }
-    } catch (e) {
-      console.warn("Could not check user job post limit:", e);
-    }
-  }, [mode, user]);
-
   useEffect(() => {
-    fetchUserPostingLimit();
-  }, [fetchUserPostingLimit]);
+    let ignore = false;
+    async function checkLimit() {
+      if (mode !== "public" || !user) return;
+      try {
+        const authHeaders: Record<string, string> = {};
+        const supabase = createClient();
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData.session?.access_token) {
+          authHeaders["Authorization"] = `Bearer ${sessionData.session.access_token}`;
+        }
+        const res = await fetch("/api/jobs?user_limit=true", {
+          headers: authHeaders,
+        });
+        if (res.ok && !ignore) {
+          const data = await res.json();
+          setUserLimitInfo(data);
+        }
+      } catch (e) {
+        console.warn("Could not check user job post limit:", e);
+      }
+    }
+    void checkLimit();
+    return () => {
+      ignore = true;
+    };
+  }, [mode, user]);
 
   // Clear any existing legacy saved draft on mount
   useEffect(() => {
@@ -1518,15 +1520,20 @@ export default function JobFormWizard({
 
   useEffect(() => {
     if (initialJob) {
-      populateFromJob(initialJob);
-      setLoadingInitial(false);
-      return;
+      let ignore = false;
+      Promise.resolve().then(() => {
+        if (!ignore) {
+          populateFromJob(initialJob);
+          setLoadingInitial(false);
+        }
+      });
+      return () => {
+        ignore = true;
+      };
     }
 
     if (mode === "edit" && jobId) {
       let cancelled = false;
-      setLoadingInitial(true);
-      setLoadError("");
 
       fetch(`/api/jobs?id=${encodeURIComponent(jobId)}`)
         .then((res) => {
