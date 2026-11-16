@@ -141,7 +141,7 @@ export default function ProfilePage() {
               <p className="text-xs font-bold text-text-primary">
                 Preview the New Profile Redesign (Bento & Editorial Concept)
               </p>
-              <p className="text-[11px] text-text-muted">
+              <p className="text-2xs text-text-muted">
                 Explore the redesigned showcase with rich dummy data, portfolio case studies & impact metrics.
               </p>
             </div>
@@ -180,7 +180,7 @@ export default function ProfilePage() {
                         <h1 className="text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
                           {name}
                         </h1>
-                        <span className="inline-flex items-center gap-1 rounded-pill bg-brand-soft px-2.5 py-0.5 text-[11px] font-medium text-brand">
+                        <span className="inline-flex items-center gap-1 rounded-pill bg-brand-soft px-2.5 py-0.5 text-2xs font-medium text-brand">
                           <CheckCircle2 className="h-3 w-3" /> Google verified
                         </span>
                       </div>
@@ -257,7 +257,7 @@ export default function ProfilePage() {
                           <p className="text-xs font-semibold text-text-primary">
                             Upload your Resume
                           </p>
-                          <p className="text-[11px] text-text-muted">
+                          <p className="text-2xs text-text-muted">
                             Employers review your resume first when considering applications.
                           </p>
                         </div>
@@ -366,7 +366,7 @@ export default function ProfilePage() {
                 )}
                 <div>
                   <p className="text-text-muted">Account Type</p>
-                  <span className="mt-1 inline-flex items-center gap-1 rounded-pill bg-brand-soft px-2.5 py-0.5 text-[11px] font-semibold text-brand">
+                  <span className="mt-1 inline-flex items-center gap-1 rounded-pill bg-brand-soft px-2.5 py-0.5 text-2xs font-semibold text-brand">
                     <UserRound size={11} /> Candidate
                   </span>
                 </div>

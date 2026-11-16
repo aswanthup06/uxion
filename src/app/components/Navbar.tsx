@@ -237,7 +237,7 @@ export default function Navbar() {
       className="relative z-50 shrink-0 border-b border-border-default bg-surface-card"
       onMouseLeave={() => setDropdown(null)}
     >
-      <div className="mx-auto flex h-[68px] w-full items-center justify-between px-3.5 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-nav-height w-full items-center justify-between px-3.5 sm:px-6 lg:px-8">
         {/* Brand */}
         <Link
           href="/"
@@ -264,7 +264,7 @@ export default function Navbar() {
           </span>
 
           {isAdminRoute && (
-            <span className="rounded-control bg-brand-soft px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand">
+            <span className="rounded-control bg-brand-soft px-1.5 py-0.5 text-3xs font-bold uppercase tracking-wider text-brand">
               Admin
             </span>
           )}
@@ -349,7 +349,7 @@ export default function Navbar() {
                                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
                                     <Icon size={15} strokeWidth={1.8} />
                                   </span>
-                                  <span className="text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                  <span className="text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
                                     {label}
                                   </span>
                                 </Link>
@@ -373,7 +373,7 @@ export default function Navbar() {
                                   <FileText size={15} strokeWidth={1.8} />
                                 </span>
                                 <span className="min-w-0 flex-1">
-                                  <span className="block text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                  <span className="block text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
                                     ATS Resume Builder
                                   </span>
                                   <span className="mt-0.5 block text-xs text-text-muted leading-snug">
@@ -392,7 +392,7 @@ export default function Navbar() {
                                   <UserRound size={15} strokeWidth={1.8} />
                                 </span>
                                 <span className="min-w-0 flex-1">
-                                  <span className="block text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                  <span className="block text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
                                     {user ? "My Profile" : "Candidate Profile"}
                                   </span>
                                   <span className="mt-0.5 block text-xs text-text-muted leading-snug">
@@ -410,9 +410,9 @@ export default function Navbar() {
                                   <Sparkles size={15} strokeWidth={1.8} />
                                 </span>
                                 <span className="min-w-0 flex-1">
-                                  <span className="flex items-center gap-1.5 text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                  <span className="flex items-center gap-1.5 text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
                                     <span>Demo Profile</span>
-                                    <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-[10px] font-semibold text-brand">
+                                    <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-3xs font-semibold text-brand">
                                       Redesign
                                     </span>
                                   </span>
@@ -432,7 +432,7 @@ export default function Navbar() {
                                   <Share2 size={15} strokeWidth={1.8} />
                                 </span>
                                 <span className="min-w-0 flex-1">
-                                  <span className="block text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                  <span className="block text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
                                     Referral Rewards
                                   </span>
                                   <span className="mt-0.5 block text-xs text-text-muted leading-snug">
@@ -451,7 +451,7 @@ export default function Navbar() {
                                   <Mail size={15} strokeWidth={1.8} />
                                 </span>
                                 <span className="min-w-0 flex-1">
-                                  <span className="block text-[13px] font-medium text-text-primary transition-colors group-hover:text-brand">
+                                  <span className="block text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
                                     Email Guide
                                   </span>
                                   <span className="mt-0.5 block text-xs text-text-muted leading-snug">
@@ -525,7 +525,7 @@ export default function Navbar() {
                             <BriefcaseBusiness size={16} strokeWidth={1.8} />
                           </span>
                           <span>
-                            <span className="block text-[13px] font-semibold text-text-primary transition-colors group-hover:text-brand">
+                            <span className="block text-xs-compact font-semibold text-text-primary transition-colors group-hover:text-brand">
                               Post a job
                             </span>
                             <span className="mt-0.5 block text-xs text-text-muted">
@@ -543,7 +543,7 @@ export default function Navbar() {
                             <Sparkles size={16} strokeWidth={1.8} />
                           </span>
                           <span>
-                            <span className="block text-[13px] font-semibold text-text-primary transition-colors group-hover:text-brand">
+                            <span className="block text-xs-compact font-semibold text-text-primary transition-colors group-hover:text-brand">
                               Poster Studio
                             </span>
                             <span className="mt-0.5 block text-xs text-text-muted">
@@ -562,7 +562,7 @@ export default function Navbar() {
                             <BriefcaseBusiness size={16} strokeWidth={1.8} />
                           </span>
                           <span>
-                            <span className="block text-[13px] font-semibold text-text-primary transition-colors group-hover:text-brand">
+                            <span className="block text-xs-compact font-semibold text-text-primary transition-colors group-hover:text-brand">
                               My jobs
                             </span>
                             <span className="mt-0.5 block text-xs text-text-muted">
@@ -662,7 +662,7 @@ export default function Navbar() {
                           <p className="truncate text-xs font-semibold text-text-primary">
                             {profile?.full_name || user.user_metadata?.full_name || "Candidate"}
                           </p>
-                          <p className="mt-0.5 truncate text-[11px] text-text-muted">{user.email}</p>
+                          <p className="mt-0.5 truncate text-2xs text-text-muted">{user.email}</p>
                         </div>
 
                         <div className="py-1">
@@ -813,7 +813,7 @@ export default function Navbar() {
             variants={mobileVariants}
             className="absolute inset-x-0 top-full overflow-hidden border-b border-border-default bg-surface-card shadow-dropdown md:hidden"
           >
-            <div className="max-h-[calc(100dvh-68px)] overflow-y-auto px-5 pb-6">
+            <div className="max-h-[calc(100dvh-var(--spacing-nav-height))] overflow-y-auto px-5 pb-6">
               {!isAdminRoute ? (
                 <>
                   <Link
@@ -871,7 +871,7 @@ export default function Navbar() {
                         className="overflow-hidden"
                       >
                         <div className="space-y-1 py-2 pl-1">
-                          <p className="px-2.5 pb-1 pt-1 text-[10px] font-bold uppercase tracking-[1.4px] text-text-muted">
+                          <p className="px-2.5 pb-1 pt-1 text-3xs font-bold uppercase tracking-[1.4px] text-text-muted">
                             Explore by domain
                           </p>
                           {categories.map(({ label, href, icon: Icon }) => (
@@ -890,7 +890,7 @@ export default function Navbar() {
 
                           <div className="my-2 border-t border-border-default" />
 
-                          <p className="px-2.5 pb-1 pt-1 text-[10px] font-bold uppercase tracking-[1.4px] text-text-muted">
+                          <p className="px-2.5 pb-1 pt-1 text-3xs font-bold uppercase tracking-[1.4px] text-text-muted">
                             Candidate resources
                           </p>
 
@@ -943,7 +943,7 @@ export default function Navbar() {
                             <span className="min-w-0 flex-1">
                               <span className="flex items-center gap-1.5 font-medium text-text-primary group-hover:text-brand">
                                 <span>Demo Profile</span>
-                                <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-[10px] font-semibold text-brand">
+                                <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-3xs font-semibold text-brand">
                                   Redesign
                                 </span>
                               </span>
@@ -1120,7 +1120,7 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <p className="pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[1.4px] text-text-muted">
+                  <p className="pb-2 pt-4 text-3xs font-semibold uppercase tracking-[1.4px] text-text-muted">
                     Administration
                   </p>
 

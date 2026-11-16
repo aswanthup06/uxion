@@ -7,6 +7,7 @@ import Script from "next/script";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { ArrowUpRight, AlertCircle, Loader2 } from "lucide-react";
+import { Button } from "@/app/components/Button";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 
@@ -259,7 +260,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
             </Link>
 
             <div className="relative z-10 max-w-[460px] pb-8">
-              <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand">
+              <p className="mb-5 text-2xs font-semibold uppercase tracking-[0.18em] text-brand">
                 A better way forward
               </p>
               <h2 className="text-4xl font-medium leading-[1.12] tracking-[-0.045em] text-text-primary xl:text-[52px]">
@@ -267,7 +268,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
                 <br />
                 starts here.
               </h2>
-              <p className="mt-5 max-w-[350px] text-[15px] leading-7 text-text-secondary">
+              <p className="mt-5 max-w-[350px] text-base-compact leading-7 text-text-secondary">
                 Discover opportunities that move your career forward.
               </p>
               <div
@@ -282,7 +283,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
               </div>
             </div>
 
-            <p className="relative z-10 text-[11px] tracking-wide text-text-muted">
+            <p className="relative z-10 text-2xs tracking-wide text-text-muted">
               ZENOWAY <span className="mx-2 text-border-strong">/</span> CAREER OPPORTUNITIES
             </p>
 
@@ -322,7 +323,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
 
             <div className="mx-auto flex w-full max-w-[390px] flex-1 flex-col justify-center py-8 sm:py-10 lg:flex-initial lg:py-12">
               <div className="mb-8 sm:mb-9">
-                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand">
+                <p className="mb-3 text-2xs font-semibold uppercase tracking-[0.18em] text-brand">
                   Welcome to Zenoway
                 </p>
                 <h1 className="text-[32px] font-medium leading-[1.12] tracking-[-0.045em] text-text-primary sm:text-[38px]">
@@ -352,24 +353,18 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
                 />
 
                 {(!isGsiRendered || isLoading) && (
-                  <button
+                  <Button
                     type="button"
+                    variant="secondary"
+                    size="lg"
                     onClick={handleGoogleSignInFallback}
                     disabled={isLoading}
-                    className="group flex min-h-[50px] w-full cursor-pointer items-center justify-center gap-3 rounded-control border border-border-default bg-surface-card px-4 py-3 text-sm font-medium text-text-primary transition-colors hover:border-border-strong hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+                    loading={isLoading}
+                    leftIcon={!isLoading ? <FcGoogle size={20} /> : undefined}
+                    className="w-full min-h-[50px] gap-3 text-sm font-medium text-text-primary"
                   >
-                    {isLoading ? (
-                      <>
-                        <Loader2 size={18} className="animate-spin text-brand" />
-                        <span>Signing you in...</span>
-                      </>
-                    ) : (
-                      <>
-                        <FcGoogle size={20} />
-                        <span>Continue with Google</span>
-                      </>
-                    )}
-                  </button>
+                    {isLoading ? "Signing you in..." : "Continue with Google"}
+                  </Button>
                 )}
               </div>
 
@@ -383,7 +378,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
                 </Link>
               </p>
 
-              <p className="mt-8 max-w-[340px] text-left text-[11px] leading-5 text-text-muted">
+              <p className="mt-8 max-w-[340px] text-left text-2xs leading-5 text-text-muted">
                 By continuing, you agree to our{" "}
                 <Link
                   href="/terms"
@@ -402,7 +397,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
               </p>
             </div>
 
-            <footer className="mx-auto w-full max-w-[390px] pb-1 text-center text-[10px] text-text-muted lg:absolute lg:bottom-5 lg:left-1/2 lg:w-auto lg:-translate-x-1/2 lg:pb-0">
+            <footer className="mx-auto w-full max-w-[390px] pb-1 text-center text-3xs text-text-muted lg:absolute lg:bottom-5 lg:left-1/2 lg:w-auto lg:-translate-x-1/2 lg:pb-0">
               © {new Date().getFullYear()} Zenoway
             </footer>
           </section>

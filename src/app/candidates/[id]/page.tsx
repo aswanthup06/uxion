@@ -79,7 +79,7 @@ export default async function CandidatePublicProfilePage({
                         <h1 className="text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
                           {name}
                         </h1>
-                        <span className="inline-flex items-center gap-1 rounded-pill bg-brand-soft px-2.5 py-0.5 text-[11px] font-medium text-brand">
+                        <span className="inline-flex items-center gap-1 rounded-pill bg-brand-soft px-2.5 py-0.5 text-2xs font-medium text-brand">
                           <CheckCircle2 className="h-3 w-3" /> Verified Candidate
                         </span>
                       </div>

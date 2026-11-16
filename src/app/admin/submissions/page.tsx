@@ -19,6 +19,7 @@ import {
   Inbox,
 } from "lucide-react";
 import type { Job } from "@/app/types/job";
+import { Button } from "@/app/components/Button";
 import LoadingSpinner from "../comp/LoadingSpinner";
 
 function formatDate(iso?: string) {
@@ -138,7 +139,7 @@ export default function SubmissionsPage() {
         {/* Header */}
         <header className="flex flex-col gap-5 border-b border-border-subtle pb-7 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-600 dark:text-amber-400">
+            <p className="flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.14em] text-amber-600">
               <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
               Moderation Queue
             </p>
@@ -154,20 +155,21 @@ export default function SubmissionsPage() {
 
           <div className="flex items-center gap-3">
             {!loading && (
-              <span className="rounded-control border border-amber-500/20 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+              <span className="rounded-control border border-amber-500/20 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-600">
                 {submissions.length} {submissions.length === 1 ? "pending review" : "pending review"}
               </span>
             )}
 
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="icon"
               onClick={() => void loadSubmissions(true)}
               disabled={refreshing || loading}
               aria-label="Refresh submissions"
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-border-default text-text-secondary transition hover:bg-surface-subtle disabled:opacity-50"
             >
               <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
-            </button>
+            </Button>
           </div>
         </header>
 
@@ -205,28 +207,28 @@ export default function SubmissionsPage() {
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="inline-flex items-center gap-1 rounded-control bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                            <span className="inline-flex items-center gap-1 rounded-control bg-amber-500/10 px-2 py-0.5 text-2xs font-semibold text-amber-600">
                               <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                               Pending Approval
                             </span>
-                            <span className="rounded-control bg-brand-soft px-2 py-0.5 text-[11px] font-semibold text-brand">
+                            <span className="rounded-control bg-brand-soft px-2 py-0.5 text-2xs font-semibold text-brand">
                               {job.workMode || "Onsite"}
                             </span>
                             {job.employmentType && (
-                              <span className="rounded-control border border-border-default px-2 py-0.5 text-[11px] font-medium text-text-muted">
+                              <span className="rounded-control border border-border-default px-2 py-0.5 text-2xs font-medium text-text-muted">
                                 {job.employmentType.replace("_", " ")}
                               </span>
                             )}
                             {job.userId ? (
-                              <span className="rounded-control bg-purple-500/10 px-2 py-0.5 text-[11px] font-semibold text-purple-600 dark:text-purple-400">
+                              <span className="rounded-control bg-purple-500/10 px-2 py-0.5 text-2xs font-semibold text-purple-600">
                                 User Post
                               </span>
                             ) : (
-                              <span className="rounded-control bg-blue-500/10 px-2 py-0.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                              <span className="rounded-control bg-blue-500/10 px-2 py-0.5 text-2xs font-semibold text-blue-600">
                                 Admin Post
                               </span>
                             )}
-                            <span className="font-mono text-[11px] text-text-muted">
+                            <span className="font-mono text-2xs text-text-muted">
                               ID: {job.id}
                             </span>
                           </div>
@@ -258,40 +260,44 @@ export default function SubmissionsPage() {
 
                         {/* 1-Click Moderation Actions */}
                         <div className="flex flex-wrap items-center gap-2 pt-2 sm:pt-0">
-                          <button
+                          <Button
                             type="button"
+                            variant="primary"
+                            size="sm"
                             disabled={isBusy}
+                            loading={isBusy}
+                            leftIcon={!isBusy ? <CheckCircle2 size={14} /> : undefined}
                             onClick={() => void handleApprove(job.id, job.title)}
-                            className="inline-flex h-9 items-center gap-1.5 rounded-control bg-emerald-600 px-3.5 text-xs font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50 shadow-subtle"
                           >
-                            <CheckCircle2 size={14} />
-                            <span>{isBusy ? "Approving..." : "Approve & Publish"}</span>
-                          </button>
+                            {isBusy ? "Approving..." : "Approve & Publish"}
+                          </Button>
 
-                          <Link
+                          <Button
                             href={`/admin/jobs/${job.id}/edit`}
-                            className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 text-xs font-semibold text-text-secondary transition hover:bg-surface-subtle hover:text-text-primary"
+                            variant="secondary"
+                            size="sm"
+                            leftIcon={<Pencil size={13} />}
                           >
-                            <Pencil size={13} />
-                            <span>Edit in Wizard</span>
-                          </Link>
+                            Edit in Wizard
+                          </Button>
 
-                          <button
+                          <Button
                             type="button"
+                            variant="danger"
+                            size="sm"
                             disabled={isBusy}
+                            leftIcon={<XCircle size={13} />}
                             onClick={() => void handleReject(job.id, job.title)}
-                            className="inline-flex h-9 items-center gap-1.5 rounded-control border border-status-error/30 bg-status-error/10 px-3 text-xs font-semibold text-status-error transition hover:bg-status-error/20 disabled:opacity-50"
                           >
-                            <XCircle size={13} />
-                            <span>Reject</span>
-                          </button>
+                            Reject
+                          </Button>
                         </div>
                       </div>
 
                       {/* Recruiter Details Row */}
                       <div className="mt-4 grid grid-cols-1 gap-3 rounded-control border border-border-default/60 bg-surface-subtle/50 p-3.5 text-xs sm:grid-cols-4">
                         <div>
-                          <span className="block text-[10px] font-semibold uppercase text-text-muted">
+                          <span className="block text-3xs font-semibold uppercase text-text-muted">
                             Salary / Budget
                           </span>
                           <span className="mt-0.5 block font-semibold text-brand">
@@ -300,7 +306,7 @@ export default function SubmissionsPage() {
                         </div>
 
                         <div>
-                          <span className="block text-[10px] font-semibold uppercase text-text-muted">
+                          <span className="block text-3xs font-semibold uppercase text-text-muted">
                             Experience
                           </span>
                           <span className="mt-0.5 block font-medium text-text-primary">
@@ -309,7 +315,7 @@ export default function SubmissionsPage() {
                         </div>
 
                         <div>
-                          <span className="block text-[10px] font-semibold uppercase text-text-muted">
+                          <span className="block text-3xs font-semibold uppercase text-text-muted">
                             Recruiter Contact
                           </span>
                           {job.mail ? (
@@ -326,7 +332,7 @@ export default function SubmissionsPage() {
                         </div>
 
                         <div>
-                          <span className="block text-[10px] font-semibold uppercase text-text-muted">
+                          <span className="block text-3xs font-semibold uppercase text-text-muted">
                             Company Link
                           </span>
                           {job.companyLink ? (

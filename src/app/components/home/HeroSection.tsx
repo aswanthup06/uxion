@@ -159,7 +159,7 @@ export default function HeroSection({
                     </span>
                   </h1>
 
-                  <p className="mt-5 max-w-[440px] text-[15px] leading-7 text-text-secondary sm:text-base">
+                  <p className="mt-5 max-w-[440px] text-base-compact leading-7 text-text-secondary sm:text-base">
                     {active.description}
                   </p>
                 </motion.div>
@@ -273,9 +273,9 @@ export default function HeroSection({
                 stroke="#b9d1bc"
                 strokeDasharray="4 6"
               />
-              <circle cx="70" cy="280" r="4" fill="#059669" />
-              <circle cx="230" cy="145" r="4" fill="#059669" />
-              <circle cx="430" cy="95" r="4" fill="#059669" />
+              <circle cx="70" cy="280" r="4" fill="var(--color-brand)" />
+              <circle cx="230" cy="145" r="4" fill="var(--color-brand)" />
+              <circle cx="430" cy="95" r="4" fill="var(--color-brand)" />
             </motion.svg>
 
             {/* Visual changes for each audience */}
@@ -301,7 +301,7 @@ export default function HeroSection({
                   <div className="rounded-panel border border-border-default bg-surface-card p-5 shadow-card sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-brand">
+                        <p className="text-2xs font-medium uppercase tracking-[0.12em] text-brand">
                           Your next hire
                         </p>
                         <h2 className="mt-2 text-xl font-medium tracking-tight text-text-primary">
@@ -338,10 +338,10 @@ export default function HeroSection({
                           {person.initial}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-[13px] font-medium text-text-primary">
+                          <p className="text-xs-compact font-medium text-text-primary">
                             {person.role}
                           </p>
-                          <p className="mt-1 text-[11px] text-text-muted">
+                          <p className="mt-1 text-2xs text-text-muted">
                             {person.skill}
                           </p>
                         </div>
@@ -359,7 +359,7 @@ export default function HeroSection({
                   <div className="rounded-panel border border-border-default bg-surface-card p-5 shadow-card sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-brand">
+                        <p className="text-2xs font-medium uppercase tracking-[0.12em] text-brand">
                           Curated opportunities
                         </p>
                         <h2 className="mt-2 text-xl font-medium tracking-tight text-text-primary">
@@ -393,13 +393,13 @@ export default function HeroSection({
                         </div>
 
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-medium text-text-primary">
+                          <p className="truncate text-xs-compact font-medium text-text-primary">
                             {job.title}
                           </p>
-                          <p className="mt-1 truncate text-[11px] text-text-muted">
+                          <p className="mt-1 truncate text-2xs text-text-muted">
                             {job.company}
                           </p>
-                          <p className="mt-1.5 flex items-center gap-1 text-[10px] text-text-secondary">
+                          <p className="mt-1.5 flex items-center gap-1 text-3xs text-text-secondary">
                             <MapPin size={11} />
                             {job.place}
                             <span className="mx-1 text-border-default">·</span>
@@ -441,10 +441,10 @@ export default function HeroSection({
                   <Check size={14} />
                 </span>
                 <div>
-                  <p className="text-[11px] font-medium text-text-primary">
+                  <p className="text-2xs font-medium text-text-primary">
                     {isEmployer ? "Post your opening" : "Apply directly"}
                   </p>
-                  <p className="mt-0.5 text-[10px] text-text-muted">
+                  <p className="mt-0.5 text-3xs text-text-muted">
                     {isEmployer ? "Meet the right talent" : "No middleman"}
                   </p>
                 </div>
@@ -458,7 +458,7 @@ export default function HeroSection({
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="absolute right-0 top-[8%] z-20 hidden rounded-card border border-border-default bg-surface-card px-3.5 py-2.5 text-[11px] text-text-secondary shadow-subtle sm:block"
+              className="absolute right-0 top-[8%] z-20 hidden rounded-card border border-border-default bg-surface-card px-3.5 py-2.5 text-2xs text-text-secondary shadow-subtle sm:block"
             >
               <span className="mr-2 text-brand">✳</span>
               {isEmployer ? "Talent · Teams · Growth" : "Design · Product · Tech"}

@@ -58,7 +58,7 @@ const panelClass = "rounded-panel border border-border-default bg-surface-card";
 const controlClass = "h-10 rounded-control border border-border-default bg-surface-card px-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring";
 
 function StatusBadge({ status }: { status: CandidateStatus }) {
-  return <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${statusStyles[status]}`}>{status}</span>;
+  return <span className={`inline-flex items-center rounded-pill px-2.5 py-1 text-xs font-medium ${statusStyles[status]}`}>{status}</span>;
 }
 
 export default function HRManagementPage() {
@@ -219,7 +219,7 @@ export default function HRManagementPage() {
           <div className="overflow-x-auto overflow-y-hidden">
             <table className="w-full min-w-[900px] border-collapse text-left">
               <thead className="bg-surface-subtle">
-                <tr className="text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted">
+                <tr className="text-2xs font-semibold uppercase tracking-[0.1em] text-text-muted">
                   <th className="w-10 px-4 py-3"><input aria-label="Select all visible candidates" type="checkbox" checked={filtered.length > 0 && filtered.every((candidate) => selected.includes(candidate.id))} onChange={(event) => setSelected(event.target.checked ? Array.from(new Set([...selected, ...filtered.map((candidate) => candidate.id)])) : selected.filter((id) => !filtered.some((candidate) => candidate.id === id)))} className="cursor-pointer accent-brand" /></th>
                   <th className="px-3 py-3">Candidate</th>
                   <th className="px-3 py-3">Applied for</th>
@@ -351,7 +351,7 @@ export default function HRManagementPage() {
               </div>
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 <StatusBadge status={activeCandidate.status} />
-                <span className="rounded-full bg-surface-muted px-2.5 py-1 text-xs text-text-secondary">{activeCandidate.experience} experience</span>
+                <span className="rounded-pill bg-surface-muted px-2.5 py-1 text-xs text-text-secondary">{activeCandidate.experience} experience</span>
               </div>
               <div className="mt-5 grid gap-4 rounded-card bg-surface-subtle p-4 sm:grid-cols-2">
                 <div>

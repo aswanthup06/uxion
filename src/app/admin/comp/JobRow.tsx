@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Job } from "../../types/job";
 import { ArrowUpRight, ImageDown, Pencil, Trash2 } from "lucide-react";
+import { Button } from "@/app/components/Button";
 
 type Props = {
   job: Job;
@@ -70,50 +71,55 @@ export default function JobRow({ job, onDelete, onViewPoster }: Props) {
       <td className="px-5 py-4">
         <div className="flex items-center justify-end gap-1">
           {onViewPoster ? (
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
               onClick={() => onViewPoster(job)}
               aria-label={`View poster for ${job.title}`}
               title="Job poster preview"
-              className="inline-flex h-9 items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 text-xs font-medium text-text-secondary transition-colors hover:border-brand/40 hover:bg-brand-soft hover:text-brand"
+              leftIcon={<ImageDown size={13} className="text-brand" />}
             >
-              <ImageDown size={13} className="text-brand" />
-              <span>Poster</span>
-            </button>
+              Poster
+            </Button>
           ) : (
-            <a
+            <Button
               href={`/job-posters?jobId=${encodeURIComponent(job.id)}`}
               target="_blank"
               rel="noopener noreferrer"
+              variant="secondary"
+              size="sm"
               aria-label={`View poster for ${job.title}`}
               title="View job poster"
-              className="inline-flex h-9 items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 text-xs font-medium text-text-secondary transition-colors hover:border-brand/40 hover:bg-brand-soft hover:text-brand"
+              leftIcon={<ImageDown size={13} className="text-brand" />}
             >
-              <ImageDown size={13} className="text-brand" />
-              <span>Poster</span>
-            </a>
+              Poster
+            </Button>
           )}
 
-          <Link
+          <Button
             href={`/admin/jobs/${job.id}/edit`}
+            variant="ghost"
+            size="sm"
             aria-label={`Edit ${job.title}`}
             title="Edit job"
-            className="inline-flex h-9 items-center gap-1.5 rounded-control px-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-brand-soft hover:text-brand"
+            leftIcon={<Pencil size={14} />}
+            rightIcon={<ArrowUpRight size={13} />}
           >
-            <Pencil size={14} />
-            <span>Edit</span>
-            <ArrowUpRight size={13} />
-          </Link>
+            Edit
+          </Button>
 
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => onDelete(job.id)}
             aria-label={`Delete ${job.title}`}
             title="Delete job"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-control text-text-muted transition-colors hover:bg-status-error-bg hover:text-status-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-status-error"
+            className="text-text-muted hover:bg-status-error-bg hover:text-status-error"
           >
             <Trash2 size={15} />
-          </button>
+          </Button>
         </div>
       </td>
     </tr>

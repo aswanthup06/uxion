@@ -13,8 +13,8 @@ type CursorTagProps = {
 export function CursorTag({ name, action, color, dark, className = "" }: CursorTagProps) {
   return (
     <div
-      className={`inline-flex w-max items-center gap-1.5 rounded-pill pl-1.5 pr-3 py-1 text-xs font-medium shadow-panel whitespace-nowrap ${
-        dark ? "text-ink" : "text-white"
+      className={`inline-flex w-max items-center gap-1.5 rounded-pill pl-1.5 pr-3 py-1 text-xs font-medium shadow-card whitespace-nowrap ${
+        dark ? "text-text-primary" : "text-text-inverse"
       } ${className}`}
       style={{ background: color }}
     >

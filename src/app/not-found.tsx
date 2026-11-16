@@ -21,7 +21,7 @@ export default function NotFound() {
           </span>
         </Link>
 
-        <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-text-muted">
+        <span className="text-2xs font-medium uppercase tracking-[0.16em] text-text-muted">
           Error 404
         </span>
       </header>
@@ -85,7 +85,7 @@ export default function NotFound() {
         </div>
 
         {/* Small side marker */}
-        <div className="absolute bottom-6 right-6 hidden items-center gap-2 text-[10px] uppercase tracking-[0.15em] text-text-muted sm:flex sm:right-10">
+        <div className="absolute bottom-6 right-6 hidden items-center gap-2 text-3xs uppercase tracking-[0.15em] text-text-muted sm:flex sm:right-10">
           <ArrowDownRight size={13} />
           Keep moving forward
         </div>
@@ -93,10 +93,10 @@ export default function NotFound() {
 
       {/* Bottom edge */}
       <footer className="flex shrink-0 items-center justify-between border-t border-border-subtle px-6 py-4 sm:px-10">
-        <span className="text-[10px] tracking-wide text-text-muted">
+        <span className="text-3xs tracking-wide text-text-muted">
           Find your next opportunity.
         </span>
-        <span className="text-[10px] font-medium tracking-wide text-brand">
+        <span className="text-3xs font-medium tracking-wide text-brand">
           ZENOWAY
         </span>
       </footer>

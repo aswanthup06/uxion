@@ -209,7 +209,7 @@ function Field({
       </div>
 
       {error && (
-        <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
+        <p className="mt-1.5 flex items-center gap-1 text-2xs font-medium text-status-error animate-in fade-in duration-150">
           <AlertCircle size={12} className="shrink-0" />
           <span>{error}</span>
         </p>
@@ -449,7 +449,7 @@ const CompanyCitySelector = forwardRef<
                 }`}
             >
               <span className="font-semibold text-text-primary">{item.city}</span>
-              <span className="text-[11px] text-text-muted">{item.state}, India</span>
+              <span className="text-2xs text-text-muted">{item.state}, India</span>
             </button>
           ))}
           {hasCustomOption && (
@@ -662,7 +662,7 @@ const CandidateScopeSelector = forwardRef<
                 }`}
             >
               <span className="font-semibold text-text-primary">{item.name}</span>
-              <span className="text-[11px] text-text-muted">
+              <span className="text-2xs text-text-muted">
                 {item.type === "state" ? "State, India" : `${item.state}, India`}
               </span>
             </button>
@@ -872,8 +872,8 @@ function HeroVisual() {
       {/* Floating job card */}
       <div className="hero-anim absolute right-4 top-4 w-[300px] animate-[float_7s_ease-in-out_infinite] rounded-2xl border border-border-default/50 bg-surface-card/80 p-4 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.25)] backdrop-blur">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-text-muted">New opening</span>
-          <span className="flex items-center gap-1.5 text-[10px] font-medium text-brand">
+          <span className="text-3xs font-medium uppercase tracking-[0.14em] text-text-muted">New opening</span>
+          <span className="flex items-center gap-1.5 text-3xs font-medium text-brand">
             <span className="relative flex h-1.5 w-1.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-60" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand" />
@@ -885,7 +885,7 @@ function HeroVisual() {
         <p className="mt-0.5 text-xs text-text-muted">Kochi · Hybrid · ₹18–26 LPA</p>
         <div className="mt-3 flex gap-1.5">
           {["React", "Next.js", "Tailwind"].map((t) => (
-            <span key={t} className="rounded-full border border-border-default/50 px-2 py-0.5 text-[10px] text-text-secondary">{t}</span>
+            <span key={t} className="rounded-pill border border-border-default/50 px-2 py-0.5 text-3xs text-text-secondary">{t}</span>
           ))}
         </div>
       </div>
@@ -898,19 +898,19 @@ function HeroVisual() {
             className="hero-anim flex animate-[slide-in_0.6s_ease-out_both] items-center gap-3 rounded-xl border border-border-default/50 bg-surface-card/90 p-2.5 shadow-subtle backdrop-blur"
             style={{ animationDelay: `${0.5 + i * 0.35}s` }}
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand/10 text-[11px] font-semibold text-brand">{a.initials}</div>
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand/10 text-2xs font-semibold text-brand">{a.initials}</div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-medium text-text-primary">{a.name}</p>
-              <p className="truncate text-[11px] text-text-muted">{a.role}</p>
+              <p className="truncate text-2xs text-text-muted">{a.role}</p>
             </div>
-            <span className="text-[10px] text-text-muted">{a.time}</span>
+            <span className="text-3xs text-text-muted">{a.time}</span>
           </div>
         ))}
       </div>
 
       {/* Commission chip */}
       <div
-        className="hero-anim absolute bottom-0 right-6 animate-[slide-in_0.6s_ease-out_both] rounded-full border border-border-default/50 bg-surface-card px-3 py-1.5 text-[11px] font-medium text-text-primary shadow-subtle"
+        className="hero-anim absolute bottom-0 right-6 animate-[slide-in_0.6s_ease-out_both] rounded-pill border border-border-default/50 bg-surface-card px-3 py-1.5 text-2xs font-medium text-text-primary shadow-subtle"
         style={{ animationDelay: "1.8s" }}
       >
         ₹0 <span className="text-text-muted">commission</span>
@@ -2522,7 +2522,7 @@ export default function JobFormWizard({
           </div>
 
           <div className="mt-4 flex justify-center">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600">
               <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
               Submitted · Pending Review
             </span>
@@ -2554,15 +2554,15 @@ export default function JobFormWizard({
 
             <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border-default/40 pt-3 text-xs sm:grid-cols-3">
               <div>
-                <span className="text-[10px] font-semibold uppercase text-text-muted">Location</span>
+                <span className="text-3xs font-semibold uppercase text-text-muted">Location</span>
                 <p className="mt-0.5 truncate font-medium text-text-primary">{previewLocation}</p>
               </div>
               <div>
-                <span className="text-[10px] font-semibold uppercase text-text-muted">Salary</span>
+                <span className="text-3xs font-semibold uppercase text-text-muted">Salary</span>
                 <p className="mt-0.5 font-semibold text-brand">{form.salary || "Not Disclosed"}</p>
               </div>
               <div>
-                <span className="text-[10px] font-semibold uppercase text-text-muted">Contact Email</span>
+                <span className="text-3xs font-semibold uppercase text-text-muted">Contact Email</span>
                 <p className="mt-0.5 truncate font-medium text-text-primary">{form.mail || "—"}</p>
               </div>
             </div>
@@ -2627,7 +2627,7 @@ export default function JobFormWizard({
               <div className="grid items-start gap-12 lg:grid-cols-[1.1fr_0.9fr]">
                 <div className="lg:pt-2">
                   {/* Eyebrow */}
-                  <div className="flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-text-muted">
+                  <div className="flex items-center gap-2.5 text-2xs font-medium uppercase tracking-[0.14em] text-text-muted">
                     <span className="h-1.5 w-1.5 rounded-full bg-brand" />
                     <span>Zenoway for Employers</span>
                     <span className="text-border-default">/</span>
@@ -2692,7 +2692,7 @@ export default function JobFormWizard({
               <div className="hidden sm:inline-flex items-center gap-1.5 text-xs text-text-muted">
                 {user && userLimitInfo && (
                   <>
-                    <span className={userLimitInfo.remaining <= 3 ? "font-semibold text-amber-600 dark:text-amber-400" : "text-text-secondary"}>
+                    <span className={userLimitInfo.remaining <= 3 ? "font-semibold text-amber-600" : "text-text-secondary"}>
                       {userLimitInfo.remaining} of {userLimitInfo.dailyLimit} posts left today
                     </span>
                     <span>•</span>
@@ -2752,7 +2752,7 @@ export default function JobFormWizard({
         {mode === "public" && user && userLimitInfo && userLimitInfo.remaining <= 0 && (
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 rounded-control border border-amber-500/30 bg-amber-500/10 p-3.5 sm:px-4 shadow-subtle">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control bg-amber-500/20 text-amber-600 dark:text-amber-400">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control bg-amber-500/20 text-amber-600">
                 <AlertCircle size={15} />
               </span>
               <p className="text-xs text-text-secondary leading-normal">
@@ -2775,11 +2775,11 @@ export default function JobFormWizard({
                     <h2 className="text-xs sm:text-sm font-bold text-text-primary">
                       Gemini AI Smart Importer
                     </h2>
-                    <span className="rounded-control bg-brand/10 border border-brand/20 px-2 py-0.5 text-[10px] font-bold text-brand uppercase tracking-wider">
+                    <span className="rounded-control bg-brand/10 border border-brand/20 px-2 py-0.5 text-3xs font-bold text-brand uppercase tracking-wider">
                       All 4 Steps
                     </span>
                   </div>
-                  <p className="mt-0.5 text-[11px] sm:text-xs text-text-secondary">
+                  <p className="mt-0.5 text-2xs sm:text-xs text-text-secondary">
                     Paste raw text from a draft, PDF, or email. Gemini AI automatically parses and fills all 4 steps.
                   </p>
                 </div>
@@ -2809,7 +2809,7 @@ export default function JobFormWizard({
             {showAiModal && (
               <div className="mt-4 border-t border-brand/15 pt-4 space-y-3.5 animate-in fade-in duration-200">
                 {/* Extraction tags preview */}
-                <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-text-muted">
+                <div className="flex flex-wrap items-center gap-1.5 text-3xs text-text-muted">
                   <span className="font-semibold text-text-secondary">Auto-extracts:</span>
                   <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">🏷️ Role & Category</span>
                   <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">🏢 Company & City</span>
@@ -2839,7 +2839,7 @@ export default function JobFormWizard({
 
                 {/* Footer action bar */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
-                  <div className="flex items-center gap-2 text-[11px] text-text-muted">
+                  <div className="flex items-center gap-2 text-2xs text-text-muted">
                     <span className="font-mono">{rawAiText.length} characters</span>
                     {rawAiText.length > 0 && (
                       <>
@@ -2912,18 +2912,18 @@ export default function JobFormWizard({
             <div className="md:hidden mb-6 rounded-control border border-border-default/60 bg-surface-card p-3.5 shadow-subtle">
               <div className="flex items-center justify-between text-xs mb-2">
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="font-mono text-[11px] font-bold text-brand shrink-0">
+                  <span className="font-mono text-2xs font-bold text-brand shrink-0">
                     {WIZARD_STEPS[currentStep - 1].tag}
                   </span>
                   <span className="font-semibold text-text-primary shrink-0">
                     {WIZARD_STEPS[currentStep - 1].label}
                   </span>
                   <span className="text-text-muted shrink-0">·</span>
-                  <span className="text-text-muted truncate text-[11px]">
+                  <span className="text-text-muted truncate text-2xs">
                     {WIZARD_STEPS[currentStep - 1].brief}
                   </span>
                 </div>
-                <span className="font-mono text-[11px] text-text-muted shrink-0 ml-2">
+                <span className="font-mono text-2xs text-text-muted shrink-0 ml-2">
                   {currentStep} / 4
                 </span>
               </div>
@@ -3089,7 +3089,7 @@ export default function JobFormWizard({
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <label className={`${labelClass} mb-0`}>Employment Type</label>
-                      <span className="hidden sm:inline-flex text-[10px] text-text-muted font-mono">1-5 or ← / → to switch</span>
+                      <span className="hidden sm:inline-flex text-3xs text-text-muted font-mono">1-5 or ← / → to switch</span>
                     </div>
                     <div
                       role="radiogroup"
@@ -3204,7 +3204,7 @@ export default function JobFormWizard({
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <label className={`${labelClass} mb-0`}>Work Mode</label>
-                      <span className="hidden sm:inline-flex text-[10px] text-text-muted font-mono">1-3 or ← / → to switch</span>
+                      <span className="hidden sm:inline-flex text-3xs text-text-muted font-mono">1-3 or ← / → to switch</span>
                     </div>
                     <div
                       role="radiogroup"
@@ -3274,7 +3274,7 @@ export default function JobFormWizard({
                       placeholder="Search city (e.g. Bengaluru, Kochi, Mumbai)..."
                     />
                     {fieldErrors.selectedOffices && (
-                      <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
+                      <p className="mt-1.5 flex items-center gap-1 text-2xs font-medium text-status-error animate-in fade-in duration-150">
                         <AlertCircle size={12} className="shrink-0" />
                         <span>{fieldErrors.selectedOffices}</span>
                       </p>
@@ -3290,7 +3290,7 @@ export default function JobFormWizard({
                           >
                             <span className="font-semibold">{office.city}</span>
                             {office.state && (
-                              <span className="text-[11px] text-text-muted">
+                              <span className="text-2xs text-text-muted">
                                 ({office.state})
                               </span>
                             )}
@@ -3312,7 +3312,7 @@ export default function JobFormWizard({
                   <div className="space-y-3 border-t border-border-default/40 pt-5">
                     <div className="flex items-center justify-between mb-1.5">
                       <label className={`${labelClass} mb-0`}>Candidate Residency & Eligibility</label>
-                      <span className="hidden sm:inline-flex text-[10px] text-text-muted font-mono">1-5 or ← / → to switch</span>
+                      <span className="hidden sm:inline-flex text-3xs text-text-muted font-mono">1-5 or ← / → to switch</span>
                     </div>
 
                     <div
@@ -3430,7 +3430,7 @@ export default function JobFormWizard({
                                 </span>
                                 {isSelected && <Check size={14} className="text-brand" />}
                               </div>
-                              <span className="mt-1 text-[11px] leading-4 text-text-muted">
+                              <span className="mt-1 text-2xs leading-4 text-text-muted">
                                 {pref.desc}
                               </span>
                             </button>
@@ -3455,7 +3455,7 @@ export default function JobFormWizard({
                             );
                           }
                           return (
-                            <span className="text-[11px] text-text-muted">
+                            <span className="text-2xs text-text-muted">
                               Add your company office location above to automatically limit applicant eligibility to your company&apos;s state.
                             </span>
                           );
@@ -3474,7 +3474,7 @@ export default function JobFormWizard({
                             </span>
                           </span>
                         ) : (
-                          <span className="text-[11px] text-text-muted">
+                          <span className="text-2xs text-text-muted">
                             Add your company office location above to automatically limit applicant eligibility to your office city.
                           </span>
                         )}
@@ -3493,7 +3493,7 @@ export default function JobFormWizard({
                           placeholder="Search allowed city or state..."
                         />
                         {fieldErrors.preferredTargets && (
-                          <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
+                          <p className="mt-1.5 flex items-center gap-1 text-2xs font-medium text-status-error animate-in fade-in duration-150">
                             <AlertCircle size={12} className="shrink-0" />
                             <span>{fieldErrors.preferredTargets}</span>
                           </p>
@@ -3507,7 +3507,7 @@ export default function JobFormWizard({
                                 className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-card px-2 py-0.5 text-xs text-text-primary"
                               >
                                 <span>{target.name}</span>
-                                <span className="text-[10px] text-text-muted">
+                                <span className="text-3xs text-text-muted">
                                   ({target.type})
                                 </span>
                                 <button
@@ -3624,13 +3624,13 @@ export default function JobFormWizard({
                       />
                       <div className="min-h-[22px]">
                         {isValidatingEmail && (
-                          <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-text-muted animate-in fade-in duration-150">
+                          <p className="mt-1.5 flex items-center gap-1.5 text-2xs font-medium text-text-muted animate-in fade-in duration-150">
                             <LoaderCircle size={12} className="animate-spin text-brand shrink-0" />
                             <span>Verifying mail server & MX records...</span>
                           </p>
                         )}
                         {!isValidatingEmail && !fieldErrors.mail && emailVerifiedDomain && (
-                          <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-text-muted animate-in fade-in duration-150">
+                          <p className="mt-1.5 flex items-center gap-1.5 text-2xs font-medium text-text-muted animate-in fade-in duration-150">
                             <CheckCircle2 size={12} className="shrink-0 text-brand" />
                             <span>Active email domain (@{emailVerifiedDomain})</span>
                           </p>
@@ -3755,7 +3755,7 @@ export default function JobFormWizard({
                             <span className="text-xs font-bold text-text-primary">
                               AI Description Assistant
                             </span>
-                            <span className="text-[10px] text-text-muted">
+                            <span className="text-3xs text-text-muted">
                               • Custom prompts, expansion &amp; polishing
                             </span>
                           </div>
@@ -3782,8 +3782,8 @@ export default function JobFormWizard({
                           </div>
 
                           {/* Preset Instruction Chips */}
-                          <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
-                            <span className="text-[10px] font-semibold text-text-muted mr-0.5">Quick chips:</span>
+                          <div className="flex flex-wrap items-center gap-1.5 text-2xs">
+                            <span className="text-3xs font-semibold text-text-muted mr-0.5">Quick chips:</span>
                             {[
                               "Expand into full detailed JD",
                               "Add 6-8 key responsibilities",
@@ -3926,7 +3926,7 @@ export default function JobFormWizard({
                             className="w-full bg-transparent p-0 text-sm leading-relaxed text-text-primary placeholder:text-text-muted/70 outline-none border-0 ring-0 focus:outline-none focus:ring-0"
                             required
                           />
-                          <div className="mt-2 flex flex-wrap items-center justify-between gap-1 border-t border-border-default/30 pt-2 text-[11px] text-text-muted">
+                          <div className="mt-2 flex flex-wrap items-center justify-between gap-1 border-t border-border-default/30 pt-2 text-2xs text-text-muted">
                             <span>
                               Tip: Press Enter on a bullet (<code className="rounded bg-surface-subtle px-1 py-0.5 text-text-secondary font-mono">•</code>) to automatically insert the next one.
                             </span>
@@ -3945,7 +3945,7 @@ export default function JobFormWizard({
                       )}
                     </div>
                     {fieldErrors.description && (
-                      <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-status-error animate-in fade-in duration-150">
+                      <p className="mt-1.5 flex items-center gap-1 text-2xs font-medium text-status-error animate-in fade-in duration-150">
                         <AlertCircle size={12} className="shrink-0" />
                         <span>{fieldErrors.description}</span>
                       </p>
@@ -3959,10 +3959,10 @@ export default function JobFormWizard({
                         Listing Preview
                       </span>
                       <div className="flex items-center gap-1.5">
-                        <span className="rounded-control bg-surface-subtle px-2 py-0.5 text-[11px] font-medium text-text-secondary border border-border-default/40">
+                        <span className="rounded-control bg-surface-subtle px-2 py-0.5 text-2xs font-medium text-text-secondary border border-border-default/40">
                           {form.category || "UI/UX & Product Design"}
                         </span>
-                        <span className="rounded-control bg-brand-soft px-2 py-0.5 text-[11px] font-semibold text-brand">
+                        <span className="rounded-control bg-brand-soft px-2 py-0.5 text-2xs font-semibold text-brand">
                           {form.workMode}
                         </span>
                       </div>
@@ -3979,7 +3979,7 @@ export default function JobFormWizard({
 
                     <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border-default/40 pt-3 text-xs sm:grid-cols-4">
                       <div>
-                        <span className="text-text-muted block text-[10px] uppercase font-semibold">
+                        <span className="text-text-muted block text-3xs uppercase font-semibold">
                           Location
                         </span>
                         <span className="mt-0.5 font-medium text-text-primary truncate block">
@@ -3988,7 +3988,7 @@ export default function JobFormWizard({
                       </div>
 
                       <div>
-                        <span className="text-text-muted block text-[10px] uppercase font-semibold">
+                        <span className="text-text-muted block text-3xs uppercase font-semibold">
                           Experience
                         </span>
                         <span className="mt-0.5 font-medium text-text-primary block">
@@ -3997,7 +3997,7 @@ export default function JobFormWizard({
                       </div>
 
                       <div>
-                        <span className="text-text-muted block text-[10px] uppercase font-semibold">
+                        <span className="text-text-muted block text-3xs uppercase font-semibold">
                           Salary
                         </span>
                         <span className="mt-0.5 font-semibold text-brand block">
@@ -4006,7 +4006,7 @@ export default function JobFormWizard({
                       </div>
 
                       <div>
-                        <span className="text-text-muted block text-[10px] uppercase font-semibold">
+                        <span className="text-text-muted block text-3xs uppercase font-semibold">
                           Contact
                         </span>
                         <span className="mt-0.5 font-medium text-text-primary truncate block">
@@ -4047,9 +4047,9 @@ export default function JobFormWizard({
 
                   {/* Daily limit reached notice on Step 4 */}
                   {mode === "public" && user && userLimitInfo && userLimitInfo.remaining <= 0 && (
-                    <div className="mt-4 rounded-control border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-700 dark:text-amber-400">
+                    <div className="mt-4 rounded-control border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-700">
                       <div className="flex items-start gap-3">
-                        <AlertCircle size={16} className="mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                        <AlertCircle size={16} className="mt-0.5 shrink-0 text-amber-600" />
                         <div>
                           <p className="font-semibold text-text-primary">
                             Daily posting limit reached (20/20 jobs posted today)
@@ -4148,7 +4148,7 @@ export default function JobFormWizard({
               <span className="text-base font-semibold text-text-primary sm:text-lg">
                 How Posting Works
               </span>
-              <span className="rounded-control bg-brand-soft px-2 py-0.5 text-[10px] font-semibold text-brand">
+              <span className="rounded-control bg-brand-soft px-2 py-0.5 text-3xs font-semibold text-brand">
                 4 Quick Steps
               </span>
             </div>
@@ -4167,7 +4167,7 @@ export default function JobFormWizard({
                     Role & AI Auto-Fill
                   </h3>
                 </div>
-                <p className="text-[11px] leading-relaxed text-text-muted">
+                <p className="text-2xs leading-relaxed text-text-muted">
                   Add job title and role type, or paste raw notes and let Gemini AI fill all 4 steps.
                 </p>
               </div>
@@ -4181,7 +4181,7 @@ export default function JobFormWizard({
                     Work Mode & City
                   </h3>
                 </div>
-                <p className="text-[11px] leading-relaxed text-text-muted">
+                <p className="text-2xs leading-relaxed text-text-muted">
                   Select Onsite, Hybrid, or Remote and pick your office branch or pan-India.
                 </p>
               </div>
@@ -4195,7 +4195,7 @@ export default function JobFormWizard({
                     Salary & Direct HR Email
                   </h3>
                 </div>
-                <p className="text-[11px] leading-relaxed text-text-muted">
+                <p className="text-2xs leading-relaxed text-text-muted">
                   Set salary and your official HR email. Candidate resumes land straight in your inbox.
                 </p>
               </div>
@@ -4209,7 +4209,7 @@ export default function JobFormWizard({
                     Review & Go Live
                   </h3>
                 </div>
-                <p className="text-[11px] leading-relaxed text-text-muted">
+                <p className="text-2xs leading-relaxed text-text-muted">
                   Quick preview and publish. Your opening goes live immediately with ₹0 commission.
                 </p>
               </div>
@@ -4221,7 +4221,7 @@ export default function JobFormWizard({
                 <Sparkles size={13} className="text-brand" />
                 <span>Direct Employer Benefits</span>
               </h4>
-              <div className="grid gap-2 text-[11px] text-text-secondary sm:grid-cols-3">
+              <div className="grid gap-2 text-2xs text-text-secondary sm:grid-cols-3">
                 <div className="flex items-center gap-1.5">
                   <Check size={12} className="text-brand shrink-0" />
                   <span>Direct to your HR email</span>

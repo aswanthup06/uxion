@@ -142,7 +142,7 @@ export default function ZenowayReferralPage() {
                                     <span className="text-brand">Earn on every apply.</span>
                                 </h1>
 
-                                <p className="mt-5 max-w-[460px] text-[15px] leading-7 text-text-secondary sm:text-base">
+                                <p className="mt-5 max-w-[460px] text-base-compact leading-7 text-text-secondary sm:text-base">
                                     Help people discover job opportunities across India. Share Zenoway jobs on
                                     WhatsApp, LinkedIn or anywhere your network is, and earn a reward when people
                                     apply through your referral link.
@@ -240,7 +240,7 @@ export default function ZenowayReferralPage() {
                             >
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-brand">
+                                        <p className="text-2xs font-medium uppercase tracking-[0.12em] text-brand">
                                             Your referral earnings
                                         </p>
                                         <h2 className="mt-2 text-xl font-medium tracking-tight">See your monthly income.</h2>
@@ -273,7 +273,7 @@ export default function ZenowayReferralPage() {
                                     className="zw-range mt-3"
                                     style={{ "--p": `${((apps - MIN_APPS) / (MAX_APPS - MIN_APPS)) * 100}%` } as React.CSSProperties}
                                 />
-                                <div className="mt-2 flex items-center justify-between text-[10px] text-text-muted">
+                                <div className="mt-2 flex items-center justify-between text-3xs text-text-muted">
                                     <span>{MIN_APPS}</span>
                                     {!touched && <span className="animate-pulse font-medium text-brand">← Drag to try →</span>}
                                     <span>{MAX_APPS}</span>
@@ -317,7 +317,7 @@ export default function ZenowayReferralPage() {
                                         <dd className="font-medium text-brand">₹{fmt(monthly)} per month</dd>
                                     </div>
                                 </dl>
-                                <p className="mt-3 text-[10px] leading-4 text-text-muted">
+                                <p className="mt-3 text-3xs leading-4 text-text-muted">
                                     Example only. Rewards apply to eligible applications.
                                 </p>
                             </motion.div>
@@ -333,8 +333,8 @@ export default function ZenowayReferralPage() {
                                         <Check size={14} />
                                     </span>
                                     <div>
-                                        <p className="text-[11px] font-medium">+₹2 per apply</p>
-                                        <p className="mt-0.5 text-[10px] text-text-muted">Tracked via your link</p>
+                                        <p className="text-2xs font-medium">+₹2 per apply</p>
+                                        <p className="mt-0.5 text-3xs text-text-muted">Tracked via your link</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -342,7 +342,7 @@ export default function ZenowayReferralPage() {
                             <motion.div
                                 animate={reduceMotion ? undefined : { y: [0, 4, 0] }}
                                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                                className="absolute right-0 top-[6%] z-20 hidden rounded-card border border-border-default bg-surface-card px-3.5 py-2.5 text-[11px] text-text-secondary shadow-subtle sm:block"
+                                className="absolute right-0 top-[6%] z-20 hidden rounded-card border border-border-default bg-surface-card px-3.5 py-2.5 text-2xs text-text-secondary shadow-subtle sm:block"
                             >
                                 <span className="mr-2 text-brand">✳</span>
                                 WhatsApp · LinkedIn · Friends
@@ -379,11 +379,11 @@ export default function ZenowayReferralPage() {
                                         <div className="flex h-10 w-10 items-center justify-center rounded-control bg-brand-soft text-brand">
                                             <Icon size={19} />
                                         </div>
-                                        <span className="text-[11px] font-medium tracking-[0.12em] text-text-muted">
+                                        <span className="text-2xs font-medium tracking-[0.12em] text-text-muted">
                                             0{i + 1}
                                         </span>
                                     </div>
-                                    <h3 className="mt-5 text-[15px] font-medium tracking-tight">{title}</h3>
+                                    <h3 className="mt-5 text-base-compact font-medium tracking-tight">{title}</h3>
                                     <p className="mt-1.5 text-xs leading-5 text-text-secondary">{text}</p>
                                 </motion.article>
                             ))}
@@ -421,7 +421,7 @@ export default function ZenowayReferralPage() {
                                         <Icon size={17} />
                                     </span>
                                     <div>
-                                        <p className="text-[13px] font-medium">{title}</p>
+                                        <p className="text-xs-compact font-medium">{title}</p>
                                         <p className="mt-1 text-xs leading-5 text-text-muted">{text}</p>
                                     </div>
                                 </motion.div>
@@ -449,8 +449,8 @@ export default function ZenowayReferralPage() {
                         <circle cx="200" cy="200" r="60" stroke="#b7d1be" />
                         <circle cx="200" cy="200" r="110" stroke="#b7d1be" strokeDasharray="3 8" />
                         <circle cx="200" cy="200" r="160" stroke="#cfe0d3" />
-                        <circle cx="200" cy="40" r="5" fill="#0fa968" />
-                        <circle cx="311" cy="311" r="4" fill="#0fa968" />
+                        <circle cx="200" cy="40" r="5" fill="var(--color-brand-accent)" />
+                        <circle cx="311" cy="311" r="4" fill="var(--color-brand-accent)" />
                     </svg>
 
                     <div className="relative max-w-lg">
@@ -475,7 +475,7 @@ export default function ZenowayReferralPage() {
                     </div>
                 </motion.div>
 
-                <p className="mx-auto mt-8 max-w-2xl text-center text-[11px] leading-5 text-text-muted">
+                <p className="mx-auto mt-8 max-w-2xl text-center text-2xs leading-5 text-text-muted">
                     Zenoway is a premium job platform, not a free job portal. Referral rewards apply to eligible
                     applications tracked through your referral link. Terms and conditions apply.
                 </p>

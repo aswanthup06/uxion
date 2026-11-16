@@ -9,14 +9,14 @@ export function TemplateThumbnail({
   template: PosterTemplateId;
   active: boolean;
 }) {
-  const frameClass = `relative aspect-[4/5] w-11 shrink-0 overflow-hidden rounded-none border bg-white ${
+  const frameClass = `relative aspect-[4/5] w-11 shrink-0 overflow-hidden rounded-none border bg-surface-card ${
     active ? "border-brand ring-1 ring-brand/30" : "border-border-default"
   }`;
 
   if (template === "bold") {
     return (
       <div
-        className={`${frameClass} border-[#087F50] bg-[#077D4E]`}
+        className={`${frameClass} border-brand bg-[#077D4E]`}
         aria-hidden="true"
       >
         <div className="relative flex h-full flex-col justify-between p-1.5">
@@ -78,21 +78,21 @@ export function TemplateThumbnail({
 
   if (template === "minimal") {
     return (
-      <div className={`${frameClass} bg-[#FAFDFB]`} aria-hidden="true">
+      <div className={`${frameClass} bg-surface-subtle`} aria-hidden="true">
         <div className="flex h-full flex-col justify-between p-1.5">
-          <div className="flex items-center justify-between border-b border-[#DDE8DF] pb-1">
+          <div className="flex items-center justify-between border-b border-border-default pb-1">
             <span className="h-1 w-4 rounded-[1px] bg-[#12231B]" />
-            <span className="h-1 w-1 rounded-full bg-[#0FA968]" />
+            <span className="h-1 w-1 rounded-full bg-brand-accent" />
           </div>
           <div className="my-auto space-y-1">
             <span className="block h-1.5 w-4 rounded-[1px] bg-[#12231B]" />
-            <span className="block h-1.5 w-6 rounded-[1px] bg-[#087F50]" />
+            <span className="block h-1.5 w-6 rounded-[1px] bg-brand" />
             <span className="block h-1 w-7 rounded-[1px] bg-[#12231B]/70" />
-            <span className="block h-2 w-0.5 bg-[#087F50]" />
+            <span className="block h-2 w-0.5 bg-brand" />
           </div>
-          <div className="flex items-center justify-between border-t border-[#DDE8DF] pt-1">
+          <div className="flex items-center justify-between border-t border-border-default pt-1">
             <span className="h-2 w-2 rounded-[1px] bg-[#12231B]/85" />
-            <span className="h-1 w-3 rounded-[1px] bg-[#087F50]/70" />
+            <span className="h-1 w-3 rounded-[1px] bg-brand/70" />
           </div>
         </div>
       </div>
@@ -101,25 +101,25 @@ export function TemplateThumbnail({
 
   if (template === "corporate") {
     return (
-      <div className={`${frameClass} bg-[#F8FBF9]`} aria-hidden="true">
+      <div className={`${frameClass} bg-surface-subtle`} aria-hidden="true">
         <div className="flex h-full flex-col justify-between">
-          <div className="flex items-center justify-between border-b-2 border-[#0FA968] bg-[#0C2D20] px-1.5 py-1.5">
+          <div className="flex items-center justify-between border-b-2 border-brand-accent bg-[#0C2D20] px-1.5 py-1.5">
             <span className="h-1.5 w-4 rounded-[1px] bg-white" />
             <span className="h-1 w-2 rounded-[1px] bg-[#9DD6B9]" />
           </div>
           <div className="space-y-1 px-1.5">
             <span className="block h-1.5 w-4 rounded-[1px] bg-[#12231B]" />
-            <span className="block h-1.5 w-6 rounded-[1px] bg-[#087F50]" />
+            <span className="block h-1.5 w-6 rounded-[1px] bg-brand" />
             <span className="block h-1 w-7 rounded-[1px] bg-[#12231B]/75" />
-            <div className="grid grid-cols-3 border-y border-[#B7D1BE] py-1">
+            <div className="grid grid-cols-3 border-y border-border-strong py-1">
               <span className="h-1.5 border-r border-[#C8DDD0]" />
               <span className="h-1.5 border-r border-[#C8DDD0]" />
               <span className="h-1.5" />
             </div>
           </div>
-          <div className="flex items-center justify-between border-t border-[#B7D1BE] bg-[#E8F4ED] px-1.5 py-1">
+          <div className="flex items-center justify-between border-t border-border-strong bg-brand-soft px-1.5 py-1">
             <span className="h-2 w-2 rounded-[1px] bg-[#0C2D20]" />
-            <span className="h-1 w-3 rounded-[1px] bg-[#087F50]/75" />
+            <span className="h-1 w-3 rounded-[1px] bg-brand/75" />
           </div>
         </div>
       </div>
@@ -129,7 +129,7 @@ export function TemplateThumbnail({
   return (
     <div className={`${frameClass} bg-[#0B241A]`} aria-hidden="true">
       <div className="flex h-full flex-col justify-between">
-        <div className="flex items-center justify-between bg-[#087F50] px-1.5 py-1">
+        <div className="flex items-center justify-between bg-brand px-1.5 py-1">
           <span className="h-1 w-3 rounded-[1px] bg-white" />
           <span className="h-1 w-2.5 rounded-[1px] bg-[#34F09A]" />
         </div>
@@ -144,7 +144,7 @@ export function TemplateThumbnail({
         </div>
         <div className="flex items-center justify-between bg-white px-1.5 py-1">
           <span className="h-2 w-2 rounded-[1px] bg-[#0B241A]" />
-          <span className="h-1 w-3 rounded-[1px] bg-[#087F50]" />
+          <span className="h-1 w-3 rounded-[1px] bg-brand" />
         </div>
       </div>
     </div>

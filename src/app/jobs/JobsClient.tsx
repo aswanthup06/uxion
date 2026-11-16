@@ -856,7 +856,7 @@ function JobsViewContent({
           <RotateCcw className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
           <span>Reset filters</span>
           {activeFilters > 0 && (
-            <span className="grid h-5 min-w-5 place-items-center rounded-full bg-surface-muted px-1.5 text-[11px] font-semibold tabular-nums text-text-secondary">
+            <span className="grid h-5 min-w-5 place-items-center rounded-pill bg-surface-muted px-1.5 text-2xs font-semibold tabular-nums text-text-secondary">
               {activeFilters}
             </span>
           )}
@@ -888,7 +888,7 @@ function JobsViewContent({
             >
               <SlidersHorizontal className="h-4 w-4" strokeWidth={1.75} /> Filters{" "}
               {activeFilters > 0 && (
-                <span className="grid h-5 min-w-5 place-items-center rounded-full bg-brand-dark px-1 text-[11px] text-white">
+                <span className="grid h-5 min-w-5 place-items-center rounded-pill bg-brand-dark px-1 text-2xs text-white">
                   {activeFilters}
                 </span>
               )}
@@ -985,7 +985,7 @@ function JobsViewContent({
                   setMode("All work modes");
                   setLocation("");
                 }}
-                className="text-[11px] font-semibold text-text-muted hover:text-brand hover:underline"
+                className="text-2xs font-semibold text-text-muted hover:text-brand hover:underline"
               >
                 Reset both
               </button>
@@ -1058,7 +1058,7 @@ function JobsViewContent({
                 className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 overflow-hidden rounded-control border border-border-default bg-surface-card shadow-modal ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95 duration-100"
                 role="listbox"
               >
-                <div className="flex items-center justify-between border-b border-border-subtle bg-surface-subtle/50 px-3.5 py-2 text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+                <div className="flex items-center justify-between border-b border-border-subtle bg-surface-subtle/50 px-3.5 py-2 text-2xs font-semibold uppercase tracking-wider text-text-muted">
                   <span>Suggested Locations</span>
                   <span className="font-normal normal-case tracking-normal text-text-muted">
                     {filteredLocationSuggestions.length} found
@@ -1428,7 +1428,7 @@ function JobsViewContent({
             <div className="relative shrink-0 border-b border-border-subtle bg-surface-card px-6 py-5 sm:px-8 sm:py-6">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <span className="inline-flex items-center rounded-full bg-brand-soft px-2.5 py-0.5 font-semibold text-brand">
+                  <span className="inline-flex items-center rounded-pill bg-brand-soft px-2.5 py-0.5 font-semibold text-brand">
                     {getJobCategory(activeJob)}
                   </span>
                   <span className="text-text-muted">
@@ -1490,25 +1490,25 @@ function JobsViewContent({
                     {/* Minimal Key Details Grid */}
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-card border border-border-default/70 bg-surface-subtle/50 p-4">
                       <div>
-                        <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted">Salary</p>
+                        <p className="text-2xs font-medium uppercase tracking-wider text-text-muted">Salary</p>
                         <p className="mt-1 text-sm font-semibold text-brand truncate">
                           {activeJob.salary || "Not Disclosed"}
                         </p>
                       </div>
                       <div>
-                        <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted">Experience</p>
+                        <p className="text-2xs font-medium uppercase tracking-wider text-text-muted">Experience</p>
                         <p className="mt-1 text-sm font-semibold text-text-primary truncate">
                           {activeJob.experience || "Fresher"}
                         </p>
                       </div>
                       <div>
-                        <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted">Location</p>
+                        <p className="text-2xs font-medium uppercase tracking-wider text-text-muted">Location</p>
                         <p className="mt-1 text-sm font-semibold text-text-primary truncate" title={modalLocInfo.officeLabel}>
                           {modalLocInfo.officeLabel}
                         </p>
                       </div>
                       <div>
-                        <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted">Work Setup</p>
+                        <p className="text-2xs font-medium uppercase tracking-wider text-text-muted">Work Setup</p>
                         <p className="mt-1 text-sm font-semibold text-text-primary truncate">
                           {modalLocInfo.workMode} · {getJobType(activeJob)}
                         </p>
@@ -1586,7 +1586,7 @@ function JobsViewContent({
 
               {/* Description */}
               <div className="space-y-1">
-                <h3 className="text-[15px] font-bold text-text-primary">
+                <h3 className="text-base-compact font-bold text-text-primary">
                   About the role
                 </h3>
                 <FormattedDescription content={activeJob.description} />

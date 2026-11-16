@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Job } from "../../types/job";
 import JobRow from "./JobRow";
 import JobEmptyState from "./JobEmptyState";
+import { Button } from "@/app/components/Button";
 import {
   ChevronLeft,
   ChevronRight,
@@ -179,29 +180,31 @@ export default function JobTable({ jobs, onDelete, onViewPoster }: Props) {
             </p>
 
             <div className="flex items-center gap-2">
-              <button
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
                 disabled={page === 1}
                 onClick={() => setPage((current) => current - 1)}
-                className="inline-flex h-9 items-center gap-1 rounded-control border border-border-default px-3 text-sm text-text-secondary transition hover:bg-surface-subtle disabled:cursor-not-allowed disabled:opacity-40"
+                leftIcon={<ChevronLeft size={15} />}
               >
-                <ChevronLeft size={15} />
                 Previous
-              </button>
+              </Button>
 
               <span className="min-w-16 text-center text-sm tabular-nums text-text-secondary">
                 {page} / {totalPages}
               </span>
 
-              <button
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
                 disabled={page === totalPages}
                 onClick={() => setPage((current) => current + 1)}
-                className="inline-flex h-9 items-center gap-1 rounded-control border border-border-default px-3 text-sm text-text-secondary transition hover:bg-surface-subtle disabled:cursor-not-allowed disabled:opacity-40"
+                rightIcon={<ChevronRight size={15} />}
               >
                 Next
-                <ChevronRight size={15} />
-              </button>
+              </Button>
             </div>
           </div>
         </>

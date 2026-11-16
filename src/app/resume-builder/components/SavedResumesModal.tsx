@@ -133,9 +133,9 @@ export default function SavedResumesModal({
               <div>
                 <p className="font-semibold">Cloud table migration pending</p>
                 <p className="mt-1 text-text-secondary">
-                  The <code className="font-mono text-[11px]">public.resumes</code> table
+                  The <code className="font-mono text-2xs">public.resumes</code> table
                   is not present in Supabase yet. Apply{" "}
-                  <code className="font-mono text-[11px]">
+                  <code className="font-mono text-2xs">
                     supabase/migrations/20261110000001_create_resumes_table.sql
                   </code>{" "}
                   to enable account sync. Your current draft remains saved locally in this
@@ -187,12 +187,12 @@ export default function SavedResumesModal({
                           {item.title}
                         </p>
                         {isActive && (
-                          <span className="rounded-pill bg-brand-soft px-2 py-0.5 text-[10px] font-semibold text-brand">
+                          <span className="rounded-pill bg-brand-soft px-2 py-0.5 text-3xs font-semibold text-brand">
                             Open
                           </span>
                         )}
                       </div>
-                      <p className="mt-0.5 text-[11px] text-text-muted">
+                      <p className="mt-0.5 text-2xs text-text-muted">
                         Updated {formatUpdatedAt(item.updatedAt)}
                       </p>
                     </div>

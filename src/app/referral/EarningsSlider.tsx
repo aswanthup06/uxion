@@ -45,7 +45,7 @@ export default function EarningsSlider() {
                         ₹{earned.toLocaleString("en-IN")}
                     </span>
                     <span
-                        className={`mt-2 inline-flex items-center gap-1 rounded-pill px-2.5 py-1 text-[11px] font-bold ${unlocked
+                        className={`mt-2 inline-flex items-center gap-1 rounded-pill px-2.5 py-1 text-2xs font-bold ${unlocked
                                 ? "bg-status-success-bg text-status-success"
                                 : "bg-surface-muted text-text-secondary"
                             }`}

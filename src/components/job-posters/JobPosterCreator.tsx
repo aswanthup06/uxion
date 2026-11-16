@@ -510,7 +510,7 @@ export function JobPosterCreator({
             {selectedJob ? (
               <Link
                 href={`/jobs/${selectedJob.id}`}
-                className="inline-flex h-7 items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 text-[11px] font-semibold text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary"
+                className="inline-flex h-7 items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 text-2xs font-semibold text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary"
               >
                 <ArrowLeft size={12} strokeWidth={2} />
                 <span>Back to job</span>
@@ -518,7 +518,7 @@ export function JobPosterCreator({
             ) : (
               <Link
                 href="/jobs"
-                className="inline-flex h-7 items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 text-[11px] font-semibold text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary"
+                className="inline-flex h-7 items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 text-2xs font-semibold text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary"
               >
                 <ArrowLeft size={12} strokeWidth={2} />
                 <span>Browse jobs</span>
@@ -622,7 +622,7 @@ export function JobPosterCreator({
                 >
                   1. Select Job
                 </label>
-                <span className="text-[11px] text-text-muted">
+                <span className="text-2xs text-text-muted">
                   {jobs.length} active {jobs.length === 1 ? "role" : "roles"}
                 </span>
               </div>
@@ -646,7 +646,7 @@ export function JobPosterCreator({
                 >
                   2. Poster Template
                 </h2>
-                <span className="text-[11px] font-semibold text-brand">
+                <span className="text-2xs font-semibold text-brand">
                   {activeTemplateMeta.name}
                 </span>
               </div>
@@ -690,10 +690,10 @@ export function JobPosterCreator({
                             />
                           )}
                         </div>
-                        <p className="mt-0.5 truncate text-[11px] text-text-secondary">
+                        <p className="mt-0.5 truncate text-2xs text-text-secondary">
                           {item.tagline}
                         </p>
-                        <p className="mt-0.5 truncate text-[10px] text-text-muted">
+                        <p className="mt-0.5 truncate text-3xs text-text-muted">
                           {item.bestFor}
                         </p>
                       </div>
@@ -716,7 +716,7 @@ export function JobPosterCreator({
                   >
                     2b. Indian Model
                   </h2>
-                  <span className="text-[11px] font-medium text-brand">
+                  <span className="text-2xs font-medium text-brand">
                     {activePortrait.name} ({activePortrait.gender === "male" ? "Man" : "Woman"})
                   </span>
                 </div>
@@ -754,12 +754,12 @@ export function JobPosterCreator({
                           )}
                         </div>
                         <span
-                          className={`mt-1.5 block truncate text-[11px] font-semibold ${isActive ? "text-brand" : "text-text-primary"
+                          className={`mt-1.5 block truncate text-2xs font-semibold ${isActive ? "text-brand" : "text-text-primary"
                             }`}
                         >
                           {p.name}
                         </span>
-                        <span className="block truncate text-[10px] text-text-muted">
+                        <span className="block truncate text-3xs text-text-muted">
                           {p.label}
                         </span>
                       </button>
@@ -781,7 +781,7 @@ export function JobPosterCreator({
                 >
                   3. Output Format
                 </h2>
-                <span className="text-[11px] text-text-muted">
+                <span className="text-2xs text-text-muted">
                   {formatSpec.width} × {formatSpec.height} px
                 </span>
               </div>
@@ -829,11 +829,11 @@ export function JobPosterCreator({
                         <span className="text-[10.5px] font-medium text-text-secondary">
                           {spec.width}×{spec.height}
                         </span>
-                        <span className="rounded-control bg-surface-muted px-1.5 py-0.5 text-[10px] font-semibold text-text-secondary">
+                        <span className="rounded-control bg-surface-muted px-1.5 py-0.5 text-3xs font-semibold text-text-secondary">
                           {spec.ratio}
                         </span>
                       </div>
-                      <span className="mt-1 text-[10px] text-text-muted">
+                      <span className="mt-1 text-3xs text-text-muted">
                         {spec.hint}
                       </span>
                     </button>
@@ -854,7 +854,7 @@ export function JobPosterCreator({
                 >
                   4. Font Style
                 </h2>
-                <span className="text-[11px] font-semibold text-brand">
+                <span className="text-2xs font-semibold text-brand">
                   {activeFontMeta.name}
                 </span>
               </div>
@@ -886,7 +886,7 @@ export function JobPosterCreator({
                         >
                           {font.name}
                         </span>
-                        <span className="mt-0.5 block truncate text-[10px] text-text-muted">
+                        <span className="mt-0.5 block truncate text-3xs text-text-muted">
                           {font.category}
                         </span>
                       </div>
@@ -913,7 +913,7 @@ export function JobPosterCreator({
                   >
                     Role Highlights
                   </span>
-                  <p className="mt-0.5 text-[11px] text-text-secondary">
+                  <p className="mt-0.5 text-2xs text-text-secondary">
                     Bullet points from job details
                   </p>
                 </div>
@@ -962,7 +962,7 @@ export function JobPosterCreator({
                           setExportScale(opt.scale);
                           resetExportFeedback();
                         }}
-                        className={`cursor-pointer rounded-[3px] px-2.5 py-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${active
+                        className={`cursor-pointer rounded-[3px] px-2.5 py-1 text-2xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${active
                           ? "bg-surface-card text-brand shadow-subtle"
                           : "text-text-secondary hover:text-text-primary"
                           }`}
@@ -1019,20 +1019,20 @@ export function JobPosterCreator({
               Poster Preview
             </span>
             <span className="text-border-strong">·</span>
-            <span className="rounded-control bg-surface-subtle border border-border-subtle px-2 py-0.5 text-[11px] font-semibold text-text-secondary">
+            <span className="rounded-control bg-surface-subtle border border-border-subtle px-2 py-0.5 text-2xs font-semibold text-text-secondary">
               {activeTemplateMeta.name}
             </span>
-            <span className="rounded-control bg-surface-subtle border border-border-subtle px-2 py-0.5 text-[11px] font-medium text-text-secondary">
+            <span className="rounded-control bg-surface-subtle border border-border-subtle px-2 py-0.5 text-2xs font-medium text-text-secondary">
               {formatSpec.label} ({formatSpec.ratio})
             </span>
-            <span className="hidden sm:inline-block text-[11px] text-text-muted">
+            <span className="hidden sm:inline-block text-2xs text-text-muted">
               {formatSpec.width * exportScale} × {formatSpec.height * exportScale} px
             </span>
             {selectedJob && (
               <Link
                 href={`/jobs/${selectedJob.id}`}
                 target="_blank"
-                className="hidden md:inline-flex items-center gap-1 text-[11px] font-medium text-text-muted hover:text-brand transition-colors ml-1"
+                className="hidden md:inline-flex items-center gap-1 text-2xs font-medium text-text-muted hover:text-brand transition-colors ml-1"
               >
                 <span>View job</span>
                 <ArrowUpRight size={11} />
@@ -1083,7 +1083,7 @@ export function JobPosterCreator({
                       setFormat(f);
                       resetExportFeedback();
                     }}
-                    className={`cursor-pointer rounded-[3px] px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+                    className={`cursor-pointer rounded-[3px] px-2.5 py-1 text-2xs font-semibold transition-colors ${
                       active
                         ? "bg-brand text-text-inverse shadow-subtle"
                         : "text-text-secondary hover:text-text-primary"
@@ -1100,7 +1100,7 @@ export function JobPosterCreator({
               type="button"
               onClick={handleCycleTemplate}
               disabled={!selectedJob || exporting}
-              className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-2.5 py-1 text-[11px] font-semibold text-text-primary hover:bg-surface-subtle disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-2.5 py-1 text-2xs font-semibold text-text-primary hover:bg-surface-subtle disabled:opacity-50"
             >
               <RefreshCw size={12} strokeWidth={2} />
               <span>Shuffle</span>
@@ -1110,7 +1110,7 @@ export function JobPosterCreator({
           {/* Quick Model Selector when Editorial Portrait template is active */}
           {template === "portrait" && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 overflow-x-auto bg-surface-subtle/50 no-scrollbar">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted shrink-0 mr-1">
+              <span className="text-3xs font-bold uppercase tracking-wider text-text-muted shrink-0 mr-1">
                 Model:
               </span>
               {POSTER_PORTRAITS.map((p) => {
@@ -1123,7 +1123,7 @@ export function JobPosterCreator({
                       setPortraitId(p.id);
                       resetExportFeedback();
                     }}
-                    className={`flex shrink-0 items-center gap-1.5 rounded-pill px-2.5 py-1 text-[11px] font-medium transition-all ${
+                    className={`flex shrink-0 items-center gap-1.5 rounded-pill px-2.5 py-1 text-2xs font-medium transition-all ${
                       isActive
                         ? "bg-brand text-text-inverse shadow-subtle"
                         : "border border-border-subtle bg-surface-card text-text-secondary hover:text-text-primary"
@@ -1229,7 +1229,7 @@ export function JobPosterCreator({
 
         {/* Mobile Bottom Bar: Customize Button */}
         <div className="lg:hidden border-t border-border-subtle bg-surface-card px-4 py-2.5 shrink-0 flex items-center justify-between gap-3">
-          <span className="text-[11px] text-text-muted truncate">
+          <span className="text-2xs text-text-muted truncate">
             {activeTemplateMeta.name} · {activeFontMeta.name}
           </span>
           <button

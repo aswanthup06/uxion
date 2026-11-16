@@ -64,7 +64,7 @@ export default function RecruiterReviewModal({
                 </span>
               </div>
               <span
-                className={`shrink-0 rounded-pill px-2.5 py-0.5 text-[10px] font-bold ${
+                className={`shrink-0 rounded-pill px-2.5 py-0.5 text-3xs font-bold ${
                   analysis.scorecard.contentQuality.status === "Passed"
                     ? "border border-status-success-border bg-status-success-bg text-brand"
                     : "border border-status-error-border bg-status-error-bg text-status-error"
@@ -92,7 +92,7 @@ export default function RecruiterReviewModal({
                 </span>
               </div>
               <span
-                className={`shrink-0 rounded-pill px-2.5 py-0.5 text-[10px] font-bold ${
+                className={`shrink-0 rounded-pill px-2.5 py-0.5 text-3xs font-bold ${
                   analysis.scorecard.experienceImpact.status === "Passed"
                     ? "border border-status-success-border bg-status-success-bg text-brand"
                     : "border border-status-warning-border bg-status-warning-bg text-status-warning"
@@ -120,7 +120,7 @@ export default function RecruiterReviewModal({
                 </span>
               </div>
               <span
-                className={`shrink-0 rounded-pill px-2.5 py-0.5 text-[10px] font-bold ${
+                className={`shrink-0 rounded-pill px-2.5 py-0.5 text-3xs font-bold ${
                   analysis.scorecard.jobMatch.status === "Passed"
                     ? "border border-status-success-border bg-status-success-bg text-brand"
                     : analysis.scorecard.jobMatch.status === "Needs review"
@@ -150,7 +150,7 @@ export default function RecruiterReviewModal({
                 </span>
               </div>
               <span
-                className={`shrink-0 rounded-pill px-2.5 py-0.5 text-[10px] font-bold ${
+                className={`shrink-0 rounded-pill px-2.5 py-0.5 text-3xs font-bold ${
                   analysis.scorecard.pdfReadiness.status === "Passed"
                     ? "border border-status-success-border bg-status-success-bg text-brand"
                     : "border border-status-warning-border bg-status-warning-bg text-status-warning"
@@ -194,11 +194,11 @@ export default function RecruiterReviewModal({
                   <AlertCircle size={15} className="mt-0.5 shrink-0 text-status-error" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase text-status-error">
+                      <span className="text-3xs font-bold uppercase text-status-error">
                         Critical
                       </span>
                       {err.location && (
-                        <span className="text-[11px] text-text-muted">
+                        <span className="text-2xs text-text-muted">
                           · {err.location}
                         </span>
                       )}
@@ -255,11 +255,11 @@ export default function RecruiterReviewModal({
                   <AlertTriangle size={15} className="mt-0.5 shrink-0 text-status-warning" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase text-status-warning">
+                      <span className="text-3xs font-bold uppercase text-status-warning">
                         Suggestion
                       </span>
                       {warn.location && (
-                        <span className="text-[11px] text-text-muted">
+                        <span className="text-2xs text-text-muted">
                           · {warn.location}
                         </span>
                       )}

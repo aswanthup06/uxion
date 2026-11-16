@@ -4,6 +4,16 @@
 @theme {
   --font-sans: var(--font-manrope);
 
+  /* Typography Micro-Scale (Zenoway Compact Workbench) */
+  --text-3xs: 10px;
+  --text-3xs--line-height: 14px;
+  --text-2xs: 11px;
+  --text-2xs--line-height: 16px;
+  --text-xs-compact: 13px;
+  --text-xs-compact--line-height: 18px;
+  --text-base-compact: 15px;
+  --text-base-compact--line-height: 22px;
+
   /* Brand Palette (Zenoway Emerald) */
   --color-brand: #087f50;
   --color-brand-hover: #066640;
@@ -48,6 +58,9 @@
   --color-status-error: #dc2626;
   --color-status-error-bg: #fef2f2;
   --color-status-error-border: #fecaca;
+  --color-status-info: #0284c7;
+  --color-status-info-bg: #f0f9ff;
+  --color-status-info-border: #bae6fd;
 
   /* Border Radii */
   --radius-control: 4px;
@@ -66,6 +79,12 @@
   /* Motion & Easing */
   --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-duration-fast: 150ms;
+  --transition-duration-normal: 200ms;
+  --transition-duration-slow: 400ms;
+
+  /* Sizing Constants */
+  --spacing-nav-height: 68px;
 }
 
 :root {

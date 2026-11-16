@@ -229,11 +229,11 @@ export function JobSelector({
                           >
                             {job.title}
                           </span>
-                          <span className="shrink-0 text-[10px] font-medium text-text-muted">
+                          <span className="shrink-0 text-3xs font-medium text-text-muted">
                             {job.id}
                           </span>
                         </div>
-                        <div className="mt-0.5 truncate text-[11px] text-text-secondary">
+                        <div className="mt-0.5 truncate text-2xs text-text-secondary">
                           {job.company}
                           {loc ? ` · ${loc}` : ""}
                         </div>

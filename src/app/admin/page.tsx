@@ -203,7 +203,7 @@ function Stat({
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-1.5 min-w-0">
           {typeof label === "string" ? (
-            <p className="text-[13px] font-medium text-text-muted truncate">
+            <p className="text-xs-compact font-medium text-text-muted truncate">
               {label}
             </p>
           ) : (
@@ -518,7 +518,7 @@ export default function AdminDashboard() {
         {pendingCount > 0 && (
           <div className="mt-8 flex flex-col items-start justify-between gap-3 rounded-card border border-amber-500/30 bg-amber-500/10 p-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/20 text-amber-600">
                 <span className="h-2.5 w-2.5 rounded-full bg-amber-500 animate-pulse" />
               </span>
               <div>
@@ -595,7 +595,7 @@ export default function AdminDashboard() {
                           .getElementById("job-listings-section")
                           ?.scrollIntoView({ behavior: "smooth" });
                       }}
-                      className="text-[11px] font-medium text-brand hover:underline"
+                      className="text-2xs font-medium text-brand hover:underline"
                     >
                       View in list ↓
                     </button>
@@ -798,7 +798,7 @@ export default function AdminDashboard() {
                 {/* Desktop table */}
                 <div className="hidden overflow-x-auto md:block">
                   <table className="w-full text-left">
-                    <thead className="border-b border-border-subtle text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted">
+                    <thead className="border-b border-border-subtle text-2xs font-semibold uppercase tracking-[0.1em] text-text-muted">
                       <tr>
                         <th className="py-4 pr-4">Job details</th>
                         <th className="px-4 py-4">Location</th>

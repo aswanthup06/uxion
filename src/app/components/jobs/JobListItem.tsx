@@ -49,9 +49,9 @@ export function JobListItem({ job }: { job: Job }) {
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="truncate text-[15px] font-semibold text-text-primary">{job.title}</h2>
+              <h2 className="truncate text-base-compact font-semibold text-text-primary">{job.title}</h2>
               {isRecent(job.postedDate) && (
-                <span className="shrink-0 rounded-pill bg-brand-soft px-2 py-0.5 text-[11px] font-semibold text-brand">
+                <span className="shrink-0 rounded-pill bg-brand-soft px-2 py-0.5 text-2xs font-semibold text-brand">
                   New
                 </span>
               )}
@@ -66,7 +66,7 @@ export function JobListItem({ job }: { job: Job }) {
         <span className="hidden text-right text-sm text-text-muted md:block">{timeAgo(job.postedDate)}</span>
 
         {/* mobile meta */}
-        <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 pl-[54px] text-[13px] text-text-secondary md:hidden">
+        <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 pl-[54px] text-xs-compact text-text-secondary md:hidden">
           <li className="flex items-center gap-1.5">
             <MapPin className="h-3.5 w-3.5 text-text-muted" aria-hidden /> {locationText}
           </li>

@@ -221,49 +221,49 @@ export default function AdminJobDetailsPage() {
             {/* Status & Badges */}
             <div className="flex flex-wrap items-center gap-2">
               {status === "published" ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-status-success-border bg-status-success-bg px-2.5 py-0.5 text-xs font-semibold text-status-success">
+                <span className="inline-flex items-center gap-1.5 rounded-pill border border-status-success-border bg-status-success-bg px-2.5 py-0.5 text-xs font-semibold text-status-success">
                   <span className="h-1.5 w-1.5 rounded-full bg-status-success" />
                   Published
                 </span>
               ) : status === "draft" ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-status-warning-border bg-status-warning-bg px-2.5 py-0.5 text-xs font-semibold text-status-warning">
+                <span className="inline-flex items-center gap-1.5 rounded-pill border border-status-warning-border bg-status-warning-bg px-2.5 py-0.5 text-xs font-semibold text-status-warning">
                   <span className="h-1.5 w-1.5 rounded-full bg-status-warning" />
                   Draft
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-border-default bg-surface-subtle px-2.5 py-0.5 text-xs font-semibold text-text-secondary">
+                <span className="inline-flex items-center gap-1.5 rounded-pill border border-border-default bg-surface-subtle px-2.5 py-0.5 text-xs font-semibold text-text-secondary">
                   <span className="h-1.5 w-1.5 rounded-full bg-border-strong" />
                   {status.charAt(0).toUpperCase() + status.slice(1)}
                 </span>
               )}
 
               {job.category && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-border-default bg-surface-subtle px-2.5 py-0.5 text-xs font-medium text-text-secondary">
+                <span className="inline-flex items-center gap-1 rounded-pill border border-border-default bg-surface-subtle px-2.5 py-0.5 text-xs font-medium text-text-secondary">
                   <Tag size={11} className="text-text-muted" />
                   {job.category}
                 </span>
               )}
 
               {job.isTestData && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-status-warning-border bg-status-warning-bg px-2.5 py-0.5 text-xs font-semibold text-status-warning">
+                <span className="inline-flex items-center gap-1 rounded-pill border border-status-warning-border bg-status-warning-bg px-2.5 py-0.5 text-xs font-semibold text-status-warning">
                   <ShieldAlert size={12} />
                   Test Data
                 </span>
               )}
 
               {job.requiresReview && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
+                <span className="inline-flex items-center gap-1 rounded-pill border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
                   <Sparkles size={12} />
                   Pending Review
                 </span>
               )}
 
               {job.userId ? (
-                <span className="inline-flex items-center gap-1 rounded-full border border-purple-200 bg-purple-50/70 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
+                <span className="inline-flex items-center gap-1 rounded-pill border border-purple-200 bg-purple-50/70 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
                   User Submission
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
+                <span className="inline-flex items-center gap-1 rounded-pill border border-status-info-border bg-status-info-bg px-2.5 py-0.5 text-xs font-semibold text-status-info">
                   Zenoway Official
                 </span>
               )}
@@ -647,11 +647,11 @@ export default function AdminJobDetailsPage() {
                   <dt className="text-xs text-text-muted">Posted By</dt>
                   <dd className="mt-0.5 text-xs font-medium text-text-primary">
                     {job.userId ? (
-                      <span className="font-mono text-purple-600 dark:text-purple-400">
+                      <span className="font-mono text-purple-600">
                         User ({job.userId})
                       </span>
                     ) : (
-                      <span className="font-medium text-blue-600 dark:text-blue-400">
+                      <span className="font-medium text-blue-600">
                         Admin / Zenoway Official
                       </span>
                     )}

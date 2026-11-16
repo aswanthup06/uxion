@@ -42,7 +42,7 @@ function FilterSection({
         <span className="flex items-center gap-2 text-sm font-semibold text-text-primary">
           {title}
           {!!badge && (
-            <span className="grid h-5 min-w-5 place-items-center rounded-full bg-brand px-1.5 text-[11px] font-semibold text-text-inverse">
+            <span className="grid h-5 min-w-5 place-items-center rounded-pill bg-brand px-1.5 text-2xs font-semibold text-text-inverse">
               {badge}
             </span>
           )}
@@ -323,7 +323,7 @@ export function FilterPanel({
                   type="button"
                   aria-pressed={on}
                   onClick={() => onChange({ experience: p.range })}
-                  className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                  className={`rounded-pill border px-3 py-1 text-xs font-medium transition-colors ${
                     on
                       ? "border-brand bg-brand text-text-inverse"
                       : "border-border-default text-text-secondary hover:border-border-strong hover:text-text-primary"

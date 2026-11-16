@@ -118,8 +118,8 @@ function Card({
 function SectionTitle({ children, hint }: { children: React.ReactNode; hint?: string }) {
     return (
         <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <h2 className="text-[15px] font-medium tracking-tight">{children}</h2>
-            {hint && <span className="text-[11px] text-text-muted">{hint}</span>}
+            <h2 className="text-base-compact font-medium tracking-tight">{children}</h2>
+            {hint && <span className="text-2xs text-text-muted">{hint}</span>}
         </div>
     );
 }
@@ -240,7 +240,7 @@ export default function ReferralDashboardPage({
                                 <span className="text-2xl font-medium tracking-tight">{fmt(last7)}</span>
                                 <span className="text-xs text-text-muted">applications this week</span>
                                 <span
-                                    className={`inline-flex items-center gap-1 rounded-pill px-2 py-0.5 text-[11px] font-medium ${change >= 0 ? "bg-brand-soft text-brand" : "bg-status-error-bg text-status-error"
+                                    className={`inline-flex items-center gap-1 rounded-pill px-2 py-0.5 text-2xs font-medium ${change >= 0 ? "bg-brand-soft text-brand" : "bg-status-error-bg text-status-error"
                                         }`}
                                 >
                                     <TrendingUp size={11} className={change < 0 ? "rotate-180" : ""} />
@@ -260,13 +260,13 @@ export default function ReferralDashboardPage({
                                             className={`w-full rounded-t-[3px] transition-colors ${i >= 7 ? "bg-brand group-hover:bg-brand-hover" : "bg-border-strong group-hover:bg-brand-accent"
                                                 }`}
                                         />
-                                        <span className="pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2 rounded-control bg-text-primary px-1.5 py-0.5 text-[10px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
+                                        <span className="pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2 rounded-control bg-text-primary px-1.5 py-0.5 text-3xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
                                             {v}
                                         </span>
                                     </div>
                                 ))}
                             </div>
-                            <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[10px] text-text-muted">
+                            <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-3xs text-text-muted">
                                 <span>14 days ago</span>
                                 <span className="flex items-center gap-3">
                                     <span className="flex items-center gap-1">
@@ -286,7 +286,7 @@ export default function ReferralDashboardPage({
                             <div className="mt-4 w-full overflow-x-auto">
                                 <table className="w-full min-w-[340px] text-left text-xs sm:min-w-[480px]">
                                     <thead>
-                                        <tr className="border-b border-border-subtle text-[11px] uppercase tracking-[0.1em] text-text-muted">
+                                        <tr className="border-b border-border-subtle text-2xs uppercase tracking-[0.1em] text-text-muted">
                                             <th className="pb-3 pr-2 font-medium">Job</th>
                                             <th className="pb-3 px-2 text-right font-medium">Applications</th>
                                             <th className="pb-3 pl-2 text-right font-medium">Earned</th>
@@ -299,8 +299,8 @@ export default function ReferralDashboardPage({
                                             return (
                                                 <tr key={job.title} className="transition-colors hover:bg-surface-subtle">
                                                     <td className="py-3.5 pr-2">
-                                                        <p className="text-[13px] font-medium leading-snug">{job.title}</p>
-                                                        <p className="mt-0.5 text-[11px] text-text-muted">
+                                                        <p className="text-xs-compact font-medium leading-snug">{job.title}</p>
+                                                        <p className="mt-0.5 text-2xs text-text-muted">
                                                             {job.company} · {job.place}
                                                         </p>
                                                     </td>
@@ -323,7 +323,7 @@ export default function ReferralDashboardPage({
                                         })}
                                     </tbody>
                                     <tfoot>
-                                        <tr className="border-t border-border-default text-[13px] font-medium">
+                                        <tr className="border-t border-border-default text-xs-compact font-medium">
                                             <td className="pt-3.5 pr-2">Total</td>
                                             <td className="pt-3.5 px-2 text-right tabular-nums whitespace-nowrap">{fmt(data.eligibleApplications)}</td>
                                             <td className="pt-3.5 pl-2 text-right tabular-nums text-brand whitespace-nowrap">₹{fmt(totalEarned)}</td>
@@ -347,10 +347,10 @@ export default function ReferralDashboardPage({
                                                 <Check size={14} />
                                             </span>
                                             <div className="min-w-0 flex-1">
-                                                <p className="text-[13px] font-medium">₹{fmt(p.amount)}</p>
-                                                <p className="text-[11px] text-text-muted">{p.date}</p>
+                                                <p className="text-xs-compact font-medium">₹{fmt(p.amount)}</p>
+                                                <p className="text-2xs text-text-muted">{p.date}</p>
                                             </div>
-                                            <span className="shrink-0 rounded-pill bg-brand-soft px-2.5 py-1 text-[11px] font-medium text-brand">
+                                            <span className="shrink-0 rounded-pill bg-brand-soft px-2.5 py-1 text-2xs font-medium text-brand">
                                                 {p.status}
                                             </span>
                                         </li>
@@ -376,7 +376,7 @@ export default function ReferralDashboardPage({
                                     className="h-full rounded-pill bg-brand"
                                 />
                             </div>
-                            <p className="mt-2 text-[11px] text-text-muted">
+                            <p className="mt-2 text-2xs text-text-muted">
                                 {canPayout
                                     ? `You've reached the ₹${MIN_PAYOUT} minimum payout.`
                                     : `₹${fmt(MIN_PAYOUT - available)} more to reach the ₹${MIN_PAYOUT} minimum payout.`}
@@ -448,7 +448,7 @@ export default function ReferralDashboardPage({
                                     </div>
                                 ))}
                             </dl>
-                            <p className="mt-3 flex items-start gap-2 text-[11px] leading-5 text-text-muted">
+                            <p className="mt-3 flex items-start gap-2 text-2xs leading-5 text-text-muted">
                                 <BadgeCheck size={14} className="mt-0.5 shrink-0 text-brand" />
                                 <span>
                                     Zenoway is a premium job platform, not a free job portal. Rewards apply to eligible
@@ -464,7 +464,7 @@ export default function ReferralDashboardPage({
                                     <FileText size={16} />
                                 </span>
                                 <div className="min-w-0 flex-1">
-                                    <h2 className="text-[13px] font-medium">Questions about earnings?</h2>
+                                    <h2 className="text-xs-compact font-medium">Questions about earnings?</h2>
                                     <p className="mt-1 text-xs leading-5 text-text-secondary">
                                         Ask in the referral WhatsApp group for updates and support.
                                     </p>

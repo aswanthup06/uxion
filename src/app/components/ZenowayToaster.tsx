@@ -73,7 +73,7 @@ export default function ZenowayToaster() {
                 type="button"
                 onClick={() => toast.dismiss(t.id)}
                 aria-label="Dismiss notification"
-                className="shrink-0 cursor-pointer rounded-control p-1 text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary focus:outline-none"
+                className="shrink-0 cursor-pointer rounded-control p-1 text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary focus-visible:ring-2 focus-visible:ring-focus-ring outline-none"
               >
                 <X size={14} />
               </button>

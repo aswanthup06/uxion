@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { ArrowUpRight, BriefcaseBusiness } from "lucide-react";
+import { Button } from "@/app/components/Button";
 
 export default function JobEmptyState() {
   return (
@@ -16,13 +16,15 @@ export default function JobEmptyState() {
         Your job listings will appear here once you publish your first opening.
       </p>
 
-      <Link
+      <Button
         href="/admin/jobs/add"
-        className="mt-6 inline-flex items-center gap-2 rounded-control bg-brand px-4 py-2.5 text-sm font-medium text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+        variant="primary"
+        size="md"
+        className="mt-6"
+        rightIcon={<ArrowUpRight size={16} />}
       >
         Add a job
-        <ArrowUpRight size={16} />
-      </Link>
+      </Button>
     </div>
   );
 }

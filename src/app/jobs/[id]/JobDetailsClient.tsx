@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 import ApplyModal from "./ApplyModal";
+import { Button } from "@/app/components/Button";
 import SiteFooter from "@/app/components/home/SiteFooter";
 import JobCard from "@/app/components/JobCard";
 import { FaWhatsapp } from "react-icons/fa";
@@ -122,32 +123,17 @@ function ActionButton({
   disabled?: boolean;
   className?: string;
 }) {
-  const classes = [
-    "inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control px-4 py-2",
-    "text-xs font-semibold transition-colors duration-normal ease-standard",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
-    "disabled:cursor-not-allowed disabled:opacity-50",
-    primary
-      ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover"
-      : "border border-border-default bg-surface-card text-text-primary hover:bg-surface-subtle",
-    disabled ? "cursor-not-allowed opacity-50 pointer-events-none" : "",
-    className,
-  ].join(" ");
-
-  if (href && !disabled) {
-    if (!external && href.startsWith("/")) {
-      return (
-        <Link href={href} className={classes}>
-          {children}
-        </Link>
-      );
-    }
-
+  if (href && external) {
     return (
       <a
         href={href}
-        className={classes}
-        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control px-4 py-2 text-xs font-semibold transition-colors duration-normal ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+          primary
+            ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover"
+            : "border border-border-default bg-surface-card text-text-primary hover:bg-surface-subtle"
+        } ${disabled ? "cursor-not-allowed opacity-50 pointer-events-none" : ""} ${className}`}
       >
         {children}
       </a>
@@ -155,9 +141,16 @@ function ActionButton({
   }
 
   return (
-    <button type="button" onClick={onClick} disabled={disabled} className={classes}>
+    <Button
+      variant={primary ? "primary" : "secondary"}
+      size="sm"
+      href={href}
+      onClick={onClick}
+      disabled={disabled}
+      className={className}
+    >
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -735,7 +728,7 @@ export default function JobDetailsClient({
           <motion.section {...rise(0.08)} className="max-w-3xl">
             <h2
               id="about-role-heading"
-              className="mb-2 text-[15px] font-bold text-text-primary"
+              className="mb-2 text-base-compact font-bold text-text-primary"
             >
               About the role
             </h2>

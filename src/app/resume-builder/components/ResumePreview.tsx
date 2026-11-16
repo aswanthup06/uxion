@@ -75,7 +75,7 @@ export default function ResumePreview({ data, onFontChange }: ResumePreviewProps
         <div className="flex flex-wrap items-center gap-2">
           {onFontChange && (
             <div
-              className="inline-flex items-center gap-0.5 rounded-control border border-border-default bg-surface-subtle p-0.5 text-[11px]"
+              className="inline-flex items-center gap-0.5 rounded-control border border-border-default bg-surface-subtle p-0.5 text-2xs"
               role="group"
               aria-label="Font selection"
             >
@@ -107,7 +107,7 @@ export default function ResumePreview({ data, onFontChange }: ResumePreviewProps
           )}
 
           <div
-            className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle p-0.5 text-[11px]"
+            className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle p-0.5 text-2xs"
             role="group"
             aria-label="Preview zoom"
           >
@@ -191,7 +191,7 @@ export default function ResumePreview({ data, onFontChange }: ResumePreviewProps
                       <p className="text-[16px] font-bold text-[#141717]">
                         Your ATS-Friendly Resume Preview
                       </p>
-                      <p className="mt-2 max-w-md text-[13px] leading-relaxed text-[#59615e]">
+                      <p className="mt-2 max-w-md text-xs-compact leading-relaxed text-[#59615e]">
                         Start filling in your details on the left. Your single-column A4 resume
                         updates here in real time—with no layout tables, icons, or graphics that
                         interfere with ATS text extraction.
@@ -478,7 +478,7 @@ export default function ResumePreview({ data, onFontChange }: ResumePreviewProps
                   )}
                 </article>
               </div>
-              <span className="mt-1.5 text-[11px] font-medium text-text-muted">
+              <span className="mt-1.5 text-2xs font-medium text-text-muted">
                 Page {page.pageNumber} of {layout.pages.length}
               </span>
             </div>

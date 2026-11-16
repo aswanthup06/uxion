@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { IoLogoWhatsapp } from "react-icons/io";
 import Modal from "@/app/components/Modal";
+import { Button } from "@/app/components/Button";
 
 type ApplyModalProps = {
   open: boolean;
@@ -188,24 +189,16 @@ export default function ApplyModal({
                         </span>
                       </div>
 
-                      <button
-                        type="button"
+                      <Button
+                        variant="secondary"
+                        size="sm"
                         onClick={handleCopyEmail}
                         aria-label="Copy contact email"
-                        className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-2.5 text-xs font-medium text-brand transition-colors hover:bg-brand-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                        className="text-brand hover:bg-brand-soft"
+                        leftIcon={emailCopied ? <Check size={14} className="text-brand" /> : <Copy size={14} />}
                       >
-                        {emailCopied ? (
-                          <>
-                            <Check size={14} className="text-brand" />
-                            <span>Copied</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy size={14} />
-                            <span>Copy</span>
-                          </>
-                        )}
-                      </button>
+                        {emailCopied ? "Copied" : "Copy"}
+                      </Button>
                     </div>
                   </div>
 
@@ -220,36 +213,29 @@ export default function ApplyModal({
                         {subjectText}
                       </span>
 
-                      <button
-                        type="button"
+                      <Button
+                        variant="secondary"
+                        size="sm"
                         onClick={handleCopySubject}
                         aria-label="Copy subject line"
-                        className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-2.5 text-xs font-medium text-brand transition-colors hover:bg-brand-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                        className="text-brand hover:bg-brand-soft"
+                        leftIcon={subjectCopied ? <Check size={14} className="text-brand" /> : <Copy size={14} />}
                       >
-                        {subjectCopied ? (
-                          <>
-                            <Check size={14} className="text-brand" />
-                            <span>Copied</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy size={14} />
-                            <span>Copy</span>
-                          </>
-                        )}
-                      </button>
+                        {subjectCopied ? "Copied" : "Copy"}
+                      </Button>
                     </div>
                   </div>
 
                   {/* Primary button: Copy Email */}
-                  <button
-                    type="button"
+                  <Button
+                    variant="primary"
+                    size="lg"
                     onClick={handleCopyEmail}
-                    className="mt-1 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-4 py-2.5 text-sm font-semibold text-text-inverse transition-colors hover:bg-brand-hover shadow-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                    className="mt-1 w-full font-semibold"
+                    leftIcon={emailCopied ? <Check size={16} /> : <Copy size={16} />}
                   >
-                    {emailCopied ? <Check size={16} /> : <Copy size={16} />}
                     {emailCopied ? "Email copied to clipboard!" : "Copy email address"}
-                  </button>
+                  </Button>
 
                   {/* Optional secondary mailto */}
                   <div className="text-center pt-1">

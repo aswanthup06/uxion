@@ -337,7 +337,7 @@ export default function ResumeUploadModal({
                       Supports PDF (.pdf), Word (.docx), Plain Text (.txt, .md), and JSON up to 10 MB
                     </p>
 
-                    <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5 text-[11px] font-medium text-text-secondary">
+                    <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5 text-2xs font-medium text-text-secondary">
                       <span className="rounded bg-surface-card px-2 py-0.5 border border-border-default">
                         PDF
                       </span>
@@ -403,7 +403,7 @@ export default function ResumeUploadModal({
                   disabled={isProcessing}
                   className="w-full rounded-control border border-border-default bg-surface-base p-3 text-xs leading-relaxed text-text-primary outline-none focus:border-brand focus:ring-1 focus:ring-brand"
                 />
-                <p className="text-[11px] text-text-muted">
+                <p className="text-2xs text-text-muted">
                   Tip: Copy directly from Google Docs, Word, or LinkedIn summary/experience sections.
                 </p>
               </div>
@@ -543,7 +543,7 @@ export default function ResumeUploadModal({
                   </div>
                 </div>
 
-                <span className="rounded-control bg-surface-subtle px-2 py-1 text-[11px] font-medium text-text-muted">
+                <span className="rounded-control bg-surface-subtle px-2 py-1 text-2xs font-medium text-text-muted">
                   {parsedPayload.detectedTitle}
                 </span>
               </div>
@@ -567,7 +567,7 @@ export default function ResumeUploadModal({
               {/* Extracted Sections Grid */}
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 pt-1">
                 <div className="rounded-control border border-border-subtle bg-surface-subtle p-2.5">
-                  <div className="flex items-center gap-1.5 text-text-muted text-[11px] font-medium uppercase">
+                  <div className="flex items-center gap-1.5 text-text-muted text-2xs font-medium uppercase">
                     <Briefcase size={12} className="text-brand" />
                     <span>Experience</span>
                   </div>
@@ -580,7 +580,7 @@ export default function ResumeUploadModal({
                 </div>
 
                 <div className="rounded-control border border-border-subtle bg-surface-subtle p-2.5">
-                  <div className="flex items-center gap-1.5 text-text-muted text-[11px] font-medium uppercase">
+                  <div className="flex items-center gap-1.5 text-text-muted text-2xs font-medium uppercase">
                     <GraduationCap size={12} className="text-brand" />
                     <span>Education</span>
                   </div>
@@ -593,7 +593,7 @@ export default function ResumeUploadModal({
                 </div>
 
                 <div className="rounded-control border border-border-subtle bg-surface-subtle p-2.5">
-                  <div className="flex items-center gap-1.5 text-text-muted text-[11px] font-medium uppercase">
+                  <div className="flex items-center gap-1.5 text-text-muted text-2xs font-medium uppercase">
                     <Wrench size={12} className="text-brand" />
                     <span>Skills</span>
                   </div>
@@ -604,7 +604,7 @@ export default function ResumeUploadModal({
                 </div>
 
                 <div className="rounded-control border border-border-subtle bg-surface-subtle p-2.5">
-                  <div className="flex items-center gap-1.5 text-text-muted text-[11px] font-medium uppercase">
+                  <div className="flex items-center gap-1.5 text-text-muted text-2xs font-medium uppercase">
                     <Sparkles size={12} className="text-brand" />
                     <span>Projects/Certs</span>
                   </div>
@@ -619,7 +619,7 @@ export default function ResumeUploadModal({
               {/* Summary Snippet if present */}
               {parsedPayload.data.summary && (
                 <div className="border-t border-border-subtle pt-2.5">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+                  <p className="text-2xs font-semibold uppercase tracking-wider text-text-muted">
                     Summary Preview
                   </p>
                   <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-text-secondary">

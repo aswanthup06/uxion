@@ -154,7 +154,7 @@ export default function AdminCandidatesPage() {
           <div className="overflow-hidden rounded-card border border-border-default bg-surface-card shadow-subtle">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="border-b border-border-default bg-surface-subtle text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+                <thead className="border-b border-border-default bg-surface-subtle text-2xs font-semibold uppercase tracking-wider text-text-muted">
                   <tr>
                     <th className="px-5 py-3.5">Candidate</th>
                     <th className="px-5 py-3.5">Email</th>
@@ -184,7 +184,7 @@ export default function AdminCandidatesPage() {
                             <p className="font-semibold text-text-primary">
                               {candidate.full_name || "Unnamed Candidate"}
                             </p>
-                            <span className="inline-flex items-center gap-1 text-[10px] text-text-muted">
+                            <span className="inline-flex items-center gap-1 text-3xs text-text-muted">
                               <CheckCircle2 size={10} className="text-brand" /> Google verified
                             </span>
                           </div>
@@ -223,13 +223,13 @@ export default function AdminCandidatesPage() {
                             <FileText size={13} /> View PDF
                           </a>
                         ) : (
-                          <span className="text-text-muted text-[11px]">No resume</span>
+                          <span className="text-text-muted text-2xs">No resume</span>
                         )}
                       </td>
                       <td className="px-5 py-4 text-right">
                         <Link
                           href={`/candidates/${candidate.id}`}
-                          className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-base px-2.5 py-1.5 text-[11px] font-semibold text-text-primary transition hover:border-brand hover:bg-brand-soft hover:text-brand"
+                          className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-base px-2.5 py-1.5 text-2xs font-semibold text-text-primary transition hover:border-brand hover:bg-brand-soft hover:text-brand"
                         >
                           View Profile <ExternalLink size={11} />
                         </Link>

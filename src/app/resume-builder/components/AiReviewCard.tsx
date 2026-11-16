@@ -82,7 +82,7 @@ export default function AiReviewCard({
               {suggestion.type === "tailor-to-jd" &&
                 "Job Description Tailoring Suggestions"}
             </p>
-            <p className="mt-0.5 text-[11px] text-text-secondary">
+            <p className="mt-0.5 text-2xs text-text-secondary">
               Review carefully before applying. Only accept wording that accurately
               reflects your real experience.
             </p>
@@ -106,7 +106,7 @@ export default function AiReviewCard({
             {suggestion.suggestedSummary}
           </div>
           {suggestion.rationale && (
-            <p className="text-[11px] text-text-secondary">{suggestion.rationale}</p>
+            <p className="text-2xs text-text-secondary">{suggestion.rationale}</p>
           )}
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -143,14 +143,14 @@ export default function AiReviewCard({
             ))}
           </ul>
           {suggestion.note && (
-            <p className="text-[11px] text-text-secondary">{suggestion.note}</p>
+            <p className="text-2xs text-text-secondary">{suggestion.note}</p>
           )}
           {suggestion.contextPrompts && suggestion.contextPrompts.length > 0 && (
             <div className="rounded-control border border-border-subtle bg-surface-subtle/70 p-2.5 text-xs text-text-secondary">
-              <p className="font-semibold text-text-primary text-[11px] mb-1">
+              <p className="font-semibold text-text-primary text-2xs mb-1">
                 Optional context / metrics to consider adding:
               </p>
-              <ul className="space-y-1 text-[11px]">
+              <ul className="space-y-1 text-2xs">
                 {suggestion.contextPrompts.map((cp, idx) => (
                   <li key={idx} className="flex items-start gap-1.5">
                     <span className="text-brand">💡</span>
@@ -215,7 +215,7 @@ export default function AiReviewCard({
                 })}
               </div>
               {suggestion.rationale && (
-                <p className="text-[11px] text-text-secondary">{suggestion.rationale}</p>
+                <p className="text-2xs text-text-secondary">{suggestion.rationale}</p>
               )}
               <div className="flex flex-wrap items-center gap-2">
                 <button
@@ -260,7 +260,7 @@ export default function AiReviewCard({
                     onApplySummary(suggestion.summarySuggestion);
                     setSummaryApplied(true);
                   }}
-                  className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-control bg-brand px-2.5 text-[11px] font-semibold text-text-inverse transition-colors hover:bg-brand-hover disabled:bg-brand-soft disabled:text-brand"
+                  className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-control bg-brand px-2.5 text-2xs font-semibold text-text-inverse transition-colors hover:bg-brand-hover disabled:bg-brand-soft disabled:text-brand"
                 >
                   <Check size={12} />
                   {summaryApplied ? "Applied" : "Apply"}
@@ -293,7 +293,7 @@ export default function AiReviewCard({
                       );
                       setAppliedExpIds((prev) => [...prev, expItem.experienceId]);
                     }}
-                    className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-control bg-brand px-2.5 text-[11px] font-semibold text-text-inverse transition-colors hover:bg-brand-hover disabled:bg-brand-soft disabled:text-brand"
+                    className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-control bg-brand px-2.5 text-2xs font-semibold text-text-inverse transition-colors hover:bg-brand-hover disabled:bg-brand-soft disabled:text-brand"
                   >
                     <Check size={12} />
                     {isApplied ? "Applied" : "Apply bullets"}
@@ -313,7 +313,7 @@ export default function AiReviewCard({
 
           {suggestion.alignmentNotes.length > 0 && (
             <div className="rounded-control border border-border-subtle bg-surface-card p-3">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+              <p className="text-2xs font-semibold uppercase tracking-wider text-text-muted">
                 Alignment Notes
               </p>
               <ul className="mt-1.5 space-y-1 text-xs text-text-secondary">
@@ -326,11 +326,11 @@ export default function AiReviewCard({
 
           {suggestion.missingRequirementsToVerify.length > 0 && (
             <div className="rounded-control border border-status-warning-border bg-status-warning-bg p-3">
-              <p className="flex items-center gap-1.5 text-[11px] font-semibold text-status-warning">
+              <p className="flex items-center gap-1.5 text-2xs font-semibold text-status-warning">
                 <AlertCircle size={13} />
                 Job requirements not currently evidenced in your resume
               </p>
-              <p className="mt-1 text-[11px] text-text-secondary">
+              <p className="mt-1 text-2xs text-text-secondary">
                 Only add these if you actually have hands-on experience with them:
               </p>
               <ul className="mt-1.5 space-y-1 text-xs text-text-primary">

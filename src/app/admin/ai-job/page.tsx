@@ -135,7 +135,7 @@ export default function AIJobPage() {
                   <FileText className="w-5 h-5 text-brand" />
                   Paste Job Description
                 </h2>
-                <span className="text-xs text-text-muted bg-surface-subtle px-3 py-1 rounded-full">
+                <span className="text-xs text-text-muted bg-surface-subtle px-3 py-1 rounded-pill">
                   {rawJob.length} characters
                 </span>
               </div>
@@ -180,7 +180,7 @@ export default function AIJobPage() {
                 </button>
               </div>
 
-              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
                 <Field icon={Briefcase} label="Job Title">
                   <input
                     className="w-full border border-border-default rounded-control px-4 py-3 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-brand-soft focus:border-brand transition-all duration-200 bg-surface-subtle hover:bg-surface-base outline-none"
@@ -344,22 +344,6 @@ export default function AIJobPage() {
         </div>
       </div>
 
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #c1c1c1;
-          border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #a8a8a8;
-        }
-      `}</style>
     </div>
   );
 }

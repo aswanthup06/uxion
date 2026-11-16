@@ -331,7 +331,7 @@ export default function JobPosterModal({
         <div className="flex flex-wrap items-center justify-between gap-2.5">
           {/* Template segmented pill group */}
           <div className="flex flex-wrap items-center gap-1 rounded-control bg-surface-subtle p-1 border border-border-subtle">
-            <span className="px-1.5 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+            <span className="px-1.5 text-3xs font-bold uppercase tracking-wider text-text-muted">
               Template
             </span>
             {POSTER_TEMPLATES.map((item) => (
@@ -351,7 +351,7 @@ export default function JobPosterModal({
 
           {/* Font segmented pill group */}
           <div className="flex flex-wrap items-center gap-1 rounded-control bg-surface-subtle p-1 border border-border-subtle">
-            <span className="px-1.5 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+            <span className="px-1.5 text-3xs font-bold uppercase tracking-wider text-text-muted">
               Font
             </span>
             {POSTER_FONTS.map((item) => (
@@ -372,7 +372,7 @@ export default function JobPosterModal({
 
           {/* Format segmented pill group */}
           <div className="flex flex-wrap items-center gap-1 rounded-control bg-surface-subtle p-1 border border-border-subtle">
-            <span className="px-1.5 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+            <span className="px-1.5 text-3xs font-bold uppercase tracking-wider text-text-muted">
               Format
             </span>
             {(["feed", "square", "story"] as PosterFormatId[]).map((f) => (
@@ -393,7 +393,7 @@ export default function JobPosterModal({
           {/* Portrait segmented pill group (for Editorial Portrait) */}
           {template === "portrait" && (
             <div className="flex flex-wrap items-center gap-1 rounded-control bg-surface-subtle p-1 border border-border-subtle">
-              <span className="px-1.5 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+              <span className="px-1.5 text-3xs font-bold uppercase tracking-wider text-text-muted">
                 Model
               </span>
               {POSTER_PORTRAITS.map((p) => (
@@ -473,7 +473,7 @@ export default function JobPosterModal({
         {/* Modal Footer / Actions */}
         <div className="flex flex-col gap-3 pt-3 sm:flex-row sm:items-center sm:justify-between border-t border-border-subtle">
           <div className="flex items-center gap-3">
-            <span className="rounded-control bg-surface-subtle border border-border-subtle px-2 py-0.5 text-[11px] font-medium text-text-muted">
+            <span className="rounded-control bg-surface-subtle border border-border-subtle px-2 py-0.5 text-2xs font-medium text-text-muted">
               {formatSpec.width} × {formatSpec.height} px · {formatSpec.ratio}
             </span>
             <a

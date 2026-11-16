@@ -96,18 +96,18 @@ export default function AtsCheckerPanel({
               <span className="text-sm font-extrabold">{analysis.overallScore}%</span>
             </div>
             {analysis.counts.errors > 0 && (
-              <span className="inline-flex items-center gap-1 rounded-pill border border-status-error-border bg-status-error-bg px-2.5 py-1 text-[11px] font-semibold text-status-error">
+              <span className="inline-flex items-center gap-1 rounded-pill border border-status-error-border bg-status-error-bg px-2.5 py-1 text-2xs font-semibold text-status-error">
                 <AlertCircle size={12} />
                 {analysis.counts.errors} to fix
               </span>
             )}
             {analysis.counts.warnings > 0 && (
-              <span className="inline-flex items-center gap-1 rounded-pill border border-status-warning-border bg-status-warning-bg px-2.5 py-1 text-[11px] font-semibold text-status-warning">
+              <span className="inline-flex items-center gap-1 rounded-pill border border-status-warning-border bg-status-warning-bg px-2.5 py-1 text-2xs font-semibold text-status-warning">
                 <AlertTriangle size={12} />
                 {analysis.counts.warnings} suggestions
               </span>
             )}
-            <span className="inline-flex items-center gap-1 rounded-pill border border-status-success-border bg-status-success-bg px-2.5 py-1 text-[11px] font-semibold text-brand">
+            <span className="inline-flex items-center gap-1 rounded-pill border border-status-success-border bg-status-success-bg px-2.5 py-1 text-2xs font-semibold text-brand">
               <CheckCircle2 size={12} />
               {analysis.counts.passes} passed
             </span>
@@ -129,7 +129,7 @@ export default function AtsCheckerPanel({
                   </span>
                 </div>
                 <span
-                  className={`shrink-0 rounded-pill px-2.5 py-0.5 text-[10px] font-bold ${
+                  className={`shrink-0 rounded-pill px-2.5 py-0.5 text-3xs font-bold ${
                     analysis.scorecard.contentQuality.status === "Passed"
                       ? "border border-status-success-border bg-status-success-bg text-brand"
                       : "border border-status-error-border bg-status-error-bg text-status-error"
@@ -157,7 +157,7 @@ export default function AtsCheckerPanel({
                   </span>
                 </div>
                 <span
-                  className={`shrink-0 rounded-pill px-2.5 py-0.5 text-[10px] font-bold ${
+                  className={`shrink-0 rounded-pill px-2.5 py-0.5 text-3xs font-bold ${
                     analysis.scorecard.experienceImpact.status === "Passed"
                       ? "border border-status-success-border bg-status-success-bg text-brand"
                       : "border border-status-warning-border bg-status-warning-bg text-status-warning"
@@ -185,7 +185,7 @@ export default function AtsCheckerPanel({
                   </span>
                 </div>
                 <span
-                  className={`shrink-0 rounded-pill px-2.5 py-0.5 text-[10px] font-bold ${
+                  className={`shrink-0 rounded-pill px-2.5 py-0.5 text-3xs font-bold ${
                     analysis.scorecard.jobMatch.status === "Passed"
                       ? "border border-status-success-border bg-status-success-bg text-brand"
                       : analysis.scorecard.jobMatch.status === "Needs review"
@@ -215,7 +215,7 @@ export default function AtsCheckerPanel({
                   </span>
                 </div>
                 <span
-                  className={`shrink-0 rounded-pill px-2.5 py-0.5 text-[10px] font-bold ${
+                  className={`shrink-0 rounded-pill px-2.5 py-0.5 text-3xs font-bold ${
                     analysis.scorecard.pdfReadiness.status === "Passed"
                       ? "border border-status-success-border bg-status-success-bg text-brand"
                       : "border border-status-warning-border bg-status-warning-bg text-status-warning"
@@ -231,7 +231,7 @@ export default function AtsCheckerPanel({
           </div>
         </div>
 
-        <div className="mt-3.5 flex items-start gap-2.5 rounded-control border border-border-subtle bg-surface-subtle/70 p-3 text-[11px] leading-relaxed text-text-muted">
+        <div className="mt-3.5 flex items-start gap-2.5 rounded-control border border-border-subtle bg-surface-subtle/70 p-3 text-2xs leading-relaxed text-text-muted">
           <Info size={14} className="mt-0.5 shrink-0 text-brand" />
           <span>{analysis.disclaimer}</span>
         </div>
@@ -274,7 +274,7 @@ export default function AtsCheckerPanel({
         />
 
         <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
-          <span className="text-[11px] text-text-muted">
+          <span className="text-2xs text-text-muted">
             {jobDescription.length} / 8000 characters
           </span>
 
@@ -308,7 +308,7 @@ export default function AtsCheckerPanel({
                   {analysis.keywordAnalysis.extractedKeywords.length} detected terms)
                 </span>
               </div>
-              <span className="text-[11px] text-text-muted italic">
+              <span className="text-2xs text-text-muted italic">
                 {analysis.keywordAnalysis.matchScoreExplanation}
               </span>
             </div>
@@ -316,14 +316,14 @@ export default function AtsCheckerPanel({
             {/* Matched Keywords */}
             {analysis.keywordAnalysis.matchedKeywords.length > 0 && (
               <div>
-                <p className="text-[11px] font-semibold text-brand">
+                <p className="text-2xs font-semibold text-brand">
                   ✓ Demonstrated in your resume ({analysis.keywordAnalysis.matchedKeywords.length})
                 </p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {analysis.keywordAnalysis.matchedKeywords.map((kw) => (
                     <span
                       key={kw}
-                      className="rounded-pill border border-status-success-border bg-status-success-bg px-2.5 py-0.5 text-[11px] font-semibold text-brand"
+                      className="rounded-pill border border-status-success-border bg-status-success-bg px-2.5 py-0.5 text-2xs font-semibold text-brand"
                     >
                       {kw}
                     </span>
@@ -335,7 +335,7 @@ export default function AtsCheckerPanel({
             {/* Transferable Skills */}
             {analysis.keywordAnalysis.transferableKeywords.length > 0 && (
               <div>
-                <p className="text-[11px] font-semibold text-text-primary">
+                <p className="text-2xs font-semibold text-text-primary">
                   ⇄ Transferable &amp; Related competencies (
                   {analysis.keywordAnalysis.transferableKeywords.length})
                 </p>
@@ -343,7 +343,7 @@ export default function AtsCheckerPanel({
                   {analysis.keywordAnalysis.transferableKeywords.map((kw) => (
                     <span
                       key={kw}
-                      className="rounded-pill border border-border-strong bg-surface-subtle px-2.5 py-0.5 text-[11px] font-medium text-text-secondary"
+                      className="rounded-pill border border-border-strong bg-surface-subtle px-2.5 py-0.5 text-2xs font-medium text-text-secondary"
                     >
                       {kw}
                     </span>
@@ -355,14 +355,14 @@ export default function AtsCheckerPanel({
             {/* Missing Critical Keywords */}
             {analysis.keywordAnalysis.missingKeywords.length > 0 && (
               <div>
-                <p className="text-[11px] font-semibold text-status-warning">
+                <p className="text-2xs font-semibold text-status-warning">
                   ⚠ Not found in your resume (add only if genuinely practiced)
                 </p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {analysis.keywordAnalysis.missingKeywords.map((kw) => (
                     <span
                       key={kw}
-                      className="rounded-pill border border-status-warning-border bg-status-warning-bg px-2.5 py-0.5 text-[11px] font-medium text-status-warning"
+                      className="rounded-pill border border-status-warning-border bg-status-warning-bg px-2.5 py-0.5 text-2xs font-medium text-status-warning"
                     >
                       {kw}
                     </span>
@@ -374,10 +374,10 @@ export default function AtsCheckerPanel({
             {/* Skills Needing Evidence */}
             {analysis.keywordAnalysis.skillsNeedingEvidence.length > 0 && (
               <div className="rounded-control border border-border-subtle bg-surface-subtle p-3">
-                <p className="text-[11px] font-semibold text-text-primary">
+                <p className="text-2xs font-semibold text-text-primary">
                   Listed in skills but missing applied context in experience:
                 </p>
-                <p className="mt-0.5 text-[11px] text-text-muted">
+                <p className="mt-0.5 text-2xs text-text-muted">
                   Recruiters prefer skills backed by a project or role bullet.
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
@@ -396,7 +396,7 @@ export default function AtsCheckerPanel({
             {/* Specific Recommendations */}
             {analysis.keywordAnalysis.sectionImprovementIdeas.length > 0 && (
               <div className="rounded-control border border-border-subtle bg-surface-card p-3">
-                <p className="text-[11px] font-bold text-text-primary">
+                <p className="text-2xs font-bold text-text-primary">
                   Recruiter Optimization Recommendations:
                 </p>
                 <ul className="mt-1.5 space-y-1 text-xs text-text-secondary">
@@ -504,13 +504,13 @@ export default function AtsCheckerPanel({
                       {check.location && (
                         <>
                           <span className="text-xs text-border-strong">·</span>
-                          <span className="text-[11px] font-medium text-brand">
+                          <span className="text-2xs font-medium text-brand">
                             {check.location}
                           </span>
                         </>
                       )}
                       {isDismissed && (
-                        <span className="rounded-pill bg-surface-muted px-1.5 py-0.2 text-[10px] text-text-muted">
+                        <span className="rounded-pill bg-surface-muted px-1.5 py-0.2 text-3xs text-text-muted">
                           Dismissed
                         </span>
                       )}
@@ -557,7 +557,7 @@ export default function AtsCheckerPanel({
                             ? onUndismissCheck(check.id)
                             : onDismissCheck(check.id)
                         }
-                        className="cursor-pointer px-2 py-1 text-[11px] text-text-muted hover:text-text-primary"
+                        className="cursor-pointer px-2 py-1 text-2xs text-text-muted hover:text-text-primary"
                       >
                         {isDismissed ? "Undo dismiss" : "Dismiss"}
                       </button>

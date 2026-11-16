@@ -91,7 +91,7 @@ export default function JobListPage() {
         {/* Header */}
         <header className="flex flex-col gap-5 border-b border-border-subtle pb-7 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand">
+            <p className="flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.14em] text-brand">
               <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" />
               Job management
             </p>

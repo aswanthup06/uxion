@@ -125,7 +125,7 @@ export default function AdminLoginPage() {
             <br />
             <span className="text-brand-accent">better work.</span>
           </h1>
-          <p className="mt-6 max-w-sm text-[15px] leading-7 text-text-secondary">
+          <p className="mt-6 max-w-sm text-base-compact leading-7 text-text-secondary">
             Manage opportunities, keep things moving, and help people find
             work that moves them forward.
           </p>
@@ -174,7 +174,7 @@ export default function AdminLoginPage() {
             <div>
               <label
                 htmlFor="admin-password"
-                className="mb-2 block text-[13px] font-semibold text-text-secondary"
+                className="mb-2 block text-xs-compact font-semibold text-text-secondary"
               >
                 Admin password
               </label>
@@ -229,7 +229,7 @@ export default function AdminLoginPage() {
                 <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-bold text-status-error">
                   !
                 </span>
-                <p className="text-[13px] leading-5 text-status-error">{error}</p>
+                <p className="text-xs-compact leading-5 text-status-error">{error}</p>
               </div>
             )}
 
@@ -258,7 +258,7 @@ export default function AdminLoginPage() {
           </form>
 
           <div className="mt-9 border-t border-border-subtle pt-5 text-center">
-            <p className="text-[11px] text-text-muted">
+            <p className="text-2xs text-text-muted">
               Powered by Zenoway · © {new Date().getFullYear()}
             </p>
           </div>

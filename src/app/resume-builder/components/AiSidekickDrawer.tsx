@@ -232,7 +232,7 @@ export default function AiSidekickDrawer({
             <h2 className="text-sm font-bold text-text-primary">
               AI Recruiter Sidekick
             </h2>
-            <p className="text-[11px] text-text-muted">
+            <p className="text-2xs text-text-muted">
               1-click instant fixes &amp; conversational co-pilot
             </p>
           </div>
@@ -253,14 +253,14 @@ export default function AiSidekickDrawer({
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-xs font-semibold text-text-primary">ATS Readiness:</span>
           <span className="text-xs font-bold text-brand">{atsAnalysis.overallScore}%</span>
-          <span className="text-[11px] text-text-muted truncate">({atsAnalysis.readinessLabel})</span>
+          <span className="text-2xs text-text-muted truncate">({atsAnalysis.readinessLabel})</span>
         </div>
         {onDownloadPdf && (
           <button
             type="button"
             disabled={isExportingPdf}
             onClick={onDownloadPdf}
-            className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-control bg-brand px-2.5 text-[11px] font-semibold text-text-inverse hover:bg-brand-hover shadow-2xs transition-colors shrink-0 disabled:opacity-60"
+            className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-control bg-brand px-2.5 text-2xs font-semibold text-text-inverse hover:bg-brand-hover shadow-2xs transition-colors shrink-0 disabled:opacity-60"
           >
             {isExportingPdf ? (
               <Loader2 size={11} className="animate-spin" />
@@ -286,7 +286,7 @@ export default function AiSidekickDrawer({
           <Zap size={13} />
           <span>Quick Fixes</span>
           {autoFixableChecks.length > 0 && (
-            <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-[10px] font-bold text-brand">
+            <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-3xs font-bold text-brand">
               {autoFixableChecks.length}
             </span>
           )}
@@ -317,7 +317,7 @@ export default function AiSidekickDrawer({
           <Target size={13} />
           <span>JD Match</span>
           {atsAnalysis.keywordAnalysis.hasJobDescription && (
-            <span className="rounded-pill bg-surface-card px-1.5 py-0.5 text-[10px] font-semibold text-text-primary">
+            <span className="rounded-pill bg-surface-card px-1.5 py-0.5 text-3xs font-semibold text-text-primary">
               {atsAnalysis.keywordAnalysis.matchPercentage}%
             </span>
           )}
@@ -339,7 +339,7 @@ export default function AiSidekickDrawer({
                     <h3 className="text-xs font-bold text-text-primary">
                       {autoFixableChecks.length} 1-Click Fix{autoFixableChecks.length > 1 ? "es" : ""} Ready
                     </h3>
-                    <p className="mt-0.5 text-[11px] leading-relaxed text-text-secondary">
+                    <p className="mt-0.5 text-2xs leading-relaxed text-text-secondary">
                       Instant correction for typos, brand casing (e.g. JavaScript, Next.js), and duplicate bullet symbols.
                     </p>
                   </div>
@@ -347,7 +347,7 @@ export default function AiSidekickDrawer({
               </div>
 
               <div className="mt-3 flex items-center justify-between border-t border-brand/20 pt-2.5">
-                <span className="text-[10px] font-medium text-brand">
+                <span className="text-3xs font-medium text-brand">
                   Free · 0 tokens · Instant
                 </span>
                 <button
@@ -368,7 +368,7 @@ export default function AiSidekickDrawer({
               <h3 className="mt-2 text-xs font-bold text-text-primary">
                 Spelling &amp; Formatting Clean!
               </h3>
-              <p className="mt-0.5 text-[11px] text-text-secondary">
+              <p className="mt-0.5 text-2xs text-text-secondary">
                 No typos, brand casing inconsistencies, or broken punctuation detected.
               </p>
             </div>
@@ -377,7 +377,7 @@ export default function AiSidekickDrawer({
           {/* List of Fixable Issues */}
           {autoFixableChecks.length > 0 && (
             <div className="space-y-2">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-text-muted">
+              <p className="text-2xs font-bold uppercase tracking-wider text-text-muted">
                 Detected Typos &amp; Casing ({autoFixableChecks.length})
               </p>
               {autoFixableChecks.map((check) => (
@@ -386,10 +386,10 @@ export default function AiSidekickDrawer({
                   className="rounded-control border border-border-default bg-surface-base p-2.5 shadow-2xs space-y-1.5"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="truncate text-[11px] font-semibold text-text-primary">
+                    <span className="truncate text-2xs font-semibold text-text-primary">
                       {check.title}
                     </span>
-                    <span className="shrink-0 rounded bg-surface-subtle px-1.5 py-0.5 text-[10px] font-medium text-text-muted">
+                    <span className="shrink-0 rounded bg-surface-subtle px-1.5 py-0.5 text-3xs font-medium text-text-muted">
                       {check.location}
                     </span>
                   </div>
@@ -410,7 +410,7 @@ export default function AiSidekickDrawer({
                     <button
                       type="button"
                       onClick={() => check.section && onJumpToSection(check.section)}
-                      className="cursor-pointer text-[11px] text-text-muted hover:text-text-primary"
+                      className="cursor-pointer text-2xs text-text-muted hover:text-text-primary"
                     >
                       Locate
                     </button>
@@ -418,7 +418,7 @@ export default function AiSidekickDrawer({
                       <button
                         type="button"
                         onClick={() => onApplyCorrection(check.action!)}
-                        className="inline-flex cursor-pointer items-center gap-1 rounded bg-brand px-2 py-0.5 text-[11px] font-semibold text-text-inverse hover:bg-brand-hover"
+                        className="inline-flex cursor-pointer items-center gap-1 rounded bg-brand px-2 py-0.5 text-2xs font-semibold text-text-inverse hover:bg-brand-hover"
                       >
                         <Check size={11} />
                         <span>Apply</span>
@@ -433,7 +433,7 @@ export default function AiSidekickDrawer({
           {/* Other Recruiter Guidelines */}
           {nonFixableChecks.length > 0 && (
             <div className="space-y-2 pt-2 border-t border-border-subtle">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-text-muted">
+              <p className="text-2xs font-bold uppercase tracking-wider text-text-muted">
                 Recruiter Recommendations ({nonFixableChecks.length})
               </p>
               {nonFixableChecks.slice(0, 5).map((check) => (
@@ -446,7 +446,7 @@ export default function AiSidekickDrawer({
                       {check.title}
                     </span>
                     <span
-                      className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold ${
+                      className={`shrink-0 rounded px-1.5 py-0.5 text-3xs font-bold ${
                         check.severity === "error"
                           ? "bg-status-error-bg text-status-error"
                           : "bg-status-warning-bg text-status-warning"
@@ -455,14 +455,14 @@ export default function AiSidekickDrawer({
                       {check.severity}
                     </span>
                   </div>
-                  <p className="text-[11px] text-text-secondary leading-relaxed">
+                  <p className="text-2xs text-text-secondary leading-relaxed">
                     {check.howToFix || check.explanation}
                   </p>
                   {check.section && (
                     <button
                       type="button"
                       onClick={() => onJumpToSection(check.section!)}
-                      className="cursor-pointer font-medium text-[11px] text-brand underline hover:no-underline"
+                      className="cursor-pointer font-medium text-2xs text-brand underline hover:no-underline"
                     >
                       Jump to {check.section}
                     </button>
@@ -479,7 +479,7 @@ export default function AiSidekickDrawer({
         <div className="flex min-h-0 flex-1 flex-col">
           {/* Quick Prompt Chips */}
           <div className="shrink-0 border-b border-border-subtle bg-surface-subtle px-3 py-2">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+            <p className="text-3xs font-semibold uppercase tracking-wider text-text-muted">
               Suggested prompts
             </p>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
@@ -494,7 +494,7 @@ export default function AiSidekickDrawer({
                   type="button"
                   disabled={isAiLoading}
                   onClick={() => handleSendPrompt(chip.replace(/^[^\w]+/, "").trim())}
-                  className="cursor-pointer rounded-pill border border-border-default bg-surface-card px-2.5 py-1 text-[11px] font-medium text-text-secondary transition-colors hover:border-brand hover:text-brand disabled:opacity-50"
+                  className="cursor-pointer rounded-pill border border-border-default bg-surface-card px-2.5 py-1 text-2xs font-medium text-text-secondary transition-colors hover:border-brand hover:text-brand disabled:opacity-50"
                 >
                   {chip}
                 </button>
@@ -525,18 +525,18 @@ export default function AiSidekickDrawer({
                 {msg.proposedSummary && (
                   <div className="mt-2 w-full rounded-control border border-border-strong bg-surface-base p-3 shadow-2xs space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-text-primary">
+                      <span className="text-2xs font-bold text-text-primary">
                         Suggested Professional Summary:
                       </span>
                       {msg.applied ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-brand">
+                        <span className="inline-flex items-center gap-1 text-2xs font-bold text-brand">
                           <Check size={12} /> Applied
                         </span>
                       ) : (
                         <button
                           type="button"
                           onClick={() => handleApplySummary(msg.id, msg.proposedSummary!)}
-                          className="inline-flex cursor-pointer items-center gap-1 rounded bg-brand px-2.5 py-1 text-[11px] font-semibold text-text-inverse hover:bg-brand-hover shadow-subtle"
+                          className="inline-flex cursor-pointer items-center gap-1 rounded bg-brand px-2.5 py-1 text-2xs font-semibold text-text-inverse hover:bg-brand-hover shadow-subtle"
                         >
                           <Check size={12} /> Apply to Resume
                         </button>
@@ -552,11 +552,11 @@ export default function AiSidekickDrawer({
                 {msg.proposedBullets && (
                   <div className="mt-2 w-full rounded-control border border-border-strong bg-surface-base p-3 shadow-2xs space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-text-primary">
+                      <span className="text-2xs font-bold text-text-primary">
                         Suggested Bullets ({msg.proposedBullets.roleLabel}):
                       </span>
                       {msg.applied ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-brand">
+                        <span className="inline-flex items-center gap-1 text-2xs font-bold text-brand">
                           <Check size={12} /> Applied
                         </span>
                       ) : (
@@ -569,7 +569,7 @@ export default function AiSidekickDrawer({
                               msg.proposedBullets!.bullets
                             )
                           }
-                          className="inline-flex cursor-pointer items-center gap-1 rounded bg-brand px-2.5 py-1 text-[11px] font-semibold text-text-inverse hover:bg-brand-hover shadow-subtle"
+                          className="inline-flex cursor-pointer items-center gap-1 rounded bg-brand px-2.5 py-1 text-2xs font-semibold text-text-inverse hover:bg-brand-hover shadow-subtle"
                         >
                           <Check size={12} /> Apply to Resume
                         </button>
@@ -589,10 +589,10 @@ export default function AiSidekickDrawer({
                 {/* Metric Prompts if requested */}
                 {msg.metricPrompts && msg.metricPrompts.length > 0 && (
                   <div className="mt-2 w-full rounded-control border border-border-subtle bg-brand-soft/30 p-2.5 text-xs space-y-1">
-                    <p className="font-semibold text-brand text-[11px]">
+                    <p className="font-semibold text-brand text-2xs">
                       💡 Optional metrics you could include:
                     </p>
-                    <ul className="space-y-1 text-[11px] text-text-secondary">
+                    <ul className="space-y-1 text-2xs text-text-secondary">
                       {msg.metricPrompts.map((q, i) => (
                         <li key={i}>• {q}</li>
                       ))}
@@ -637,7 +637,7 @@ export default function AiSidekickDrawer({
                 )}
               </button>
             </div>
-            <p className="mt-1 text-[10px] text-text-muted text-center">
+            <p className="mt-1 text-3xs text-text-muted text-center">
               Micro-targeted context (~150 tokens) · Factual accuracy preserved
             </p>
           </div>
@@ -669,7 +669,7 @@ export default function AiSidekickDrawer({
               {/* Match Score Card */}
               <div className="flex items-center justify-between rounded-card border border-border-default bg-surface-subtle p-3">
                 <div>
-                  <span className="text-[11px] font-semibold text-text-secondary">
+                  <span className="text-2xs font-semibold text-text-secondary">
                     Estimated Term Coverage
                   </span>
                   <p className="text-xl font-extrabold text-brand">
@@ -693,14 +693,14 @@ export default function AiSidekickDrawer({
 
               {/* Matched Keywords */}
               <div className="space-y-1.5">
-                <p className="text-[11px] font-bold text-text-primary">
+                <p className="text-2xs font-bold text-text-primary">
                   Matched Skills &amp; Keywords ({atsAnalysis.keywordAnalysis.matchedKeywords.length})
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {atsAnalysis.keywordAnalysis.matchedKeywords.slice(0, 15).map((kw) => (
                     <span
                       key={kw}
-                      className="rounded bg-status-success-bg px-2 py-0.5 text-[11px] font-medium text-brand border border-status-success-border"
+                      className="rounded bg-status-success-bg px-2 py-0.5 text-2xs font-medium text-brand border border-status-success-border"
                     >
                       ✓ {kw}
                     </span>
@@ -711,17 +711,17 @@ export default function AiSidekickDrawer({
               {/* Missing Keywords */}
               {atsAnalysis.keywordAnalysis.missingKeywords.length > 0 && (
                 <div className="space-y-1.5">
-                  <p className="text-[11px] font-bold text-text-primary">
+                  <p className="text-2xs font-bold text-text-primary">
                     Missing Keywords to Consider ({atsAnalysis.keywordAnalysis.missingKeywords.length})
                   </p>
-                  <p className="text-[10px] text-text-muted">
+                  <p className="text-3xs text-text-muted">
                     Only include if you have genuine experience with these technologies:
                   </p>
                   <div className="flex flex-wrap gap-1">
                     {atsAnalysis.keywordAnalysis.missingKeywords.slice(0, 12).map((kw) => (
                       <span
                         key={kw}
-                        className="rounded bg-surface-subtle px-2 py-0.5 text-[11px] font-medium text-text-secondary border border-border-default"
+                        className="rounded bg-surface-subtle px-2 py-0.5 text-2xs font-medium text-text-secondary border border-border-default"
                       >
                         {kw}
                       </span>

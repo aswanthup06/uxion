@@ -395,7 +395,7 @@ export default function ProfileDesignPage() {
               <dl className="space-y-3 text-sm">
                 {CANDIDATE.snapshot.map(([k, v]) => (
                   <div key={k}>
-                    <dt className="text-[11px] text-text-muted">{k}</dt>
+                    <dt className="text-2xs text-text-muted">{k}</dt>
                     <dd
                       className={
                         k === "Expected CTC" || k === "Notice period"
@@ -689,7 +689,7 @@ export default function ProfileDesignPage() {
           <div className="border-b border-border-default pb-4">
             <h2 className="text-lg font-bold">{CANDIDATE.name}</h2>
             <p className="font-semibold text-brand">{CANDIDATE.headline}</p>
-            <p className="mt-1 text-[11px] text-text-muted">
+            <p className="mt-1 text-2xs text-text-muted">
               Bengaluru · {CANDIDATE.email} · {CANDIDATE.phone}
             </p>
           </div>

@@ -21,13 +21,13 @@ export default function MainLayout({
   return (
     <AuthProvider>
       {isAuthPage ? (
-        <main className="h-dvh overflow-y-auto bg-gray-50">
+        <main className="h-dvh overflow-y-auto bg-surface-subtle">
           {children}
         </main>
       ) : (
         <div
           className="flex h-dvh min-h-0 flex-col overflow-hidden"
-          style={{ "--nav-h": "68px" } as CSSProperties}
+          style={{ "--nav-h": "var(--spacing-nav-height)" } as CSSProperties}
         >
           <Navbar />
 

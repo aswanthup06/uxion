@@ -130,7 +130,7 @@ function GroupResult({
           <FaWhatsapp className="h-6 w-6" />
         </span>
         <div className="min-w-0 flex-1">
-          <span className="inline-flex text-[11px] font-bold uppercase tracking-[0.14em] text-brand">
+          <span className="inline-flex text-2xs font-bold uppercase tracking-[0.14em] text-brand">
             {category}
           </span>
           <h3 className="mt-1 break-words text-base font-semibold leading-6 text-text-primary">
@@ -304,21 +304,21 @@ export default function SharePage() {
                   <ellipse cx="170" cy="150" rx="125" ry="94" stroke="#dce7dc" strokeDasharray="3 7" />
                   <ellipse cx="170" cy="150" rx="88" ry="120" stroke="#e7ede5" transform="rotate(-28 170 150)" />
                   <path d="M45 195 C95 195 105 90 160 112 S235 210 295 72" stroke="#b9d1bc" strokeDasharray="4 6" />
-                  <circle cx="45" cy="195" r="4" fill="#059669" />
-                  <circle cx="160" cy="112" r="4" fill="#059669" />
-                  <circle cx="295" cy="72" r="4" fill="#059669" />
+                  <circle cx="45" cy="195" r="4" fill="var(--color-brand)" />
+                  <circle cx="160" cy="112" r="4" fill="var(--color-brand)" />
+                  <circle cx="295" cy="72" r="4" fill="var(--color-brand)" />
                 </motion.svg>
                 <motion.div
                   animate={reduce ? undefined : { y: [0, -5, 0] }}
                   transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-                  className="relative rounded-card z-10 w-[78%] max-w-[250px] border border-[#e8ece6] bg-white p-4 shadow-[0_16px_50px_-30px_rgba(25,60,35,0.2)]"
+                  className="relative rounded-card z-10 w-[78%] max-w-[250px] border border-border-subtle bg-surface-card p-4 shadow-[0_16px_50px_-30px_rgba(25,60,35,0.2)]"
                 >
                   <div className="flex items-center gap-3">
                     <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand-soft text-brand">
                       <FaWhatsapp className="h-5 w-5" />
                     </span>
                     <div>
-                      <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-brand">Zenoway community</p>
+                      <p className="text-2xs font-medium uppercase tracking-[0.12em] text-brand">Zenoway community</p>
                       <p className="mt-1 text-sm font-medium text-text-primary">Find your people.</p>
                     </div>
                   </div>
@@ -327,17 +327,17 @@ export default function SharePage() {
                     <div className="flex items-center gap-2.5">
                       <span className="h-2 w-2 rounded-pill bg-brand" />
                       <span className="h-2 w-24 bg-surface-muted" />
-                      <span className="ml-auto text-[10px] text-text-muted">Jobs</span>
+                      <span className="ml-auto text-3xs text-text-muted">Jobs</span>
                     </div>
                     <div className="flex items-center gap-2.5">
                       <span className="h-2 w-2 rounded-pill bg-brand-accent" />
                       <span className="h-2 w-16 bg-surface-muted" />
-                      <span className="ml-auto text-[10px] text-text-muted">Groups</span>
+                      <span className="ml-auto text-3xs text-text-muted">Groups</span>
                     </div>
                     <div className="flex items-center gap-2.5">
                       <span className="h-2 w-2 rounded-pill bg-border-strong" />
                       <span className="h-2 w-20 bg-surface-muted" />
-                      <span className="ml-auto text-[10px] text-text-muted">Updates</span>
+                      <span className="ml-auto text-3xs text-text-muted">Updates</span>
                     </div>
                   </div>
                 </motion.div>
@@ -351,7 +351,7 @@ export default function SharePage() {
                   Your next opportunity starts{" "}
                   <span className="text-brand">with community.</span>
                 </motion.h1>
-                <motion.p initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1, ease: EASE }} className="mt-4 max-w-[510px] text-[15px] leading-7 text-text-secondary sm:text-base">
+                <motion.p initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1, ease: EASE }} className="mt-4 max-w-[510px] text-base-compact leading-7 text-text-secondary sm:text-base">
                   Find job communities by category and state, or follow the channel
                   for important alerts and updates.
                 </motion.p>
@@ -525,7 +525,7 @@ export default function SharePage() {
               <FaWhatsapp className="h-6 w-6" />
             </span>
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-brand">Find your community</p>
+              <p className="text-3xs font-bold uppercase tracking-[0.14em] text-brand">Find your community</p>
               <h2 id="group-modal-title" className="mt-1 text-lg font-semibold tracking-tight text-text-primary sm:text-xl">Join a WhatsApp group</h2>
             </div>
           </div>

@@ -860,24 +860,24 @@ export default function ResumeBuilderWorkspace() {
 
             {user ? (
               migrationRequired ? (
-                <span className="inline-flex items-center gap-1.5 rounded-pill border border-status-warning-border bg-status-warning-bg px-2.5 py-1 text-[11px] font-medium text-status-warning">
+                <span className="inline-flex items-center gap-1.5 rounded-pill border border-status-warning-border bg-status-warning-bg px-2.5 py-1 text-2xs font-medium text-status-warning">
                   <HardDrive size={12} />
                   Local draft (DB migration pending)
                 </span>
               ) : activeResumeId && !isDirty ? (
-                <span className="inline-flex items-center gap-1.5 rounded-pill border border-status-success-border bg-status-success-bg px-2.5 py-1 text-[11px] font-medium text-brand">
+                <span className="inline-flex items-center gap-1.5 rounded-pill border border-status-success-border bg-status-success-bg px-2.5 py-1 text-2xs font-medium text-brand">
                   <Cloud size={12} />
                   Saved to account
                   {lastCloudSavedAt ? "" : ""}
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-pill border border-border-default bg-surface-subtle px-2.5 py-1 text-[11px] font-medium text-text-secondary">
+                <span className="inline-flex items-center gap-1.5 rounded-pill border border-border-default bg-surface-subtle px-2.5 py-1 text-2xs font-medium text-text-secondary">
                   <HardDrive size={12} />
                   {activeResumeId ? "Unsaved changes (local backup)" : "Local draft · not synced"}
                 </span>
               )
             ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-pill border border-border-default bg-surface-subtle px-2.5 py-1 text-[11px] font-medium text-text-secondary">
+              <span className="inline-flex items-center gap-1.5 rounded-pill border border-border-default bg-surface-subtle px-2.5 py-1 text-2xs font-medium text-text-secondary">
                 <HardDrive size={12} />
                 Saved in this browser
               </span>
@@ -990,11 +990,11 @@ export default function ResumeBuilderWorkspace() {
               <Sparkles size={14} className="text-brand" />
               <span className="hidden sm:inline">AI Sidekick</span>
               <span className="sm:hidden">Sidekick</span>
-              <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-[10px] font-bold text-brand">
+              <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-3xs font-bold text-brand">
                 {atsAnalysis.overallScore}%
               </span>
               {autoFixCount > 0 && (
-                <span className="rounded-pill bg-brand px-1.5 py-0.5 text-[10px] font-bold text-text-inverse animate-pulse">
+                <span className="rounded-pill bg-brand px-1.5 py-0.5 text-3xs font-bold text-text-inverse animate-pulse">
                   {autoFixCount} fix{autoFixCount > 1 ? "es" : ""}
                 </span>
               )}
@@ -1093,7 +1093,7 @@ export default function ResumeBuilderWorkspace() {
                 >
                   <ShieldCheck size={13} />
                   Recruiter Review &amp; ATS
-                  <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-[10px] font-bold text-brand">
+                  <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-3xs font-bold text-brand">
                     {atsAnalysis.overallScore}%
                   </span>
                 </button>
@@ -1123,13 +1123,13 @@ export default function ResumeBuilderWorkspace() {
 
             {/* Career Profile Preset Selector */}
             {(desktopTab === "build" || mobileTab === "build") && (
-              <div className="mt-2.5 flex items-center justify-between text-[11px] text-text-muted">
+              <div className="mt-2.5 flex items-center justify-between text-2xs text-text-muted">
                 <span>Section layout:</span>
                 <div className="inline-flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => applyProfileOrder("experienced")}
-                    className={`cursor-pointer rounded-pill px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                    className={`cursor-pointer rounded-pill px-2 py-0.5 text-2xs font-medium transition-colors ${
                       !isFresherOrder
                         ? "border border-border-default bg-surface-subtle font-semibold text-brand"
                         : "text-text-secondary hover:text-text-primary"
@@ -1142,7 +1142,7 @@ export default function ResumeBuilderWorkspace() {
                   <button
                     type="button"
                     onClick={() => applyProfileOrder("fresher")}
-                    className={`cursor-pointer rounded-pill px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                    className={`cursor-pointer rounded-pill px-2 py-0.5 text-2xs font-medium transition-colors ${
                       isFresherOrder
                         ? "border border-border-default bg-surface-subtle font-semibold text-brand"
                         : "text-text-secondary hover:text-text-primary"
@@ -1172,7 +1172,7 @@ export default function ResumeBuilderWorkspace() {
                       key={sec}
                       type="button"
                       onClick={() => jumpToSection(sec)}
-                      className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-pill border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                      className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-pill border px-2.5 py-1 text-2xs font-medium transition-colors ${
                         active
                           ? "border-brand bg-brand-soft text-brand"
                           : "border-border-default bg-surface-card text-text-secondary hover:border-border-strong hover:text-text-primary"
@@ -1359,7 +1359,7 @@ export default function ResumeBuilderWorkspace() {
               >
                 <div className="space-y-4">
                   {/* Privacy & AI Disclosure */}
-                  <div className="flex items-start gap-2.5 rounded-card border border-border-subtle bg-surface-subtle px-3.5 py-2.5 text-[11px] leading-relaxed text-text-secondary">
+                  <div className="flex items-start gap-2.5 rounded-card border border-border-subtle bg-surface-subtle px-3.5 py-2.5 text-2xs leading-relaxed text-text-secondary">
                     <Sparkles size={13} className="mt-0.5 shrink-0 text-brand" />
                     <span>
                       {aiConfigured ? (

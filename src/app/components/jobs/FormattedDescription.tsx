@@ -127,7 +127,7 @@ export default function FormattedDescription({
       elements.push(
         <h4
           key={`heading-${index}`}
-          className="mt-5 mb-2 text-[15px] font-bold text-text-primary first:mt-1"
+          className="mt-5 mb-2 text-base-compact font-bold text-text-primary first:mt-1"
         >
           {cleanTitle}
         </h4>

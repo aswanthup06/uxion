@@ -31,7 +31,7 @@ export default function BrandPanel() {
       </Link>
 
       <div className="relative z-10 my-10 max-w-lg">
-        <p className="mb-5 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand">
+        <p className="mb-5 inline-flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.22em] text-brand">
           <span className="h-px w-6 bg-brand" />
           Your next chapter
         </p>
@@ -40,7 +40,7 @@ export default function BrandPanel() {
           <br />
           fits your life.
         </h2>
-        <p className="mt-5 max-w-sm text-[15px] leading-7 text-text-secondary">
+        <p className="mt-5 max-w-sm text-base-compact leading-7 text-text-secondary">
           Discover meaningful opportunities and take the next step in your
           career, on your terms.
         </p>

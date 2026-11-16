@@ -90,11 +90,11 @@ function Field({
         className={inputClass(Boolean(error))}
       />
       {error ? (
-        <p id={`${id}-err`} className="mt-1 text-[11px] text-status-error">
+        <p id={`${id}-err`} className="mt-1 text-2xs text-status-error">
           {error}
         </p>
       ) : hint ? (
-        <p id={`${id}-hint`} className="mt-1 text-[11px] text-text-muted">
+        <p id={`${id}-hint`} className="mt-1 text-2xs text-text-muted">
           {hint}
         </p>
       ) : null}
@@ -385,7 +385,7 @@ export function PersonalSectionEditor({
                 key={preset}
                 type="button"
                 onClick={() => addLink(preset)}
-                className="inline-flex cursor-pointer items-center gap-1 rounded-control border border-border-default bg-surface-subtle px-2 py-1 text-[11px] font-medium text-text-secondary transition-colors hover:border-brand hover:text-brand"
+                className="inline-flex cursor-pointer items-center gap-1 rounded-control border border-border-default bg-surface-subtle px-2 py-1 text-2xs font-medium text-text-secondary transition-colors hover:border-brand hover:text-brand"
               >
                 <Plus size={11} />
                 {preset}
@@ -394,7 +394,7 @@ export function PersonalSectionEditor({
             <button
               type="button"
               onClick={() => addLink("")}
-              className="inline-flex cursor-pointer items-center gap-1 rounded-control border border-border-default bg-surface-card px-2 py-1 text-[11px] font-medium text-brand transition-colors hover:border-brand hover:bg-brand-soft"
+              className="inline-flex cursor-pointer items-center gap-1 rounded-control border border-border-default bg-surface-card px-2 py-1 text-2xs font-medium text-brand transition-colors hover:border-brand hover:bg-brand-soft"
             >
               <Plus size={11} />
               Custom link
@@ -410,7 +410,7 @@ export function PersonalSectionEditor({
                 className="rounded-card border border-border-default bg-surface-subtle/60 p-3"
               >
                 <div className="mb-2 flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-medium text-text-muted">
+                  <span className="text-2xs font-medium text-text-muted">
                     Link {idx + 1}
                   </span>
                   <EntryControls
@@ -530,7 +530,7 @@ export function SummarySectionEditor({
             type="button"
             disabled={aiLoading}
             onClick={onAiImproveSummary}
-            className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-control border border-border-strong bg-brand-soft px-2.5 text-[11px] font-semibold text-brand transition-colors hover:bg-brand-soft-hover disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-control border border-border-strong bg-brand-soft px-2.5 text-2xs font-semibold text-brand transition-colors hover:bg-brand-soft-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
             {aiLoading ? (
               <Loader2 size={12} className="animate-spin" />
@@ -566,7 +566,7 @@ export function SummarySectionEditor({
                   if (f.action) onApplyCorrection(f.action);
                 });
               }}
-              className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-control border border-amber-500/30 bg-amber-500/10 px-2.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 transition-colors"
+              className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-control border border-amber-500/30 bg-amber-500/10 px-2.5 text-2xs font-semibold text-amber-700 hover:bg-amber-500/20 transition-colors"
               title={summaryFixes.map((c) => c.action?.label || c.title).join(" · ")}
             >
               <Check size={11} />
@@ -574,7 +574,7 @@ export function SummarySectionEditor({
             </button>
           )}
 
-      <p className="mt-1 text-[11px] text-text-muted">
+      <p className="mt-1 text-2xs text-text-muted">
         Aim for 40–85 words. Leave blank if you prefer not to include a summary.
       </p>
     </SectionWrapper>
@@ -814,7 +814,7 @@ export function ExperienceSectionEditor({
                         type="button"
                         disabled={isAiLoading || !exp.bullets.some((b) => b.trim())}
                         onClick={() => onAiRewriteBullets(exp.id)}
-                        className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-control border border-border-strong bg-brand-soft px-2.5 text-[11px] font-semibold text-brand transition-colors hover:bg-brand-soft-hover disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-control border border-border-strong bg-brand-soft px-2.5 text-2xs font-semibold text-brand transition-colors hover:bg-brand-soft-hover disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {isAiLoading ? (
                           <Loader2 size={12} className="animate-spin" />
@@ -864,7 +864,7 @@ export function ExperienceSectionEditor({
                                   }}
                                   aria-label="Apply quick fix"
                                   title={bulletFixes.map((c) => c.action?.label || c.title).join(" · ")}
-                                  className="grid h-6 w-6 cursor-pointer place-items-center rounded-control border border-amber-500/40 bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25 shadow-2xs"
+                                  className="grid h-6 w-6 cursor-pointer place-items-center rounded-control border border-amber-500/40 bg-amber-500/15 text-amber-700 hover:bg-amber-500/25 shadow-2xs"
                                 >
                                   <Check size={11} />
                                 </button>
@@ -936,7 +936,7 @@ export function ExperienceSectionEditor({
 
                           {/* Compact Suggestion Chip */}
                           {bulletFixes.length > 0 && onApplyCorrection && (
-                            <div className="ml-5 flex items-center gap-1.5 text-[11px] text-text-muted">
+                            <div className="ml-5 flex items-center gap-1.5 text-2xs text-text-muted">
                               <span className="font-semibold text-amber-600">Tip:</span>
                               <span className="truncate max-w-sm text-text-secondary">
                                 {bulletFixes[0].action?.label || bulletFixes[0].title}
@@ -960,7 +960,7 @@ export function ExperienceSectionEditor({
                             inlineSuggestion?.idx === bIdx && (
                               <div className="ml-5 mt-1 rounded-control border border-brand/40 bg-brand-soft/40 p-2.5 text-xs shadow-2xs space-y-1.5">
                                 <div className="flex items-center justify-between">
-                                  <span className="flex items-center gap-1 text-[11px] font-bold text-brand">
+                                  <span className="flex items-center gap-1 text-2xs font-bold text-brand">
                                     <Sparkles size={12} /> Suggested rewrite:
                                   </span>
                                   <div className="flex items-center gap-1.5">
@@ -972,14 +972,14 @@ export function ExperienceSectionEditor({
                                         updateExp(exp.id, { bullets: next });
                                         setInlineSuggestion(null);
                                       }}
-                                      className="inline-flex cursor-pointer items-center gap-1 rounded bg-brand px-2 py-0.5 text-[11px] font-semibold text-text-inverse hover:bg-brand-hover shadow-subtle"
+                                      className="inline-flex cursor-pointer items-center gap-1 rounded bg-brand px-2 py-0.5 text-2xs font-semibold text-text-inverse hover:bg-brand-hover shadow-subtle"
                                     >
                                       <Check size={11} /> Accept
                                     </button>
                                     <button
                                       type="button"
                                       onClick={() => setInlineSuggestion(null)}
-                                      className="cursor-pointer text-[11px] text-text-muted hover:text-text-primary px-1"
+                                      className="cursor-pointer text-2xs text-text-muted hover:text-text-primary px-1"
                                     >
                                       Dismiss
                                     </button>
@@ -1307,14 +1307,14 @@ export function SkillsSectionEditor({
       <div className="space-y-4">
         {aiConfigured && (
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-control border border-border-subtle bg-surface-subtle px-3 py-2">
-            <span className="text-[11px] text-text-secondary">
+            <span className="text-2xs text-text-secondary">
               Extract missing skills directly from your existing experience and projects.
             </span>
             <button
               type="button"
               disabled={aiLoading}
               onClick={onAiSuggestSkills}
-              className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-control border border-border-strong bg-brand-soft px-2.5 text-[11px] font-semibold text-brand transition-colors hover:bg-brand-soft-hover disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-control border border-border-strong bg-brand-soft px-2.5 text-2xs font-semibold text-brand transition-colors hover:bg-brand-soft-hover disabled:cursor-not-allowed disabled:opacity-50"
             >
               {aiLoading ? (
                 <Loader2 size={12} className="animate-spin" />
@@ -1631,7 +1631,7 @@ export function ProjectsSectionEditor({
                     );
                     if (descFixes.length === 0) return null;
                     return (
-                      <div className="mt-1 flex items-center justify-between gap-1.5 text-[11px] text-text-muted">
+                      <div className="mt-1 flex items-center justify-between gap-1.5 text-2xs text-text-muted">
                         <div className="flex items-center gap-1.5 min-w-0">
                           <span className="font-semibold text-amber-600 shrink-0">Tip:</span>
                           <span className="truncate text-text-secondary">
