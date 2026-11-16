@@ -38,7 +38,6 @@ import FormattedDescription from "@/app/components/jobs/FormattedDescription";
 import Modal from "@/app/components/Modal";
 import { useAuth } from "@/context/AuthContext";
 import { createClient } from "@/lib/supabase/client";
-import { State, City } from "country-state-city";
 import { JOB_CATEGORIES, matchJobCategory } from "@/data/categories";
 import {
   CANONICAL_CITIES,
@@ -48,14 +47,29 @@ import {
 } from "@/lib/supabase/locations-data";
 import type { Job } from "@/app/types/job";
 
-// Pre-index India cities and states from country-state-city
-const CSC_STATES = State.getStatesOfCountry("IN") || [];
-const CSC_STATE_MAP = new Map(CSC_STATES.map((s) => [s.isoCode, s.name]));
-const CSC_CITIES = (City.getCitiesOfCountry("IN") || []).map((c) => ({
-  name: c.name,
-  state: CSC_STATE_MAP.get(c.stateCode) || c.stateCode,
-  countryCode: "IN",
-}));
+// In-memory module cache for India cities loaded on-demand from /api/locations?country=IN&type=cities
+// Prevents bundling the 8.5MB worldwide country-state-city database into client JavaScript.
+let globalCscCities: Array<{ name: string; state: string; countryCode: string }> | null = null;
+let cscCitiesPromise: Promise<Array<{ name: string; state: string; countryCode: string }>> | null = null;
+
+export function fetchCscCities(): Promise<Array<{ name: string; state: string; countryCode: string }>> {
+  if (globalCscCities) return Promise.resolve(globalCscCities);
+  if (cscCitiesPromise) return cscCitiesPromise;
+  cscCitiesPromise = fetch("/api/locations?country=IN&type=cities")
+    .then((res) => res.json())
+    .then((data) => {
+      if (Array.isArray(data)) {
+        globalCscCities = data;
+        return data;
+      }
+      return [];
+    })
+    .catch((err) => {
+      console.warn("Could not load extended cities from API:", err);
+      return [];
+    });
+  return cscCitiesPromise;
+}
 
 export function resolveOfficeState(cityName: string): string {
   if (!cityName) return "";
@@ -65,8 +79,11 @@ export function resolveOfficeState(cityName: string): string {
   );
   if (canonical?.state) return canonical.state;
 
-  const csc = CSC_CITIES.find((c) => c.name.toLowerCase() === cityLower);
-  return csc?.state || "";
+  if (globalCscCities) {
+    const csc = globalCscCities.find((c) => c.name.toLowerCase() === cityLower);
+    if (csc?.state) return csc.state;
+  }
+  return "";
 }
 
 export function getOfficeStates(offices: OfficeLocation[]): string[] {
@@ -239,6 +256,17 @@ const CompanyCitySelector = forwardRef<
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [cscCities, setCscCities] = useState<Array<{ name: string; state: string; countryCode: string }>>(
+    () => globalCscCities || []
+  );
+
+  useEffect(() => {
+    if (!globalCscCities) {
+      fetchCscCities().then((cities) => {
+        if (cities.length > 0) setCscCities(cities);
+      });
+    }
+  }, []);
 
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -271,7 +299,7 @@ const CompanyCitySelector = forwardRef<
       }
     }
 
-    for (const c of CSC_CITIES) {
+    for (const c of cscCities) {
       if (results.length >= 15) break;
       if (!seen.has(c.name.toLowerCase()) && c.name.toLowerCase().includes(q)) {
         seen.add(c.name.toLowerCase());
@@ -280,7 +308,7 @@ const CompanyCitySelector = forwardRef<
     }
 
     return results;
-  }, [query]);
+  }, [query, cscCities]);
 
   const hasCustomOption = Boolean(
     query.trim() && !suggestions.some((s) => s.city.toLowerCase() === query.trim().toLowerCase())
@@ -299,7 +327,7 @@ const CompanyCitySelector = forwardRef<
     const matchedCanonical = CANONICAL_CITIES.find(
       (c) => c.name.toLowerCase() === qLower || c.aliases?.some((a) => a.toLowerCase() === qLower)
     );
-    const matchedCsc = CSC_CITIES.find((c) => c.name.toLowerCase() === qLower);
+    const matchedCsc = cscCities.find((c) => c.name.toLowerCase() === qLower);
     const matchedSuggestion = suggestions.find((s) => s.city.toLowerCase() === qLower);
 
     let office: OfficeLocation;
@@ -971,6 +999,11 @@ export default function JobFormWizard({
   useEffect(() => {
     formRefState.current = form;
   }, [form]);
+  useEffect(() => {
+    if (!globalCscCities) {
+      fetchCscCities();
+    }
+  }, []);
   const lastVerifiedEmailRef = useRef<string>("");
   const isNavigatingRef = useRef<boolean>(false);
   const citySelectorRef = useRef<CompanyCitySelectorHandle | null>(null);
@@ -1185,9 +1218,10 @@ export default function JobFormWizard({
       const extractedCity = (parsed.city || parsed.location || "").trim();
       let resolvedOffices: OfficeLocation[] = [];
       if (extractedCity && !/^(remote|worldwide|pan-india|anywhere)$/i.test(extractedCity)) {
+        const list = globalCscCities || [];
         const found = CANONICAL_CITIES.find(
           (c) => c.name.toLowerCase() === extractedCity.toLowerCase()
-        ) || CSC_CITIES.find(
+        ) || list.find(
           (c) => c.name.toLowerCase() === extractedCity.toLowerCase()
         );
         resolvedOffices = [

@@ -3,7 +3,7 @@ import { getAllJobs, getJobById } from "@/lib/supabase/jobs";
 import type { Job } from "@/app/types/job";
 import { JobPosterCreator } from "@/components/job-posters/JobPosterCreator";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Create Job Poster | Zenoway",

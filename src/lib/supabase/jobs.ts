@@ -5,6 +5,7 @@ import type { Job } from "@/app/types/job";
 import { getServerSupabase, getServiceSupabase, isSupabaseConfigured } from "./server";
 import type { DbJob, DbJobInsert, DbJobUpdate } from "./types";
 import { unstable_cache } from "next/cache";
+import { cache } from "react";
 
 /**
  * Maps a database row (snake_case) to the application Job type (camelCase).
@@ -344,8 +345,9 @@ export async function approveJob(id: string): Promise<Job> {
 
 /**
  * Fetch a single job by its ID.
+ * Wrapped in React cache() to deduplicate requests across generateMetadata and Page rendering.
  */
-export async function getJobById(id: string): Promise<Job | null> {
+export const getJobById = cache(async (id: string): Promise<Job | null> => {
   if (!isSupabaseConfigured()) {
     console.warn(`getJobById(${id}): Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL in .env.local.`);
     return null;
@@ -368,7 +370,7 @@ export async function getJobById(id: string): Promise<Job | null> {
     console.error(`Failed to fetch job with ID ${id}:`, error);
     return null;
   }
-}
+});
 
 /**
  * Insert a new job record using privileged server credentials.
