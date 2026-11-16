@@ -23,10 +23,9 @@ import {
   X,
 } from "lucide-react";
 import type { Job } from "@/app/types/job";
-import { parseExperience, timeAgo, isRecent, getJobCategory } from "@/app/components/jobs/jobs-utils";
+import { parseExperience, timeAgo, getJobCategory } from "@/app/components/jobs/jobs-utils";
 import {
   normalizeWorkMode,
-  formatLocationLabel,
   jobMatchesLocation,
   resolveLocationAliases,
   CANONICAL_CITIES,
@@ -42,7 +41,6 @@ type WorkMode = "On-site" | "Hybrid" | "Remote";
 const categories = JOB_CATEGORIES;
 
 const types: JobType[] = ["Full-time", "Part-time", "Contract", "Internship"];
-const modes: WorkMode[] = ["On-site", "Hybrid", "Remote"];
 const experiences = [
   "Any experience",
   "Entry level",
@@ -442,14 +440,6 @@ function JobsViewContent({
       };
     });
   }, [jobs]);
-
-  const locationCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const loc of availableLocations) {
-      counts[loc.name] = loc.count;
-    }
-    return counts;
-  }, [availableLocations]);
 
   const filteredLocationSuggestions = useMemo(() => {
     const q = location.trim().toLowerCase();
@@ -1023,6 +1013,7 @@ function JobsViewContent({
               <span className="sr-only">Location</span>
               <input
                 ref={locInputRef}
+                role="combobox"
                 value={location}
                 onChange={(e) => {
                   setLocation(e.target.value);
@@ -1034,6 +1025,7 @@ function JobsViewContent({
                 placeholder="City, state, or region"
                 className="w-full bg-transparent text-sm text-text-primary outline-none placeholder:text-text-muted"
                 aria-expanded={locDropdownOpen}
+                aria-controls="location-listbox"
                 aria-autocomplete="list"
               />
               {location && (
@@ -1055,6 +1047,7 @@ function JobsViewContent({
             {/* Custom Popover Dropdown with Small Corners (rounded-control: 4px) */}
             {locDropdownOpen && (
               <div
+                id="location-listbox"
                 className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 overflow-hidden rounded-control border border-border-default bg-surface-card shadow-modal ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95 duration-100"
                 role="listbox"
               >
@@ -1170,7 +1163,6 @@ function JobsViewContent({
           <span className="mr-1 shrink-0 font-medium text-text-muted">Quick location:</span>
           {POPULAR_LOCATIONS.map((loc) => {
             const isActive = location.toLowerCase() === loc.toLowerCase();
-            const count = locationCounts[loc] ?? 0;
             return (
               <button
                 key={loc}
@@ -1286,7 +1278,6 @@ function JobsViewContent({
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {visibleJobs.map((job) => {
                   const isSaved = saved.includes(job.id);
-                  const cat = getJobCategory(job);
                   const typeTag = getJobType(job);
                   const locInfo = parseCardLocation(job);
 

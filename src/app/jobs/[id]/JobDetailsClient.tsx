@@ -5,16 +5,13 @@ import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
-  BriefcaseBusiness,
   Building2,
-  Clock3,
   Compass,
   ExternalLink,
   Globe,
   ImageDown,
   MapPin,
   Share2,
-  Wallet,
   CheckCircle2,
 } from "lucide-react";
 
@@ -311,8 +308,9 @@ export default function JobDetailsClient({
     job.workModeNotes,
     job.physicalLocations,
     job.remoteEligibilityType,
-    job.primaryState,
-    job.primaryCountry,
+    job.remoteEligibilityCities,
+    job.remoteEligibilityRegions,
+    job.primaryCity,
     workMode,
     locationLabel,
   ]);
@@ -390,7 +388,6 @@ export default function JobDetailsClient({
     const optionalExpiry = job.validThrough ? new Date(job.validThrough) : null;
 
     if (optionalExpiry && Number.isNaN(optionalExpiry.getTime())) return null;
-    if (optionalExpiry && optionalExpiry.getTime() < Date.now()) return null;
 
     const locationParts = (job.location || "")
       .split(",")
@@ -539,6 +536,7 @@ export default function JobDetailsClient({
     job.employmentType,
     job.applicantCountry,
     job.remoteEligibilityType,
+    job.remoteEligibilityRegions,
     job.remoteEligibilityCountries,
     job.primaryCity,
     job.primaryState,

@@ -1,12 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toBlob, getFontEmbedCSS } from "html-to-image";
 import toast from "react-hot-toast";
 import {
   Download,
   ExternalLink,
-  ImageDown,
   Loader2,
   Sparkles,
 } from "lucide-react";
@@ -15,7 +14,6 @@ import Modal from "@/app/components/Modal";
 import type { Job } from "@/app/types/job";
 import {
   getCompanyLogoUrl,
-  getJobPublicUrl,
   getPosterFilename,
   POSTER_FONTS,
   POSTER_FORMATS,
@@ -94,9 +92,6 @@ export default function JobPosterModal({
   const [companyLogoDataUrl, setCompanyLogoDataUrl] = useState<string | null>(
     null
   );
-  const [resolvedFontFamily, setResolvedFontFamily] = useState<string | undefined>(
-    undefined
-  );
 
   const activeFont =
     POSTER_FONTS.find((f) => f.id === fontId) || POSTER_FONTS[0];
@@ -112,13 +107,6 @@ export default function JobPosterModal({
     if (!isOpen) return;
 
     let cancelled = false;
-
-    const bodyFont = window.getComputedStyle(document.body).fontFamily;
-    if (bodyFont && bodyFont.trim()) {
-      window.requestAnimationFrame(() => {
-        if (!cancelled) setResolvedFontFamily(bodyFont);
-      });
-    }
 
     const preloadAsset = (path: string, onReady: (dataUrl: string) => void) => {
       fetch(path)

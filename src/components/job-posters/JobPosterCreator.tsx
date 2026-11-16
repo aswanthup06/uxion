@@ -25,7 +25,6 @@ import {
 import type { Job } from "@/app/types/job";
 import {
   getCompanyLogoUrl,
-  getJobPublicUrl,
   getPosterFilename,
   POSTER_FONTS,
   POSTER_FORMATS,
@@ -51,8 +50,6 @@ interface JobPosterCreatorProps {
   missingRequestedJobId?: string | null;
   initialLoadError?: boolean;
 }
-
-const FALLBACK_FONT_FAMILY = 'var(--font-manrope), "Manrope", Arial, sans-serif';
 
 async function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -125,8 +122,6 @@ export function JobPosterCreator({
     "/posters/megaphone-cutout.png"
   );
   const [companyLogoDataUrl, setCompanyLogoDataUrl] = useState<string | null>(null);
-  const [resolvedFontFamily, setResolvedFontFamily] =
-    useState<string>(FALLBACK_FONT_FAMILY);
 
   const [exporting, setExporting] = useState<boolean>(false);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -199,15 +194,6 @@ export function JobPosterCreator({
   // Preload /logo.png as a data URI and capture resolved Manrope font family
   useEffect(() => {
     let cancelled = false;
-
-    const bodyFont = window.getComputedStyle(document.body).fontFamily;
-    if (bodyFont && bodyFont.trim()) {
-      window.requestAnimationFrame(() => {
-        if (!cancelled) {
-          setResolvedFontFamily(bodyFont);
-        }
-      });
-    }
 
     const preloadAsset = (
       path: string,

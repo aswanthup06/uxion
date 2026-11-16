@@ -11,29 +11,22 @@ import {
   Palette,
   Code2,
   Database,
-  Cloud,
-  Bug,
   Mail,
-  // Share2,
   BriefcaseBusiness,
   LayoutDashboard,
-  Settings,
   LogOut,
   X,
-  Menu,
   UserRound,
   Users,
   Inbox,
   Plus,
   Sparkles,
-  // FileText,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 const JOBS = "/jobs";
 const POST_JOB = "/post-job";
 const POSTER_STUDIO = "/job-posters";
-const MY_JOBS = "/jobs/manage";
 const LOGIN = "/login";
 const ADMIN_LOGIN = "/admin/login";
 
@@ -638,9 +631,12 @@ export default function Navbar() {
                   className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full overflow-hidden transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                 >
                   {profile?.avatar_url || user.user_metadata?.avatar_url ? (
-                    <img
+                    <Image
                       src={profile?.avatar_url || user.user_metadata?.avatar_url}
                       alt={profile?.full_name || "Candidate"}
+                      width={36}
+                      height={36}
+                      unoptimized
                       className="h-full w-full rounded-full object-cover"
                     />
                   ) : (

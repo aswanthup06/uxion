@@ -1,22 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect, KeyboardEvent } from "react";
+import { useState, useRef, useEffect, useCallback, KeyboardEvent } from "react";
 import {
-  AlertCircle,
   ArrowRight,
-  Briefcase,
   Check,
   CheckCircle2,
-  ChevronRight,
   Download,
-  ExternalLink,
-  FileCheck2,
-  HelpCircle,
   Loader2,
   MessageSquare,
-  RefreshCw,
   Send,
-  ShieldCheck,
   Sparkles,
   Target,
   Wand2,
@@ -27,7 +19,6 @@ import type { ResumeData, ResumeSectionKey } from "@/lib/resume/types";
 import type {
   AtsAnalysisResult,
   AtsCheckAction,
-  AtsCheckItem,
 } from "@/lib/resume/ats-checker";
 import { applyAllAtsFixes } from "@/lib/resume/ats-checker";
 
@@ -74,8 +65,6 @@ export default function AiSidekickDrawer({
   onApplyCorrection,
   targetJobDescription,
   onJobDescriptionChange,
-  aiConfigured,
-  onOpenUploadModal,
   onDownloadPdf,
   isExportingPdf = false,
 }: AiSidekickDrawerProps) {
@@ -124,66 +113,69 @@ export default function AiSidekickDrawer({
   };
 
   // Send instruction to AI Co-pilot
-  const handleSendPrompt = async (promptText: string) => {
-    const query = promptText.trim();
-    if (!query || isAiLoading) return;
+  const handleSendPrompt = useCallback(
+    async (promptText: string) => {
+      const query = promptText.trim();
+      if (!query || isAiLoading) return;
 
-    const userMsg: ChatMessage = {
-      id: `user-${Date.now()}`,
-      sender: "user",
-      text: query,
-      timestamp: Date.now(),
-    };
-
-    setChatMessages((prev) => [...prev, userMsg]);
-    setChatInput("");
-    setIsAiLoading(true);
-
-    try {
-      const response = await fetch("/api/resume/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "copilot-chat",
-          data,
-          message: query,
-          jobDescription: targetJobDescription,
-        }),
-      });
-
-      const json = await response.json().catch(() => ({}));
-
-      if (!response.ok || !json.success) {
-        throw new Error(json.error || "Could not get AI co-pilot response.");
-      }
-
-      const aiMsg: ChatMessage = {
-        id: `ai-${Date.now()}`,
-        sender: "ai",
-        text: json.reply || "I've reviewed your request and generated recommendations below:",
+      const userMsg: ChatMessage = {
+        id: `user-${Date.now()}`,
+        sender: "user",
+        text: query,
         timestamp: Date.now(),
-        proposedSummary: json.proposedSummary,
-        proposedBullets: json.proposedBullets,
-        metricPrompts: json.metricPrompts,
       };
 
-      setChatMessages((prev) => [...prev, aiMsg]);
-    } catch (err) {
-      const errorText =
-        err instanceof Error ? err.message : "Failed to communicate with AI co-pilot.";
-      setChatMessages((prev) => [
-        ...prev,
-        {
-          id: `ai-err-${Date.now()}`,
+      setChatMessages((prev) => [...prev, userMsg]);
+      setChatInput("");
+      setIsAiLoading(true);
+
+      try {
+        const response = await fetch("/api/resume/ai", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "copilot-chat",
+            data,
+            message: query,
+            jobDescription: targetJobDescription,
+          }),
+        });
+
+        const json = await response.json().catch(() => ({}));
+
+        if (!response.ok || !json.success) {
+          throw new Error(json.error || "Could not get AI co-pilot response.");
+        }
+
+        const aiMsg: ChatMessage = {
+          id: `ai-${Date.now()}`,
           sender: "ai",
-          text: `⚠️ ${errorText}`,
+          text: json.reply || "I've reviewed your request and generated recommendations below:",
           timestamp: Date.now(),
-        },
-      ]);
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
+          proposedSummary: json.proposedSummary,
+          proposedBullets: json.proposedBullets,
+          metricPrompts: json.metricPrompts,
+        };
+
+        setChatMessages((prev) => [...prev, aiMsg]);
+      } catch (err) {
+        const errorText =
+          err instanceof Error ? err.message : "Failed to communicate with AI co-pilot.";
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            id: `ai-err-${Date.now()}`,
+            sender: "ai",
+            text: `⚠️ ${errorText}`,
+            timestamp: Date.now(),
+          },
+        ]);
+      } finally {
+        setIsAiLoading(false);
+      }
+    },
+    [data, isAiLoading, targetJobDescription]
+  );
 
   const handleApplySummary = (messageId: string, summary: string) => {
     onUpdateResumeData((prev) => ({ ...prev, summary }));
