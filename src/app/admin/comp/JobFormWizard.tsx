@@ -1,8 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useRef, useMemo, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
-import Link from "next/link";
+import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import {
   BriefcaseBusiness,
@@ -14,12 +13,8 @@ import {
   CheckCircle2,
   AlertCircle,
   LoaderCircle,
-  Plus,
   X,
   Check,
-  Compass,
-  ArrowLeft,
-  ArrowUpRight,
   Sparkles,
   Wand2,
   ChevronDown,
@@ -39,915 +34,62 @@ import { createClient } from "@/lib/supabase/client";
 import { JOB_CATEGORIES, matchJobCategory } from "@/data/categories";
 import {
   CANONICAL_CITIES,
-  INDIAN_STATES,
   normalizeWorkMode,
   type RemoteEligibilityType,
 } from "@/lib/supabase/locations-data";
 import type { Job } from "@/app/types/job";
-
-// In-memory module cache for India cities loaded on-demand from /api/locations?country=IN&type=cities
-// Prevents bundling the 8.5MB worldwide country-state-city database into client JavaScript.
-let globalCscCities: Array<{ name: string; state: string; countryCode: string }> | null = null;
-let cscCitiesPromise: Promise<Array<{ name: string; state: string; countryCode: string }>> | null = null;
-
-export function fetchCscCities(): Promise<Array<{ name: string; state: string; countryCode: string }>> {
-  if (globalCscCities) return Promise.resolve(globalCscCities);
-  if (cscCitiesPromise) return cscCitiesPromise;
-  cscCitiesPromise = fetch("/api/locations?country=IN&type=cities")
-    .then((res) => res.json())
-    .then((data) => {
-      if (Array.isArray(data)) {
-        globalCscCities = data;
-        return data;
-      }
-      return [];
-    })
-    .catch((err) => {
-      console.warn("Could not load extended cities from API:", err);
-      return [];
-    });
-  return cscCitiesPromise;
-}
-
-export function resolveOfficeState(cityName: string): string {
-  if (!cityName) return "";
-  const cityLower = cityName.trim().toLowerCase();
-  const canonical = CANONICAL_CITIES.find(
-    (c) => c.name.toLowerCase() === cityLower || c.aliases?.some((a) => a.toLowerCase() === cityLower)
-  );
-  if (canonical?.state) return canonical.state;
-
-  if (globalCscCities) {
-    const csc = globalCscCities.find((c) => c.name.toLowerCase() === cityLower);
-    if (csc?.state) return csc.state;
-  }
-  return "";
-}
-
-export function getOfficeStates(offices: OfficeLocation[]): string[] {
-  const states: string[] = [];
-  for (const o of offices) {
-    let st = (o.state || "").trim();
-    if (!st && o.city) {
-      st = resolveOfficeState(o.city);
-    }
-    if (st && !states.some((existing) => existing.toLowerCase() === st.toLowerCase())) {
-      states.push(st);
-    }
-  }
-  return states;
-}
-
-export type CandidatePreference =
-  | "COMPANY_STATE"
-  | "ALL_INDIA"
-  | "EXACT_LOCATION"
-  | "SPECIFIC_LOCATION"
-  | "WORLDWIDE";
-
-export interface OfficeLocation {
-  city: string;
-  state: string;
-  country: string;
-  countryCode: string;
-}
-
-export interface PreferredTarget {
-  name: string;
-  type: "city" | "state";
-  state?: string;
-}
-
-export interface JobFormState {
-  title: string;
-  company: string;
-  category?: string;
-  employmentType: "FULL_TIME" | "PART_TIME" | "CONTRACTOR" | "INTERN" | "OTHER";
-  workMode: "Onsite" | "Hybrid" | "Remote";
-  location: string;
-  selectedOffices: OfficeLocation[];
-  candidatePreference: CandidatePreference;
-  preferredTargets: PreferredTarget[];
-  remoteEligibilityType: RemoteEligibilityType;
-  remoteEligibilityCountries: string[];
-  hqLocation: string;
-  experienceMin: string;
-  experienceMax: string;
-  postedDate: string;
-  salary: string;
-  mail: string;
-  companyLink: string;
-  description: string;
-}
-
-interface JobFormWizardProps {
-  mode: "create" | "edit" | "public";
-  jobId?: string;
-  initialJob?: Job | null;
-}
-
-const inputClass =
-  "w-full rounded-control border border-border-default bg-surface-card px-3.5 py-2.5 text-sm text-text-primary outline-none transition placeholder:text-text-muted hover:border-border-strong focus:border-brand focus:ring-2 focus:ring-brand/20 disabled:cursor-not-allowed disabled:bg-surface-subtle";
-
-const labelClass =
-  "mb-1.5 block text-xs font-semibold text-text-secondary";
-
-function Field({
-  label,
-  name,
-  value,
-  onChange,
-  onBlur,
-  placeholder,
-  icon: Icon,
-  type = "text",
-  required = false,
-  min,
-  max,
-  maxLength = 150,
-  step,
-  error,
-}: {
-  label: string;
-  name: string;
-  value: string;
-  onChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => void;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  placeholder: string;
-  icon?: React.ElementType;
-  type?: string;
-  required?: boolean;
-  min?: string;
-  max?: string;
-  maxLength?: number;
-  step?: string;
-  error?: string;
-}) {
-  return (
-    <div className="min-w-0">
-      <label htmlFor={name} className={labelClass}>
-        {label}
-        {required && <span className="ml-1 text-status-error">*</span>}
-      </label>
-
-      <div className="group relative">
-        {Icon && (
-          <Icon
-            className={`pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors ${error
-              ? "text-status-error"
-              : "text-text-muted group-focus-within:text-brand"
-              }`}
-            strokeWidth={1.8}
-          />
-        )}
-
-        <input
-          id={name}
-          name={name}
-          type={type}
-          value={value}
-          onChange={onChange}
-          onBlur={onBlur}
-          placeholder={placeholder}
-          required={required}
-          min={min}
-          max={max}
-          maxLength={maxLength}
-          step={step}
-          className={`${inputClass} ${Icon ? "pl-10" : ""} ${error
-            ? "border-status-error ring-1 ring-status-error/30 focus:border-status-error focus:ring-status-error/40"
-            : ""
-            }`}
-        />
-      </div>
-
-      {error && (
-        <p className="mt-1.5 flex items-center gap-1 text-2xs font-medium text-status-error animate-in fade-in duration-150">
-          <AlertCircle size={12} className="shrink-0" />
-          <span>{error}</span>
-        </p>
-      )}
-    </div>
-  );
-}
-
-export interface CompanyCitySelectorHandle {
-  commit: () => OfficeLocation | null;
-}
-
-const CompanyCitySelector = forwardRef<
-  CompanyCitySelectorHandle,
-  {
-    onSelect: (office: OfficeLocation) => void;
-    placeholder?: string;
-  }
->(function CompanyCitySelector(
-  {
-    onSelect,
-    placeholder = "Type city name (e.g. Bengaluru, Kochi, Mumbai)...",
-  },
-  ref
-) {
-  const [query, setQuery] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [cscCities, setCscCities] = useState<Array<{ name: string; state: string; countryCode: string }>>(
-    () => globalCscCities || []
-  );
-
-  useEffect(() => {
-    if (!globalCscCities) {
-      fetchCscCities().then((cities) => {
-        if (cities.length > 0) setCscCities(cities);
-      });
-    }
-  }, []);
-
-  const suggestions = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) {
-      return [
-        { city: "Bengaluru", state: "Karnataka", country: "India", countryCode: "IN" },
-        { city: "Kochi", state: "Kerala", country: "India", countryCode: "IN" },
-        { city: "Mumbai", state: "Maharashtra", country: "India", countryCode: "IN" },
-        { city: "Hyderabad", state: "Telangana", country: "India", countryCode: "IN" },
-        { city: "Pune", state: "Maharashtra", country: "India", countryCode: "IN" },
-        { city: "Delhi NCR", state: "Delhi", country: "India", countryCode: "IN" },
-        { city: "Gurugram", state: "Haryana", country: "India", countryCode: "IN" },
-        { city: "Noida", state: "Uttar Pradesh", country: "India", countryCode: "IN" },
-        { city: "Chennai", state: "Tamil Nadu", country: "India", countryCode: "IN" },
-        { city: "Trivandrum", state: "Kerala", country: "India", countryCode: "IN" },
-      ];
-    }
-
-    const results: OfficeLocation[] = [];
-    const seen = new Set<string>();
-
-    for (const c of CANONICAL_CITIES) {
-      if (
-        c.name.toLowerCase().includes(q) ||
-        c.state.toLowerCase().includes(q) ||
-        c.aliases.some((a) => a.toLowerCase().includes(q))
-      ) {
-        seen.add(c.name.toLowerCase());
-        results.push({ city: c.name, state: c.state, country: "India", countryCode: "IN" });
-      }
-    }
-
-    for (const c of cscCities) {
-      if (results.length >= 15) break;
-      if (!seen.has(c.name.toLowerCase()) && c.name.toLowerCase().includes(q)) {
-        seen.add(c.name.toLowerCase());
-        results.push({ city: c.name, state: c.state, country: "India", countryCode: "IN" });
-      }
-    }
-
-    return results;
-  }, [query, cscCities]);
-
-  const hasCustomOption = Boolean(
-    query.trim() && !suggestions.some((s) => s.city.toLowerCase() === query.trim().toLowerCase())
-  );
-  const totalOptions = suggestions.length + (hasCustomOption ? 1 : 0);
-
-  const [prevSuggestions, setPrevSuggestions] = useState(suggestions);
-  if (suggestions !== prevSuggestions) {
-    setPrevSuggestions(suggestions);
-    setHighlightedIndex(0);
-  }
-
-  const commitQuery = useCallback((): OfficeLocation | null => {
-    const trimmed = query.trim();
-    if (!trimmed) return null;
-
-    const qLower = trimmed.toLowerCase();
-    const matchedCanonical = CANONICAL_CITIES.find(
-      (c) => c.name.toLowerCase() === qLower || c.aliases?.some((a) => a.toLowerCase() === qLower)
-    );
-    const matchedCsc = cscCities.find((c) => c.name.toLowerCase() === qLower);
-    const matchedSuggestion = suggestions.find((s) => s.city.toLowerCase() === qLower);
-
-    let office: OfficeLocation;
-    if (matchedSuggestion) {
-      office = matchedSuggestion;
-    } else if (matchedCanonical) {
-      office = {
-        city: matchedCanonical.name,
-        state: matchedCanonical.state,
-        country: "India",
-        countryCode: "IN",
-      };
-    } else if (matchedCsc) {
-      office = {
-        city: matchedCsc.name,
-        state: matchedCsc.state,
-        country: "India",
-        countryCode: "IN",
-      };
-    } else {
-      office = {
-        city: trimmed,
-        state: resolveOfficeState(trimmed),
-        country: "India",
-        countryCode: "IN",
-      };
-    }
-
-    onSelect(office);
-    setQuery("");
-    setIsOpen(false);
-    return office;
-  }, [query, suggestions, onSelect, cscCities]);
-
-  useImperativeHandle(
-    ref,
-    () => ({
-      commit: commitQuery,
-    }),
-    [commitQuery]
-  );
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        if (query.trim()) {
-          commitQuery();
-        } else {
-          setIsOpen(false);
-        }
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [query, commitQuery]);
-
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!isOpen) {
-      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsOpen(true);
-        return;
-      }
-      if (e.key === "Enter") {
-        if (query.trim()) {
-          e.preventDefault();
-          e.stopPropagation();
-          commitQuery();
-          return;
-        }
-        // Let empty query bubble so Enter continues to next step
-        return;
-      }
-    }
-
-    if (isOpen) {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        e.stopPropagation();
-        setHighlightedIndex((prev) => (totalOptions === 0 ? 0 : (prev + 1) % totalOptions));
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        e.stopPropagation();
-        setHighlightedIndex((prev) => (totalOptions === 0 ? 0 : (prev - 1 + totalOptions) % totalOptions));
-      } else if (e.key === "Enter") {
-        e.preventDefault();
-        e.stopPropagation();
-        if (highlightedIndex < suggestions.length && suggestions[highlightedIndex]) {
-          onSelect(suggestions[highlightedIndex]);
-          setQuery("");
-          setIsOpen(false);
-        } else {
-          commitQuery();
-        }
-      } else if (e.key === "Escape") {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsOpen(false);
-      }
-    }
-  };
-
-  return (
-    <div ref={containerRef} className="relative">
-      <div className="relative">
-        <Building2
-          className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
-          strokeWidth={1.8}
-        />
-        <input
-          type="text"
-          value={query}
-          maxLength={100}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setIsOpen(true);
-          }}
-          onFocus={() => setIsOpen(true)}
-          onBlur={() => {
-            if (query.trim()) {
-              commitQuery();
-            }
-          }}
-          onKeyDown={handleInputKeyDown}
-          placeholder={placeholder}
-          className={`${inputClass} pl-10`}
-        />
-      </div>
-
-      {isOpen && (
-        <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-56 overflow-y-auto rounded-control border border-border-default bg-surface-card shadow-modal">
-          {suggestions.map((item, idx) => (
-            <button
-              key={`${item.city}-${item.state}-${idx}`}
-              type="button"
-              onMouseDown={(e) => e.preventDefault()}
-              onMouseEnter={() => setHighlightedIndex(idx)}
-              onClick={() => {
-                onSelect(item);
-                setQuery("");
-                setIsOpen(false);
-              }}
-              className={`flex w-full items-center justify-between px-3.5 py-2 text-left text-xs transition-colors ${highlightedIndex === idx
-                  ? "bg-brand-soft text-brand font-semibold"
-                  : "hover:bg-surface-subtle"
-                }`}
-            >
-              <span className="font-semibold text-text-primary">{item.city}</span>
-              <span className="text-2xs text-text-muted">{item.state}, India</span>
-            </button>
-          ))}
-          {hasCustomOption && (
-            <button
-              type="button"
-              onMouseDown={(e) => e.preventDefault()}
-              onMouseEnter={() => setHighlightedIndex(suggestions.length)}
-              onClick={() => {
-                commitQuery();
-              }}
-              className={`flex w-full items-center gap-1.5 border-t border-border-default px-3.5 py-2 text-left text-xs transition-colors ${highlightedIndex === suggestions.length
-                  ? "bg-brand-soft text-brand font-semibold"
-                  : "text-brand hover:bg-brand-soft"
-                }`}
-            >
-              <Plus size={13} />
-              <span>Add &quot;{query.trim()}&quot; as custom city</span>
-            </button>
-          )}
-        </div>
-      )}
-    </div>
-  );
-});
-
-export interface CandidateScopeSelectorHandle {
-  commit: () => PreferredTarget | null;
-}
-
-const CandidateScopeSelector = forwardRef<
-  CandidateScopeSelectorHandle,
-  {
-    onAdd: (target: PreferredTarget) => void;
-    placeholder?: string;
-  }
->(function CandidateScopeSelector(
-  {
-    onAdd,
-    placeholder = "Search candidate city or state...",
-  },
-  ref
-) {
-  const [query, setQuery] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) {
-      return [
-        { name: "Karnataka", type: "state" as const },
-        { name: "Kerala", type: "state" as const },
-        { name: "Maharashtra", type: "state" as const },
-        { name: "Tamil Nadu", type: "state" as const },
-        { name: "Telangana", type: "state" as const },
-        { name: "Bengaluru", type: "city" as const, state: "Karnataka" },
-        { name: "Kochi", type: "city" as const, state: "Kerala" },
-        { name: "Mumbai", type: "city" as const, state: "Maharashtra" },
-        { name: "Hyderabad", type: "city" as const, state: "Telangana" },
-      ];
-    }
-
-    const items: PreferredTarget[] = [];
-    const seen = new Set<string>();
-
-    for (const s of INDIAN_STATES) {
-      if (s.name.toLowerCase().includes(q)) {
-        seen.add(s.name.toLowerCase());
-        items.push({ name: s.name, type: "state" });
-      }
-    }
-
-    for (const c of CANONICAL_CITIES) {
-      if (
-        c.name.toLowerCase().includes(q) ||
-        c.aliases.some((a) => a.toLowerCase().includes(q))
-      ) {
-        seen.add(c.name.toLowerCase());
-        items.push({ name: c.name, type: "city", state: c.state });
-      }
-    }
-
-    return items.slice(0, 15);
-  }, [query]);
-
-  const commitQuery = useCallback((): PreferredTarget | null => {
-    const trimmed = query.trim();
-    if (!trimmed) return null;
-
-    const matched = results[highlightedIndex] || results[0];
-    if (matched) {
-      onAdd(matched);
-      setQuery("");
-      setIsOpen(false);
-      return matched;
-    }
-    return null;
-  }, [query, results, highlightedIndex, onAdd]);
-
-  useImperativeHandle(
-    ref,
-    () => ({
-      commit: commitQuery,
-    }),
-    [commitQuery]
-  );
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        if (query.trim()) {
-          commitQuery();
-        } else {
-          setIsOpen(false);
-        }
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [query, commitQuery]);
-
-  const [prevResults, setPrevResults] = useState(results);
-  if (results !== prevResults) {
-    setPrevResults(results);
-    setHighlightedIndex(0);
-  }
-
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!isOpen) {
-      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsOpen(true);
-        return;
-      }
-      if (e.key === "Enter") {
-        if (query.trim()) {
-          e.preventDefault();
-          e.stopPropagation();
-          commitQuery();
-          return;
-        }
-        return;
-      }
-    }
-
-    if (isOpen) {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        e.stopPropagation();
-        setHighlightedIndex((prev) => (results.length === 0 ? 0 : (prev + 1) % results.length));
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        e.stopPropagation();
-        setHighlightedIndex((prev) => (results.length === 0 ? 0 : (prev - 1 + results.length) % results.length));
-      } else if (e.key === "Enter") {
-        e.preventDefault();
-        e.stopPropagation();
-        commitQuery();
-      } else if (e.key === "Escape") {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsOpen(false);
-      }
-    }
-  };
-
-  return (
-    <div ref={containerRef} className="relative">
-      <div className="relative">
-        <Compass
-          className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
-          strokeWidth={1.8}
-        />
-        <input
-          type="text"
-          value={query}
-          maxLength={100}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setIsOpen(true);
-          }}
-          onFocus={() => setIsOpen(true)}
-          onBlur={() => {
-            if (query.trim()) {
-              commitQuery();
-            }
-          }}
-          onKeyDown={handleInputKeyDown}
-          placeholder={placeholder}
-          className={`${inputClass} pl-10`}
-        />
-      </div>
-
-      {isOpen && (
-        <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-56 overflow-y-auto rounded-control border border-border-default bg-surface-card shadow-modal">
-          {results.map((item, idx) => (
-            <button
-              key={`${item.name}-${item.type}-${idx}`}
-              type="button"
-              onMouseDown={(e) => e.preventDefault()}
-              onMouseEnter={() => setHighlightedIndex(idx)}
-              onClick={() => {
-                onAdd(item);
-                setQuery("");
-                setIsOpen(false);
-              }}
-              className={`flex w-full items-center justify-between px-3.5 py-2 text-left text-xs transition-colors ${highlightedIndex === idx
-                  ? "bg-brand-soft text-brand font-semibold"
-                  : "hover:bg-surface-subtle"
-                }`}
-            >
-              <span className="font-semibold text-text-primary">{item.name}</span>
-              <span className="text-2xs text-text-muted">
-                {item.type === "state" ? "State, India" : `${item.state}, India`}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-});
-
-function formatExperienceLabel(minVal: string, maxVal: string): string {
-  const minNum = minVal.trim() === "" ? 0 : Number(minVal);
-  const hasMax = maxVal.trim() !== "";
-  const maxNum = hasMax ? Number(maxVal) : null;
-
-  if (minNum === 0 && (maxNum === null || maxNum === 0)) {
-    return "Fresher";
-  }
-  if (minNum === 0 && maxNum !== null && maxNum > 0) {
-    return `0–${maxNum} years`;
-  }
-  if (maxNum !== null && maxNum > minNum) {
-    return `${minNum}–${maxNum} years`;
-  }
-  if (maxNum !== null && maxNum === minNum) {
-    return `${minNum} year${minNum === 1 ? "" : "s"}`;
-  }
-  return `${minNum}+ years`;
-}
-
-function parseExperienceFromJob(job: Job): { min: string; max: string } {
-  const value = (job.experience || "").trim();
-  if (!value || /^fresher$/i.test(value)) {
-    return { min: "0", max: "0" };
-  }
-  const range = value.match(/(\d+(?:\.\d+)?)\s*[-–]\s*(\d+(?:\.\d+)?)/);
-  if (range) {
-    return { min: range[1], max: range[2] };
-  }
-  const plus = value.match(/(\d+(?:\.\d+)?)\s*\+/);
-  if (plus) {
-    return { min: plus[1], max: "" };
-  }
-  const single = value.match(/(\d+(?:\.\d+)?)/);
-  if (single) {
-    return { min: single[1], max: single[1] };
-  }
-  return { min: "0", max: "0" };
-}
-
-
-function computeSubmitPostedDate(
-  formPostedDate: string,
-  todayStr: string,
-  mode: string,
-  initialJobPostedDate?: string
-): string {
-  if (mode === "edit" && initialJobPostedDate) {
-    const initialInputDate = dateForInput(initialJobPostedDate);
-    if (initialInputDate === formPostedDate) {
-      const isMidnight =
-        /T00:00:00(\.000)?Z?$/i.test(initialJobPostedDate) ||
-        /00:00:00/.test(initialJobPostedDate);
-      if (formPostedDate === todayStr && isMidnight) {
-        return new Date().toISOString();
-      }
-      return initialJobPostedDate;
-    }
-  }
-
-  if (formPostedDate === todayStr) {
-    return new Date().toISOString();
-  }
-
-  return new Date(`${formPostedDate}T12:00:00.000Z`).toISOString();
-}
-
-function dateForInput(value?: string): string {
-  if (!value) return "";
-  const dateOnly = value.match(/^(\d{4}-\d{2}-\d{2})/);
-  if (dateOnly) return dateOnly[1];
-  const dmy = value.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
-  if (dmy) {
-    return `${dmy[3]}-${dmy[2].padStart(2, "0")}-${dmy[1].padStart(2, "0")}`;
-  }
-  const d = new Date(value);
-  return Number.isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
-}
-
-const WIZARD_STEPS = [
-  {
-    num: 1,
-    tag: "01",
-    label: "Role",
-    brief: "Job title, company & type",
-  },
-  {
-    num: 2,
-    tag: "02",
-    label: "Location",
-    brief: "Offices & candidate residency",
-  },
-  {
-    num: 3,
-    tag: "03",
-    label: "Compensation",
-    brief: "Experience, salary & contact email",
-  },
-  {
-    num: 4,
-    tag: "04",
-    label: "Review",
-    brief: "Job description & publish",
-  },
-];
-
-export function cleanDescriptionText(raw: string): string {
-  if (!raw) return "";
-  let text = raw;
-
-  // 1. Remove leading metadata block if any (Role Title:, Company:, etc.)
-  const lines = text.split("\n");
-  let startIdx = 0;
-  for (let i = 0; i < lines.length; i++) {
-    const l = lines[i].trim();
-    if (!l) {
-      if (startIdx === i) startIdx = i + 1;
-      continue;
-    }
-    if (
-      /^(role(\s+title)?|job\s+title|company(\s+name)?|category|experience(\s+level)?|work\s+mode|location|workplace|employment\s+type)\s*[:–—\-]/i.test(
-        l
-      )
-    ) {
-      startIdx = i + 1;
-      continue;
-    }
-    break;
-  }
-  text = lines.slice(startIdx).join("\n");
-
-  // 2. Remove emojis and symbol icons
-  text = text.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}]/gu, "");
-
-  // 3. Remove markdown headers like ### Heading -> Heading
-  text = text.replace(/^#{1,6}\s+/gm, "");
-
-  // 4. Remove bold/italic markdown like **word** -> word, __word__ -> word
-  text = text.replace(/\*\*([^*]+)\*\*/g, "$1");
-  text = text.replace(/__([^_]+)__/g, "$1");
-  text = text.replace(/(^|[^\*])\*([^\*]+)\*([^\*]|$)/g, "$1$2$3");
-
-  // 5. Standardize bullet points (*, -, >, › -> •)
-  text = text.replace(/^[\s]*[\*\-›\>✓✔]\s+/gm, "• ");
-
-  // 6. Remove recruiter hashtags (#hiring, #job, etc.)
-  text = text.replace(/#[a-zA-Z0-9_]+/g, "");
-
-  // 7. Normalize excessive line breaks
-  text = text.replace(/\n{3,}/g, "\n\n");
-
-  return text.trim();
-}
-
-const SAMPLE_JOB_DESCRIPTION = `Role: Senior Frontend Engineer
-Company: Zenoway Tech
-Location: Bengaluru, Karnataka (Hybrid)
-Employment Type: Full-time
-Experience: 3 to 6 years
-Salary: ₹18,00,000 - ₹26,00,000 per annum
-Contact Email: careers@zenoway.online
-
-About the Role:
-We are looking for an experienced Senior Frontend Engineer to build high-performance web applications using Next.js, React, and TypeScript. You will collaborate closely with UI/UX designers and backend engineers to craft responsive, accessible interfaces.
-
-Key Responsibilities:
-- Build modular, accessible web interfaces using Next.js App Router and Tailwind CSS.
-- Optimize web application performance, Core Web Vitals, and responsive layouts.
-- Collaborate with product designers in Figma to implement design systems and reusable components.
-
-Requirements:
-- 3+ years of experience with React, Next.js, and TypeScript.
-- Strong knowledge of modern CSS, Tailwind, state management, and web performance.
-- Passion for great developer experience, automated testing, and semantic HTML.`;
-
-const applicants = [
-  { initials: "AR", name: "Anjali R.", role: "React Developer", time: "just now" },
-  { initials: "RM", name: "Rahul M.", role: "Product Designer", time: "2m ago" },
-  { initials: "SK", name: "Sneha K.", role: "Backend Engineer", time: "5m ago" },
-];
-
-function HeroVisual() {
-  return (
-    <div aria-hidden className="relative hidden h-[380px] lg:block">
-      {/* Soft brand glow */}
-      <div className="absolute left-1/2 top-1/2 -z-10 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/15 blur-3xl" />
-
-      {/* Dot grid, faded at edges. If the --border-default token is not an RGB triplet, use rgba(120,120,120,0.35) instead. */}
-      <div
-        className="absolute inset-0 -z-10 opacity-60 [mask-image:radial-gradient(closest-side,black,transparent)]"
-        style={{
-          backgroundImage: "radial-gradient(circle, rgba(120,120,120,0.35) 1px, transparent 1px)",
-          backgroundSize: "20px 20px",
-        }}
-      />
-
-      {/* Floating job card */}
-      <div className="hero-anim absolute right-4 top-4 w-[300px] animate-[float_7s_ease-in-out_infinite] rounded-2xl border border-border-default/50 bg-surface-card/80 p-4 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.25)] backdrop-blur">
-        <div className="flex items-center justify-between">
-          <span className="text-3xs font-medium uppercase tracking-[0.14em] text-text-muted">New opening</span>
-          <span className="flex items-center gap-1.5 text-3xs font-medium text-brand">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-60" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand" />
-            </span>
-            Live
-          </span>
-        </div>
-        <h3 className="mt-3 text-sm font-semibold text-text-primary">Senior UI Developer</h3>
-        <p className="mt-0.5 text-xs text-text-muted">Kochi · Hybrid · ₹18–26 LPA</p>
-        <div className="mt-3 flex gap-1.5">
-          {["React", "Next.js", "Tailwind"].map((t) => (
-            <span key={t} className="rounded-pill border border-border-default/50 px-2 py-0.5 text-3xs text-text-secondary">{t}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* Applicants sliding in */}
-      <div className="absolute bottom-6 left-0 w-[290px] space-y-2.5">
-        {applicants.map((a, i) => (
-          <div
-            key={a.name}
-            className="hero-anim flex animate-[slide-in_0.6s_ease-out_both] items-center gap-3 rounded-xl border border-border-default/50 bg-surface-card/90 p-2.5 shadow-subtle backdrop-blur"
-            style={{ animationDelay: `${0.5 + i * 0.35}s` }}
-          >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand/10 text-2xs font-semibold text-brand">{a.initials}</div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-medium text-text-primary">{a.name}</p>
-              <p className="truncate text-2xs text-text-muted">{a.role}</p>
-            </div>
-            <span className="text-3xs text-text-muted">{a.time}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Commission chip */}
-      <div
-        className="hero-anim absolute bottom-0 right-6 animate-[slide-in_0.6s_ease-out_both] rounded-pill border border-border-default/50 bg-surface-card px-3 py-1.5 text-2xs font-medium text-text-primary shadow-subtle"
-        style={{ animationDelay: "1.8s" }}
-      >
-        ₹0 <span className="text-text-muted">commission</span>
-      </div>
-    </div>
-  );
-}
+import {
+  type CandidatePreference,
+  type OfficeLocation,
+  type PreferredTarget,
+  type JobFormState,
+  type JobFormWizardProps,
+} from "./job-wizard/types";
+import {
+  fetchCscCities,
+  getCachedCscCities,
+  resolveOfficeState,
+  getOfficeStates,
+  formatExperienceLabel,
+  parseExperienceFromJob,
+  dateForInput,
+  computeSubmitPostedDate,
+  WIZARD_STEPS,
+  cleanDescriptionText,
+  SAMPLE_JOB_DESCRIPTION,
+  inputClass,
+  labelClass,
+} from "./job-wizard/wizard-utils";
+import { Field } from "./job-wizard/Field";
+import {
+  CompanyCitySelector,
+  type CompanyCitySelectorHandle,
+} from "./job-wizard/CompanyCitySelector";
+import {
+  CandidateScopeSelector,
+  type CandidateScopeSelectorHandle,
+} from "./job-wizard/CandidateScopeSelector";
+import { HeroVisual } from "./job-wizard/HeroVisual";
+import {
+  WizardLoadingScreen,
+  WizardErrorScreen,
+  WizardSuccessScreen,
+} from "./job-wizard/WizardScreens";
+
+export type {
+  CandidatePreference,
+  OfficeLocation,
+  PreferredTarget,
+  JobFormState,
+  JobFormWizardProps,
+};
+export {
+  fetchCscCities,
+  resolveOfficeState,
+  getOfficeStates,
+  CompanyCitySelector,
+  CandidateScopeSelector,
+};
 
 export default function JobFormWizard({
   mode,
@@ -1002,9 +144,7 @@ export default function JobFormWizard({
     formRefState.current = form;
   }, [form]);
   useEffect(() => {
-    if (!globalCscCities) {
-      fetchCscCities();
-    }
+    fetchCscCities();
   }, []);
   const lastVerifiedEmailRef = useRef<string>("");
   const isNavigatingRef = useRef<boolean>(false);
@@ -1220,11 +360,11 @@ export default function JobFormWizard({
       const extractedCity = (parsed.city || parsed.location || "").trim();
       let resolvedOffices: OfficeLocation[] = [];
       if (extractedCity && !/^(remote|worldwide|pan-india|anywhere)$/i.test(extractedCity)) {
-        const list = globalCscCities || [];
+        const list = getCachedCscCities();
         const found = CANONICAL_CITIES.find(
           (c) => c.name.toLowerCase() === extractedCity.toLowerCase()
         ) || list.find(
-          (c) => c.name.toLowerCase() === extractedCity.toLowerCase()
+          (c: { name: string; state: string; countryCode: string }) => c.name.toLowerCase() === extractedCity.toLowerCase()
         );
         resolvedOffices = [
           {
@@ -2526,135 +1666,52 @@ export default function JobFormWizard({
     return `${prefix}${officeSummary}`;
   }, [form.workMode, form.selectedOffices, form.candidatePreference, form.preferredTargets]);
 
+  const handleResetPublicSubmission = () => {
+    setForm({
+      title: "",
+      company: "",
+      category: "UI/UX & Product Design",
+      employmentType: "FULL_TIME",
+      workMode: "Onsite",
+      location: "",
+      selectedOffices: [],
+      candidatePreference: "COMPANY_STATE",
+      preferredTargets: [],
+      remoteEligibilityType: "COUNTRIES",
+      remoteEligibilityCountries: ["IN"],
+      hqLocation: "",
+      experienceMin: "",
+      experienceMax: "",
+      postedDate: getToday(),
+      salary: "",
+      mail: "",
+      companyLink: "",
+      description: "",
+    });
+    setCurrentStep(1);
+    setIsSubmittedSuccess(false);
+    setSubmittedJobData(null);
+    setEmailVerifiedDomain(null);
+    lastVerifiedEmailRef.current = "";
+    setIsCheckingNext(false);
+  };
+
   if (loadingInitial) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
-        <LoaderCircle size={24} className="animate-spin text-brand" />
-        <p className="text-xs font-medium text-text-muted">Loading job details...</p>
-      </div>
-    );
+    return <WizardLoadingScreen />;
   }
 
   if (loadError) {
-    return (
-      <div className="mx-auto max-w-lg py-20 text-center">
-        <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-control bg-status-error/10 text-status-error">
-          <AlertCircle size={20} />
-        </div>
-        <h2 className="mt-3 text-base font-semibold text-text-primary">Unable to load job</h2>
-        <p className="mt-1 text-xs text-text-muted">{loadError}</p>
-        <Link
-          href="/admin/jobs"
-          className="mt-5 inline-flex items-center gap-1.5 rounded-control bg-brand px-3.5 py-2 text-xs font-medium text-text-inverse"
-        >
-          <ArrowLeft size={13} />
-          Back to job listings
-        </Link>
-      </div>
-    );
+    return <WizardErrorScreen error={loadError} />;
   }
 
   if (mode === "public" && isSubmittedSuccess) {
     return (
-      <main className="min-h-full bg-surface-base text-text-primary">
-        <div className="mx-auto max-w-2xl px-5 py-16 sm:px-8 text-center">
-          <div className="mx-auto flex items-center justify-center text-brand">
-            <CheckCircle2 size={40} strokeWidth={2} />
-          </div>
-
-          <div className="mt-4 flex justify-center">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-              Submitted · Pending Review
-            </span>
-          </div>
-
-          <h1 className="mt-3 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
-            Job Submitted for Review!
-          </h1>
-
-          <p className="mt-2 text-sm leading-6 text-text-muted">
-            Thank you for posting on Zenoway. To maintain high listing quality and ensure compensation transparency, all public submissions undergo a quick editorial review. Your listing will go live once approved by our moderation team.
-          </p>
-
-          {/* Submitted Job Overview Card */}
-          <div className="mt-8 rounded-card border border-border-default bg-surface-card p-5 text-left shadow-subtle">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-bold text-text-primary">
-                  {submittedJobData?.title || form.title}
-                </h3>
-                <p className="text-xs font-medium text-text-secondary">
-                  {submittedJobData?.company || form.company}
-                </p>
-              </div>
-              <span className="rounded-control bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand">
-                {submittedJobData?.workMode || form.workMode}
-              </span>
-            </div>
-
-            <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border-default/40 pt-3 text-xs sm:grid-cols-3">
-              <div>
-                <span className="text-3xs font-semibold uppercase text-text-muted">Location</span>
-                <p className="mt-0.5 truncate font-medium text-text-primary">{previewLocation}</p>
-              </div>
-              <div>
-                <span className="text-3xs font-semibold uppercase text-text-muted">Salary</span>
-                <p className="mt-0.5 font-semibold text-brand">{form.salary || "Not Disclosed"}</p>
-              </div>
-              <div>
-                <span className="text-3xs font-semibold uppercase text-text-muted">Contact Email</span>
-                <p className="mt-0.5 truncate font-medium text-text-primary">{form.mail || "—"}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
-            <Link
-              href="/jobs"
-              className="inline-flex items-center justify-center gap-1.5 rounded-control bg-brand px-4 py-2.5 text-xs font-medium text-text-inverse transition hover:bg-brand-hover shadow-subtle"
-            >
-              <span>Browse Job Listings</span>
-              <ArrowUpRight size={14} />
-            </Link>
-            <button
-              type="button"
-              onClick={() => {
-                setForm({
-                  title: "",
-                  company: "",
-                  category: "UI/UX & Product Design",
-                  employmentType: "FULL_TIME",
-                  workMode: "Onsite",
-                  location: "",
-                  selectedOffices: [],
-                  candidatePreference: "COMPANY_STATE",
-                  preferredTargets: [],
-                  remoteEligibilityType: "COUNTRIES",
-                  remoteEligibilityCountries: ["IN"],
-                  hqLocation: "",
-                  experienceMin: "",
-                  experienceMax: "",
-                  postedDate: getToday(),
-                  salary: "",
-                  mail: "",
-                  companyLink: "",
-                  description: "",
-                });
-                setCurrentStep(1);
-                setIsSubmittedSuccess(false);
-                setSubmittedJobData(null);
-                setEmailVerifiedDomain(null);
-                lastVerifiedEmailRef.current = "";
-                setIsCheckingNext(false);
-              }}
-              className="inline-flex items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-medium text-text-secondary transition hover:bg-surface-subtle hover:text-text-primary"
-            >
-              <span>Post Another Job</span>
-            </button>
-          </div>
-        </div>
-      </main>
+      <WizardSuccessScreen
+        submittedJobData={submittedJobData}
+        form={form}
+        previewLocation={previewLocation}
+        onPostAnother={handleResetPublicSubmission}
+      />
     );
   }
 
