@@ -18,26 +18,33 @@ export default function MainLayout({
     pathname === "/login" ||
     pathname === "/admin/login";
 
+  const isStudioWorkspace =
+    pathname === "/resume-builder" ||
+    pathname === "/job-posters";
+
   return (
     <AuthProvider>
       {isAuthPage ? (
-        <main className="h-dvh overflow-y-auto bg-surface-subtle">
+        <main className="min-h-screen bg-surface-subtle">
           {children}
         </main>
-      ) : (
+      ) : isStudioWorkspace ? (
         <div
-          className="flex h-dvh min-h-0 flex-col overflow-hidden"
+          className="flex h-dvh min-h-0 flex-col overflow-hidden bg-surface-base"
           style={{ "--nav-h": "var(--spacing-nav-height)" } as CSSProperties}
         >
           <Navbar />
-
-          <main
-            className={`min-h-0 min-w-0 flex-1 ${
-              pathname === "/jobs" || pathname === "/resume-builder" || pathname === "/job-posters"
-                ? "overflow-y-auto lg:overflow-hidden"
-                : "overflow-y-auto"
-            } overscroll-y-contain`}
-          >
+          <main className="min-h-0 min-w-0 flex-1 overflow-hidden">
+            {children}
+          </main>
+        </div>
+      ) : (
+        <div
+          className="flex min-h-screen flex-col bg-surface-base"
+          style={{ "--nav-h": "var(--spacing-nav-height)" } as CSSProperties}
+        >
+          <Navbar />
+          <main className="min-w-0 flex-1">
             {children}
           </main>
         </div>

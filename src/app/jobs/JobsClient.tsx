@@ -724,7 +724,7 @@ function JobsViewContent({
   const noSavedYet = savedOnly && saved.length === 0;
 
   return (
-    <div className="min-h-full bg-surface-page text-text-primary lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[272px_minmax(0,1fr)] lg:overflow-hidden">
+    <div className="min-h-full bg-surface-page text-text-primary lg:grid lg:h-[calc(100dvh-var(--nav-h,68px))] lg:min-h-0 lg:grid-cols-[272px_minmax(0,1fr)] lg:overflow-hidden">
       {/* Sidebar */}
       <aside
         className={`${filtersOpen ? "flex" : "hidden"

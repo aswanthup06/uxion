@@ -227,7 +227,7 @@ export default function Navbar() {
 
   return (
     <header
-      className="relative z-50 shrink-0 border-b border-border-default bg-surface-card"
+      className="sticky top-0 z-50 shrink-0 border-b border-border-default bg-surface-card/95 backdrop-blur-sm"
       onMouseLeave={() => setDropdown(null)}
     >
       <div className="mx-auto flex h-nav-height w-full items-center justify-between px-3.5 sm:px-6 lg:px-8">
