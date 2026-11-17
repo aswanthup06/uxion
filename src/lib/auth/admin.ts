@@ -7,8 +7,15 @@ const MAX_ADMIN_TOKEN_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
 async function getAdminSecretKey(): Promise<CryptoKey> {
   const secret =
     process.env.ADMIN_KEY?.trim() ||
-    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ||
-    "zenoway-protected-admin-hmac-fallback-key-2025";
+    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+
+  if (!secret) {
+    throw new Error(
+      "[admin] ADMIN_KEY env var is not set. " +
+        "Admin route protection cannot function without a secret key. " +
+        "Set ADMIN_KEY in your .env.local (dev) or deployment environment."
+    );
+  }
 
   const encoder = new TextEncoder();
   return crypto.subtle.importKey(
