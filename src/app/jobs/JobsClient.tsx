@@ -724,7 +724,7 @@ function JobsViewContent({
   const noSavedYet = savedOnly && saved.length === 0;
 
   return (
-    <div className="min-h-full bg-surface-page text-text-primary lg:grid lg:h-[calc(100dvh-var(--nav-h,68px))] lg:min-h-0 lg:grid-cols-[272px_minmax(0,1fr)] lg:overflow-hidden">
+    <div className="min-h-full bg-surface-page text-text-primary lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[272px_minmax(0,1fr)] lg:overflow-hidden">
       {/* Sidebar */}
       <aside
         className={`${filtersOpen ? "flex" : "hidden"
@@ -1341,7 +1341,7 @@ function JobsViewContent({
                       tabIndex={0}
                       role="button"
                       aria-label={`View ${job.title} at ${job.company}`}
-                      className="group relative flex cursor-pointer flex-col justify-between rounded-card border border-border-default bg-surface-card p-5 text-left transition-all duration-200 hover:border-brand-accent/50 hover:shadow-card-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                      className="group relative flex cursor-pointer flex-col justify-between rounded-card border border-border-default bg-surface-card p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-border-strong hover:shadow-card-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                     >
                       <div>
                         {/* Top: Job Title + Bookmark */}

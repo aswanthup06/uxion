@@ -10,7 +10,7 @@ export function JobGridCard({ job }: { job: Job }) {
   return (
     <Link
       href={`/jobs/${job.id}`}
-      className="group flex min-h-[10.5rem] flex-col justify-between rounded-card border border-border-subtle bg-surface-card p-5 outline-none transition-all duration-normal hover:-translate-y-0.5 hover:border-brand-accent/50 hover:shadow-card-hover focus-visible:ring-2 focus-visible:ring-brand-accent/50"
+      className="group flex min-h-[10.5rem] flex-col justify-between rounded-card border border-border-subtle bg-surface-card p-5 outline-none transition-all duration-normal hover:-translate-y-0.5 hover:border-border-strong hover:shadow-card-hover focus-visible:ring-2 focus-visible:ring-brand-accent/50"
     >
       <div>
         <div className="flex items-center justify-between text-xs text-text-muted">

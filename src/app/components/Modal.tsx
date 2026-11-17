@@ -68,7 +68,15 @@ export default function Modal({
     if (!isOpen) return;
 
     const originalOverflow = document.body.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
     document.body.style.overflow = "hidden";
+
+    // Fallback padding compensation for browsers without scrollbar-gutter: stable
+    if (scrollbarWidth > 0 && !(typeof CSS !== "undefined" && CSS.supports?.("scrollbar-gutter", "stable"))) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (closeOnEscape && event.key === "Escape") {
@@ -81,6 +89,7 @@ export default function Modal({
 
     return () => {
       document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, closeOnEscape, onClose]);
@@ -142,7 +151,7 @@ export default function Modal({
       {isOpen && (
         <div
           role="presentation"
-          className={`fixed inset-0 z-50 flex overflow-y-auto ${isSheet
+          className={`fixed inset-0 z-50 flex overflow-y-auto overscroll-contain ${isSheet
             ? "items-end justify-center p-0"
             : isAuto
               ? "items-end justify-center p-0 sm:items-center sm:p-4"
@@ -228,7 +237,7 @@ export default function Modal({
 
             {/* Modal Body */}
             <div
-              className={`min-h-0 flex-1 ${bodyClassName.includes("overflow-") ? "" : "overflow-y-auto"
+              className={`min-h-0 flex-1 overscroll-contain ${bodyClassName.includes("overflow-") ? "" : "overflow-y-auto"
                 } ${bodyClassName}`}
             >
               {children}

@@ -22,12 +22,14 @@ export default function MainLayout({
     pathname === "/resume-builder" ||
     pathname === "/job-posters";
 
+  const isJobsCatalog = pathname === "/jobs";
+
   return (
     <AuthProvider>
       {isAuthPage ? (
-        <main className="min-h-screen bg-surface-subtle">
+        <div className="h-dvh overflow-hidden bg-surface-subtle">
           {children}
-        </main>
+        </div>
       ) : isStudioWorkspace ? (
         <div
           className="flex h-dvh min-h-0 flex-col overflow-hidden bg-surface-base"
@@ -35,6 +37,16 @@ export default function MainLayout({
         >
           <Navbar />
           <main className="min-h-0 min-w-0 flex-1 overflow-hidden">
+            {children}
+          </main>
+        </div>
+      ) : isJobsCatalog ? (
+        <div
+          className="flex min-h-screen flex-col bg-surface-base lg:h-dvh lg:overflow-hidden"
+          style={{ "--nav-h": "var(--spacing-nav-height)" } as CSSProperties}
+        >
+          <Navbar />
+          <main className="min-w-0 flex-1 lg:min-h-0 lg:overflow-hidden">
             {children}
           </main>
         </div>
