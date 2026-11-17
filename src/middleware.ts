@@ -1,10 +1,10 @@
-// src/proxy.ts
-// Next.js 16 Proxy / Middleware convention
+// src/middleware.ts
+// Next.js Edge Middleware — guards /admin routes
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyAdminToken } from "@/lib/auth/admin";
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Protect admin routes (exclude login page and public assets)
