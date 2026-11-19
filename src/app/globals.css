@@ -99,24 +99,24 @@
   --zw-brand-soft: #edf7f1;
   --zw-brand-soft-hover: #e3f2e8;
 
-  /* Surfaces & Backgrounds (Light) */
-  --zw-surface-base: #ffffff;
-  --zw-surface-subtle: #f8faf8;
-  --zw-surface-muted: #f2f6f3;
+  /* Surfaces & Backgrounds (Light - crisp card elevation against soft canvas) */
+  --zw-surface-base: #fbfcfb;
+  --zw-surface-subtle: #f3f6f4;
+  --zw-surface-muted: #eaf0eb;
   --zw-surface-card: #ffffff;
-  --zw-surface-page: #ffffff;
-  --zw-surface-dark: #164e3b;
+  --zw-surface-page: #fbfcfb;
+  --zw-surface-dark: #111a15;
 
-  /* Typography / Text Colors (Light) */
-  --zw-text-primary: #17251f;
-  --zw-text-secondary: #536258;
-  --zw-text-muted: #596b5e;
+  /* Typography / Text Colors (Light - sharp, high contrast hierarchy) */
+  --zw-text-primary: #111a15;
+  --zw-text-secondary: #405247;
+  --zw-text-muted: #607366;
   --zw-text-inverse: #ffffff;
 
-  /* Borders & Focus Rings (Light) */
-  --zw-border-subtle: #e6ebe7;
-  --zw-border-default: #dde8df;
-  --zw-border-strong: #b7d1be;
+  /* Borders & Focus Rings (Light - defined, visible borders) */
+  --zw-border-subtle: #e5ebe6;
+  --zw-border-default: #d1ded4;
+  --zw-border-strong: #9eb8a5;
   --zw-focus-ring: rgba(8, 127, 80, 0.2);
 
   /* Status States (Light) */
@@ -133,11 +133,11 @@
   --zw-status-info-bg: #f0f9ff;
   --zw-status-info-border: #bae6fd;
 
-  /* Shadows (Light) */
-  --zw-shadow-subtle: 0 1px 2px 0 rgba(24, 35, 30, 0.04);
-  --zw-shadow-card: 0 1px 3px 0 rgba(24, 35, 30, 0.06), 0 1px 2px -1px rgba(24, 35, 30, 0.06);
-  --zw-shadow-card-hover: 0 8px 24px -4px rgba(24, 35, 30, 0.08), 0 2px 6px -1px rgba(24, 35, 30, 0.04);
-  --zw-shadow-dropdown: 0 8px 24px -4px rgba(24, 35, 30, 0.12);
+  /* Shadows (Light - clean card definition) */
+  --zw-shadow-subtle: 0 1px 2px 0 rgba(16, 30, 22, 0.05);
+  --zw-shadow-card: 0 1px 3px 0 rgba(16, 30, 22, 0.08), 0 1px 2px -1px rgba(16, 30, 22, 0.06);
+  --zw-shadow-card-hover: 0 10px 25px -4px rgba(16, 30, 22, 0.10), 0 2px 6px -1px rgba(16, 30, 22, 0.05);
+  --zw-shadow-dropdown: 0 8px 24px -4px rgba(16, 30, 22, 0.12);
   --zw-shadow-modal: 0 20px 40px -12px rgba(16, 37, 27, 0.22);
 
   /* Layout & Spacing Tokens */
