@@ -86,7 +86,7 @@ export default function AdminCandidatesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-white text-text-primary">
+    <div className="min-h-screen bg-surface-base text-text-primary">
       <div className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 space-y-8">
         {/* Header */}
         <header>
@@ -116,7 +116,7 @@ export default function AdminCandidatesPage() {
                 onClick={() => fetchCandidates(true)}
                 disabled={refreshing}
                 aria-label="Refresh candidates"
-                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-white px-3.5 text-xs font-semibold text-text-secondary shadow-2xs transition hover:border-border-strong hover:text-text-primary disabled:opacity-50 cursor-pointer"
+                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-secondary shadow-2xs transition hover:border-border-strong hover:text-text-primary disabled:opacity-50 cursor-pointer"
               >
                 <RefreshCw size={14} className={refreshing ? "animate-spin text-brand" : ""} />
                 <span>Refresh</span>
@@ -134,7 +134,7 @@ export default function AdminCandidatesPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, email, or role..."
-              className="h-9 w-full rounded-control border border-border-default bg-white pl-9 pr-4 text-xs text-text-primary outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/10"
+              className="h-9 w-full rounded-control border border-border-default bg-surface-card pl-9 pr-4 text-xs text-text-primary outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/10"
             />
           </div>
           <p className="text-xs text-text-muted">
@@ -144,7 +144,7 @@ export default function AdminCandidatesPage() {
 
         {/* Content */}
         {loading ? (
-          <div className="rounded-card border border-border-subtle bg-white p-8">
+          <div className="rounded-card border border-border-subtle bg-surface-card p-8">
             <LoadingSpinner label="Loading candidate profiles..." className="py-20" />
           </div>
         ) : error ? (
@@ -162,7 +162,7 @@ export default function AdminCandidatesPage() {
             </button>
           </div>
         ) : filteredCandidates.length === 0 ? (
-          <div className="rounded-card border border-border-subtle bg-white p-12 text-center">
+          <div className="rounded-card border border-border-subtle bg-surface-card p-12 text-center">
             <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-control bg-brand-soft text-brand">
               <Users size={22} />
             </div>
@@ -174,7 +174,7 @@ export default function AdminCandidatesPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-card border border-border-subtle bg-white shadow-2xs">
+          <div className="overflow-hidden rounded-card border border-border-subtle bg-surface-card shadow-2xs">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="border-b border-border-subtle bg-surface-subtle/50 text-2xs font-semibold uppercase tracking-wider text-text-muted">
@@ -255,7 +255,7 @@ export default function AdminCandidatesPage() {
                       <td className="px-5 py-4 text-right">
                         <Link
                           href={`/candidates/${candidate.id}`}
-                          className="inline-flex items-center gap-1 rounded-control border border-border-default bg-white px-2.5 py-1.5 text-2xs font-semibold text-text-primary shadow-2xs transition hover:border-brand hover:bg-brand-soft hover:text-brand"
+                          className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 py-1.5 text-2xs font-semibold text-text-primary shadow-2xs transition hover:border-brand hover:bg-brand-soft hover:text-brand"
                         >
                           View Profile <ExternalLink size={11} />
                         </Link>

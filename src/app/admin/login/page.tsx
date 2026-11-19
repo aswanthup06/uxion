@@ -103,7 +103,7 @@ export default function AdminLoginPage() {
           className="pointer-events-none absolute inset-0 opacity-60"
           style={{
             backgroundImage:
-              "radial-gradient(#B9D9C2 0.8px, transparent 0.8px)",
+              "radial-gradient(var(--color-border-strong) 0.8px, transparent 0.8px)",
             backgroundSize: "22px 22px",
             maskImage: "linear-gradient(to bottom right, black, transparent 72%)",
           }}

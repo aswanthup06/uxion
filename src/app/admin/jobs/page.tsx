@@ -91,7 +91,7 @@ export default function JobListPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-text-primary">
+    <div className="min-h-screen bg-surface-base text-text-primary">
       <div className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 space-y-8">
         {/* Header */}
         <header>
@@ -121,7 +121,7 @@ export default function JobListPage() {
                 onClick={() => void loadJobs(true)}
                 disabled={refreshing || loading}
                 aria-label="Refresh job listings"
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-border-default bg-white text-text-secondary shadow-2xs transition hover:border-border-strong hover:text-text-primary disabled:opacity-50 cursor-pointer"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-border-default bg-surface-card text-text-secondary shadow-2xs transition hover:border-border-strong hover:text-text-primary disabled:opacity-50 cursor-pointer"
               >
                 <RefreshCw
                   size={14}
@@ -133,20 +133,12 @@ export default function JobListPage() {
                 href="/job-posters"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-control border border-border-default bg-white px-3.5 text-xs font-semibold text-text-primary shadow-2xs transition hover:border-border-strong hover:bg-surface-subtle"
+                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-primary shadow-2xs transition hover:border-border-strong hover:bg-surface-subtle"
               >
                 <ImageDown size={14} className="text-brand" />
                 <span>Job Posters</span>
                 <ArrowUpRight size={13} className="text-text-muted" />
               </a>
-
-              <Link
-                href="/admin/jobs/add"
-                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-control bg-brand px-3.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-brand-hover"
-              >
-                <Plus size={15} />
-                <span>Add new job</span>
-              </Link>
             </div>
           </div>
         </header>
@@ -154,7 +146,7 @@ export default function JobListPage() {
         {/* Existing job table */}
         <section>
           {loading ? (
-            <div className="rounded-card border border-border-subtle bg-white p-8">
+            <div className="rounded-card border border-border-subtle bg-surface-card p-8">
               <LoadingSpinner label="Loading published jobs..." className="py-12" />
             </div>
           ) : jobs.length > 0 ? (
@@ -164,7 +156,7 @@ export default function JobListPage() {
               onViewPoster={(job) => setPosterJob(job)}
             />
           ) : (
-            <div className="rounded-card border border-border-subtle bg-white py-16 text-center">
+            <div className="rounded-card border border-border-subtle bg-surface-card py-16 text-center">
               <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-control bg-brand-soft text-brand">
                 <BriefcaseBusiness size={20} strokeWidth={1.7} />
               </span>

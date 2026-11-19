@@ -213,7 +213,7 @@ export default function ReferralDashboardPage({
                             <div className="flex items-start justify-between gap-2">
                                 <span className="min-w-0 text-xs leading-snug text-text-muted">{label}</span>
                                 <span
-                                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-control ${tone === "brand" ? "bg-brand text-white" : "bg-brand-soft text-brand"
+                                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-control ${tone === "brand" ? "bg-brand text-text-inverse" : "bg-brand-soft text-brand"
                                         }`}
                                 >
                                     <Icon size={15} />

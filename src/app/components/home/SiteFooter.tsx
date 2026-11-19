@@ -55,13 +55,13 @@ export default function SiteFooter() {
               aria-label="Zenoway home"
               className="inline-flex items-center gap-2"
             >
-             <Image
-  src="/logo.png"
-  alt="Zenoway logo"
-  width={300}
-  height={100}
-  className="h-6 w-auto object-contain"
-/>
+              <Image
+                src="/logo.png"
+                alt="Zenoway logo"
+                width={300}
+                height={100}
+                className="h-6 w-auto object-contain"
+              />
 
               <span className="text-xl font-bold tracking-tight text-text-primary">
                 zenoway

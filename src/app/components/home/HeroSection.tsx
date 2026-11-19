@@ -230,7 +230,7 @@ export default function HeroSection({
               className="absolute inset-3 opacity-40"
               style={{
                 backgroundImage:
-                  "radial-gradient(#b9c8ba 0.7px, transparent 0.7px)",
+                  "radial-gradient(var(--color-border-strong) 0.7px, transparent 0.7px)",
                 backgroundSize: "17px 17px",
                 maskImage:
                   "radial-gradient(ellipse at center, black 15%, transparent 75%)",
@@ -257,7 +257,7 @@ export default function HeroSection({
                 cy="210"
                 rx="180"
                 ry="140"
-                stroke="#dce7dc"
+                stroke="var(--color-border-default)"
                 strokeDasharray="3 7"
               />
               <ellipse
@@ -265,12 +265,12 @@ export default function HeroSection({
                 cy="210"
                 rx="135"
                 ry="175"
-                stroke="#e7ede5"
+                stroke="var(--color-border-subtle)"
                 transform="rotate(-28 250 210)"
               />
               <path
                 d="M70 280 C150 280 155 120 230 145 S350 275 430 95"
-                stroke="#b9d1bc"
+                stroke="var(--color-border-strong)"
                 strokeDasharray="4 6"
               />
               <circle cx="70" cy="280" r="4" fill="var(--color-brand)" />

@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
 /* Zenoway Design System Tokens */
 
 @theme {
@@ -15,52 +17,53 @@
   --text-base-compact--line-height: 22px;
 
   /* Brand Palette (Zenoway Emerald) */
-  --color-brand: #087f50;
-  --color-brand-hover: #066640;
-  --color-brand-accent: #0fa968;
-  --color-brand-dark: #164e3b;
-  --color-brand-soft: #edf7f1;
-  --color-brand-soft-hover: #e3f2e8;
+  --color-brand: var(--zw-brand);
+  --color-brand-hover: var(--zw-brand-hover);
+  --color-brand-accent: var(--zw-brand-accent);
+  --color-brand-dark: var(--zw-brand-dark);
+  --color-brand-soft: var(--zw-brand-soft);
+  --color-brand-soft-hover: var(--zw-brand-soft-hover);
 
   /* Surfaces & Backgrounds */
-  --color-surface-base: #ffffff;
-  --color-surface-subtle: #f8faf8;
-  --color-surface-muted: #f2f6f3;
-  --color-surface-card: #ffffff;
-  --color-surface-page: #ffffff;
-  --color-surface-dark: #164e3b;
+  --color-surface-base: var(--zw-surface-base);
+  --color-surface-subtle: var(--zw-surface-subtle);
+  --color-surface-muted: var(--zw-surface-muted);
+  --color-surface-card: var(--zw-surface-card);
+  --color-surface-page: var(--zw-surface-page);
+  --color-surface-dark: var(--zw-surface-dark);
 
   /* Typography / Text Colors */
-  --color-text-primary: #17251f;
-  --color-text-secondary: #536258;
-  --color-text-muted: #596b5e;
-  --color-text-inverse: #ffffff;
+  --color-text-primary: var(--zw-text-primary);
+  --color-text-secondary: var(--zw-text-secondary);
+  --color-text-muted: var(--zw-text-muted);
+  --color-text-inverse: var(--zw-text-inverse);
 
   /* Typography Direct Aliases (allows both text-primary and text-text-primary) */
-  --color-primary: #17251f;
-  --color-secondary: #536258;
-  --color-muted: #596b5e;
-  --color-inverse: #ffffff;
+  --color-primary: var(--zw-text-primary);
+  --color-secondary: var(--zw-text-secondary);
+  --color-muted: var(--zw-text-muted);
+  --color-inverse: var(--zw-text-inverse);
 
   /* Borders & Focus Rings */
-  --color-border-subtle: #e6ebe7;
-  --color-border-default: #dde8df;
-  --color-border-strong: #b7d1be;
-  --color-focus-ring: rgba(8, 127, 80, 0.2);
+  --color-border: var(--zw-border-default);
+  --color-border-subtle: var(--zw-border-subtle);
+  --color-border-default: var(--zw-border-default);
+  --color-border-strong: var(--zw-border-strong);
+  --color-focus-ring: var(--zw-focus-ring);
 
   /* Status States */
-  --color-status-success: #087f50;
-  --color-status-success-bg: #edf7f1;
-  --color-status-success-border: #b7d1be;
-  --color-status-warning: #d97706;
-  --color-status-warning-bg: #fffbeb;
-  --color-status-warning-border: #fde68a;
-  --color-status-error: #dc2626;
-  --color-status-error-bg: #fef2f2;
-  --color-status-error-border: #fecaca;
-  --color-status-info: #0284c7;
-  --color-status-info-bg: #f0f9ff;
-  --color-status-info-border: #bae6fd;
+  --color-status-success: var(--zw-status-success);
+  --color-status-success-bg: var(--zw-status-success-bg);
+  --color-status-success-border: var(--zw-status-success-border);
+  --color-status-warning: var(--zw-status-warning);
+  --color-status-warning-bg: var(--zw-status-warning-bg);
+  --color-status-warning-border: var(--zw-status-warning-border);
+  --color-status-error: var(--zw-status-error);
+  --color-status-error-bg: var(--zw-status-error-bg);
+  --color-status-error-border: var(--zw-status-error-border);
+  --color-status-info: var(--zw-status-info);
+  --color-status-info-bg: var(--zw-status-info-bg);
+  --color-status-info-border: var(--zw-status-info-border);
 
   /* Border Radii */
   --radius-control: 4px;
@@ -70,11 +73,11 @@
   --radius-pill: 9999px;
 
   /* Shadows */
-  --shadow-subtle: 0 1px 2px 0 rgba(24, 35, 30, 0.04);
-  --shadow-card: 0 1px 3px 0 rgba(24, 35, 30, 0.06), 0 1px 2px -1px rgba(24, 35, 30, 0.06);
-  --shadow-card-hover: 0 8px 24px -4px rgba(24, 35, 30, 0.08), 0 2px 6px -1px rgba(24, 35, 30, 0.04);
-  --shadow-dropdown: 0 8px 24px -4px rgba(24, 35, 30, 0.12);
-  --shadow-modal: 0 20px 40px -12px rgba(16, 37, 27, 0.22);
+  --shadow-subtle: var(--zw-shadow-subtle);
+  --shadow-card: var(--zw-shadow-card);
+  --shadow-card-hover: var(--zw-shadow-card-hover);
+  --shadow-dropdown: var(--zw-shadow-dropdown);
+  --shadow-modal: var(--zw-shadow-modal);
 
   /* Motion & Easing */
   --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
@@ -88,6 +91,55 @@
 }
 
 :root {
+  /* Brand Palette (Light - rich high-contrast emerald) */
+  --zw-brand: #087f50;
+  --zw-brand-hover: #066640;
+  --zw-brand-accent: #087f50;
+  --zw-brand-dark: #164e3b;
+  --zw-brand-soft: #edf7f1;
+  --zw-brand-soft-hover: #e3f2e8;
+
+  /* Surfaces & Backgrounds (Light) */
+  --zw-surface-base: #ffffff;
+  --zw-surface-subtle: #f8faf8;
+  --zw-surface-muted: #f2f6f3;
+  --zw-surface-card: #ffffff;
+  --zw-surface-page: #ffffff;
+  --zw-surface-dark: #164e3b;
+
+  /* Typography / Text Colors (Light) */
+  --zw-text-primary: #17251f;
+  --zw-text-secondary: #536258;
+  --zw-text-muted: #596b5e;
+  --zw-text-inverse: #ffffff;
+
+  /* Borders & Focus Rings (Light) */
+  --zw-border-subtle: #e6ebe7;
+  --zw-border-default: #dde8df;
+  --zw-border-strong: #b7d1be;
+  --zw-focus-ring: rgba(8, 127, 80, 0.2);
+
+  /* Status States (Light) */
+  --zw-status-success: #087f50;
+  --zw-status-success-bg: #edf7f1;
+  --zw-status-success-border: #b7d1be;
+  --zw-status-warning: #d97706;
+  --zw-status-warning-bg: #fffbeb;
+  --zw-status-warning-border: #fde68a;
+  --zw-status-error: #dc2626;
+  --zw-status-error-bg: #fef2f2;
+  --zw-status-error-border: #fecaca;
+  --zw-status-info: #0284c7;
+  --zw-status-info-bg: #f0f9ff;
+  --zw-status-info-border: #bae6fd;
+
+  /* Shadows (Light) */
+  --zw-shadow-subtle: 0 1px 2px 0 rgba(24, 35, 30, 0.04);
+  --zw-shadow-card: 0 1px 3px 0 rgba(24, 35, 30, 0.06), 0 1px 2px -1px rgba(24, 35, 30, 0.06);
+  --zw-shadow-card-hover: 0 8px 24px -4px rgba(24, 35, 30, 0.08), 0 2px 6px -1px rgba(24, 35, 30, 0.04);
+  --zw-shadow-dropdown: 0 8px 24px -4px rgba(24, 35, 30, 0.12);
+  --zw-shadow-modal: 0 20px 40px -12px rgba(16, 37, 27, 0.22);
+
   /* Layout & Spacing Tokens */
   --container-max: 1200px;
   --container-narrow: 1024px;
@@ -101,18 +153,71 @@
   --duration-slow: 400ms;
 
   /* Legacy & Semantic Variable Aliases */
-  --color-background: var(--color-surface-base);
-  --color-surface: var(--color-surface-base);
-  --color-text: var(--color-text-primary);
-  --color-border: var(--color-border-subtle);
+  --color-background: var(--zw-surface-base);
+  --color-surface: var(--zw-surface-base);
+  --color-text: var(--zw-text-primary);
+  --color-border: var(--zw-border-subtle);
   --container-width: var(--container-max);
   --page-gutter: var(--gutter-desktop);
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* Brand Palette (Dark - luminous, vibrant emerald across all pages) */
+  --zw-brand: #10b981;
+  --zw-brand-hover: #059669;
+  --zw-brand-accent: #10b981;
+  --zw-brand-dark: #34d399;
+  --zw-brand-soft: rgba(16, 185, 129, 0.15);
+  --zw-brand-soft-hover: rgba(16, 185, 129, 0.25);
+
+  /* Surfaces & Backgrounds (Dark - Deeper, refined Obsidian) */
+  --zw-surface-base: #09090b;
+  --zw-surface-subtle: #0a0a0c;
+  --zw-surface-muted: #131316;
+  --zw-surface-card: #0c0c0e;
+  --zw-surface-page: #09090b;
+  --zw-surface-dark: #000000;
+
+  /* Typography / Text Colors (Dark - crisp, bright & high contrast) */
+  --zw-text-primary: #ffffff;
+  --zw-text-secondary: #e4e4e7;
+  --zw-text-muted: #a1a1aa;
+  --zw-text-inverse: #052e16;
+
+  /* Borders & Focus Rings (Dark - refined, ultra-subtle translucent hairlines) */
+  --zw-border-subtle: rgba(255, 255, 255, 0.03);
+  --zw-border-default: rgba(255, 255, 255, 0.05);
+  --zw-border-strong: rgba(255, 255, 255, 0.09);
+  --zw-focus-ring: rgba(16, 185, 129, 0.35);
+
+  /* Status States (Dark) */
+  --zw-status-success: #10b981;
+  --zw-status-success-bg: rgba(16, 185, 129, 0.12);
+  --zw-status-success-border: rgba(16, 185, 129, 0.25);
+  --zw-status-warning: #f59e0b;
+  --zw-status-warning-bg: rgba(245, 158, 11, 0.12);
+  --zw-status-warning-border: rgba(245, 158, 11, 0.25);
+  --zw-status-error: #ef4444;
+  --zw-status-error-bg: rgba(239, 68, 68, 0.12);
+  --zw-status-error-border: rgba(239, 68, 68, 0.25);
+  --zw-status-info: #0ea5e9;
+  --zw-status-info-bg: rgba(14, 165, 233, 0.12);
+  --zw-status-info-border: rgba(14, 165, 233, 0.25);
+
+  /* Shadows (Dark - enhanced depth & subtle edge highlights) */
+  --zw-shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --zw-shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  --zw-shadow-card-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.65);
+  --zw-shadow-dropdown: 0 14px 36px -4px rgba(0, 0, 0, 0.75);
+  --zw-shadow-modal: 0 24px 50px -12px rgba(0, 0, 0, 0.85);
 }
 
 html {
   min-height: 100%;
   font-family: var(--font-manrope), Arial, sans-serif;
-  color-scheme: light;
+  color-scheme: light dark;
   scrollbar-gutter: stable;
 }
 

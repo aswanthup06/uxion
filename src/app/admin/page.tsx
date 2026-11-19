@@ -199,7 +199,7 @@ function StatCard({
 }) {
   const content = (
     <div
-      className="group relative flex h-full flex-col justify-between rounded-card border border-border-subtle bg-white p-5 shadow-2xs transition duration-150 hover:border-border-strong hover:shadow-xs"
+      className="group relative flex h-full flex-col justify-between rounded-card border border-border-subtle bg-surface-card p-5 shadow-2xs transition duration-150 hover:border-border-strong hover:shadow-xs"
     >
       <div>
         <div className="flex items-center justify-between gap-3">
@@ -464,7 +464,7 @@ export default function AdminDashboard() {
   }, [jobs, search, tableDateFilter]);
 
   return (
-    <div className="min-h-screen bg-white text-text-primary">
+    <div className="min-h-screen bg-surface-base text-text-primary">
       <div className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 space-y-8">
         {/* Top Header */}
         <header>
@@ -564,7 +564,7 @@ export default function AdminDashboard() {
                 onClick={() => setIsDropdownOpen((prev) => !prev)}
                 aria-expanded={isDropdownOpen}
                 aria-haspopup="listbox"
-                className={`inline-flex h-9 items-center gap-2 rounded-control border bg-white px-3.5 text-xs font-semibold shadow-2xs transition ${
+                className={`inline-flex h-9 items-center gap-2 rounded-control border bg-surface-card px-3.5 text-xs font-semibold shadow-2xs transition ${
                   isDropdownOpen
                     ? "border-brand ring-2 ring-focus-ring text-text-primary"
                     : "border-border-default text-text-secondary hover:border-border-strong hover:text-text-primary"
@@ -587,7 +587,7 @@ export default function AdminDashboard() {
                 <div
                   role="listbox"
                   aria-label="Select timeframe"
-                  className="absolute right-0 top-full mt-1.5 w-48 rounded-card border border-border-subtle bg-white p-1.5 shadow-dropdown z-40 animate-in fade-in zoom-in-95 duration-100"
+                  className="absolute right-0 top-full mt-1.5 w-48 rounded-card border border-border-subtle bg-surface-card p-1.5 shadow-dropdown z-40 animate-in fade-in zoom-in-95 duration-100"
                 >
                   <div className="px-2.5 py-1.5 text-3xs font-bold uppercase tracking-wider text-text-muted">
                     Filter by Period
@@ -700,10 +700,10 @@ export default function AdminDashboard() {
         {/* Main Job Listings Card */}
         <section
           id="job-listings-section"
-          className="rounded-card border border-border-subtle bg-white shadow-2xs overflow-hidden"
+          className="rounded-card border border-border-subtle bg-surface-card shadow-2xs overflow-hidden"
         >
           {/* Card Top Toolbar */}
-          <div className="flex flex-col justify-between gap-4 border-b border-border-subtle p-5 sm:flex-row sm:items-center bg-white">
+          <div className="flex flex-col justify-between gap-4 border-b border-border-subtle p-5 sm:flex-row sm:items-center bg-surface-card">
             <div className="flex items-center gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-control bg-brand-soft text-brand font-semibold shrink-0">
                 <BriefcaseBusiness size={17} />
@@ -713,7 +713,7 @@ export default function AdminDashboard() {
                   <h3 className="text-base font-semibold text-text-primary">
                     Job Listings
                   </h3>
-                  <span className="rounded-control bg-white border border-border-default px-2 py-0.5 text-2xs font-semibold text-text-secondary">
+                  <span className="rounded-control bg-surface-subtle border border-border-default px-2 py-0.5 text-2xs font-semibold text-text-secondary">
                     {filteredJobs.length} {filteredJobs.length === 1 ? "job" : "jobs"}
                   </span>
                 </div>
@@ -735,7 +735,7 @@ export default function AdminDashboard() {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search role, company, city..."
-                  className="h-9 w-full rounded-control border border-border-default bg-white pl-9 pr-3 text-xs text-text-primary placeholder:text-text-muted outline-none transition hover:border-border-strong focus:border-brand focus:ring-2 focus:ring-focus-ring"
+                  className="h-9 w-full rounded-control border border-border-default bg-surface-card pl-9 pr-3 text-xs text-text-primary placeholder:text-text-muted outline-none transition hover:border-border-strong focus:border-brand focus:ring-2 focus:ring-focus-ring"
                 />
               </div>
 
@@ -745,7 +745,7 @@ export default function AdminDashboard() {
                   onClick={() => setIsTableDropdownOpen((prev) => !prev)}
                   aria-expanded={isTableDropdownOpen}
                   aria-haspopup="listbox"
-                  className={`inline-flex h-9 items-center gap-2 rounded-control border bg-white px-3 text-xs font-semibold shadow-2xs transition cursor-pointer ${
+                  className={`inline-flex h-9 items-center gap-2 rounded-control border bg-surface-card px-3 text-xs font-semibold shadow-2xs transition cursor-pointer ${
                     isTableDropdownOpen
                       ? "border-brand ring-2 ring-focus-ring text-text-primary"
                       : "border-border-default text-text-secondary hover:border-border-strong hover:text-text-primary"
@@ -772,7 +772,7 @@ export default function AdminDashboard() {
                   <div
                     role="listbox"
                     aria-label="Filter jobs table by date"
-                    className="absolute right-0 top-full mt-1.5 w-52 rounded-card border border-border-subtle bg-white p-1.5 shadow-dropdown z-40 animate-in fade-in zoom-in-95 duration-100"
+                    className="absolute right-0 top-full mt-1.5 w-52 rounded-card border border-border-subtle bg-surface-card p-1.5 shadow-dropdown z-40 animate-in fade-in zoom-in-95 duration-100"
                   >
                     <div className="px-2.5 py-1.5 text-3xs font-bold uppercase tracking-wider text-text-muted">
                       Filter by Date
@@ -822,7 +822,7 @@ export default function AdminDashboard() {
 
               <Link
                 href="/admin/jobs"
-                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-white px-3 text-xs font-semibold text-text-secondary shadow-2xs transition hover:bg-surface-subtle hover:text-text-primary"
+                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 text-xs font-semibold text-text-secondary shadow-2xs transition hover:bg-surface-subtle hover:text-text-primary"
               >
                 <span>Full view</span>
                 <ArrowUpRight size={13} />
@@ -881,7 +881,7 @@ export default function AdminDashboard() {
                 {!search && tableDateFilter === "all" && (
                   <Link
                     href="/admin/jobs/add"
-                    className="mt-4 inline-flex items-center gap-1.5 rounded-control bg-brand px-3.5 py-2 text-xs font-semibold text-white hover:bg-brand-hover shadow-xs"
+                    className="mt-4 inline-flex items-center gap-1.5 rounded-control bg-brand px-3.5 py-2 text-xs font-semibold text-text-inverse hover:bg-brand-hover shadow-xs"
                   >
                     <Plus size={14} />
                     <span>Add your first job</span>
@@ -893,7 +893,7 @@ export default function AdminDashboard() {
                 {/* Desktop Table */}
                 <div className="hidden overflow-x-auto md:block">
                   <table className="w-full text-left">
-                    <thead className="border-b border-border-subtle bg-white text-2xs font-semibold uppercase tracking-wider text-text-muted">
+                    <thead className="border-b border-border-subtle bg-surface-subtle text-2xs font-semibold uppercase tracking-wider text-text-muted">
                       <tr>
                         <th className="py-3.5 pl-6 pr-4">Role & Company</th>
                         <th className="px-4 py-3.5">Location</th>
@@ -976,7 +976,7 @@ export default function AdminDashboard() {
                                 rel="noopener noreferrer"
                                 aria-label={`View poster for ${job.title}`}
                                 title="View poster image"
-                                className="inline-flex items-center gap-1 rounded-control border border-border-default bg-white px-2.5 py-1 text-xs font-medium text-text-secondary shadow-2xs transition hover:border-brand/40 hover:text-brand"
+                                className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 py-1 text-xs font-medium text-text-secondary shadow-2xs transition hover:border-brand/40 hover:text-brand"
                               >
                                 <ImageDown size={13} className="text-brand" />
                                 <span>Poster</span>
@@ -985,7 +985,7 @@ export default function AdminDashboard() {
                               <Link
                                 href={`/admin/jobs/${job.id}/edit`}
                                 aria-label={`Edit ${job.title}`}
-                                className="inline-flex items-center gap-1 rounded-control border border-border-default bg-white px-2.5 py-1 text-xs font-medium text-text-secondary shadow-2xs transition hover:border-brand/40 hover:text-brand"
+                                className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 py-1 text-xs font-medium text-text-secondary shadow-2xs transition hover:border-brand/40 hover:text-brand"
                               >
                                 <Pencil size={12} />
                                 <span>Edit</span>
@@ -995,7 +995,7 @@ export default function AdminDashboard() {
                                 href={`/admin/jobs/${job.id}`}
                                 aria-label={`View ${job.title}`}
                                 title="View details"
-                                className="inline-flex h-7 w-7 items-center justify-center rounded-control border border-border-default bg-white text-text-muted shadow-2xs transition hover:border-brand/40 hover:text-brand"
+                                className="inline-flex h-7 w-7 items-center justify-center rounded-control border border-border-default bg-surface-card text-text-muted shadow-2xs transition hover:border-brand/40 hover:text-brand"
                               >
                                 <ExternalLink size={13} />
                               </Link>
@@ -1070,7 +1070,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Card Footer */}
-                <div className="flex flex-col gap-2 border-t border-border-subtle bg-white px-6 py-4 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-2 border-t border-border-subtle bg-surface-card px-6 py-4 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex flex-wrap items-center gap-2">
                     <span>
                       Showing {Math.min(filteredJobs.length, 10)} of{" "}

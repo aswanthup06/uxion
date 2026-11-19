@@ -149,7 +149,7 @@ export default function JobRow({ job, onDelete, onViewPoster, isLatest }: Props)
               onClick={() => onViewPoster(job)}
               aria-label={`View poster for ${job.title}`}
               title="Job poster preview"
-              className="inline-flex items-center gap-1 rounded-control border border-border-default bg-white px-2.5 py-1 text-xs font-medium text-text-secondary shadow-2xs transition hover:border-brand/40 hover:text-brand cursor-pointer"
+              className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 py-1 text-xs font-medium text-text-secondary shadow-2xs transition hover:border-brand/40 hover:text-brand cursor-pointer"
             >
               <ImageDown size={13} className="text-brand" />
               <span>Poster</span>
@@ -161,7 +161,7 @@ export default function JobRow({ job, onDelete, onViewPoster, isLatest }: Props)
               rel="noopener noreferrer"
               aria-label={`View poster for ${job.title}`}
               title="View job poster"
-              className="inline-flex items-center gap-1 rounded-control border border-border-default bg-white px-2.5 py-1 text-xs font-medium text-text-secondary shadow-2xs transition hover:border-brand/40 hover:text-brand"
+              className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 py-1 text-xs font-medium text-text-secondary shadow-2xs transition hover:border-brand/40 hover:text-brand"
             >
               <ImageDown size={13} className="text-brand" />
               <span>Poster</span>
@@ -171,7 +171,7 @@ export default function JobRow({ job, onDelete, onViewPoster, isLatest }: Props)
           <Link
             href={`/admin/jobs/${job.id}/edit`}
             aria-label={`Edit ${job.title}`}
-            className="inline-flex items-center gap-1 rounded-control border border-border-default bg-white px-2.5 py-1 text-xs font-medium text-text-secondary shadow-2xs transition hover:border-brand/40 hover:text-brand"
+            className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 py-1 text-xs font-medium text-text-secondary shadow-2xs transition hover:border-brand/40 hover:text-brand"
           >
             <Pencil size={12} />
             <span>Edit</span>
@@ -182,7 +182,7 @@ export default function JobRow({ job, onDelete, onViewPoster, isLatest }: Props)
             onClick={() => onDelete(job.id)}
             aria-label={`Delete ${job.title}`}
             title="Delete job"
-            className="inline-flex h-7 w-7 items-center justify-center rounded-control border border-border-default bg-white text-text-muted shadow-2xs transition hover:border-status-error/40 hover:text-status-error hover:bg-status-error-bg cursor-pointer"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-control border border-border-default bg-surface-card text-text-muted shadow-2xs transition hover:border-status-error/40 hover:text-status-error hover:bg-status-error-bg cursor-pointer"
           >
             <Trash2 size={13} />
           </button>
@@ -191,7 +191,7 @@ export default function JobRow({ job, onDelete, onViewPoster, isLatest }: Props)
             href={`/admin/jobs/${job.id}`}
             aria-label={`View ${job.title}`}
             title="View details"
-            className="inline-flex h-7 w-7 items-center justify-center rounded-control border border-border-default bg-white text-text-muted shadow-2xs transition hover:border-brand/40 hover:text-brand"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-control border border-border-default bg-surface-card text-text-muted shadow-2xs transition hover:border-brand/40 hover:text-brand"
           >
             <ExternalLink size={13} />
           </Link>

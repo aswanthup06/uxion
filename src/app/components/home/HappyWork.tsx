@@ -132,7 +132,7 @@ export default function HappyWork() {
             <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-tight text-text-primary sm:text-4xl">
               Love what you do.
               <br />
-              <span className="text-brand-accent">Live a little more.</span>
+              <span className="text-brand">Live a little more.</span>
             </h2>
 
             <p className="mt-5 max-w-md text-sm leading-7 text-text-secondary sm:text-base">

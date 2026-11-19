@@ -52,9 +52,10 @@ export function JobDetailModal({
         <div className="relative shrink-0 border-b border-border-subtle bg-surface-card px-6 py-5 sm:px-8 sm:py-6">
           <div className="flex items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span className="inline-flex items-center rounded-pill bg-brand-soft px-2.5 py-0.5 font-semibold text-brand">
+              <span className="font-semibold text-brand">
                 {getJobCategory(activeJob)}
               </span>
+              <span className="text-text-muted">·</span>
               <span className="text-text-muted">
                 Posted {timeAgo(activeJob.postedDate)}
               </span>
@@ -204,16 +205,16 @@ export function JobDetailModal({
         </div>
 
         {/* Pinned Sticky Footer Actions */}
-        <div className="shrink-0 border-t border-border-default bg-surface-card px-6 py-4 sm:px-8">
+        <div className="shrink-0 border-t border-border-subtle bg-surface-card px-6 py-4 sm:px-8">
           <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => onToggleSave(activeJob.id)}
-                className={`inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-3.5 py-2.5 text-xs font-semibold transition-all ${
+                className={`inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border px-3.5 text-xs font-semibold shadow-2xs transition-colors ${
                   isSaved
                     ? "border-brand bg-brand-soft text-brand"
-                    : "border-border-default bg-surface-card text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
+                    : "border-border-default bg-surface-card text-text-primary hover:border-border-strong hover:bg-surface-subtle"
                 }`}
               >
                 <Bookmark
@@ -227,9 +228,13 @@ export function JobDetailModal({
               <button
                 type="button"
                 onClick={() => onShare(activeJob)}
-                className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-border-default bg-surface-card px-3.5 py-2.5 text-xs font-semibold text-text-secondary hover:bg-surface-subtle hover:text-text-primary transition-all"
+                className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-primary shadow-2xs transition-colors hover:border-border-strong hover:bg-surface-subtle"
               >
-                {shareCopied ? <Check className="h-4 w-4 text-brand" strokeWidth={1.75} /> : <Share2 className="h-4 w-4" strokeWidth={1.75} />}
+                {shareCopied ? (
+                  <Check className="h-4 w-4 text-brand" strokeWidth={1.75} />
+                ) : (
+                  <Share2 className="h-4 w-4" strokeWidth={1.75} />
+                )}
                 <span>{shareCopied ? "Link Copied" : "Share"}</span>
               </button>
             </div>
@@ -237,7 +242,7 @@ export function JobDetailModal({
             <Link
               href={`/jobs/${activeJob.id}`}
               prefetch={true}
-              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white shadow-subtle transition-all hover:bg-brand-hover active:scale-[0.99]"
+              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control bg-brand px-5 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover active:scale-[0.99]"
             >
               <span>View More</span>
               <ArrowUpRight className="h-4 w-4" strokeWidth={1.75} />

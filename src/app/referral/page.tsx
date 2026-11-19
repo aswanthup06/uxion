@@ -77,11 +77,11 @@ function SliderStyles() {
     return (
         <style>{`
       .zw-range { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 9999px; cursor: pointer;
-        background: linear-gradient(to right, #087f50 var(--p), #e6ebe7 var(--p)); outline: none; }
+        background: linear-gradient(to right, var(--color-brand) var(--p), var(--color-border-subtle) var(--p)); outline: none; }
       .zw-range::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
-        background: #fff; border: 2px solid #087f50; box-shadow: 0 1px 4px rgba(24,35,30,.25); cursor: grab; }
+        background: var(--color-surface-card); border: 2px solid var(--color-brand); box-shadow: 0 1px 4px rgba(24,35,30,.25); cursor: grab; }
       .zw-range::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%;
-        background: #fff; border: 2px solid #087f50; box-shadow: 0 1px 4px rgba(24,35,30,.25); cursor: grab; }
+        background: var(--color-surface-card); border: 2px solid var(--color-brand); box-shadow: 0 1px 4px rgba(24,35,30,.25); cursor: grab; }
       .zw-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px rgba(8,127,80,.25); }
       .zw-range[data-hint="true"]::-webkit-slider-thumb { animation: zw-thumb 1.6s ease-out infinite; }
       .zw-range[data-hint="true"]::-moz-range-thumb { animation: zw-thumb 1.6s ease-out infinite; }
@@ -196,7 +196,7 @@ export default function ZenowayReferralPage() {
                                 aria-hidden="true"
                                 className="absolute inset-3 opacity-40"
                                 style={{
-                                    backgroundImage: "radial-gradient(#b9c8ba 0.7px, transparent 0.7px)",
+                                    backgroundImage: "radial-gradient(var(--color-border-strong) 0.7px, transparent 0.7px)",
                                     backgroundSize: "17px 17px",
                                     maskImage: "radial-gradient(ellipse at center, black 15%, transparent 75%)",
                                 }}
@@ -211,23 +211,23 @@ export default function ZenowayReferralPage() {
                                 animate={reduceMotion ? undefined : { rotate: [0, 2, 0] }}
                                 transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
                             >
-                                <ellipse cx="250" cy="210" rx="180" ry="140" stroke="#dce7dc" strokeDasharray="3 7" />
+                                <ellipse cx="250" cy="210" rx="180" ry="140" stroke="var(--color-border-default)" strokeDasharray="3 7" />
                                 <ellipse
                                     cx="250"
                                     cy="210"
                                     rx="135"
                                     ry="175"
-                                    stroke="#e7ede5"
+                                    stroke="var(--color-border-subtle)"
                                     transform="rotate(-28 250 210)"
                                 />
                                 <path
                                     d="M70 280 C150 280 155 120 230 145 S350 275 430 95"
-                                    stroke="#b9d1bc"
+                                    stroke="var(--color-border-strong)"
                                     strokeDasharray="4 6"
                                 />
-                                <circle cx="70" cy="280" r="4" fill="#0fa968" />
-                                <circle cx="230" cy="145" r="4" fill="#0fa968" />
-                                <circle cx="430" cy="95" r="4" fill="#0fa968" />
+                                <circle cx="70" cy="280" r="4" fill="var(--color-brand)" />
+                                <circle cx="230" cy="145" r="4" fill="var(--color-brand)" />
+                                <circle cx="430" cy="95" r="4" fill="var(--color-brand)" />
                             </motion.svg>
 
                             {/* earnings card */}
@@ -445,9 +445,9 @@ export default function ZenowayReferralPage() {
                         fill="none"
                         className="pointer-events-none absolute -right-16 -top-16 h-[320px] w-[320px] opacity-70"
                     >
-                        <circle cx="200" cy="200" r="60" stroke="#b7d1be" />
-                        <circle cx="200" cy="200" r="110" stroke="#b7d1be" strokeDasharray="3 8" />
-                        <circle cx="200" cy="200" r="160" stroke="#cfe0d3" />
+                        <circle cx="200" cy="200" r="60" stroke="var(--color-border-strong)" />
+                        <circle cx="200" cy="200" r="110" stroke="var(--color-border-strong)" strokeDasharray="3 8" />
+                        <circle cx="200" cy="200" r="160" stroke="var(--color-border-subtle)" />
                         <circle cx="200" cy="40" r="5" fill="var(--color-brand-accent)" />
                         <circle cx="311" cy="311" r="4" fill="var(--color-brand-accent)" />
                     </svg>

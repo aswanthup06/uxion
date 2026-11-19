@@ -6,10 +6,11 @@ import Link from "next/link";
 import Script from "next/script";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
-import { ArrowUpRight, AlertCircle } from "lucide-react";
+import { ArrowUpRight, AlertCircle, LoaderCircle } from "lucide-react";
 import { Button } from "@/app/components/Button";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "next-themes";
 
 declare global {
   interface Window {
@@ -50,6 +51,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isLoading: authLoading } = useAuth();
+  const { resolvedTheme } = useTheme();
 
   const rawDestination =
     searchParams.get("redirect") ||
@@ -173,7 +175,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
 
       window.google.accounts.id.renderButton(googleButtonRef.current, {
         type: "standard",
-        theme: "outline",
+        theme: resolvedTheme === "dark" ? "filled_black" : "outline",
         size: "large",
         text: isSignin ? "signin_with" : "signup_with",
         shape: "rectangular",
@@ -192,7 +194,7 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
     } catch (gsiErr) {
       console.warn("Could not initialize Google Identity Services:", gsiErr);
     }
-  }, [googleClientId, handleCredentialResponse, isSignin]);
+  }, [googleClientId, handleCredentialResponse, isSignin, resolvedTheme]);
 
   // Fallback OAuth redirect if GSI is not configured or blocked
   const handleGoogleSignInFallback = async () => {
@@ -343,29 +345,26 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
                 </div>
               )}
 
-              {/* Native Google Sign In Button Container */}
-              <div className="w-full min-w-0 max-w-full overflow-hidden">
-                <div
-                  ref={googleButtonRef}
-                  className={`w-full flex justify-center min-h-[44px] overflow-hidden ${
-                    isGsiRendered && !isLoading ? "block" : "hidden"
-                  }`}
-                />
-
-                {(!isGsiRendered || isLoading) && (
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="lg"
-                    onClick={handleGoogleSignInFallback}
-                    disabled={isLoading}
-                    loading={isLoading}
-                    leftIcon={!isLoading ? <FcGoogle size={20} /> : undefined}
-                    className="w-full min-h-[50px] gap-3 text-sm font-medium text-text-primary"
-                  >
-                    {isLoading ? "Signing you in..." : "Continue with Google"}
-                  </Button>
-                )}
+              {/* Custom Google Sign In Button */}
+              <div className="w-full min-w-0 max-w-full">
+                <button
+                  type="button"
+                  onClick={handleGoogleSignInFallback}
+                  disabled={isLoading}
+                  className="group relative flex h-11 w-full cursor-pointer items-center justify-center gap-3 rounded-control border border-border-default bg-surface-card px-4 text-sm font-semibold text-text-primary shadow-subtle transition-all duration-200 hover:border-border-strong hover:bg-surface-subtle active:scale-[0.99] disabled:cursor-wait disabled:opacity-70 dark:border-white/12 dark:bg-surface-muted dark:hover:border-white/20 dark:hover:bg-[#202024]"
+                >
+                  {isLoading ? (
+                    <>
+                      <LoaderCircle size={18} className="animate-spin text-brand" />
+                      <span>Signing you in...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FcGoogle size={20} className="shrink-0" />
+                      <span>{isSignin ? "Continue with Google" : "Sign up with Google"}</span>
+                    </>
+                  )}
+                </button>
               </div>
 
               <p className="mt-5 text-left text-sm text-text-muted">

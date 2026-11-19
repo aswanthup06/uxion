@@ -12,6 +12,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import ZenowayToaster from "./components/ZenowayToaster";
 
 import MainLayout from "./MainLayout";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -125,6 +126,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${manrope.variable} ${spaceGrotesk.variable} ${plusJakarta.variable} ${playfair.variable} ${syne.variable}`}
     >
       <head>
@@ -157,9 +159,16 @@ export default function RootLayout({
           `}
         </Script>
 
-        <MainLayout>{children}</MainLayout>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <MainLayout>{children}</MainLayout>
+          <ZenowayToaster />
+        </ThemeProvider>
 
-        <ZenowayToaster />
         <Analytics />
         <SpeedInsights />
       </body>

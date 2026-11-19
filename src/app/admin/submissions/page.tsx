@@ -140,7 +140,7 @@ export default function SubmissionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-text-primary">
+    <div className="min-h-screen bg-surface-base text-text-primary">
       <div className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 space-y-8">
         {/* Header */}
         <header>
@@ -166,7 +166,7 @@ export default function SubmissionsPage() {
 
             <div className="flex items-center gap-2.5">
               {!loading && (
-                <span className="rounded-control border border-border-default bg-white px-3 py-1.5 text-xs font-semibold text-text-secondary shadow-2xs">
+                <span className="rounded-control border border-border-default bg-surface-card px-3 py-1.5 text-xs font-semibold text-text-secondary shadow-2xs">
                   <span className="font-bold text-text-primary">{submissions.length}</span>{" "}
                   {submissions.length === 1 ? "pending review" : "pending review"}
                 </span>
@@ -177,7 +177,7 @@ export default function SubmissionsPage() {
                 onClick={() => void loadSubmissions(true)}
                 disabled={refreshing || loading}
                 aria-label="Refresh submissions"
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-border-default bg-white text-text-secondary shadow-2xs transition hover:border-border-strong hover:text-text-primary disabled:opacity-50 cursor-pointer"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-border-default bg-surface-card text-text-secondary shadow-2xs transition hover:border-border-strong hover:text-text-primary disabled:opacity-50 cursor-pointer"
               >
                 <RefreshCw size={14} className={refreshing ? "animate-spin text-brand" : ""} />
               </button>
@@ -188,11 +188,11 @@ export default function SubmissionsPage() {
         {/* Content Section */}
         <section>
           {loading ? (
-            <div className="rounded-card border border-border-subtle bg-white p-8">
+            <div className="rounded-card border border-border-subtle bg-surface-card p-8">
               <LoadingSpinner label="Loading pending submissions..." className="py-12" />
             </div>
           ) : submissions.length === 0 ? (
-            <div className="rounded-card border border-border-subtle bg-white py-16 text-center">
+            <div className="rounded-card border border-border-subtle bg-surface-card py-16 text-center">
               <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-control bg-brand-soft text-brand">
                 <Inbox size={22} strokeWidth={1.8} />
               </span>
@@ -212,7 +212,7 @@ export default function SubmissionsPage() {
                 return (
                   <div
                     key={job.id}
-                    className="overflow-hidden rounded-card border border-border-subtle bg-white shadow-2xs transition hover:border-border-default"
+                    className="overflow-hidden rounded-card border border-border-subtle bg-surface-card shadow-2xs transition hover:border-border-default"
                   >
                     {/* Card Header & Summary */}
                     <div className="p-5 sm:p-6">
@@ -375,7 +375,7 @@ export default function SubmissionsPage() {
                         </button>
 
                         {isExpanded && (
-                          <div className="mt-3 rounded-control border border-border-subtle bg-white p-4 text-xs leading-relaxed text-text-secondary whitespace-pre-wrap max-h-96 overflow-y-auto">
+                          <div className="mt-3 rounded-control border border-border-subtle bg-surface-subtle p-4 text-xs leading-relaxed text-text-secondary whitespace-pre-wrap max-h-96 overflow-y-auto">
                             {job.description || "No description provided."}
                           </div>
                         )}

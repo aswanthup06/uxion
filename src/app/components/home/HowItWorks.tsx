@@ -59,7 +59,7 @@ export default function HowItWorks() {
         <div className="grid gap-9 md:grid-cols-[0.8fr_1.2fr] md:items-center md:gap-14">
           {/* Left: Introduction and steps */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-accent">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand">
               How it works
             </p>
 
@@ -88,7 +88,7 @@ export default function HowItWorks() {
                   >
                     <span
                       className={`mt-0.5 w-6 shrink-0 text-xs tabular-nums font-medium ${
-                        selected ? "text-brand-accent" : "text-text-muted"
+                        selected ? "text-brand" : "text-text-muted"
                       }`}
                     >
                       0{index + 1}
@@ -131,7 +131,7 @@ export default function HowItWorks() {
                     <ArrowRight
                       size={15}
                       className={`mt-0.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5 ${
-                        selected ? "text-brand-accent" : "text-text-muted"
+                        selected ? "text-brand" : "text-text-muted"
                       }`}
                     />
                   </button>
@@ -141,7 +141,7 @@ export default function HowItWorks() {
 
             <Link
               href="/jobs"
-              className="mt-5 inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-brand-accent transition-colors hover:text-brand"
+              className="mt-5 inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-brand transition-colors hover:text-brand-hover"
             >
               Browse all jobs
               <ArrowRight size={15} />
@@ -214,7 +214,7 @@ export default function HowItWorks() {
                             </span>
 
                             {index === 0 && (
-                              <span className="text-xs font-semibold text-brand-accent">
+                              <span className="text-xs font-semibold text-brand">
                                 New
                               </span>
                             )}
@@ -227,7 +227,7 @@ export default function HowItWorks() {
                   {/* Step 2: Read role details */}
                   {active === 1 && (
                     <div className="rounded-card border border-border-default bg-surface-card p-4 sm:p-5 shadow-subtle">
-                      <span className="text-xs font-semibold text-brand-accent">
+                      <span className="text-xs font-semibold text-brand">
                         DESIGN · FULL-TIME
                       </span>
 

@@ -23,6 +23,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const JOBS = "/jobs";
 const POST_JOB = "/post-job";
@@ -613,6 +614,8 @@ export default function Navbar() {
         {/* Desktop actions */}
         {!isAdminRoute ? (
           <div className="hidden shrink-0 h-full items-center gap-3 md:flex lg:gap-3">
+            <ThemeToggle />
+
             <Link
               href={POST_JOB}
               onClick={closeMenus}
@@ -710,7 +713,7 @@ export default function Navbar() {
               <Link
                 href={loginHref}
                 onClick={handleSignInClick}
-                className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-secondary transition-colors duration-200 hover:border-brand hover:bg-brand-soft hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+                className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-primary transition-colors duration-200 hover:border-brand hover:bg-brand-soft hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
               >
                 Sign in
               </Link>
@@ -718,12 +721,14 @@ export default function Navbar() {
           </div>
         ) : (
           <div className="hidden shrink-0 items-center gap-2 md:flex">
+            <ThemeToggle />
+
             <button
               type="button"
               disabled={loggingOut}
               onClick={handleAdminLogout}
               title="Log out of admin"
-              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control px-3 text-xs font-medium text-text-muted transition-colors duration-150 hover:bg-surface-subtle hover:text-status-error disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-primary shadow-subtle transition-colors duration-200 hover:border-status-error/40 hover:bg-status-error-bg hover:text-status-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:cursor-not-allowed disabled:opacity-60"
             >
               <LogOut size={14} className={iconClass} />
               <span>{loggingOut ? "Logging out..." : "Log out"}</span>
@@ -741,11 +746,13 @@ export default function Navbar() {
 
         {/* Mobile menu toggle & quick action */}
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2.5 md:hidden">
+          <ThemeToggle size="sm" />
+
           {!isAdminRoute && (
             <Link
               href={POST_JOB}
               onClick={closeMenus}
-              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1 rounded-control bg-brand-soft px-2.5 sm:px-3 text-xs font-semibold text-brand transition-colors duration-200 hover:bg-brand-soft-hover hover:text-brand-dark"
+              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1 rounded-control bg-brand px-2.5 sm:px-3 text-xs font-semibold text-text-inverse shadow-subtle transition-colors duration-200 hover:bg-brand-hover"
             >
               <Plus size={13} />
               <span>Post Job</span>
@@ -1161,7 +1168,7 @@ export default function Navbar() {
                       type="button"
                       disabled={loggingOut}
                       onClick={handleAdminLogout}
-                      className="mb-2 flex w-full cursor-pointer items-center gap-2.5 rounded-control px-3 py-2.5 text-left text-xs font-medium text-text-muted transition-colors hover:bg-surface-subtle hover:text-status-error disabled:cursor-not-allowed disabled:opacity-60"
+                      className="mb-2 flex w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-3 py-2.5 text-xs font-semibold text-text-primary shadow-subtle transition-colors hover:border-status-error/40 hover:bg-status-error-bg hover:text-status-error disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <LogOut size={16} className={iconClass} />
                       {loggingOut ? "Logging out..." : "Log out"}

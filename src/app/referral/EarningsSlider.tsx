@@ -23,13 +23,13 @@ export default function EarningsSlider() {
             {/* Ring */}
             <div className="relative mx-auto h-48 w-48 shrink-0 sm:h-56 sm:w-56">
                 <svg viewBox="0 0 160 160" className="h-full w-full -rotate-90" aria-hidden="true">
-                    <circle cx="80" cy="80" r={R} fill="none" stroke="#f2f6f3" strokeWidth="14" />
+                    <circle cx="80" cy="80" r={R} fill="none" stroke="var(--color-surface-muted)" strokeWidth="14" />
                     <circle
                         cx="80"
                         cy="80"
                         r={R}
                         fill="none"
-                        stroke={unlocked ? "#087f50" : "#0fa968"}
+                        stroke={unlocked ? "var(--color-brand)" : "var(--color-brand-accent)"}
                         strokeWidth="14"
                         strokeLinecap="round"
                         strokeDasharray={C}
@@ -46,8 +46,8 @@ export default function EarningsSlider() {
                     </span>
                     <span
                         className={`mt-2 inline-flex items-center gap-1 rounded-pill px-2.5 py-1 text-2xs font-bold ${unlocked
-                                ? "bg-status-success-bg text-status-success"
-                                : "bg-surface-muted text-text-secondary"
+                            ? "bg-status-success-bg text-status-success"
+                            : "bg-surface-muted text-text-secondary"
                             }`}
                     >
                         {unlocked ? <Check className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
@@ -72,7 +72,7 @@ export default function EarningsSlider() {
                     step={10}
                     value={apps}
                     onChange={(e) => setApps(Number(e.target.value))}
-                    className="mt-4 h-2 w-full cursor-pointer accent-[#087f50]"
+                    className="mt-4 h-2 w-full cursor-pointer accent-brand"
                 />
                 <div className="mt-1 flex justify-between text-xs text-text-muted">
                     <span>0</span>
@@ -86,8 +86,8 @@ export default function EarningsSlider() {
                             type="button"
                             onClick={() => setApps(p)}
                             className={`rounded-pill border px-3.5 py-1.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${apps === p
-                                    ? "border-brand bg-brand text-white"
-                                    : "border-border-default bg-surface-base text-text-secondary hover:bg-surface-subtle"
+                                ? "border-brand bg-brand text-text-inverse"
+                                : "border-border-default bg-surface-base text-text-secondary hover:bg-surface-subtle"
                                 }`}
                         >
                             {p.toLocaleString("en-IN")}

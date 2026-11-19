@@ -166,8 +166,7 @@ export default function Modal({
             exit="exit"
             onClick={closeOnBackdropClick ? onClose : undefined}
             aria-hidden="true"
-            className="fixed inset-0 bg-text-primary/20 backdrop-blur-[6px]"
-
+            className="fixed inset-0 bg-black/60 backdrop-blur-[6px]"
           />
 
           {/* Dialog Card */}

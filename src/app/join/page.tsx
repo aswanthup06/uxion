@@ -288,7 +288,7 @@ export default function SharePage() {
                 <div
                   className="absolute inset-2 opacity-50"
                   style={{
-                    backgroundImage: "radial-gradient(#b9c8ba 0.7px, transparent 0.7px)",
+                    backgroundImage: "radial-gradient(var(--color-border-strong) 0.7px, transparent 0.7px)",
                     backgroundSize: "17px 17px",
                     maskImage: "radial-gradient(ellipse at center, black 15%, transparent 75%)",
                   }}
@@ -300,9 +300,9 @@ export default function SharePage() {
                   animate={reduce ? undefined : { rotate: [0, 2, 0] }}
                   transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <ellipse cx="170" cy="150" rx="125" ry="94" stroke="#dce7dc" strokeDasharray="3 7" />
-                  <ellipse cx="170" cy="150" rx="88" ry="120" stroke="#e7ede5" transform="rotate(-28 170 150)" />
-                  <path d="M45 195 C95 195 105 90 160 112 S235 210 295 72" stroke="#b9d1bc" strokeDasharray="4 6" />
+                  <ellipse cx="170" cy="150" rx="125" ry="94" stroke="var(--color-border-default)" strokeDasharray="3 7" />
+                  <ellipse cx="170" cy="150" rx="88" ry="120" stroke="var(--color-border-subtle)" transform="rotate(-28 170 150)" />
+                  <path d="M45 195 C95 195 105 90 160 112 S235 210 295 72" stroke="var(--color-border-strong)" strokeDasharray="4 6" />
                   <circle cx="45" cy="195" r="4" fill="var(--color-brand)" />
                   <circle cx="160" cy="112" r="4" fill="var(--color-brand)" />
                   <circle cx="295" cy="72" r="4" fill="var(--color-brand)" />

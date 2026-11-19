@@ -68,7 +68,7 @@ export default function Faq() {
       <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[0.8fr_1.2fr] md:gap-14">
         {/* Introduction */}
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-accent">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand">
             FAQ
           </p>
 
@@ -85,7 +85,7 @@ export default function Faq() {
 
           <Link
             href="/contact"
-            className="group mt-6 inline-flex cursor-pointer items-center gap-3 rounded-card border border-border-default bg-surface-card p-3 transition-colors hover:border-brand-accent/40 hover:shadow-subtle"
+            className="group mt-6 inline-flex cursor-pointer items-center gap-3 rounded-card border border-border-default bg-surface-card p-3 transition-colors hover:border-brand/40 hover:shadow-subtle"
           >
             <span className="grid h-9 w-9 shrink-0 place-items-center rounded-control bg-brand-soft text-brand">
               <MessageCircle size={17} strokeWidth={1.8} />
@@ -102,7 +102,7 @@ export default function Faq() {
 
             <ArrowRight
               size={15}
-              className="text-text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand-accent"
+              className="text-text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand"
             />
           </Link>
         </div>
@@ -128,7 +128,7 @@ export default function Faq() {
                       <span className="flex min-w-0 items-start gap-3">
                         <span
                           className={`mt-0.5 hidden w-5 shrink-0 text-xs tabular-nums sm:block ${
-                            isOpen ? "text-brand-accent font-semibold" : "text-text-muted"
+                            isOpen ? "text-brand font-semibold" : "text-text-muted"
                           }`}
                         >
                           {String(index + 1).padStart(2, "0")}
@@ -192,7 +192,7 @@ export default function Faq() {
                                 {" "}
                                 <Link
                                   href={item.link.href}
-                                  className="inline-flex cursor-pointer items-center gap-1 font-medium text-brand underline decoration-brand-accent/40 underline-offset-4 transition-colors hover:text-brand-accent"
+                                  className="inline-flex cursor-pointer items-center gap-1 font-medium text-brand underline decoration-brand/40 underline-offset-4 transition-colors hover:text-brand-hover"
                                 >
                                   {item.link.label}
                                   <span aria-hidden="true">↗</span>

@@ -2048,8 +2048,8 @@ export default function JobFormWizard({
                       className={`group flex w-full items-center justify-between gap-3 rounded-control border p-3.5 text-left transition-all duration-150 ${isPast
                         ? "border-brand/30 bg-brand-soft/40 text-brand shadow-subtle hover:bg-brand-soft/60"
                         : isActive
-                          ? "border-brand/40 bg-white shadow-subtle ring-1 ring-brand/20"
-                          : "border-border-default/50 bg-white/70 text-text-muted hover:border-border-strong hover:bg-white hover:text-text-secondary"
+                          ? "border-brand/40 bg-surface-card shadow-subtle ring-1 ring-brand/20"
+                          : "border-border-default/50 bg-surface-card/70 text-text-muted hover:border-border-strong hover:bg-surface-card hover:text-text-secondary"
                         }`}
                     >
                       <div className="min-w-0 flex-1">
@@ -2283,10 +2283,7 @@ export default function JobFormWizard({
                         e.preventDefault();
                       }}
                       onClick={handleNext}
-                      className={`inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-xs font-medium transition-all duration-200 ${isCurrentStepValid
-                          ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30"
-                          : "bg-brand/50 text-text-inverse/80 hover:bg-brand/70 hover:text-text-inverse shadow-none"
-                        }`}
+                      className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 text-xs font-semibold text-text-inverse shadow-subtle transition-all duration-200 hover:bg-brand-hover active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                       title={isCurrentStepValid ? "Continue to Location" : "Fill required fields to continue"}
                     >
                       <span>Continue to Location</span>
@@ -2629,7 +2626,7 @@ export default function JobFormWizard({
                       type="button"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={handleBack}
-                      className="inline-flex items-center justify-center rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-medium text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary cursor-pointer"
+                      className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-4 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary active:scale-[0.99]"
                     >
                       <span>Back</span>
                     </button>
@@ -2640,10 +2637,7 @@ export default function JobFormWizard({
                         e.preventDefault();
                       }}
                       onClick={handleNext}
-                      className={`inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-xs font-medium transition-all duration-200 ${isCurrentStepValid
-                          ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30"
-                          : "bg-brand/50 text-text-inverse/80 hover:bg-brand/70 hover:text-text-inverse shadow-none"
-                        }`}
+                      className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 text-xs font-semibold text-text-inverse shadow-subtle transition-all duration-200 hover:bg-brand-hover active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                       title={isCurrentStepValid ? "Continue to Compensation" : "Add office location to continue"}
                     >
                       <span>Continue to Compensation</span>
@@ -2757,7 +2751,7 @@ export default function JobFormWizard({
                       type="button"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={handleBack}
-                      className="inline-flex items-center justify-center rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-xs font-medium text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary cursor-pointer"
+                      className="inline-flex h-9 cursor-pointer items-center justify-center rounded-control border border-border-default bg-surface-card px-4 text-xs font-semibold text-text-secondary shadow-subtle transition-all hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary active:scale-[0.99]"
                     >
                       <span>Back</span>
                     </button>
@@ -2769,12 +2763,9 @@ export default function JobFormWizard({
                       }}
                       onClick={handleNext}
                       disabled={isCheckingNext}
-                      className={`inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-xs font-medium transition-all duration-200 ${isCheckingNext
-                          ? "cursor-wait opacity-70 bg-brand text-text-inverse"
-                          : isCurrentStepValid
-                            ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30"
-                            : "bg-brand/50 text-text-inverse/80 hover:bg-brand/70 hover:text-text-inverse shadow-none"
-                        }`}
+                      className={`inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 text-xs font-semibold text-text-inverse shadow-subtle transition-all duration-200 hover:bg-brand-hover active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                        isCheckingNext ? "cursor-wait opacity-70" : ""
+                      }`}
                       title={isCurrentStepValid ? "Continue to Review" : "Fill experience and valid email to continue"}
                     >
                       {isCheckingNext ? (
@@ -3186,14 +3177,12 @@ export default function JobFormWizard({
                       <button
                         type="submit"
                         disabled={isSubmitting || (mode === "public" && Boolean(userLimitInfo && userLimitInfo.remaining <= 0))}
-                        className={`inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-xs font-medium transition-all duration-200 ${
-                          isSubmitting
-                            ? "cursor-wait opacity-70 bg-brand text-text-inverse"
-                            : mode === "public" && userLimitInfo && userLimitInfo.remaining <= 0
-                              ? "cursor-not-allowed opacity-50 bg-border-strong text-text-muted shadow-none"
-                              : isCurrentStepValid
-                                ? "bg-brand text-text-inverse shadow-subtle hover:bg-brand-hover ring-1 ring-brand/30 cursor-pointer"
-                                : "bg-brand/50 text-text-inverse/80 hover:bg-brand/70 hover:text-text-inverse shadow-none cursor-pointer"
+                        className={`inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 text-xs font-semibold text-text-inverse shadow-subtle transition-all duration-200 hover:bg-brand-hover active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                          mode === "public" && userLimitInfo && userLimitInfo.remaining <= 0
+                            ? "cursor-not-allowed opacity-50 bg-border-strong text-text-muted shadow-none"
+                            : isSubmitting
+                              ? "cursor-wait opacity-70"
+                              : ""
                         }`}
                         title={
                           mode === "public" && userLimitInfo && userLimitInfo.remaining <= 0
