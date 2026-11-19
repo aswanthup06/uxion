@@ -110,27 +110,6 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-surface-page text-text-primary">
       <div className="mx-auto w-full max-w-5xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <nav
-          aria-label="Breadcrumb"
-          className="mb-6 flex items-center gap-2 text-xs text-text-muted"
-        >
-          <Link
-            href="/"
-            className="cursor-pointer transition-colors hover:text-brand"
-          >
-            Home
-          </Link>
-          <span aria-hidden="true" className="text-border-strong">
-            /
-          </span>
-          <span
-            aria-current="page"
-            className="font-medium text-text-secondary"
-          >
-            My Profile
-          </span>
-        </nav>
 
         {/* Prototype Redesign Banner */}
         <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-panel border border-brand/20 bg-brand-soft/40 p-4 sm:flex-row sm:items-center">

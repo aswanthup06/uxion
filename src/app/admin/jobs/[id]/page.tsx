@@ -223,144 +223,141 @@ export default function AdminJobDetailsPage() {
   const status = job.status || "published";
 
   return (
-    <main className="min-h-full bg-surface-page text-text-primary">
-      <div className="mx-auto max-w-7xl px-5 pb-16 pt-6 sm:px-8 sm:pt-9">
-        {/* Breadcrumb Navigation */}
-        <nav className="mb-6 flex flex-wrap items-center gap-2 text-xs text-text-muted">
-          <Link href="/admin" className="transition hover:text-brand">
-            Dashboard
-          </Link>
-          <span>/</span>
-          <Link href="/admin/jobs" className="transition hover:text-brand">
-            Job listings
-          </Link>
-          <span>/</span>
-          <span className="max-w-[200px] truncate font-medium text-text-primary sm:max-w-md">
-            {job.title}
-          </span>
-        </nav>
-
+    <div className="min-h-screen bg-white text-text-primary">
+      <div className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 space-y-8">
         {/* Page Header */}
-        <header className="flex flex-col gap-6 border-b border-border-subtle pb-7 lg:flex-row lg:items-start lg:justify-between">
-          <div className="min-w-0 flex-1">
-            {/* Status & Badges */}
-            <div className="flex flex-wrap items-center gap-2">
-              {status === "published" ? (
-                <span className="inline-flex items-center gap-1.5 rounded-pill border border-status-success-border bg-status-success-bg px-2.5 py-0.5 text-xs font-semibold text-status-success">
-                  <span className="h-1.5 w-1.5 rounded-full bg-status-success" />
-                  Published
+        <header className="border-b border-border-subtle/80 pb-6">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="min-w-0 flex-1">
+              {/* Eyebrow */}
+              <div className="flex items-center gap-2 mb-2">
+                <span className="flex h-2 w-2 rounded-full bg-brand animate-pulse" />
+                <span className="text-2xs font-bold uppercase tracking-wider text-brand">
+                  Admin Console
                 </span>
-              ) : status === "draft" ? (
-                <span className="inline-flex items-center gap-1.5 rounded-pill border border-status-warning-border bg-status-warning-bg px-2.5 py-0.5 text-xs font-semibold text-status-warning">
-                  <span className="h-1.5 w-1.5 rounded-full bg-status-warning" />
-                  Draft
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-pill border border-border-default bg-surface-subtle px-2.5 py-0.5 text-xs font-semibold text-text-secondary">
-                  <span className="h-1.5 w-1.5 rounded-full bg-border-strong" />
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                </span>
-              )}
+                <span className="text-text-muted">•</span>
+                <span className="text-xs text-text-muted">Job Details</span>
+              </div>
 
-              {job.category && (
-                <span className="inline-flex items-center gap-1 rounded-pill border border-border-default bg-surface-subtle px-2.5 py-0.5 text-xs font-medium text-text-secondary">
-                  <Tag size={11} className="text-text-muted" />
-                  {job.category}
-                </span>
-              )}
+              {/* Status & Badges */}
+              <div className="flex flex-wrap items-center gap-2">
+                {status === "published" ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-control border border-status-success-border bg-status-success-bg px-2.5 py-0.5 text-xs font-semibold text-status-success">
+                    <span className="h-1.5 w-1.5 rounded-full bg-status-success" />
+                    Published
+                  </span>
+                ) : status === "draft" ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-control border border-status-warning-border bg-status-warning-bg px-2.5 py-0.5 text-xs font-semibold text-status-warning">
+                    <span className="h-1.5 w-1.5 rounded-full bg-status-warning" />
+                    Draft
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-control border border-border-default bg-surface-subtle px-2.5 py-0.5 text-xs font-semibold text-text-secondary">
+                    <span className="h-1.5 w-1.5 rounded-full bg-border-strong" />
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </span>
+                )}
 
-              {job.isTestData && (
-                <span className="inline-flex items-center gap-1 rounded-pill border border-status-warning-border bg-status-warning-bg px-2.5 py-0.5 text-xs font-semibold text-status-warning">
-                  <ShieldAlert size={12} />
-                  Test Data
-                </span>
-              )}
+                {job.category && (
+                  <span className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle px-2.5 py-0.5 text-xs font-medium text-text-secondary">
+                    <Tag size={11} className="text-text-muted" />
+                    {job.category}
+                  </span>
+                )}
 
-              {job.requiresReview && (
-                <span className="inline-flex items-center gap-1 rounded-pill border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
-                  <Sparkles size={12} />
-                  Pending Review
-                </span>
-              )}
+                {job.isTestData && (
+                  <span className="inline-flex items-center gap-1 rounded-control border border-status-warning-border bg-status-warning-bg px-2.5 py-0.5 text-xs font-semibold text-status-warning">
+                    <ShieldAlert size={12} />
+                    Test Data
+                  </span>
+                )}
 
-              {job.userId ? (
-                <span className="inline-flex items-center gap-1 rounded-pill border border-purple-200 bg-purple-50/70 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
-                  User Submission
+                {job.requiresReview && (
+                  <span className="inline-flex items-center gap-1 rounded-control border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
+                    <Sparkles size={12} />
+                    Pending Review
+                  </span>
+                )}
+
+                {job.userId ? (
+                  <span className="inline-flex items-center gap-1 rounded-control border border-purple-200 bg-purple-50/70 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
+                    User Submission
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-control border border-status-info-border bg-status-info-bg px-2.5 py-0.5 text-xs font-semibold text-status-info">
+                    Zenoway Official
+                  </span>
+                )}
+              </div>
+
+              {/* Title */}
+              <h1 className="mt-3 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
+                {job.title}
+              </h1>
+
+              {/* Company & Meta subtitle */}
+              <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-text-secondary">
+                <span className="inline-flex items-center gap-1.5 font-medium text-text-primary">
+                  <Building2 size={16} className="text-text-muted" />
+                  {job.company}
                 </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 rounded-pill border border-status-info-border bg-status-info-bg px-2.5 py-0.5 text-xs font-semibold text-status-info">
-                  Zenoway Official
+
+                <span className="inline-flex items-center gap-1.5">
+                  <MapPin size={15} className="text-text-muted" />
+                  {locationDisplay || job.location || "Location not specified"}
                 </span>
-              )}
+
+                <span className="inline-flex items-center gap-1.5 text-text-muted">
+                  <CalendarDays size={15} />
+                  Posted {formatDate(job.postedDate)}
+                </span>
+              </div>
             </div>
 
-            {/* Title */}
-            <h1 className="mt-3 text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
-              {job.title}
-            </h1>
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              {/* View live public listing in new tab */}
+              <a
+                href={`/jobs/${job.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-white px-3.5 text-xs font-semibold text-text-primary shadow-2xs transition hover:border-border-strong hover:bg-surface-subtle"
+              >
+                <span>View Live Listing</span>
+                <ExternalLink size={13} className="text-text-muted" />
+              </a>
 
-            {/* Company & Meta subtitle */}
-            <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-text-secondary">
-              <span className="inline-flex items-center gap-1.5 font-medium text-text-primary">
-                <Building2 size={16} className="text-text-muted" />
-                {job.company}
-              </span>
+              {/* View / Download Job Poster (Option A: In-Admin Modal) */}
+              <button
+                type="button"
+                onClick={() => setIsPosterModalOpen(true)}
+                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-white px-3.5 text-xs font-semibold text-text-primary shadow-2xs transition hover:border-border-strong hover:bg-surface-subtle cursor-pointer"
+              >
+                <ImageDown size={14} className="text-brand" />
+                <span>Job Poster</span>
+              </button>
 
-              <span className="inline-flex items-center gap-1.5">
-                <MapPin size={15} className="text-text-muted" />
-                {locationDisplay || job.location || "Location not specified"}
-              </span>
+              {/* Edit Job link */}
+              <Link
+                href={`/admin/jobs/${job.id}/edit`}
+                className="inline-flex h-9 items-center gap-1.5 rounded-control bg-brand px-3.5 text-xs font-semibold text-white transition hover:bg-brand-hover shadow-2xs"
+              >
+                <Pencil size={14} />
+                <span>Edit Job</span>
+                <ArrowUpRight size={13} />
+              </Link>
 
-              <span className="inline-flex items-center gap-1.5 text-text-muted">
-                <CalendarDays size={15} />
-                Posted {formatDate(job.postedDate)}
-              </span>
+              {/* Delete button */}
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={handleDelete}
+                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-status-error-border bg-white px-3.5 text-xs font-semibold text-status-error shadow-2xs transition hover:bg-status-error hover:text-white hover:border-status-error disabled:opacity-50 cursor-pointer"
+              >
+                <Trash2 size={14} />
+                <span>{deleting ? "Deleting..." : "Delete Job"}</span>
+              </button>
             </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* View live public listing in new tab */}
-            <a
-              href={`/jobs/${job.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-10 items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-primary shadow-subtle transition hover:bg-surface-subtle"
-            >
-              <span>View Live Listing</span>
-              <ExternalLink size={13} className="text-text-muted" />
-            </a>
-
-            {/* View / Download Job Poster (Option A: In-Admin Modal) */}
-            <button
-              type="button"
-              onClick={() => setIsPosterModalOpen(true)}
-              className="inline-flex h-10 items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-primary shadow-subtle transition hover:bg-surface-subtle"
-            >
-              <ImageDown size={14} className="text-brand" />
-              <span>Job Poster</span>
-            </button>
-
-            {/* Edit Job link */}
-            <Link
-              href={`/admin/jobs/${job.id}/edit`}
-              className="inline-flex h-10 items-center gap-2 rounded-control bg-brand px-4 text-xs font-semibold text-text-inverse transition hover:bg-brand-hover shadow-subtle"
-            >
-              <Pencil size={14} />
-              <span>Edit Job</span>
-              <ArrowUpRight size={13} />
-            </Link>
-
-            {/* Delete button */}
-            <button
-              type="button"
-              disabled={deleting}
-              onClick={handleDelete}
-              className="inline-flex h-10 items-center gap-1.5 rounded-control border border-status-error-border bg-status-error-bg px-3.5 text-xs font-semibold text-status-error shadow-subtle transition hover:bg-status-error hover:text-text-inverse hover:border-status-error disabled:opacity-50"
-            >
-              <Trash2 size={14} />
-              <span>{deleting ? "Deleting..." : "Delete Job"}</span>
-            </button>
           </div>
         </header>
 
@@ -717,6 +714,6 @@ export default function AdminJobDetailsPage() {
         isOpen={isPosterModalOpen}
         onClose={() => setIsPosterModalOpen(false)}
       />
-    </main>
+    </div>
   );
 }

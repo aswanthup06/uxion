@@ -140,62 +140,59 @@ export default function SubmissionsPage() {
   };
 
   return (
-    <main className="min-h-full bg-surface-page text-text-primary">
-      <div className="mx-auto max-w-7xl px-5 pb-16 pt-6 sm:px-8 sm:pt-9">
-        {/* Breadcrumb */}
-        <nav className="mb-6 flex items-center gap-2 text-xs text-text-muted">
-          <Link href="/admin" className="transition hover:text-brand">
-            Dashboard
-          </Link>
-          <span>/</span>
-          <span className="font-medium text-text-primary">Public submissions</span>
-        </nav>
-
+    <div className="min-h-screen bg-white text-text-primary">
+      <div className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 space-y-8">
         {/* Header */}
-        <header className="flex flex-col gap-5 border-b border-border-subtle pb-7 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.14em] text-amber-600">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-              Moderation Queue
-            </p>
+        <header className="border-b border-border-subtle/80 pb-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="flex h-2 w-2 rounded-full bg-brand animate-pulse" />
+                <span className="text-2xs font-bold uppercase tracking-wider text-brand">
+                  Admin Console
+                </span>
+                <span className="text-text-muted">•</span>
+                <span className="text-xs text-text-muted">Moderation Queue</span>
+              </div>
 
-            <h1 className="mt-3 text-[26px] font-semibold tracking-[-0.04em] text-text-primary sm:text-[32px]">
-              Public Job Submissions
-            </h1>
+              <h1 className="text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
+                Public Submissions
+              </h1>
 
-            <p className="mt-2 text-sm leading-6 text-text-muted">
-              Review and approve recruiter postings before they appear live on the Zenoway job board.
-            </p>
-          </div>
+              <p className="mt-1 text-sm text-text-secondary">
+                Review and approve recruiter postings before they appear live on the platform.
+              </p>
+            </div>
 
-          <div className="flex items-center gap-3">
-            {!loading && (
-              <span className="rounded-control border border-amber-500/20 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-600">
-                {submissions.length} {submissions.length === 1 ? "pending review" : "pending review"}
-              </span>
-            )}
+            <div className="flex items-center gap-2.5">
+              {!loading && (
+                <span className="rounded-control border border-border-default bg-white px-3 py-1.5 text-xs font-semibold text-text-secondary shadow-2xs">
+                  <span className="font-bold text-text-primary">{submissions.length}</span>{" "}
+                  {submissions.length === 1 ? "pending review" : "pending review"}
+                </span>
+              )}
 
-            <Button
-              type="button"
-              variant="secondary"
-              size="icon"
-              onClick={() => void loadSubmissions(true)}
-              disabled={refreshing || loading}
-              aria-label="Refresh submissions"
-            >
-              <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
-            </Button>
+              <button
+                type="button"
+                onClick={() => void loadSubmissions(true)}
+                disabled={refreshing || loading}
+                aria-label="Refresh submissions"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-border-default bg-white text-text-secondary shadow-2xs transition hover:border-border-strong hover:text-text-primary disabled:opacity-50 cursor-pointer"
+              >
+                <RefreshCw size={14} className={refreshing ? "animate-spin text-brand" : ""} />
+              </button>
+            </div>
           </div>
         </header>
 
         {/* Content Section */}
-        <section className="pt-6">
+        <section>
           {loading ? (
-            <div className="rounded-card border border-border-default bg-surface-card p-8">
+            <div className="rounded-card border border-border-subtle bg-white p-8">
               <LoadingSpinner label="Loading pending submissions..." className="py-12" />
             </div>
           ) : submissions.length === 0 ? (
-            <div className="rounded-card border border-border-default bg-surface-card py-16 text-center">
+            <div className="rounded-card border border-border-subtle bg-white py-16 text-center">
               <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-control bg-brand-soft text-brand">
                 <Inbox size={22} strokeWidth={1.8} />
               </span>
@@ -215,7 +212,7 @@ export default function SubmissionsPage() {
                 return (
                   <div
                     key={job.id}
-                    className="overflow-hidden rounded-card border border-border-default bg-surface-card transition hover:border-border-strong"
+                    className="overflow-hidden rounded-card border border-border-subtle bg-white shadow-2xs transition hover:border-border-default"
                   >
                     {/* Card Header & Summary */}
                     <div className="p-5 sm:p-6">
@@ -310,7 +307,7 @@ export default function SubmissionsPage() {
                       </div>
 
                       {/* Recruiter Details Row */}
-                      <div className="mt-4 grid grid-cols-1 gap-3 rounded-control border border-border-default/60 bg-surface-subtle/50 p-3.5 text-xs sm:grid-cols-4">
+                      <div className="mt-4 grid grid-cols-1 gap-3 rounded-control border border-border-subtle bg-surface-subtle/50 p-3.5 text-xs sm:grid-cols-4">
                         <div>
                           <span className="block text-3xs font-semibold uppercase text-text-muted">
                             Salary / Budget
@@ -367,18 +364,18 @@ export default function SubmissionsPage() {
                       </div>
 
                       {/* Description Toggle */}
-                      <div className="mt-4 border-t border-border-default/40 pt-3">
+                      <div className="mt-4 border-t border-border-subtle pt-3">
                         <button
                           type="button"
                           onClick={() => setExpandedId(isExpanded ? null : job.id)}
-                          className="flex items-center gap-1.5 text-xs font-semibold text-text-secondary transition hover:text-text-primary"
+                          className="flex items-center gap-1.5 text-xs font-semibold text-text-secondary transition hover:text-text-primary cursor-pointer"
                         >
                           <span>{isExpanded ? "Hide Description" : "Read Full Description & Requirements"}</span>
                           {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
                         </button>
 
                         {isExpanded && (
-                          <div className="mt-3 rounded-control border border-border-default bg-surface-card p-4 text-xs leading-relaxed text-text-secondary whitespace-pre-wrap max-h-96 overflow-y-auto">
+                          <div className="mt-3 rounded-control border border-border-subtle bg-white p-4 text-xs leading-relaxed text-text-secondary whitespace-pre-wrap max-h-96 overflow-y-auto">
                             {job.description || "No description provided."}
                           </div>
                         )}
@@ -391,6 +388,6 @@ export default function SubmissionsPage() {
           )}
         </section>
       </div>
-    </main>
+    </div>
   );
 }

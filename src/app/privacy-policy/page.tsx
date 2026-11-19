@@ -35,22 +35,6 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-dvh bg-surface-page text-text-primary">
       <div className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-16">
-        {/* Breadcrumb */}
-        <nav
-          aria-label="Breadcrumb"
-          className="mb-12 flex items-center gap-2 text-sm sm:mb-16"
-        >
-          <Link
-            href="/"
-            className="text-text-muted transition-colors hover:text-brand"
-          >
-            Home
-          </Link>
-          <span className="text-border-strong">/</span>
-          <span aria-current="page" className="font-medium text-brand">
-            Privacy Policy
-          </span>
-        </nav>
 
         {/* Header */}
         <header className="mb-12 max-w-2xl border-b border-border-default pb-8 sm:mb-16">

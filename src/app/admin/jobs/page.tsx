@@ -91,97 +91,70 @@ export default function JobListPage() {
   };
 
   return (
-    <main className="min-h-full bg-surface-page text-text-primary">
-      <div className="mx-auto max-w-7xl px-5 pb-10 pt-6 sm:px-8 sm:pt-9">
-        {/* Breadcrumb */}
-        <nav className="mb-6 flex items-center gap-2 text-xs text-text-muted">
-          <Link
-            href="/admin"
-            className="transition hover:text-brand"
-          >
-            Dashboard
-          </Link>
-          <span>/</span>
-          <span className="font-medium text-text-primary">Job listings</span>
-        </nav>
-
+    <div className="min-h-screen bg-white text-text-primary">
+      <div className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 space-y-8">
         {/* Header */}
-        <header className="flex flex-col gap-5 border-b border-border-subtle pb-7 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.14em] text-brand">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" />
-              Job management
-            </p>
+        <header className="border-b border-border-subtle/80 pb-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="flex h-2 w-2 rounded-full bg-brand animate-pulse" />
+                <span className="text-2xs font-bold uppercase tracking-wider text-brand">
+                  Admin Console
+                </span>
+                <span className="text-text-muted">•</span>
+                <span className="text-xs text-text-muted">Job Management</span>
+              </div>
 
-            <h1 className="mt-3 text-[26px] font-semibold tracking-[-0.04em] text-text-primary sm:text-[32px]">
-              Job listings
-            </h1>
+              <h1 className="text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
+                Manage Jobs
+              </h1>
 
-            <p className="mt-2 text-sm leading-6 text-text-muted">
-              Manage, review and update your published job postings.
-            </p>
-          </div>
+              <p className="mt-1 text-sm text-text-secondary">
+                Review, update, and manage published job postings across the platform.
+              </p>
+            </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => void loadJobs(true)}
-              disabled={refreshing || loading}
-              aria-label="Refresh job listings"
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-border-default text-text-secondary transition hover:bg-surface-subtle disabled:opacity-50"
-            >
-              <RefreshCw
-                size={15}
-                className={refreshing ? "animate-spin" : ""}
-              />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => void loadJobs(true)}
+                disabled={refreshing || loading}
+                aria-label="Refresh job listings"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-border-default bg-white text-text-secondary shadow-2xs transition hover:border-border-strong hover:text-text-primary disabled:opacity-50 cursor-pointer"
+              >
+                <RefreshCw
+                  size={14}
+                  className={refreshing ? "animate-spin text-brand" : ""}
+                />
+              </button>
 
-            <a
-              href="/job-posters"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-sm font-medium text-text-primary shadow-subtle transition hover:bg-surface-subtle"
-            >
-              <ImageDown size={15} className="text-brand" />
-              <span>Job Posters</span>
-              <ArrowUpRight size={14} className="text-text-muted" />
-            </a>
+              <a
+                href="/job-posters"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-control border border-border-default bg-white px-3.5 text-xs font-semibold text-text-primary shadow-2xs transition hover:border-border-strong hover:bg-surface-subtle"
+              >
+                <ImageDown size={14} className="text-brand" />
+                <span>Job Posters</span>
+                <ArrowUpRight size={13} className="text-text-muted" />
+              </a>
 
-            <Link
-              href="/admin/jobs/add"
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-control bg-brand px-4 text-sm font-medium text-text-inverse transition hover:bg-brand-hover"
-            >
-              <Plus size={16} />
-              Add new job
-              <ArrowUpRight size={14} />
-            </Link>
+              <Link
+                href="/admin/jobs/add"
+                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-control bg-brand px-3.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-brand-hover"
+              >
+                <Plus size={15} />
+                <span>Add new job</span>
+              </Link>
+            </div>
           </div>
         </header>
 
-        {/* Summary */}
-        <section className="flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle py-5">
-          <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-control bg-brand-soft text-brand">
-              <BriefcaseBusiness size={17} strokeWidth={1.7} />
-            </span>
-
-            <div>
-              <p className="text-xs text-text-muted">Total job listings</p>
-              <p className="mt-0.5 text-xl font-semibold tracking-tight text-text-primary">
-                {loading ? "..." : jobs.length}
-              </p>
-            </div>
-          </div>
-
-          <span className="text-xs text-text-muted">
-            {loading ? "Loading..." : jobs.length === 1 ? "1 listing" : `${jobs.length} listings`}
-          </span>
-        </section>
-
         {/* Existing job table */}
-        <section className="pt-6">
+        <section>
           {loading ? (
-            <div className="rounded-panel border border-border-default bg-surface-card p-8">
+            <div className="rounded-card border border-border-subtle bg-white p-8">
               <LoadingSpinner label="Loading published jobs..." className="py-12" />
             </div>
           ) : jobs.length > 0 ? (
@@ -191,7 +164,7 @@ export default function JobListPage() {
               onViewPoster={(job) => setPosterJob(job)}
             />
           ) : (
-            <div className="py-16 text-center">
+            <div className="rounded-card border border-border-subtle bg-white py-16 text-center">
               <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-control bg-brand-soft text-brand">
                 <BriefcaseBusiness size={20} strokeWidth={1.7} />
               </span>
@@ -200,17 +173,17 @@ export default function JobListPage() {
                 No job listings yet
               </h2>
 
-              <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-text-muted">
+              <p className="mx-auto mt-2 max-w-sm text-xs leading-5 text-text-muted">
                 Your job postings will appear here once you add your first
                 listing.
               </p>
 
               <Link
                 href="/admin/jobs/add"
-                className="mt-5 inline-flex items-center gap-2 rounded-control bg-brand px-4 py-2.5 text-sm font-medium text-text-inverse transition hover:bg-brand-hover"
+                className="mt-5 inline-flex h-9 items-center gap-1.5 rounded-control bg-brand px-4 text-xs font-semibold text-white transition hover:bg-brand-hover"
               >
-                <Plus size={15} />
-                Add your first job
+                <Plus size={14} />
+                <span>Add your first job</span>
               </Link>
             </div>
           )}
@@ -223,6 +196,6 @@ export default function JobListPage() {
         isOpen={Boolean(posterJob)}
         onClose={() => setPosterJob(null)}
       />
-    </main>
+    </div>
   );
 }

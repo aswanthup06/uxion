@@ -254,19 +254,6 @@ export default function ProfileDesignPage() {
       {/* HERO: light, static concentric rings behind the avatar */}
       <div className="relative overflow-hidden">
         <div className="relative mx-auto max-w-5xl px-5 pb-14 pt-8 sm:px-8 sm:pb-16">
-          {/* Breadcrumb */}
-          <nav
-            aria-label="Breadcrumb"
-            className="relative z-10 mb-12 flex items-center gap-2 text-xs text-text-muted"
-          >
-            <Link href="/" className="transition hover:text-brand">Home</Link>
-            <span aria-hidden="true">/</span>
-            <Link href="/jobs" className="transition hover:text-brand">Candidates</Link>
-            <span aria-hidden="true">/</span>
-            <span aria-current="page" className="font-semibold text-text-primary">
-              {CANDIDATE.name}
-            </span>
-          </nav>
 
           {/* Profile */}
           <header>

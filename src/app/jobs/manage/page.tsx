@@ -141,11 +141,6 @@ export default function HRManagementPage() {
   return (
     <div className="min-h-full bg-surface-subtle text-text-primary">
       <div className="mx-auto max-w-[1440px] px-4 pb-12 pt-5 sm:px-6 lg:px-8">
-        <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-text-muted">
-          <Link href="/" className="cursor-pointer transition-colors hover:text-brand">Home</Link>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page" className="font-medium text-text-secondary">HR management</span>
-        </nav>
 
         <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>

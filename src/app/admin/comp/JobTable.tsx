@@ -82,13 +82,13 @@ export default function JobTable({ jobs, onDelete, onViewPoster }: Props) {
   }
 
   return (
-    <section className="overflow-hidden rounded-panel border border-border-default bg-surface-card">
+    <section className="overflow-hidden rounded-card border border-border-subtle bg-white shadow-2xs">
       {/* Search and result count */}
       <div className="flex flex-col gap-3 border-b border-border-subtle p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-sm">
           <Search
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
+            size={15}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
           />
 
           <input
@@ -97,7 +97,7 @@ export default function JobTable({ jobs, onDelete, onViewPoster }: Props) {
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search jobs, companies, locations..."
             aria-label="Search jobs"
-            className="h-10 w-full rounded-control border border-border-default bg-surface-base pl-9 pr-9 text-sm text-text-primary outline-none transition focus:border-brand focus:ring-2 focus:ring-brand-soft"
+            className="h-9 w-full rounded-control border border-border-default bg-white pl-9 pr-9 text-xs text-text-primary outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/10"
           />
 
           {search && (
@@ -107,32 +107,29 @@ export default function JobTable({ jobs, onDelete, onViewPoster }: Props) {
               aria-label="Clear search"
               className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-control p-1 text-text-muted hover:text-text-primary"
             >
-              <X size={15} />
+              <X size={14} />
             </button>
           )}
         </div>
 
-        <p className="text-sm text-text-muted">
-          <span className="font-medium text-text-primary">
-            {filteredJobs.length}
-          </span>{" "}
-          {filteredJobs.length === 1 ? "job" : "jobs"}
+        <p className="text-xs text-text-muted">
+          Showing <span className="font-semibold text-text-primary">{filteredJobs.length}</span> {filteredJobs.length === 1 ? "job" : "jobs"}
         </p>
       </div>
 
       {/* Table */}
       {filteredJobs.length === 0 ? (
         <div className="px-6 py-16 text-center">
-          <p className="text-sm font-medium text-text-primary">
+          <p className="text-sm font-semibold text-text-primary">
             No matching jobs
           </p>
-          <p className="mt-1 text-sm text-text-muted">
-            Try another title, company, or location.
+          <p className="mt-1 text-xs text-text-muted">
+            Try another title, company, or location keyword.
           </p>
           <button
             type="button"
             onClick={() => setSearch("")}
-            className="mt-4 text-sm font-medium text-brand hover:underline"
+            className="mt-4 text-xs font-semibold text-brand hover:underline"
           >
             Clear search
           </button>
@@ -142,12 +139,12 @@ export default function JobTable({ jobs, onDelete, onViewPoster }: Props) {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] border-collapse text-left">
               <thead>
-                <tr className="border-b border-border-subtle bg-surface-subtle">
+                <tr className="border-b border-border-subtle bg-surface-subtle/50 text-2xs font-semibold uppercase tracking-wider text-text-muted">
                   {["Job", "Company", "Location", "Views", "Copy Clicks", "Actions"].map(
                     (heading) => (
                       <th
                         key={heading}
-                        className={`px-5 py-3 text-xs font-medium uppercase tracking-wide text-text-muted ${
+                        className={`px-5 py-3 text-2xs font-semibold uppercase tracking-wider text-text-muted ${
                           heading === "Actions" ? "text-right" : ""
                         }`}
                       >
