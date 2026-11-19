@@ -6,6 +6,8 @@ import { getJobById } from "@/lib/supabase/jobs";
 import { formatLocationLabel } from "@/lib/supabase/locations-data";
 import { getRelatedJobs } from "@/lib/jobs/related";
 import { matchCommunityGroup } from "@/lib/community/match-group";
+import { createServerAuthClient } from "@/lib/supabase/server";
+import { isJobEmailUnlocked, maskEmail } from "@/lib/payments/razorpay";
 
 interface JobDetailsPageProps {
   params: Promise<{ id: string }>;
@@ -72,6 +74,28 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
     notFound();
   }
 
+  // Check auth and email unlock status
+  let isUnlocked = false;
+  try {
+    const authClient = await createServerAuthClient();
+    const {
+      data: { user },
+    } = await authClient.auth.getUser();
+
+    if (user) {
+      isUnlocked = await isJobEmailUnlocked(user.id, job.id);
+    }
+  } catch (err) {
+    // Graceful fallback if cookies or DB check fails
+    console.warn("Unable to check email unlock status on server:", err);
+  }
+
+  // Securely mask email on server if not unlocked
+  const clientJob = {
+    ...job,
+    mail: isUnlocked ? job.mail : maskEmail(job.mail),
+  };
+
   const [relatedJobs, matchedGroup] = await Promise.all([
     getRelatedJobs(job, 3),
     Promise.resolve(matchCommunityGroup(job)),
@@ -79,9 +103,10 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
 
   return (
     <JobDetailsClient
-      job={job}
+      job={clientJob}
       relatedJobs={relatedJobs}
       matchedGroup={matchedGroup}
+      isEmailUnlocked={isUnlocked}
     />
   );
 }
