@@ -1,23 +1,25 @@
-
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
   Building2,
   CalendarDays,
+  Check,
   ChevronDown,
   ChevronRight,
+  Eye,
   ImageDown,
   MapPin,
+  MousePointerClick,
   Pencil,
   Plus,
-  RefreshCw,
   Search,
   AlertCircle,
   Users,
+  ExternalLink,
 } from "lucide-react";
 
 type Job = {
@@ -26,6 +28,15 @@ type Job = {
   company: string;
   location: string;
   postedDate: string;
+  views?: number;
+  emailCopyCount?: number;
+};
+
+type Candidate = {
+  id: string;
+  email?: string;
+  full_name?: string | null;
+  created_at?: string;
 };
 
 function parseDate(value?: string): Date | null {
@@ -89,19 +100,6 @@ function formatDate(value?: string) {
   });
 }
 
-function getInitials(value?: string) {
-  return (
-    value
-      ?.trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase() || "?"
-  );
-}
-
 type Timeframe =
   | "today"
   | "yesterday"
@@ -110,13 +108,13 @@ type Timeframe =
   | "this_month"
   | "all";
 
-const TIMEFRAME_OPTIONS: { value: Timeframe; label: string }[] = [
-  { value: "today", label: "Today" },
-  { value: "yesterday", label: "Yesterday" },
-  { value: "7days", label: "Last 7 days" },
-  { value: "30days", label: "Last 30 days" },
-  { value: "this_month", label: "This month" },
-  { value: "all", label: "All time" },
+const TIMEFRAME_OPTIONS: { value: Timeframe; label: string; shortLabel: string }[] = [
+  { value: "today", label: "Today", shortLabel: "Today" },
+  { value: "yesterday", label: "Yesterday", shortLabel: "Yest" },
+  { value: "7days", label: "Last 7 days", shortLabel: "7D" },
+  { value: "30days", label: "Last 30 days", shortLabel: "30D" },
+  { value: "this_month", label: "This month", shortLabel: "Month" },
+  { value: "all", label: "All time", shortLabel: "All" },
 ];
 
 function isDateInTimeframe(
@@ -182,52 +180,70 @@ function isJob(value: unknown): value is Job {
   );
 }
 
-function Stat({
+function StatCard({
   label,
   value,
-  description,
+  subtext,
   icon: Icon,
   loading,
-  control,
+  href,
+  action,
 }: {
-  label: React.ReactNode;
-  value: number;
-  description: React.ReactNode;
-  icon: typeof BriefcaseBusiness;
+  label: string;
+  value: number | string;
+  subtext: React.ReactNode;
+  icon: React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>;
   loading: boolean;
-  control?: React.ReactNode;
+  href?: string;
+  action?: React.ReactNode;
 }) {
-  return (
-    <div className="min-w-0 border-b border-border-subtle py-5 sm:border-b-0 sm:border-r sm:border-border-subtle sm:px-5 sm:first:pl-0 sm:last:border-r-0 sm:last:pr-0">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-1.5 min-w-0">
-          {typeof label === "string" ? (
-            <p className="text-xs-compact font-medium text-text-muted truncate">
-              {label}
-            </p>
-          ) : (
-            label
-          )}
-          {control}
+  const content = (
+    <div
+      className="group relative flex h-full flex-col justify-between rounded-card border border-border-subtle bg-white p-5 shadow-2xs transition duration-150 hover:border-border-strong hover:shadow-xs"
+    >
+      <div>
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+            {label}
+          </span>
+          <Icon size={17} strokeWidth={1.8} className="text-text-muted shrink-0" />
         </div>
-        <Icon size={17} strokeWidth={1.7} className="text-brand shrink-0" />
+
+        {loading ? (
+          <div className="mt-4 h-8 w-24 animate-pulse rounded-control bg-surface-subtle" />
+        ) : (
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold tracking-tight text-text-primary">
+              {typeof value === "number" ? value.toLocaleString("en-IN") : value}
+            </span>
+          </div>
+        )}
       </div>
 
-      {loading ? (
-        <div className="mt-3 h-9 w-16 animate-pulse rounded-control bg-surface-subtle" />
-      ) : (
-        <p className="mt-2 text-3xl font-semibold tracking-[-0.045em] text-text-primary">
-          {value.toLocaleString("en-IN")}
-        </p>
-      )}
-
-      <div className="mt-2 text-xs text-text-muted">{description}</div>
+      <div className="mt-4 flex items-center justify-between gap-2 border-t border-border-subtle/80 pt-3 text-xs text-text-muted">
+        <div className="truncate">{subtext}</div>
+        {action}
+      </div>
     </div>
   );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="block h-full rounded-card focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }
 
 export default function AdminDashboard() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [pendingCount, setPendingCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -235,14 +251,38 @@ export default function AdminDashboard() {
   const [retryKey, setRetryKey] = useState(0);
   const [timeframe, setTimeframe] = useState<Timeframe>("today");
   const [tableDateFilter, setTableDateFilter] = useState<"all" | Timeframe>("all");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsDropdownOpen(false);
+      }
+    }
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isDropdownOpen]);
 
   useEffect(() => {
     const controller = new AbortController();
-    async function fetchAdminJobs() {
+    async function fetchDashboardData() {
       try {
-        const [response, pendingResponse] = await Promise.all([
+        const [response, pendingResponse, candidatesResponse] = await Promise.all([
           fetch("/api/jobs", { cache: "no-store", signal: controller.signal }),
           fetch("/api/jobs?status=pending", { cache: "no-store", signal: controller.signal }).catch(() => null),
+          fetch("/api/admin/candidates", { cache: "no-store", signal: controller.signal }).catch(() => null),
         ]);
 
         if (!response.ok) {
@@ -260,6 +300,13 @@ export default function AdminDashboard() {
           setPendingCount(Array.isArray(pendingData) ? pendingData.length : 0);
         }
 
+        if (candidatesResponse && candidatesResponse.ok) {
+          const cData = await candidatesResponse.json().catch(() => ({}));
+          if (Array.isArray(cData?.candidates)) {
+            setCandidates(cData.candidates);
+          }
+        }
+
         const validJobs = data.filter(isJob);
 
         validJobs.sort((a, b) => {
@@ -275,16 +322,61 @@ export default function AdminDashboard() {
         setError(
           err instanceof Error
             ? err.message
-            : "Something went wrong while loading jobs."
+            : "Something went wrong while loading dashboard data."
         );
       } finally {
         if (!controller.signal.aborted) setLoading(false);
       }
     }
 
-    void fetchAdminJobs();
+    void fetchDashboardData();
     return () => controller.abort();
   }, [retryKey]);
+
+  const metrics = useMemo(() => {
+    const periodJobs = jobs.filter((job) =>
+      isDateInTimeframe(job.postedDate, timeframe)
+    );
+    const periodCandidates = candidates.filter((c) =>
+      isDateInTimeframe(c.created_at, timeframe)
+    );
+
+    const totalViews = jobs.reduce(
+      (sum, j) => sum + (typeof j.views === "number" ? j.views : 0),
+      0
+    );
+    const periodViews = (timeframe === "all" ? jobs : periodJobs).reduce(
+      (sum, j) => sum + (typeof j.views === "number" ? j.views : 0),
+      0
+    );
+
+    const totalClicks = jobs.reduce(
+      (sum, j) => sum + (typeof j.emailCopyCount === "number" ? j.emailCopyCount : 0),
+      0
+    );
+    const periodClicks = (timeframe === "all" ? jobs : periodJobs).reduce(
+      (sum, j) => sum + (typeof j.emailCopyCount === "number" ? j.emailCopyCount : 0),
+      0
+    );
+
+    const totalCTR =
+      totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : "0.0";
+    const periodCTR =
+      periodViews > 0 ? ((periodClicks / periodViews) * 100).toFixed(1) : "0.0";
+
+    return {
+      periodJobsCount: periodJobs.length,
+      totalJobsCount: jobs.length,
+      periodCandidatesCount: periodCandidates.length,
+      totalCandidatesCount: candidates.length,
+      periodViews,
+      totalViews,
+      periodClicks,
+      totalClicks,
+      totalCTR,
+      periodCTR,
+    };
+  }, [jobs, candidates, timeframe]);
 
   const timeframeCounts = useMemo<Record<Timeframe, number>>(() => {
     const now = new Date();
@@ -344,66 +436,6 @@ export default function AdminDashboard() {
     return counts;
   }, [jobs]);
 
-  const timeframeDescriptions = useMemo<Record<Timeframe, string>>(() => {
-    const now = new Date();
-    const todayStr = now.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-    });
-
-    const yesterday = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() - 1
-    );
-    const yesterdayStr = yesterday.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-    });
-
-    const monthStr = now.toLocaleDateString("en-GB", {
-      month: "long",
-      year: "numeric",
-    });
-
-    const count = timeframeCounts[timeframe];
-    const jobWord = count === 1 ? "job" : "jobs";
-
-    return {
-      today:
-        count > 0
-          ? `${count} ${jobWord} posted today (${todayStr})`
-          : `No jobs posted today (${todayStr})`,
-      yesterday:
-        count > 0
-          ? `${count} ${jobWord} posted yesterday (${yesterdayStr})`
-          : `No jobs posted yesterday (${yesterdayStr})`,
-      "7days":
-        count > 0
-          ? `${count} ${jobWord} posted in the last 7 days`
-          : "No jobs posted in the last 7 days",
-      "30days":
-        count > 0
-          ? `${count} ${jobWord} posted in the last 30 days`
-          : "No jobs posted in the last 30 days",
-      this_month:
-        count > 0
-          ? `${count} ${jobWord} posted in ${monthStr}`
-          : `No jobs posted in ${monthStr}`,
-      all: "All-time available listings",
-    };
-  }, [timeframeCounts, timeframe]);
-
-  const companiesCount = useMemo(
-    () =>
-      new Set(
-        jobs
-          .map((job) => job.company.trim().toLowerCase())
-          .filter(Boolean)
-      ).size,
-    [jobs]
-  );
-
   const filteredJobs = useMemo(() => {
     let result = jobs;
 
@@ -425,66 +457,34 @@ export default function AdminDashboard() {
     return result;
   }, [jobs, search, tableDateFilter]);
 
-  const latestJob = jobs[0];
-
   return (
-    <div className="min-h-full bg-surface-page text-text-primary">
-      <div className="mx-auto w-full max-w-[1320px] px-5 py-8 sm:px-8 sm:py-10 lg:px-12">
-        {/* Header */}
-        <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-          <div>
-            <div className="mb-3 flex items-center gap-2 text-xs text-text-muted">
-              <span>Admin</span>
-              <ChevronRight size={13} />
-              <span className="text-text-secondary">Overview</span>
-            </div>
-
-            <h1 className="text-[30px] font-semibold tracking-[-0.05em] text-text-primary sm:text-[36px]">
-              Dashboard
-            </h1>
-
-            <p className="mt-2 text-sm leading-6 text-text-secondary">
-              Manage your job listings in one place.
-            </p>
+    <div className="min-h-screen bg-white text-text-primary">
+      <div className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 space-y-8">
+        {/* Top Header */}
+        <header className="border-b border-border-subtle/80 pb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="flex h-2 w-2 rounded-full bg-brand animate-pulse" />
+            <span className="text-2xs font-bold uppercase tracking-wider text-brand">
+              Admin Console
+            </span>
+            <span className="text-text-muted">•</span>
+            <span className="text-xs text-text-muted">Overview</span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setRetryKey((key) => key + 1)}
-              disabled={loading}
-              className="inline-flex h-10 items-center gap-2 rounded-control border border-border-default bg-surface-card px-3.5 text-sm font-medium text-text-secondary shadow-xs transition hover:bg-surface-subtle hover:text-text-primary disabled:opacity-50"
-            >
-              <RefreshCw
-                size={15}
-                className={loading ? "animate-spin" : ""}
-              />
-              Refresh
-            </button>
+          <h1 className="text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
+            Dashboard Overview
+          </h1>
 
-            <Link
-              href="/admin/candidates"
-              className="inline-flex h-10 items-center gap-2 rounded-control border border-border-default bg-surface-card px-3.5 text-sm font-medium text-text-secondary shadow-xs transition hover:bg-surface-subtle hover:text-text-primary"
-            >
-              <Users size={15} />
-              Candidates
-            </Link>
-
-            <Link
-              href="/admin/jobs/add"
-              className="inline-flex h-10 items-center gap-2 rounded-control bg-brand px-4 text-sm font-medium text-text-inverse shadow-xs transition hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-            >
-              <Plus size={16} />
-              Add a job
-            </Link>
-          </div>
+          <p className="mt-1 text-sm text-text-secondary">
+            Monitor job listings, candidate growth, impressions, and applications in real time.
+          </p>
         </header>
 
         {/* Error state */}
         {error && (
           <div
             role="alert"
-            className="mt-8 flex flex-col gap-3 rounded-panel border border-red-200 bg-red-50 p-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 rounded-card border border-red-200 bg-red-50 p-4 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="flex items-start gap-3">
               <AlertCircle
@@ -492,211 +492,246 @@ export default function AdminDashboard() {
                 className="mt-0.5 shrink-0 text-red-600"
               />
               <div>
-                <p className="text-sm font-medium text-red-900">
+                <p className="text-sm font-semibold text-red-950">
                   Could not load dashboard data
                 </p>
-                <p className="mt-1 text-sm text-red-700">{error}</p>
+                <p className="mt-0.5 text-xs text-red-700">{error}</p>
               </div>
             </div>
 
             <button
               type="button"
               onClick={() => setRetryKey((key) => key + 1)}
-              className="self-start text-sm font-semibold text-red-800 underline underline-offset-4"
+              className="self-start text-xs font-bold text-red-800 underline underline-offset-4"
             >
-              Try again
+              Retry
             </button>
           </div>
         )}
 
         {/* Pending Submissions Alert Banner */}
         {pendingCount > 0 && (
-          <div className="mt-8 flex flex-col items-start justify-between gap-3 rounded-card border border-amber-500/30 bg-amber-500/10 p-4 sm:flex-row sm:items-center">
+          <div className="flex flex-col items-start justify-between gap-3 rounded-card border border-amber-200 bg-amber-50/70 p-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/20 text-amber-600">
-                <span className="h-2.5 w-2.5 rounded-full bg-amber-500 animate-pulse" />
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-amber-100 text-amber-700">
+                <AlertCircle size={17} />
               </span>
               <div>
-                <p className="text-sm font-semibold text-text-primary">
+                <p className="text-sm font-semibold text-amber-950">
                   {pendingCount === 1
-                    ? "1 public job submission awaits review"
-                    : `${pendingCount} public job submissions await review`}
+                    ? "1 public job listing requires admin review"
+                    : `${pendingCount} public job listings require admin review`}
                 </p>
-                <p className="text-xs text-text-muted">
-                  New listings posted via /post-job need admin approval before appearing live.
+                <p className="text-xs text-amber-800/80">
+                  Public postings submitted via the portal must be approved before appearing live.
                 </p>
               </div>
             </div>
             <Link
               href="/admin/submissions"
-              className="inline-flex h-9 items-center gap-1.5 rounded-control bg-amber-500 px-4 text-xs font-semibold text-white shadow-subtle hover:bg-amber-600 transition"
+              className="inline-flex h-8 items-center gap-1.5 rounded-control bg-amber-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 transition"
             >
-              <span>Review Submissions</span>
-              <ArrowUpRight size={14} />
+              <span>Review now</span>
+              <ArrowUpRight size={13} />
             </Link>
           </div>
         )}
 
-        {/* Overview statistics */}
-        <section className="mt-9 border-y border-border-subtle sm:mt-11">
-          <div className="flex flex-col justify-between gap-1 border-b border-border-subtle py-4 sm:flex-row sm:items-center">
-            <h2 className="text-sm font-semibold text-text-primary">Platform overview</h2>
-            <p className="text-xs text-text-muted">
-              Based on available job listings
-            </p>
+        {/* Key Metrics Section */}
+        <section className="space-y-4">
+          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+            <div>
+              <h2 className="text-base font-semibold tracking-tight text-text-primary">
+                Platform Performance
+              </h2>
+              <p className="text-xs text-text-muted">
+                {timeframe === "all"
+                  ? "Showing all-time cumulative platform performance"
+                  : `Live metrics filtered for ${TIMEFRAME_OPTIONS.find((o) => o.value === timeframe)?.label.toLowerCase()}`}
+              </p>
+            </div>
+
+            {/* Compact Timeframe Dropdown (Stripe / Vercel style) */}
+            <div className="relative inline-block text-left" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsDropdownOpen((prev) => !prev)}
+                aria-expanded={isDropdownOpen}
+                aria-haspopup="listbox"
+                className={`inline-flex h-9 items-center gap-2 rounded-control border bg-white px-3.5 text-xs font-semibold shadow-2xs transition ${
+                  isDropdownOpen
+                    ? "border-brand ring-2 ring-focus-ring text-text-primary"
+                    : "border-border-default text-text-secondary hover:border-border-strong hover:text-text-primary"
+                }`}
+              >
+                <CalendarDays size={14} className="text-brand shrink-0" />
+                <span className="text-text-muted font-normal">Range:</span>
+                <span className="font-semibold text-text-primary">
+                  {TIMEFRAME_OPTIONS.find((o) => o.value === timeframe)?.label}
+                </span>
+                <ChevronDown
+                  size={14}
+                  className={`text-text-muted transition-transform duration-200 ${
+                    isDropdownOpen ? "rotate-180 text-brand" : ""
+                  }`}
+                />
+              </button>
+
+              {isDropdownOpen && (
+                <div
+                  role="listbox"
+                  aria-label="Select timeframe"
+                  className="absolute right-0 top-full mt-1.5 w-48 rounded-card border border-border-subtle bg-white p-1.5 shadow-dropdown z-40 animate-in fade-in zoom-in-95 duration-100"
+                >
+                  <div className="px-2.5 py-1.5 text-3xs font-bold uppercase tracking-wider text-text-muted">
+                    Filter by Period
+                  </div>
+                  <div className="space-y-0.5">
+                    {TIMEFRAME_OPTIONS.map((opt) => {
+                      const isSelected = timeframe === opt.value;
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          role="option"
+                          aria-selected={isSelected}
+                          onClick={() => {
+                            setTimeframe(opt.value);
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`flex w-full items-center justify-between rounded-control px-2.5 py-2 text-xs transition ${
+                            isSelected
+                              ? "bg-brand-soft font-semibold text-brand"
+                              : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
+                          }`}
+                        >
+                          <span>{opt.label}</span>
+                          {isSelected && <Check size={14} className="text-brand shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 sm:divide-x sm:divide-border-subtle">
-            <Stat
-              label="Total job listings"
-              value={jobs.length}
-              description="All available listings"
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* 1. Total Jobs */}
+            <StatCard
+              label="Total Jobs"
+              value={timeframe === "all" ? metrics.totalJobsCount : metrics.periodJobsCount}
+              subtext={
+                timeframe === "all"
+                  ? "All published listings"
+                  : `All-time: ${metrics.totalJobsCount.toLocaleString("en-IN")}`
+              }
+              action={
+                timeframe !== "all" && metrics.periodJobsCount > 0 && tableDateFilter !== timeframe ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setTableDateFilter(timeframe);
+                      document
+                        .getElementById("job-listings-section")
+                        ?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="text-2xs font-semibold text-brand hover:underline"
+                  >
+                    Filter list ↓
+                  </button>
+                ) : undefined
+              }
               icon={BriefcaseBusiness}
               loading={loading}
+              href="/admin/jobs"
             />
-            <Stat
-              label="Posted"
-              control={
-                <div className="relative inline-flex items-center">
-                  <select
-                    id="admin-posted-timeframe"
-                    value={timeframe}
-                    onChange={(e) => setTimeframe(e.target.value as Timeframe)}
-                    aria-label="Filter posted timeframe"
-                    className="h-6 cursor-pointer appearance-none rounded-control border border-border-default bg-surface-card pl-2 pr-5 text-xs font-semibold text-text-secondary shadow-2xs transition hover:border-brand hover:text-text-primary focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-                  >
-                    {TIMEFRAME_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    size={12}
-                    className="pointer-events-none absolute right-1.5 text-text-muted"
-                  />
-                </div>
+
+            {/* 2. Total Candidates */}
+            <StatCard
+              label="Total Candidates"
+              value={timeframe === "all" ? metrics.totalCandidatesCount : metrics.periodCandidatesCount}
+              subtext={
+                timeframe === "all"
+                  ? "Registered candidate profiles"
+                  : `All-time: ${metrics.totalCandidatesCount.toLocaleString("en-IN")}`
               }
-              value={timeframeCounts[timeframe]}
-              description={
-                <span className="flex flex-wrap items-center justify-between gap-1">
-                  <span>{timeframeDescriptions[timeframe]}</span>
-                  {timeframeCounts[timeframe] > 0 && tableDateFilter !== timeframe && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setTableDateFilter(timeframe);
-                        document
-                          .getElementById("job-listings-section")
-                          ?.scrollIntoView({ behavior: "smooth" });
-                      }}
-                      className="text-2xs font-medium text-brand hover:underline"
-                    >
-                      View in list ↓
-                    </button>
-                  )}
-                </span>
+              icon={Users}
+              loading={loading}
+              href="/admin/candidates"
+            />
+
+            {/* 3. Total Views */}
+            <StatCard
+              label="Total Views"
+              value={timeframe === "all" ? metrics.totalViews : metrics.periodViews}
+              subtext={
+                timeframe === "all"
+                  ? "Cumulative impressions"
+                  : `All-time: ${metrics.totalViews.toLocaleString("en-IN")}`
               }
-              icon={CalendarDays}
+              icon={Eye}
               loading={loading}
             />
-            <Stat
-              label="Companies represented"
-              value={companiesCount}
-              description="Unique company names"
-              icon={Building2}
+
+            {/* 4. Total Clicks */}
+            <StatCard
+              label="Total Clicks"
+              value={timeframe === "all" ? metrics.totalClicks : metrics.periodClicks}
+              subtext={
+                <span>
+                  CTR: <strong className="font-semibold text-text-primary">{timeframe === "all" ? metrics.totalCTR : metrics.periodCTR}%</strong>
+                  {timeframe !== "all" && ` • All: ${metrics.totalClicks.toLocaleString("en-IN")}`}
+                </span>
+              }
+              icon={MousePointerClick}
               loading={loading}
             />
           </div>
         </section>
 
-        {/* Latest job */}
-        {!loading && !error && latestJob && (
-          <section className="mt-9 border-b border-border-subtle pb-7">
-            <div className="mb-4 flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-text-muted">
-                Latest posting
-              </p>
-            </div>
-
-            <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-              <div className="min-w-0">
-                <h2 className="break-words text-xl font-semibold tracking-[-0.035em] text-text-primary sm:text-2xl">
-                  <Link
-                    href={`/admin/jobs/${latestJob.id}`}
-                    className="hover:text-brand transition"
-                  >
-                    {latestJob.title}
-                  </Link>
-                </h2>
-
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs text-text-secondary">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Building2 size={14} />
-                    {latestJob.company}
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <MapPin size={14} />
-                    {latestJob.location}
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <CalendarDays size={14} />
-                    {formatDate(latestJob.postedDate)}
+        {/* Main Job Listings Card */}
+        <section
+          id="job-listings-section"
+          className="rounded-card border border-border-subtle bg-white shadow-2xs overflow-hidden"
+        >
+          {/* Card Top Toolbar */}
+          <div className="flex flex-col justify-between gap-4 border-b border-border-subtle p-5 sm:flex-row sm:items-center bg-white">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-control bg-brand-soft text-brand font-semibold shrink-0">
+                <BriefcaseBusiness size={17} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-semibold text-text-primary">
+                    Job Listings
+                  </h3>
+                  <span className="rounded-control bg-white border border-border-default px-2 py-0.5 text-2xs font-semibold text-text-secondary">
+                    {filteredJobs.length} {filteredJobs.length === 1 ? "job" : "jobs"}
                   </span>
                 </div>
-              </div>
-
-              <div className="flex shrink-0 items-center gap-3 self-start sm:self-center">
-                <a
-                  href={`/job-posters?jobId=${encodeURIComponent(latestJob.id)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-text-secondary transition hover:text-brand"
-                >
-                  <ImageDown size={15} className="text-brand" />
-                  <span>Poster</span>
-                </a>
-
-                <Link
-                  href={`/admin/jobs/${latestJob.id}/edit`}
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-brand transition hover:text-brand-hover"
-                >
-                  Edit job
-                  <ArrowUpRight size={16} />
-                </Link>
+                <p className="text-xs text-text-muted">
+                  Search, inspect performance, and update published listings.
+                </p>
               </div>
             </div>
-          </section>
-        )}
 
-        {/* Job listings */}
-        <section id="job-listings-section" className="mt-9">
-          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <h2 className="text-lg font-semibold tracking-[-0.025em] text-text-primary">
-                Job listings
-              </h2>
-              <p className="mt-1 text-sm text-text-muted">
-                Search and update your published jobs.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <label className="relative block sm:w-[240px]">
-                <span className="sr-only">Search jobs</span>
+            {/* Search & Filters */}
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="relative min-w-[220px] flex-1 sm:flex-none">
                 <Search
-                  size={16}
+                  size={15}
                   className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
                 />
                 <input
                   type="search"
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search jobs..."
-                  className="h-10 w-full rounded-control border border-border-default bg-surface-card pl-9 pr-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted hover:border-border-strong focus:border-brand focus:ring-4 focus:ring-focus-ring"
+                  placeholder="Search role, company, city..."
+                  className="h-9 w-full rounded-control border border-border-default bg-white pl-9 pr-3 text-xs text-text-primary placeholder:text-text-muted outline-none transition hover:border-border-strong focus:border-brand focus:ring-2 focus:ring-focus-ring"
                 />
-              </label>
+              </div>
 
               <div className="relative inline-flex items-center">
                 <select
@@ -705,9 +740,9 @@ export default function AdminDashboard() {
                     setTableDateFilter(event.target.value as "all" | Timeframe)
                   }
                   aria-label="Filter jobs table by date"
-                  className="h-10 cursor-pointer appearance-none rounded-control border border-border-default bg-surface-card pl-3 pr-8 text-xs font-medium text-text-secondary shadow-xs transition hover:bg-surface-subtle hover:text-text-primary focus:border-brand focus:outline-none"
+                  className="h-9 cursor-pointer appearance-none rounded-control border border-border-default bg-white pl-3 pr-8 text-xs font-medium text-text-secondary shadow-2xs transition hover:bg-surface-subtle hover:text-text-primary focus:border-brand focus:outline-none"
                 >
-                  <option value="all">All dates</option>
+                  <option value="all">All dates ({jobs.length})</option>
                   <option value="today">Today ({timeframeCounts.today})</option>
                   <option value="yesterday">Yesterday ({timeframeCounts.yesterday})</option>
                   <option value="7days">Last 7 days ({timeframeCounts["7days"]})</option>
@@ -722,26 +757,26 @@ export default function AdminDashboard() {
 
               <Link
                 href="/admin/jobs"
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-3.5 text-sm font-medium text-text-secondary shadow-xs transition hover:bg-surface-subtle hover:text-text-primary"
+                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-white px-3 text-xs font-semibold text-text-secondary shadow-2xs transition hover:bg-surface-subtle hover:text-text-primary"
               >
-                All jobs
-                <ArrowUpRight size={15} />
+                <span>Full view</span>
+                <ArrowUpRight size={13} />
               </Link>
             </div>
           </div>
 
-          <div className="mt-5 border-t border-border-subtle">
+          {/* Table / Content */}
+          <div>
             {loading ? (
-              <div className="space-y-5 py-6">
+              <div className="space-y-4 p-6">
                 {Array.from({ length: 5 }).map((_, index) => (
                   <div
                     key={index}
                     className="flex animate-pulse items-center gap-4"
                   >
-                    <div className="h-10 w-10 rounded-control bg-surface-subtle" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-3.5 w-1/3 rounded-pill bg-surface-subtle" />
-                      <div className="h-3 w-1/2 rounded-pill bg-surface-muted" />
+                      <div className="h-3.5 w-1/3 rounded-control bg-surface-subtle" />
+                      <div className="h-3 w-1/2 rounded-control bg-surface-muted" />
                     </div>
                   </div>
                 ))}
@@ -752,19 +787,19 @@ export default function AdminDashboard() {
               </div>
             ) : filteredJobs.length === 0 ? (
               <div className="py-16 text-center">
-                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand-soft text-brand">
-                  {search ? <Search size={19} /> : <BriefcaseBusiness size={19} />}
+                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-control bg-brand-soft text-brand">
+                  {search ? <Search size={20} /> : <BriefcaseBusiness size={20} />}
                 </div>
 
                 <h3 className="mt-4 text-sm font-semibold text-text-primary">
                   {search || tableDateFilter !== "all"
-                    ? "No matching jobs"
+                    ? "No matching jobs found"
                     : "No jobs posted yet"}
                 </h3>
 
-                <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-text-muted">
+                <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-text-muted">
                   {search || tableDateFilter !== "all"
-                    ? "No jobs found for the selected filter or search term."
+                    ? "Try adjusting your search keywords or date filter to see more listings."
                     : "Your job listings will appear here when you add your first job."}
                 </p>
 
@@ -781,83 +816,123 @@ export default function AdminDashboard() {
                 {!search && tableDateFilter === "all" && (
                   <Link
                     href="/admin/jobs/add"
-                    className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-hover"
+                    className="mt-4 inline-flex items-center gap-1.5 rounded-control bg-brand px-3.5 py-2 text-xs font-semibold text-white hover:bg-brand-hover shadow-xs"
                   >
-                    <Plus size={15} />
-                    Add your first job
+                    <Plus size={14} />
+                    <span>Add your first job</span>
                   </Link>
                 )}
               </div>
             ) : (
               <>
-                {/* Desktop table */}
+                {/* Desktop Table */}
                 <div className="hidden overflow-x-auto md:block">
                   <table className="w-full text-left">
-                    <thead className="border-b border-border-subtle text-2xs font-semibold uppercase tracking-[0.1em] text-text-muted">
+                    <thead className="border-b border-border-subtle bg-white text-2xs font-semibold uppercase tracking-wider text-text-muted">
                       <tr>
-                        <th className="py-4 pr-4">Job details</th>
-                        <th className="px-4 py-4">Location</th>
-                        <th className="px-4 py-4">Date posted</th>
-                        <th className="py-4 pl-4 text-right">Action</th>
+                        <th className="py-3.5 pl-6 pr-4">Role & Company</th>
+                        <th className="px-4 py-3.5">Location</th>
+                        <th className="px-4 py-3.5">Date Posted</th>
+                        <th className="px-4 py-3.5">Telemetry</th>
+                        <th className="py-3.5 pl-4 pr-6 text-right">Actions</th>
                       </tr>
                     </thead>
 
-                    <tbody className="divide-y divide-border-subtle">
-                      {filteredJobs.slice(0, 8).map((job) => (
-                        <tr key={job.id} className="group transition-colors hover:bg-surface-subtle">
-                          <td className="py-4 pr-4">
-                            <div className="flex min-w-0 items-center gap-3">
-                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-brand-soft text-xs font-semibold text-brand">
-                                {getInitials(job.company)}
+                    <tbody className="divide-y divide-border-subtle/70">
+                      {filteredJobs.slice(0, 10).map((job, idx) => (
+                        <tr
+                          key={job.id}
+                          className="group transition-colors hover:bg-surface-subtle/70"
+                        >
+                          {/* Role & Company (No logo) */}
+                          <td className="py-4 pl-6 pr-4">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <Link
+                                  href={`/admin/jobs/${job.id}`}
+                                  className="max-w-[320px] lg:max-w-md truncate text-sm font-semibold text-text-primary hover:text-brand transition"
+                                >
+                                  {job.title}
+                                </Link>
+                                {idx === 0 && tableDateFilter === "all" && !search && (
+                                  <span className="rounded-[4px] bg-emerald-50 px-2 py-0.5 text-3xs font-bold uppercase tracking-wider text-emerald-700 border border-emerald-200/60">
+                                    Latest
+                                  </span>
+                                )}
                               </div>
-                              <div className="min-w-0">
-                                <p className="max-w-sm truncate text-sm font-medium text-text-primary">
-                                  <Link
-                                    href={`/admin/jobs/${job.id}`}
-                                    className="hover:text-brand hover:underline transition"
-                                  >
-                                    {job.title}
-                                  </Link>
-                                </p>
-                                <p className="mt-1 text-xs text-text-muted">
-                                  {job.company}
-                                </p>
-                              </div>
+                              <p className="mt-0.5 text-xs text-text-muted truncate">
+                                {job.company}
+                              </p>
                             </div>
                           </td>
 
-                          <td className="px-4 py-4 text-sm text-text-secondary">
+                          {/* Location */}
+                          <td className="px-4 py-4 text-xs text-text-secondary whitespace-nowrap">
                             <span className="inline-flex items-center gap-1.5">
-                              <MapPin size={14} className="shrink-0 text-text-muted" />
+                              <MapPin size={13} className="shrink-0 text-text-muted" />
                               {job.location}
                             </span>
                           </td>
 
-                          <td className="px-4 py-4 text-sm text-text-secondary">
-                            {formatDate(job.postedDate)}
+                          {/* Date Posted */}
+                          <td className="px-4 py-4 text-xs text-text-secondary whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1.5">
+                              <CalendarDays size={13} className="shrink-0 text-text-muted" />
+                              {formatDate(job.postedDate)}
+                            </span>
                           </td>
 
-                          <td className="py-4 pl-4 text-right">
-                            <div className="flex items-center justify-end gap-3">
+                          {/* Telemetry (Views & Clicks) */}
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-2 text-2xs">
+                              <span
+                                title="Page views"
+                                className="inline-flex items-center gap-1 rounded-control bg-surface-subtle px-2 py-1 font-medium text-text-secondary border border-border-subtle"
+                              >
+                                <Eye size={12} className="text-violet-600" />
+                                {(job.views || 0).toLocaleString()}
+                              </span>
+                              <span
+                                title="Copy email / apply clicks"
+                                className="inline-flex items-center gap-1 rounded-control bg-amber-50/70 text-amber-800 border border-amber-200/60 px-2 py-1 font-medium"
+                              >
+                                <MousePointerClick size={12} className="text-amber-600" />
+                                {(job.emailCopyCount || 0).toLocaleString()}
+                              </span>
+                            </div>
+                          </td>
+
+                          {/* Actions */}
+                          <td className="py-4 pl-4 pr-6 text-right whitespace-nowrap">
+                            <div className="flex items-center justify-end gap-2">
                               <a
                                 href={`/job-posters?jobId=${encodeURIComponent(job.id)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label={`View poster for ${job.title}`}
-                                title="View poster"
-                                className="inline-flex items-center gap-1 text-xs text-text-muted transition hover:text-brand"
+                                title="View poster image"
+                                className="inline-flex items-center gap-1 rounded-control border border-border-default bg-white px-2.5 py-1 text-xs font-medium text-text-secondary shadow-2xs transition hover:border-brand/40 hover:text-brand"
                               >
-                                <ImageDown size={14} className="text-brand" />
+                                <ImageDown size={13} className="text-brand" />
                                 <span>Poster</span>
                               </a>
 
                               <Link
                                 href={`/admin/jobs/${job.id}/edit`}
                                 aria-label={`Edit ${job.title}`}
-                                className="inline-flex items-center gap-1.5 text-sm font-medium text-text-muted transition hover:text-brand"
+                                className="inline-flex items-center gap-1 rounded-control border border-border-default bg-white px-2.5 py-1 text-xs font-medium text-text-secondary shadow-2xs transition hover:border-brand/40 hover:text-brand"
                               >
-                                <Pencil size={14} />
-                                Edit
+                                <Pencil size={12} />
+                                <span>Edit</span>
+                              </Link>
+
+                              <Link
+                                href={`/admin/jobs/${job.id}`}
+                                aria-label={`View ${job.title}`}
+                                title="View details"
+                                className="inline-flex h-7 w-7 items-center justify-center rounded-control border border-border-default bg-white text-text-muted shadow-2xs transition hover:border-brand/40 hover:text-brand"
+                              >
+                                <ExternalLink size={13} />
                               </Link>
                             </div>
                           </td>
@@ -867,67 +942,91 @@ export default function AdminDashboard() {
                   </table>
                 </div>
 
-                {/* Mobile list */}
-                <div className="divide-y divide-border-subtle md:hidden">
+                {/* Mobile List View (No logo) */}
+                <div className="divide-y divide-border-subtle/70 md:hidden">
                   {filteredJobs.slice(0, 8).map((job) => (
-                    <div key={job.id} className="flex gap-3 py-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-brand-soft text-xs font-semibold text-brand">
-                        {getInitials(job.company)}
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <p className="break-words text-sm font-medium text-text-primary">
-                          <Link
-                            href={`/admin/jobs/${job.id}`}
-                            className="hover:text-brand hover:underline transition"
-                          >
-                            {job.title}
-                          </Link>
-                        </p>
-                        <p className="mt-1 text-xs text-text-muted">
+                    <div key={job.id} className="p-4 space-y-3">
+                      <div>
+                        <Link
+                          href={`/admin/jobs/${job.id}`}
+                          className="break-words text-sm font-semibold text-text-primary hover:text-brand transition"
+                        >
+                          {job.title}
+                        </Link>
+                        <p className="text-xs text-text-muted mt-0.5">
                           {job.company}
                         </p>
-                        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-text-muted">
-                          <span className="inline-flex items-center gap-1">
-                            <MapPin size={12} />
-                            {job.location}
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-text-muted">
+                        <span className="inline-flex items-center gap-1">
+                          <MapPin size={12} />
+                          {job.location}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <CalendarDays size={12} />
+                          {formatDate(job.postedDate)}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2 pt-2 border-t border-border-subtle/60">
+                        <div className="flex items-center gap-2 text-2xs">
+                          <span className="inline-flex items-center gap-1 text-text-muted">
+                            <Eye size={12} /> {(job.views || 0).toLocaleString()}
                           </span>
-                          <span>{formatDate(job.postedDate)}</span>
+                          <span>•</span>
+                          <span className="inline-flex items-center gap-1 text-amber-700">
+                            <MousePointerClick size={12} /> {(job.emailCopyCount || 0).toLocaleString()}
+                          </span>
                         </div>
 
-                        <Link
-                          href={`/admin/jobs/${job.id}/edit`}
-                          className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-brand hover:text-brand-hover"
-                        >
-                          <Pencil size={13} />
-                          Edit job
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={`/job-posters?jobId=${encodeURIComponent(job.id)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 rounded-control border border-border-default px-2 py-1 text-xs font-medium text-text-secondary"
+                          >
+                            <ImageDown size={12} className="text-brand" />
+                            Poster
+                          </a>
+
+                          <Link
+                            href={`/admin/jobs/${job.id}/edit`}
+                            className="inline-flex items-center gap-1 rounded-control border border-border-default px-2 py-1 text-xs font-medium text-text-secondary"
+                          >
+                            <Pencil size={11} />
+                            Edit
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex flex-col gap-2 border-t border-border-subtle py-4 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
+                {/* Card Footer */}
+                <div className="flex flex-col gap-2 border-t border-border-subtle bg-white px-6 py-4 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex flex-wrap items-center gap-2">
                     <span>
-                      Showing {Math.min(filteredJobs.length, 8)} of{" "}
+                      Showing {Math.min(filteredJobs.length, 10)} of{" "}
                       {filteredJobs.length} matching jobs
                     </span>
                     {tableDateFilter !== "all" && (
                       <button
                         type="button"
                         onClick={() => setTableDateFilter("all")}
-                        className="font-medium text-brand hover:underline"
+                        className="font-semibold text-brand hover:underline"
                       >
                         (Clear date filter)
                       </button>
                     )}
                   </div>
+
                   <Link
                     href="/admin/jobs"
-                    className="inline-flex items-center gap-1 self-start font-semibold text-brand hover:text-brand-hover sm:self-auto"
+                    className="inline-flex items-center gap-1 font-semibold text-brand hover:text-brand-hover"
                   >
-                    Manage all jobs
+                    <span>Manage all listings in full view</span>
                     <ChevronRight size={14} />
                   </Link>
                 </div>
@@ -936,8 +1035,9 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        <footer className="mt-12 border-t border-border-subtle pt-5 text-xs text-text-muted">
-          Zenoway Admin
+        {/* Footer */}
+        <footer className="pt-2 pb-6 text-center text-xs text-text-muted">
+          Zenoway Admin Console • Internal Management Workbench
         </footer>
       </div>
     </div>

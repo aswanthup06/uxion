@@ -203,7 +203,7 @@ export default function HeroSection({
             </div>
 
             {/* Trust points */}
-            <div className="mt-8 flex flex-wrap gap-x-5 gap-y-3 border-t border-border-default pt-5">
+            <div className="mt-6 flex flex-wrap gap-x-5 gap-y-3">
               {(isEmployer
                 ? ["Reach creative talent", "Direct applications", "Simple hiring"]
                 : ["Direct to HR", "Fresh opportunities", "Built for India"]
