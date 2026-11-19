@@ -9,15 +9,10 @@ describe("Razorpay payment helpers", () => {
   });
 
   describe("maskEmail", () => {
-    it("handles standard email addresses", () => {
-      expect(maskEmail("careers@example.com")).toBe("ca****s@example.com");
-      expect(maskEmail("recruitment@zenoway.com")).toBe("re********t@zenoway.com");
-    });
-
-    it("handles short usernames", () => {
-      expect(maskEmail("hr@company.com")).toBe("h*@company.com");
-      expect(maskEmail("job@company.com")).toBe("j**@company.com");
-      expect(maskEmail("jobs@company.com")).toBe("j***@company.com");
+    it("masks email addresses completely with full stars", () => {
+      expect(maskEmail("careers@example.com")).toBe("******************");
+      expect(maskEmail("recruitment@zenoway.com")).toBe("******************");
+      expect(maskEmail("founder@gmail.com")).toBe("******************");
     });
 
     it("handles invalid or empty inputs safely", () => {

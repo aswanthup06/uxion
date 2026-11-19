@@ -362,7 +362,7 @@ export default function ApplyModal({
                     : "tracking-wider text-text-muted select-none filter blur-[1.5px]"
                 }`}
               >
-                {activeEmail || "hiring***@company.com"}
+                {activeEmail || "******************"}
               </span>
             </div>
 

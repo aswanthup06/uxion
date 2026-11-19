@@ -66,32 +66,15 @@ export function verifyRazorpaySignature({
 }
 
 /**
- * Masks an email address for privacy and preview before purchase.
- * Example:
- * "careers@company.com" -> "ca****s@company.com"
- * "hr@company.com"      -> "h*@company.com"
+ * Masks an email address with full stars for confidential preview before unlock.
+ * Completely conceals username and domain to prevent bias against @gmail.com or personal domains.
  */
 export function maskEmail(email?: string | null): string {
   if (!email || typeof email !== "string" || !email.includes("@")) {
     return "";
   }
 
-  const [username, domain] = email.trim().split("@");
-  if (!username || !domain) return "";
-
-  if (username.length <= 2) {
-    return `${username[0]}*@${domain}`;
-  }
-
-  if (username.length <= 4) {
-    return `${username[0]}${"*".repeat(username.length - 1)}@${domain}`;
-  }
-
-  const visibleStart = username.slice(0, 2);
-  const visibleEnd = username.slice(-1);
-  const maskedMiddle = "*".repeat(username.length - 3);
-
-  return `${visibleStart}${maskedMiddle}${visibleEnd}@${domain}`;
+  return "******************";
 }
 
 /**
