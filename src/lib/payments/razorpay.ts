@@ -1,5 +1,6 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import { getServerSupabase, getServiceSupabase, isSupabaseConfigured } from "@/lib/supabase/server";
 
 export const UNLOCK_PRICE_INR = 5;
 export const UNLOCK_PRICE_PAISE = UNLOCK_PRICE_INR * 100; // 500 paise = ₹5
@@ -86,4 +87,29 @@ export function maskEmail(email?: string | null): string {
   const maskedMiddle = "*".repeat(username.length - 3);
 
   return `${visibleStart}${maskedMiddle}${visibleEnd}@${domain}`;
+}
+
+/**
+ * Checks whether an authenticated user has unlocked the email for a given job.
+ */
+export async function isJobEmailUnlocked(userId?: string | null, jobId?: string | null): Promise<boolean> {
+  if (!isSupabaseConfigured() || !userId || !jobId) {
+    return false;
+  }
+
+  try {
+    const supabase = getServerSupabase();
+    const { data } = await supabase
+      .from("unlocked_job_emails")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("job_id", jobId)
+      .eq("status", "paid")
+      .maybeSingle();
+
+    return Boolean(data);
+  } catch (error) {
+    console.error("isJobEmailUnlocked query error:", error);
+    return false;
+  }
 }
