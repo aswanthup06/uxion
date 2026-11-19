@@ -253,19 +253,25 @@ export default function AdminDashboard() {
   const [tableDateFilter, setTableDateFilter] = useState<"all" | Timeframe>("all");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isTableDropdownOpen, setIsTableDropdownOpen] = useState(false);
+  const tableDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
+      if (tableDropdownRef.current && !tableDropdownRef.current.contains(event.target as Node)) {
+        setIsTableDropdownOpen(false);
+      }
     }
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setIsDropdownOpen(false);
+        setIsTableDropdownOpen(false);
       }
     }
-    if (isDropdownOpen) {
+    if (isDropdownOpen || isTableDropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("keydown", handleKeyDown);
       return () => {
@@ -273,7 +279,7 @@ export default function AdminDashboard() {
         document.removeEventListener("keydown", handleKeyDown);
       };
     }
-  }, [isDropdownOpen]);
+  }, [isDropdownOpen, isTableDropdownOpen]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -733,26 +739,85 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              <div className="relative inline-flex items-center">
-                <select
-                  value={tableDateFilter}
-                  onChange={(event) =>
-                    setTableDateFilter(event.target.value as "all" | Timeframe)
-                  }
-                  aria-label="Filter jobs table by date"
-                  className="h-9 cursor-pointer appearance-none rounded-control border border-border-default bg-white pl-3 pr-8 text-xs font-medium text-text-secondary shadow-2xs transition hover:bg-surface-subtle hover:text-text-primary focus:border-brand focus:outline-none"
+              <div className="relative inline-block text-left" ref={tableDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsTableDropdownOpen((prev) => !prev)}
+                  aria-expanded={isTableDropdownOpen}
+                  aria-haspopup="listbox"
+                  className={`inline-flex h-9 items-center gap-2 rounded-control border bg-white px-3 text-xs font-semibold shadow-2xs transition cursor-pointer ${
+                    isTableDropdownOpen
+                      ? "border-brand ring-2 ring-focus-ring text-text-primary"
+                      : "border-border-default text-text-secondary hover:border-border-strong hover:text-text-primary"
+                  }`}
                 >
-                  <option value="all">All dates ({jobs.length})</option>
-                  <option value="today">Today ({timeframeCounts.today})</option>
-                  <option value="yesterday">Yesterday ({timeframeCounts.yesterday})</option>
-                  <option value="7days">Last 7 days ({timeframeCounts["7days"]})</option>
-                  <option value="30days">Last 30 days ({timeframeCounts["30days"]})</option>
-                  <option value="this_month">This month ({timeframeCounts.this_month})</option>
-                </select>
-                <ChevronDown
-                  size={14}
-                  className="pointer-events-none absolute right-2.5 text-text-muted"
-                />
+                  <CalendarDays size={13} className="text-brand shrink-0" />
+                  <span className="font-semibold text-text-primary">
+                    {tableDateFilter === "all"
+                      ? "All dates"
+                      : TIMEFRAME_OPTIONS.find((o) => o.value === tableDateFilter)?.label}
+                  </span>
+                  <span className="rounded-[4px] bg-surface-subtle px-1.5 py-0.5 text-3xs font-semibold text-text-muted border border-border-subtle">
+                    {timeframeCounts[tableDateFilter]}
+                  </span>
+                  <ChevronDown
+                    size={14}
+                    className={`text-text-muted transition-transform duration-200 ${
+                      isTableDropdownOpen ? "rotate-180 text-brand" : ""
+                    }`}
+                  />
+                </button>
+
+                {isTableDropdownOpen && (
+                  <div
+                    role="listbox"
+                    aria-label="Filter jobs table by date"
+                    className="absolute right-0 top-full mt-1.5 w-52 rounded-card border border-border-subtle bg-white p-1.5 shadow-dropdown z-40 animate-in fade-in zoom-in-95 duration-100"
+                  >
+                    <div className="px-2.5 py-1.5 text-3xs font-bold uppercase tracking-wider text-text-muted">
+                      Filter by Date
+                    </div>
+                    <div className="space-y-0.5">
+                      {[
+                        { value: "all" as const, label: "All dates" },
+                        { value: "today" as const, label: "Today" },
+                        { value: "yesterday" as const, label: "Yesterday" },
+                        { value: "7days" as const, label: "Last 7 days" },
+                        { value: "30days" as const, label: "Last 30 days" },
+                        { value: "this_month" as const, label: "This month" },
+                      ].map((opt) => {
+                        const isSelected = tableDateFilter === opt.value;
+                        return (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            role="option"
+                            aria-selected={isSelected}
+                            onClick={() => {
+                              setTableDateFilter(opt.value);
+                              setIsTableDropdownOpen(false);
+                            }}
+                            className={`flex w-full items-center justify-between rounded-control px-2.5 py-2 text-xs transition cursor-pointer ${
+                              isSelected
+                                ? "bg-brand-soft font-semibold text-brand"
+                                : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
+                            }`}
+                          >
+                            <span className="flex items-center gap-1.5">
+                              <span>{opt.label}</span>
+                              <span className="text-2xs text-text-muted">
+                                ({timeframeCounts[opt.value]})
+                              </span>
+                            </span>
+                            {isSelected && (
+                              <Check size={14} className="text-brand shrink-0" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <Link
