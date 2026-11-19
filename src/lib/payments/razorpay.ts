@@ -5,6 +5,10 @@ import { getServerSupabase, getServiceSupabase, isSupabaseConfigured } from "@/l
 export const UNLOCK_PRICE_INR = 5;
 export const UNLOCK_PRICE_PAISE = UNLOCK_PRICE_INR * 100; // 500 paise = ₹5
 
+export function isFreeEmailUnlockEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_FREE_EMAIL_UNLOCK === "true";
+}
+
 let razorpayInstance: Razorpay | null = null;
 
 /**

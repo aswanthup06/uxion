@@ -35,6 +35,7 @@ type JobDetailsClientProps = {
   job: Job;
   relatedJobs?: Job[];
   matchedGroup?: MatchedCommunityGroup | null;
+  isEmailUnlocked?: boolean;
 };
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -156,12 +157,20 @@ export default function JobDetailsClient({
   job,
   relatedJobs = [],
   matchedGroup = null,
+  isEmailUnlocked = false,
 }: JobDetailsClientProps) {
   const reduceMotion = useReducedMotion();
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [toast, setToast] = useState<string | null>(null);
   const [applyOpen, setApplyOpen] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(Boolean(isEmailUnlocked));
+  const [currentEmail, setCurrentEmail] = useState(job.mail);
+
+  useEffect(() => {
+    setIsUnlocked(Boolean(isEmailUnlocked));
+    setCurrentEmail(job.mail);
+  }, [isEmailUnlocked, job.mail]);
 
   useEffect(() => {
     if (!job?.id) return;
@@ -859,10 +868,15 @@ export default function JobDetailsClient({
       <ApplyModal
         open={applyOpen}
         onClose={() => setApplyOpen(false)}
-        email={job.mail}
+        email={currentEmail}
         jobId={job.id}
         jobTitle={job.title}
         company={job.company}
+        isInitialUnlocked={isUnlocked}
+        onUnlocked={(newEmail) => {
+          setIsUnlocked(true);
+          setCurrentEmail(newEmail);
+        }}
       />
     </main>
   );

@@ -3,12 +3,13 @@
 import Link from "next/link";
 import {
   ArrowUpRight,
-  Bookmark,
   Building2,
   Check,
   Compass,
   ExternalLink,
+  Lock,
   Share2,
+  Unlock,
   X,
 } from "lucide-react";
 import type { Job } from "@/app/types/job";
@@ -20,8 +21,7 @@ import { parseCardLocation, getJobType } from "./jobs-client-utils";
 interface JobDetailModalProps {
   activeJob: Job | null;
   onClose: () => void;
-  isSaved: boolean;
-  onToggleSave: (id: string) => void;
+  isUnlocked?: boolean;
   onShare: (job: Job) => void;
   shareCopied: boolean;
 }
@@ -29,8 +29,7 @@ interface JobDetailModalProps {
 export function JobDetailModal({
   activeJob,
   onClose,
-  isSaved,
-  onToggleSave,
+  isUnlocked = false,
   onShare,
   shareCopied,
 }: JobDetailModalProps) {
@@ -208,22 +207,28 @@ export function JobDetailModal({
         <div className="shrink-0 border-t border-border-subtle bg-surface-card px-6 py-4 sm:px-8">
           <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => onToggleSave(activeJob.id)}
-                className={`inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border px-3.5 text-xs font-semibold shadow-2xs transition-colors ${
-                  isSaved
-                    ? "border-brand bg-brand-soft text-brand"
-                    : "border-border-default bg-surface-card text-text-primary hover:border-border-strong hover:bg-surface-subtle"
-                }`}
-              >
-                <Bookmark
-                  className="h-4 w-4"
-                  strokeWidth={1.75}
-                  fill={isSaved ? "currentColor" : "none"}
-                />
-                <span>{isSaved ? "Saved" : "Save Job"}</span>
-              </button>
+              {isUnlocked ? (
+                <span className="inline-flex h-9 items-center justify-center gap-1.5 rounded-control border border-brand/20 bg-brand-soft px-3.5 text-xs font-semibold text-brand shadow-2xs">
+                  <Unlock className="h-4 w-4" strokeWidth={2} />
+                  <span>Unlocked</span>
+                </span>
+              ) : process.env.NEXT_PUBLIC_FREE_EMAIL_UNLOCK === "true" ? (
+                <Link
+                  href={`/jobs/${activeJob.id}`}
+                  className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border border-brand/20 bg-brand-soft px-3.5 text-xs font-semibold text-brand shadow-2xs transition-colors hover:bg-brand-soft-hover"
+                >
+                  <Unlock className="h-3.5 w-3.5 text-brand" strokeWidth={2} />
+                  <span>Free Unlock</span>
+                </Link>
+              ) : (
+                <Link
+                  href={`/jobs/${activeJob.id}`}
+                  className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-primary shadow-2xs transition-colors hover:border-border-strong hover:bg-surface-subtle"
+                >
+                  <Lock className="h-3.5 w-3.5 text-amber-500" strokeWidth={2} />
+                  <span>₹5 to Unlock</span>
+                </Link>
+              )}
 
               <button
                 type="button"

@@ -3,6 +3,7 @@ import { createServerAuthClient, getServiceSupabase } from "@/lib/supabase/serve
 import { getJobById } from "@/lib/supabase/jobs";
 import {
   getRazorpayClient,
+  isFreeEmailUnlockEnabled,
   isJobEmailUnlocked,
   UNLOCK_PRICE_PAISE,
 } from "@/lib/payments/razorpay";
@@ -52,6 +53,35 @@ export async function POST(req: Request) {
     if (alreadyUnlocked) {
       return NextResponse.json({
         alreadyUnlocked: true,
+        email: job.mail.trim(),
+      });
+    }
+
+    // Free Launch Mode: unlock directly without payment gateway
+    if (isFreeEmailUnlockEnabled()) {
+      try {
+        const serviceSupabase = getServiceSupabase();
+        await serviceSupabase.from("unlocked_job_emails").upsert(
+          {
+            user_id: user.id,
+            job_id: job.id,
+            amount: 0,
+            currency: "INR",
+            razorpay_order_id: "free_launch_offer",
+            razorpay_payment_id: "free_launch_offer",
+            status: "paid",
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "user_id,job_id" }
+        );
+      } catch (dbErr) {
+        console.warn("Failed to record free unlock in DB:", dbErr);
+      }
+
+      return NextResponse.json({
+        success: true,
+        isFree: true,
+        isUnlocked: true,
         email: job.mail.trim(),
       });
     }

@@ -7,12 +7,10 @@ import {
   useMemo,
   useRef,
   useState,
-  useSyncExternalStore,
 } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   ArrowDownUp,
-  Bookmark,
   Building2,
   ChevronDown,
   Globe,
@@ -20,10 +18,12 @@ import {
   RotateCcw,
   Search,
   SlidersHorizontal,
+  Unlock,
   WifiOff,
   X,
 } from "lucide-react";
 import type { Job } from "@/app/types/job";
+import { useAuth } from "@/context/AuthContext";
 import { getJobCategory, parseExperience } from "@/app/components/jobs/jobs-utils";
 import {
   CANONICAL_CITIES,
@@ -33,14 +33,10 @@ import {
 import {
   categories,
   getJobType,
-  getSavedJobsServerSnapshot,
-  getSavedJobsSnapshot,
   getWorkMode,
   PAGE_SIZE,
   parseMonthlySalary,
   POPULAR_LOCATIONS,
-  subscribeSavedJobs,
-  toggleSavedJob,
 } from "./comp/jobs-client-utils";
 import { JobDetailModal } from "./comp/JobDetailModal";
 import { JobCardItem } from "./comp/JobCardItem";
@@ -75,13 +71,25 @@ function JobsViewContent({
   const [salaryFloor, setSalaryFloor] = useState<string>("0");
   const [sortBy, setSortBy] = useState<string>("recent");
 
-  const saved = useSyncExternalStore(
-    subscribeSavedJobs,
-    getSavedJobsSnapshot,
-    getSavedJobsServerSnapshot
-  );
+  const { user } = useAuth();
+  const [unlockedJobIds, setUnlockedJobIds] = useState<string[]>([]);
+  const [unlockedOnly, setUnlockedOnly] = useState(false);
 
-  const [savedOnly, setSavedOnly] = useState(false);
+  useEffect(() => {
+    if (!user) {
+      setUnlockedJobIds([]);
+      return;
+    }
+    fetch("/api/jobs/unlocked")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && Array.isArray(data.unlockedJobIds)) {
+          setUnlockedJobIds(data.unlockedJobIds);
+        }
+      })
+      .catch(() => {});
+  }, [user]);
+
   const [activeJob, setActiveJob] = useState<Job | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -100,10 +108,6 @@ function JobsViewContent({
       }
     }
   }
-
-  const toggleSaved = (id: string) => {
-    toggleSavedJob(id);
-  };
 
   const loadJobs = useCallback(async () => {
     try {
@@ -260,7 +264,7 @@ function JobsViewContent({
       if (type !== "All job types" && jType !== type) return false;
       if (mode !== "All work modes" && jMode !== mode) return false;
       if (category !== "All categories" && cat !== category) return false;
-      if (savedOnly && !saved.includes(job.id)) return false;
+      if (unlockedOnly && !unlockedJobIds.includes(job.id)) return false;
 
       if (experience !== "Any experience") {
         const r = parseExperience(job.experience);
@@ -306,8 +310,8 @@ function JobsViewContent({
     experience,
     salaryFloor,
     sortBy,
-    savedOnly,
-    saved,
+    unlockedOnly,
+    unlockedJobIds,
   ]);
 
   const activeFilters = [
@@ -328,7 +332,7 @@ function JobsViewContent({
     setExperience("Any experience");
     setSalaryFloor("0");
     setSortBy("recent");
-    setSavedOnly(false);
+    setUnlockedOnly(false);
     setFiltersOpen(false);
   };
 
@@ -336,7 +340,7 @@ function JobsViewContent({
     search.trim() ||
     location.trim() ||
     activeFilters > 0 ||
-    savedOnly ||
+    unlockedOnly ||
     sortBy !== "recent"
   );
 
@@ -347,7 +351,7 @@ function JobsViewContent({
   const hasMore = visibleCount < filteredJobs.length;
 
   // Reset paging when filters change
-  const filterKey = `${search}|${location}|${type}|${mode}|${category}|${experience}|${salaryFloor}|${sortBy}|${savedOnly}`;
+  const filterKey = `${search}|${location}|${type}|${mode}|${category}|${experience}|${salaryFloor}|${sortBy}|${unlockedOnly}`;
   const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
   if (filterKey !== prevFilterKey) {
     setPrevFilterKey(filterKey);
@@ -396,7 +400,7 @@ function JobsViewContent({
     }
   };
 
-  const noSavedYet = savedOnly && saved.length === 0;
+  const noUnlockedYet = unlockedOnly && unlockedJobIds.length === 0;
 
   return (
     <div className="min-h-full bg-surface-page text-text-primary lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[272px_minmax(0,1fr)] lg:overflow-hidden">
@@ -404,10 +408,10 @@ function JobsViewContent({
       <JobFilterSidebar
         filtersOpen={filtersOpen}
         onCloseFilters={() => setFiltersOpen(false)}
-        savedOnly={savedOnly}
-        setSavedOnly={setSavedOnly}
+        unlockedOnly={unlockedOnly}
+        setUnlockedOnly={setUnlockedOnly}
         totalJobsCount={jobs.length}
-        savedCount={saved.length}
+        unlockedCount={unlockedJobIds.length}
         type={type}
         setType={setType}
         category={category}
@@ -620,23 +624,23 @@ function JobsViewContent({
           ) : filteredJobs.length === 0 ? (
             <div className="rounded-panel border border-dashed border-border-default bg-surface-card px-5 py-16 text-center">
               <div className="mx-auto grid h-12 w-12 place-items-center rounded-pill bg-surface-muted text-text-muted">
-                {noSavedYet ? <Bookmark className="h-5 w-5" strokeWidth={1.75} /> : <Search className="h-5 w-5" strokeWidth={1.75} />}
+                {noUnlockedYet ? <Unlock className="h-5 w-5" strokeWidth={1.75} /> : <Search className="h-5 w-5" strokeWidth={1.75} />}
               </div>
               <h3 className="mt-4 text-base font-semibold text-text-primary">
-                {noSavedYet ? "No saved roles yet" : "No matching jobs found"}
+                {noUnlockedYet ? "No unlocked roles yet" : "No matching jobs found"}
               </h3>
               <p className="mt-1 text-sm text-text-secondary">
-                {noSavedYet
-                  ? "Tap the bookmark icon on any job card to save it here for later."
+                {noUnlockedYet
+                  ? "Roles whose recruitment emails you've unlocked for ₹5 will appear here."
                   : "Try adjusting your search terms, removing filters, or widening the salary criteria."}
               </p>
               <button
                 type="button"
-                onClick={noSavedYet ? () => setSavedOnly(false) : clearFilters}
+                onClick={noUnlockedYet ? () => setUnlockedOnly(false) : clearFilters}
                 className="mt-5 inline-flex cursor-pointer items-center gap-2 rounded-control border border-border-default bg-surface-card px-4 py-2.5 text-sm font-semibold text-text-secondary transition-colors duration-200 hover:bg-surface-subtle hover:text-text-primary"
               >
                 <RotateCcw className="h-3.5 w-3.5" strokeWidth={1.75} />
-                {noSavedYet ? "Browse all jobs" : "Reset search and filters"}
+                {noUnlockedYet ? "Browse all jobs" : "Reset search and filters"}
               </button>
             </div>
           ) : (
@@ -647,9 +651,8 @@ function JobsViewContent({
                   <JobCardItem
                     key={job.id}
                     job={job}
-                    isSaved={saved.includes(job.id)}
+                    isUnlocked={unlockedJobIds.includes(job.id)}
                     onSelect={(selected) => setActiveJob(selected)}
-                    onToggleSave={toggleSaved}
                   />
                 ))}
               </div>
@@ -686,8 +689,7 @@ function JobsViewContent({
       <JobDetailModal
         activeJob={activeJob}
         onClose={() => setActiveJob(null)}
-        isSaved={Boolean(activeJob && saved.includes(activeJob.id))}
-        onToggleSave={toggleSaved}
+        isUnlocked={Boolean(activeJob && unlockedJobIds.includes(activeJob.id))}
         onShare={shareJob}
         shareCopied={shareCopied}
       />

@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  Bookmark,
   BriefcaseBusiness,
   ChevronDown,
   RotateCcw,
+  Unlock,
   X,
 } from "lucide-react";
 import { categories, types, experiences } from "./jobs-client-utils";
@@ -12,10 +12,10 @@ import { categories, types, experiences } from "./jobs-client-utils";
 interface JobFilterSidebarProps {
   filtersOpen: boolean;
   onCloseFilters: () => void;
-  savedOnly: boolean;
-  setSavedOnly: (saved: boolean) => void;
+  unlockedOnly: boolean;
+  setUnlockedOnly: (unlocked: boolean) => void;
   totalJobsCount: number;
-  savedCount: number;
+  unlockedCount: number;
   type: string;
   setType: (type: string) => void;
   category: string;
@@ -67,10 +67,10 @@ function Chip({
 export function JobFilterSidebar({
   filtersOpen,
   onCloseFilters,
-  savedOnly,
-  setSavedOnly,
+  unlockedOnly,
+  setUnlockedOnly,
   totalJobsCount,
-  savedCount,
+  unlockedCount,
   type,
   setType,
   category,
@@ -106,10 +106,10 @@ export function JobFilterSidebar({
         <button
           type="button"
           onClick={() => {
-            setSavedOnly(false);
+            setUnlockedOnly(false);
             onCloseFilters();
           }}
-          className={navCls(!savedOnly)}
+          className={navCls(!unlockedOnly)}
         >
           <BriefcaseBusiness className="h-4 w-4" strokeWidth={1.75} /> All jobs{" "}
           <span className="ml-auto text-xs opacity-60">{totalJobsCount}</span>
@@ -117,13 +117,13 @@ export function JobFilterSidebar({
         <button
           type="button"
           onClick={() => {
-            setSavedOnly(true);
+            setUnlockedOnly(true);
             onCloseFilters();
           }}
-          className={navCls(savedOnly)}
+          className={navCls(unlockedOnly)}
         >
-          <Bookmark className="h-4 w-4" strokeWidth={1.75} fill={savedOnly ? "currentColor" : "none"} /> Saved{" "}
-          <span className="ml-auto text-xs opacity-60">{savedCount}</span>
+          <Unlock className="h-4 w-4" strokeWidth={1.75} /> Unlocked{" "}
+          <span className="ml-auto text-xs opacity-60">{unlockedCount}</span>
         </button>
       </nav>
 
