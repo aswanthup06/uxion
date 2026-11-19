@@ -160,16 +160,16 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
       // Clear any prior renders
       googleButtonRef.current.innerHTML = "";
 
-      // Google GSI button width: between 250 and 390
+      // Google GSI button width: between 200 and 390
       const availableWidth =
         googleButtonRef.current.offsetWidth > 0
           ? googleButtonRef.current.offsetWidth
           : typeof window !== "undefined"
-            ? Math.max(250, window.innerWidth - 64)
-            : 390;
+            ? Math.max(200, window.innerWidth - 64)
+            : 350;
       const buttonWidth = Math.min(
         390,
-        Math.max(250, Math.floor(availableWidth))
+        Math.max(200, Math.floor(availableWidth))
       );
 
       window.google.accounts.id.renderButton(googleButtonRef.current, {
@@ -355,36 +355,35 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
                 </div>
               )}
 
-              {/* Custom Google Sign In Button with Native GSI Overlay */}
-              <div className="relative w-full min-w-0 max-w-full">
-                {/* Visual Custom Button */}
-                <button
-                  type="button"
-                  onClick={!isGsiRendered ? handleGoogleSignInFallback : undefined}
-                  disabled={isLoading}
-                  className="group relative flex h-11 w-full cursor-pointer items-center justify-center gap-3 rounded-control border border-border-default bg-surface-card px-4 text-sm font-semibold text-text-primary shadow-subtle transition-all duration-200 hover:border-border-strong hover:bg-surface-subtle active:scale-[0.99] disabled:cursor-wait disabled:opacity-70 dark:border-white/12 dark:bg-surface-muted dark:hover:border-white/20 dark:hover:bg-[#202024]"
-                >
-                  {isLoading ? (
-                    <>
-                      <LoaderCircle size={18} className="animate-spin text-brand" />
-                      <span>Signing you in...</span>
-                    </>
-                  ) : (
-                    <>
-                      <FcGoogle size={20} className="shrink-0" />
-                      <span>{isSignin ? "Continue with Google" : "Sign up with Google"}</span>
-                    </>
-                  )}
-                </button>
-
-                {/* Invisible Native Google Overlay for 1-Click ID Token Sign-In */}
+              {/* Native Google Sign In Button Container */}
+              <div className="w-full min-w-0 max-w-full">
                 <div
                   ref={googleButtonRef}
-                  className={`absolute inset-0 z-10 flex h-full w-full cursor-pointer items-center justify-center overflow-hidden opacity-[0.0001] [&_iframe]:!cursor-pointer ${
-                    isGsiRendered && !isLoading ? "block pointer-events-auto" : "hidden pointer-events-none"
+                  className={`w-full flex justify-center min-h-[44px] overflow-hidden ${
+                    isGsiRendered && !isLoading ? "block" : "hidden"
                   }`}
-                  aria-hidden="true"
                 />
+
+                {(!isGsiRendered || isLoading) && (
+                  <button
+                    type="button"
+                    onClick={handleGoogleSignInFallback}
+                    disabled={isLoading}
+                    className="group relative flex h-11 w-full cursor-pointer items-center justify-center gap-3 rounded-control border border-border-default bg-surface-card px-4 text-sm font-semibold text-text-primary shadow-subtle transition-all duration-200 hover:border-border-strong hover:bg-surface-subtle active:scale-[0.99] disabled:cursor-wait disabled:opacity-70 dark:border-white/12 dark:bg-surface-muted dark:hover:border-white/20 dark:hover:bg-[#202024]"
+                  >
+                    {isLoading ? (
+                      <>
+                        <LoaderCircle size={18} className="animate-spin text-brand" />
+                        <span>Signing you in...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FcGoogle size={20} className="shrink-0" />
+                        <span>{isSignin ? "Continue with Google" : "Sign up with Google"}</span>
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
 
               <p className="mt-5 text-left text-sm text-text-muted">
