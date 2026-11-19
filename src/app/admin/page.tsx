@@ -461,7 +461,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-white text-text-primary">
       <div className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 space-y-8">
         {/* Top Header */}
-        <header className="border-b border-border-subtle/80 pb-6">
+        <header>
           <div className="flex items-center gap-2 mb-2">
             <span className="flex h-2 w-2 rounded-full bg-brand animate-pulse" />
             <span className="text-2xs font-bold uppercase tracking-wider text-brand">

@@ -57,7 +57,7 @@ export default function CandidateProfilePage() {
         <Link href="/jobs" className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-text-secondary hover:text-brand"><ArrowLeft className="h-4 w-4" />Back to jobs</Link>
         <span className="inline-flex items-center gap-2 text-xs text-text-muted"><span className="h-2 w-2 rounded-full bg-brand" />Candidate profile</span>
       </div>
-      <header className="mb-6 flex flex-col justify-between gap-5 border-b border-border-default pb-6 sm:flex-row sm:items-end">
+      <header className="mb-6 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
         <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">Your career, clearly presented</p><h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">Candidate profile</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-text-muted">Add your details, experience, skills and preferences so employers can understand what you bring to the role.</p></div>
         <div className="grid h-12 w-12 place-items-center self-start rounded-full border border-border-default bg-brand-soft text-brand sm:self-auto"><UserRound className="h-5 w-5" /></div>
       </header>

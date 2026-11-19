@@ -143,7 +143,7 @@ export default function SubmissionsPage() {
     <div className="min-h-screen bg-white text-text-primary">
       <div className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 space-y-8">
         {/* Header */}
-        <header className="border-b border-border-subtle/80 pb-6">
+        <header>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <div className="flex items-center gap-2 mb-2">

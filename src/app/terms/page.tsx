@@ -37,7 +37,7 @@ export default function TermsPage() {
       <div className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-16">
 
         {/* Header */}
-        <header className="mb-12 max-w-2xl border-b border-border-default pb-8 sm:mb-16">
+        <header className="mb-12 max-w-2xl sm:mb-16">
           <div className="mb-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand">
             <ShieldCheck size={14} strokeWidth={1.8} />
             Legal

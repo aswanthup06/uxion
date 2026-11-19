@@ -226,7 +226,7 @@ export default function AdminJobDetailsPage() {
     <div className="min-h-screen bg-white text-text-primary">
       <div className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 space-y-8">
         {/* Page Header */}
-        <header className="border-b border-border-subtle/80 pb-6">
+        <header>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1">
               {/* Eyebrow */}
