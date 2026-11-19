@@ -10,19 +10,6 @@ import {
 
 export async function POST(req: Request) {
   try {
-    const authClient = await createServerAuthClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await authClient.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: "Please log in to unlock this contact email." },
-        { status: 401 }
-      );
-    }
-
     const body = await req.json().catch(() => ({}));
     const { jobId } = body;
 
@@ -48,34 +35,37 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if the user already unlocked this job's email
-    const alreadyUnlocked = await isJobEmailUnlocked(user.id, jobId);
-    if (alreadyUnlocked) {
-      return NextResponse.json({
-        alreadyUnlocked: true,
-        email: job.mail.trim(),
-      });
+    // Attempt to get user session if available
+    let currentUser: { id: string; email?: string; user_metadata?: Record<string, any> } | null = null;
+    try {
+      const authClient = await createServerAuthClient();
+      const { data } = await authClient.auth.getUser();
+      currentUser = data?.user || null;
+    } catch {
+      currentUser = null;
     }
 
-    // Free Launch Mode: unlock directly without payment gateway
+    // 1. FREE LAUNCH MODE: 100% free unlock for everyone
     if (isFreeEmailUnlockEnabled()) {
-      try {
-        const serviceSupabase = getServiceSupabase();
-        await serviceSupabase.from("unlocked_job_emails").upsert(
-          {
-            user_id: user.id,
-            job_id: job.id,
-            amount: 0,
-            currency: "INR",
-            razorpay_order_id: "free_launch_offer",
-            razorpay_payment_id: "free_launch_offer",
-            status: "paid",
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "user_id,job_id" }
-        );
-      } catch (dbErr) {
-        console.warn("Failed to record free unlock in DB:", dbErr);
+      if (currentUser) {
+        try {
+          const serviceSupabase = getServiceSupabase();
+          await serviceSupabase.from("unlocked_job_emails").upsert(
+            {
+              user_id: currentUser.id,
+              job_id: job.id,
+              amount: 0,
+              currency: "INR",
+              razorpay_order_id: "free_launch_offer",
+              razorpay_payment_id: "free_launch_offer",
+              status: "paid",
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "user_id,job_id" }
+          );
+        } catch (dbErr) {
+          console.warn("Failed to record free unlock in DB:", dbErr);
+        }
       }
 
       return NextResponse.json({
@@ -86,7 +76,24 @@ export async function POST(req: Request) {
       });
     }
 
-    // Create Razorpay order
+    // 2. PAID MODE: Requires authenticated user
+    if (!currentUser) {
+      return NextResponse.json(
+        { error: "Please log in to unlock this contact email." },
+        { status: 401 }
+      );
+    }
+
+    // Check if the user already unlocked this job's email
+    const alreadyUnlocked = await isJobEmailUnlocked(currentUser.id, jobId);
+    if (alreadyUnlocked) {
+      return NextResponse.json({
+        alreadyUnlocked: true,
+        email: job.mail.trim(),
+      });
+    }
+
+    // Create Razorpay order for ₹5
     const razorpay = getRazorpayClient();
     const sanitizedJobId = jobId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 10);
     const receipt = `rcpt_${sanitizedJobId}_${Date.now().toString().slice(-6)}`;
@@ -96,8 +103,8 @@ export async function POST(req: Request) {
       currency: "INR",
       receipt,
       notes: {
-        userId: user.id,
-        userEmail: user.email || "",
+        userId: currentUser.id,
+        userEmail: currentUser.email || "",
         jobId: job.id,
         jobTitle: job.title,
         company: job.company,
@@ -110,7 +117,7 @@ export async function POST(req: Request) {
       const serviceSupabase = getServiceSupabase();
       await serviceSupabase.from("unlocked_job_emails").upsert(
         {
-          user_id: user.id,
+          user_id: currentUser.id,
           job_id: job.id,
           amount: UNLOCK_PRICE_PAISE,
           currency: "INR",

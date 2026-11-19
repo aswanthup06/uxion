@@ -100,7 +100,7 @@ export default function ApplyModal({
   const { user } = useAuth();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  const isFreeMode = process.env.NEXT_PUBLIC_FREE_EMAIL_UNLOCK === "true";
+  const isFreeMode = process.env.NEXT_PUBLIC_FREE_EMAIL_UNLOCK !== "false";
 
   const [isUnlocked, setIsUnlocked] = useState(isInitialUnlocked);
   const [activeEmail, setActiveEmail] = useState(email);
@@ -299,7 +299,7 @@ export default function ApplyModal({
               </span>
             ) : isFreeMode ? (
               <span className="inline-flex items-center gap-1 rounded-pill bg-brand-soft px-2.5 py-0.5 text-2xs font-semibold text-brand">
-                <Unlock size={11} /> Free Launch Offer
+                <Unlock size={11} /> Free Access
               </span>
             ) : (
               <span className="inline-flex items-center gap-1 rounded-pill bg-amber-500/10 px-2 py-0.5 text-2xs font-medium text-amber-600 dark:text-amber-400">
@@ -397,12 +397,9 @@ export default function ApplyModal({
               <div className="text-right shrink-0">
                 {isFreeMode ? (
                   <>
-                    <div className="flex items-center justify-end gap-1">
-                      <span className="text-xs text-text-muted line-through">₹5</span>
-                      <span className="text-lg font-bold text-brand">FREE</span>
-                    </div>
+                    <span className="text-lg font-bold text-brand">FREE</span>
                     <span className="block text-3xs font-medium text-brand uppercase tracking-wider">
-                      Launch offer
+                      Free Access
                     </span>
                   </>
                 ) : (
@@ -426,14 +423,14 @@ export default function ApplyModal({
               <span>Lifetime access on this opening</span>
             </div>
 
-            {!user ? (
+            {!user && !isFreeMode ? (
               <Link
                 href={`/login?next=/jobs/${jobId || ""}`}
                 onClick={onClose}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-control bg-brand px-4 py-2.5 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover active:scale-[0.99]"
               >
                 <LogIn size={15} />
-                {isFreeMode ? "Sign in to Unlock for Free" : "Sign in to Unlock for ₹5"}
+                Sign in to Unlock for ₹5
               </Link>
             ) : (
               <Button

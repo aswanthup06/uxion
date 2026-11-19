@@ -212,7 +212,7 @@ export function JobDetailModal({
                   <Unlock className="h-4 w-4" strokeWidth={2} />
                   <span>Unlocked</span>
                 </span>
-              ) : process.env.NEXT_PUBLIC_FREE_EMAIL_UNLOCK === "true" ? (
+              ) : process.env.NEXT_PUBLIC_FREE_EMAIL_UNLOCK !== "false" ? (
                 <Link
                   href={`/jobs/${activeJob.id}`}
                   className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border border-brand/20 bg-brand-soft px-3.5 text-xs font-semibold text-brand shadow-2xs transition-colors hover:bg-brand-soft-hover"
