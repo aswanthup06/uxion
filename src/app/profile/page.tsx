@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  CheckCircle2,
   Loader2,
   LogOut,
   ShieldCheck,
@@ -171,27 +170,21 @@ function MinimalAccountView() {
           )}
         </div>
 
-        {/* Name with Verified Badge */}
-        <div className="mt-4 flex items-center justify-center gap-1.5">
-          <h1 className="text-xl font-bold tracking-tight text-text-primary sm:text-2xl">
-            {name}
-          </h1>
-          <span className="inline-flex items-center gap-1 rounded-pill bg-brand-soft px-1.5 py-0.5 text-3xs font-semibold text-brand">
-            <ShieldCheck size={11} />
-            <span>Verified</span>
-          </span>
-        </div>
+        {/* Name */}
+        <h1 className="mt-4 text-xl font-bold tracking-tight text-text-primary sm:text-2xl">
+          {name}
+        </h1>
 
         {/* Email */}
         <p className="mt-1 text-xs text-text-muted sm:text-sm">
           {email}
         </p>
 
-        {/* Status & Member Since */}
-        <div className="mt-2 inline-flex items-center justify-center gap-1.5 text-2xs text-text-muted">
-          <span className="inline-flex items-center gap-1 font-medium text-status-success">
-            <CheckCircle2 size={11} />
-            <span>Active</span>
+        {/* Verified Badge & Member Since */}
+        <div className="mt-2.5 flex items-center justify-center gap-2 text-2xs text-text-muted">
+          <span className="inline-flex items-center gap-1 rounded-pill bg-brand-soft px-2 py-0.5 text-3xs font-semibold text-brand">
+            <ShieldCheck size={11} />
+            <span>Verified</span>
           </span>
           {memberSince && (
             <>
