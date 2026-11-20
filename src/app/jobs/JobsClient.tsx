@@ -155,20 +155,6 @@ function JobsViewContent({
     return counts;
   }, [jobs]);
 
-  // Derived work mode counts
-  const modeCounts = useMemo(() => {
-    const counts: Record<string, number> = {
-      Remote: 0,
-      Hybrid: 0,
-      "On-site": 0,
-    };
-    for (const j of jobs) {
-      const m = getWorkMode(j);
-      if (counts[m] !== undefined) counts[m]++;
-    }
-    return counts;
-  }, [jobs]);
-
   // Locations with live job counts
   const availableLocations = useMemo(() => {
     const locMap = new Map<string, { name: string; state?: string }>();
@@ -436,11 +422,11 @@ function JobsViewContent({
           {/* Scrollable Work Mode Switcher Box */}
           <div className="flex h-9.5 min-w-0 flex-1 sm:flex-initial items-center gap-1 overflow-x-auto overscroll-x-contain rounded-control border border-border-default bg-surface-card p-1 shadow-xs no-scrollbar">
             {[
-              { id: "All work modes", label: "All", count: jobs.length },
-              { id: "Remote", label: "Remote", icon: Globe, count: modeCounts["Remote"] },
-              { id: "Hybrid", label: "Hybrid", icon: Building2, count: modeCounts["Hybrid"] },
-              { id: "On-site", label: "On-site", icon: MapPin, count: modeCounts["On-site"] },
-            ].map(({ id, label, icon: Icon, count }) => {
+              { id: "All work modes", label: "All" },
+              { id: "Remote", label: "Remote", icon: Globe },
+              { id: "Hybrid", label: "Hybrid", icon: Building2 },
+              { id: "On-site", label: "On-site", icon: MapPin },
+            ].map(({ id, label, icon: Icon }) => {
               const isActive = mode === id;
               return (
                 <button
@@ -462,13 +448,6 @@ function JobsViewContent({
                     />
                   )}
                   <span>{label}</span>
-                  <span
-                    className={`text-xs tabular-nums ${
-                      isActive ? "text-text-inverse/80" : "text-text-muted"
-                    }`}
-                  >
-                    {count}
-                  </span>
                 </button>
               );
             })}
