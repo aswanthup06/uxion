@@ -5,9 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  Check,
   Loader2,
   LogOut,
-  ShieldCheck,
   Trash2,
   User,
 } from "lucide-react";
@@ -150,8 +150,8 @@ function MinimalAccountView() {
   return (
     <div className="min-h-screen bg-surface-base px-4 pt-12 pb-20 antialiased sm:pt-16">
       <div className="mx-auto w-full max-w-sm text-center">
-        {/* Avatar */}
-        <div className="mx-auto h-20 w-20">
+        {/* Avatar with Verified Icon */}
+        <div className="relative mx-auto h-20 w-20">
           {avatarUrl && !avatarError ? (
             <Image
               src={avatarUrl}
@@ -161,13 +161,21 @@ function MinimalAccountView() {
               priority
               unoptimized
               onError={() => setAvatarError(true)}
-              className="mx-auto h-20 w-20 rounded-full object-cover ring-2 ring-border-default shadow-subtle"
+              className="h-20 w-20 rounded-full object-cover ring-2 ring-border-default shadow-subtle"
             />
           ) : (
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-brand text-2xl font-bold text-white shadow-subtle">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-brand text-2xl font-bold text-white shadow-subtle">
               {initials}
             </div>
           )}
+
+          {/* Verified icon badge on avatar */}
+          <span
+            className="absolute -bottom-0.5 -right-0.5 grid h-6 w-6 place-items-center rounded-full bg-brand text-white ring-2 ring-surface-base shadow-subtle"
+            title="Verified"
+          >
+            <Check size={12} strokeWidth={2.5} />
+          </span>
         </div>
 
         {/* Name */}
@@ -180,19 +188,12 @@ function MinimalAccountView() {
           {email}
         </p>
 
-        {/* Verified Badge & Member Since */}
-        <div className="mt-2.5 flex items-center justify-center gap-2 text-2xs text-text-muted">
-          <span className="inline-flex items-center gap-1 rounded-pill bg-brand-soft px-2 py-0.5 text-3xs font-semibold text-brand">
-            <ShieldCheck size={11} />
-            <span>Verified</span>
-          </span>
-          {memberSince && (
-            <>
-              <span className="text-border-default">·</span>
-              <span>Joined {memberSince}</span>
-            </>
-          )}
-        </div>
+        {/* Member Since */}
+        {memberSince && (
+          <p className="mt-1.5 text-2xs text-text-muted">
+            Joined {memberSince}
+          </p>
+        )}
 
         {/* Actions */}
         <div className="mt-7 space-y-3">
