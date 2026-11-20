@@ -587,7 +587,7 @@ export default function JobDetailsClient({
 
         <motion.header
           {...rise(0.04)}
-          className="border-b border-border-subtle pb-7"
+          className="pb-2"
         >
           {/* Title & Primary Action Row */}
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
@@ -621,16 +621,11 @@ export default function JobDetailsClient({
               </div>
             </div>
 
-            {/* Single Action Cluster: Share + Download Poster + Apply Now */}
+            {/* Top Actions: Share + Apply Now */}
             <div className="flex shrink-0 flex-wrap items-center gap-2.5">
               <ActionButton onClick={shareJob}>
                 <Share2 size={15} strokeWidth={1.75} />
                 Share
-              </ActionButton>
-
-              <ActionButton href={`/job-posters?jobId=${encodeURIComponent(job.id)}`}>
-                <ImageDown size={15} strokeWidth={1.75} />
-                Download Poster
               </ActionButton>
 
               {job.mail?.trim() ? (
@@ -732,7 +727,7 @@ export default function JobDetailsClient({
 
         {/* Main Content Area */}
         <div className="mt-8">
-          <motion.section {...rise(0.08)} className="max-w-3xl">
+          <motion.section {...rise(0.08)} className="w-full">
             <h2
               id="about-role-heading"
               className="mb-2 text-base-compact font-bold text-text-primary"
@@ -742,6 +737,32 @@ export default function JobDetailsClient({
 
             <div>
               <FormattedDescription content={description} />
+            </div>
+
+            {/* End of JD Actions */}
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <ActionButton href={`/job-posters?jobId=${encodeURIComponent(job.id)}`}>
+                  <ImageDown size={15} strokeWidth={1.75} />
+                  Download Poster
+                </ActionButton>
+
+                <ActionButton onClick={shareJob}>
+                  <Share2 size={15} strokeWidth={1.75} />
+                  Share
+                </ActionButton>
+              </div>
+
+              {job.mail?.trim() ? (
+                <ActionButton primary onClick={() => setApplyOpen(true)}>
+                  Apply now
+                  <ArrowUpRight size={16} strokeWidth={2} />
+                </ActionButton>
+              ) : (
+                <ActionButton primary disabled>
+                  Applications closed
+                </ActionButton>
+              )}
             </div>
           </motion.section>
         </div>

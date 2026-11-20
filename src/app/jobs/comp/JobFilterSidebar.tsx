@@ -88,7 +88,7 @@ export function JobFilterSidebar({
     <aside
       className={`${
         filtersOpen ? "flex" : "hidden"
-      } flex-col gap-7 border-b border-border-default bg-surface-card p-5 lg:sticky lg:top-0 lg:flex lg:h-full lg:min-h-0 lg:self-stretch lg:overflow-y-auto lg:overscroll-contain lg:border-b-0 lg:border-r lg:p-6 lg:pb-8 [&>*]:shrink-0`}
+      } flex-col gap-7 border-b border-border-default bg-surface-card p-5 lg:flex lg:h-full lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:border-b-0 lg:border-r lg:p-6 lg:pb-8 [&>*]:shrink-0`}
     >
       <div className="flex items-center justify-between lg:hidden">
         <span className="text-sm font-semibold text-text-primary">Filters</span>

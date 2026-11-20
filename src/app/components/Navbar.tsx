@@ -752,7 +752,7 @@ export default function Navbar() {
             <Link
               href={POST_JOB}
               onClick={closeMenus}
-              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1 rounded-control bg-brand px-2.5 sm:px-3 text-xs font-semibold text-text-inverse shadow-subtle transition-colors duration-200 hover:bg-brand-hover"
+              className="hidden sm:inline-flex h-9 cursor-pointer items-center justify-center gap-1 rounded-control bg-brand px-2.5 sm:px-3 text-xs font-semibold text-text-inverse shadow-subtle transition-colors duration-200 hover:bg-brand-hover"
             >
               <Plus size={13} />
               <span>Post Job</span>

@@ -73,8 +73,8 @@ export default function Modal({
 
     document.body.style.overflow = "hidden";
 
-    // Fallback padding compensation for browsers without scrollbar-gutter: stable
-    if (scrollbarWidth > 0 && !(typeof CSS !== "undefined" && CSS.supports?.("scrollbar-gutter", "stable"))) {
+    // Padding compensation to prevent layout shift when body scroll is locked
+    if (scrollbarWidth > 0) {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
     }
 

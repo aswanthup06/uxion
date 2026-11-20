@@ -359,21 +359,26 @@ function JobsViewContent({
   }
 
   useEffect(() => {
-    mainRef.current?.scrollTo({ top: 0 });
+    if (mainRef.current && window.innerWidth >= 1024) {
+      mainRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (window.scrollY > 0) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }, [filterKey]);
 
   // Infinite scroll sentinel
   useEffect(() => {
-    const root = mainRef.current;
     const node = sentinelRef.current;
-    if (!root || !node || !hasMore) return;
+    if (!node || !hasMore) return;
+    const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
+    const root = isDesktop ? mainRef.current : null;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, filteredJobs.length));
         }
       },
-      { root, rootMargin: "0px 0px 400px 0px" }
+      { root, rootMargin: isDesktop ? "0px 0px 400px 0px" : "400px" }
     );
     observer.observe(node);
     return () => observer.disconnect();
