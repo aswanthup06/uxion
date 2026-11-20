@@ -51,7 +51,7 @@ export function JobDetailModal({
       onClose={onClose}
       maxWidth="2xl"
       showCloseButton={false}
-      className="p-0 border border-border-default shadow-modal overflow-hidden rounded-2xl"
+      className="p-0 border-t border-x sm:border border-border-default shadow-modal overflow-hidden rounded-t-2xl rounded-b-none sm:rounded-2xl"
       bodyClassName="overflow-hidden flex flex-col min-h-0 flex-1 bg-surface-card"
     >
       <div className="flex flex-col min-h-0 flex-1 h-full">
