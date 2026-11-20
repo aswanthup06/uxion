@@ -18,7 +18,6 @@ import {
   SlidersHorizontal,
   Unlock,
   WifiOff,
-  X,
 } from "lucide-react";
 import type { Job } from "@/app/types/job";
 import { useAuth } from "@/context/AuthContext";
@@ -494,43 +493,6 @@ function JobsViewContent({
               })}
             </div>
           </div>
-
-          {/* Active criteria pills summary if filtered */}
-          {(mode !== "All work modes" || location.trim()) && (
-            <div className="flex flex-wrap items-center gap-2 text-xs text-text-muted">
-              <span>Active:</span>
-              {mode !== "All work modes" && (
-                <button
-                  type="button"
-                  onClick={() => setMode("All work modes")}
-                  className="inline-flex cursor-pointer items-center gap-1 rounded-control bg-brand-soft px-2.5 py-0.5 font-medium text-brand hover:bg-brand-soft-hover"
-                >
-                  <span>{mode}</span>
-                  <X size={11} />
-                </button>
-              )}
-              {location.trim() && (
-                <button
-                  type="button"
-                  onClick={() => setLocation("")}
-                  className="inline-flex cursor-pointer items-center gap-1 rounded-control bg-brand-soft px-2.5 py-0.5 font-medium text-brand hover:bg-brand-soft-hover"
-                >
-                  <span>{location}</span>
-                  <X size={11} />
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("All work modes");
-                  setLocation("");
-                }}
-                className="text-2xs font-semibold text-text-muted hover:text-brand hover:underline"
-              >
-                Reset both
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Extracted Search Bar & Location Autocomplete */}

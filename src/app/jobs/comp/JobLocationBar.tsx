@@ -306,16 +306,6 @@ export function JobLocationBar({
             </button>
           );
         })}
-        {location && (
-          <button
-            type="button"
-            onClick={() => setLocation("")}
-            className="ml-2 inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-brand hover:underline"
-          >
-            <span>Reset</span>
-            <X size={12} />
-          </button>
-        )}
       </div>
     </>
   );
