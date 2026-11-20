@@ -621,8 +621,8 @@ export default function JobDetailsClient({
               </div>
             </div>
 
-            {/* Top Actions: Share + Apply Now */}
-            <div className="flex shrink-0 flex-wrap items-center gap-2.5">
+            {/* Top Actions: Desktop Only (Beside title) */}
+            <div className="hidden shrink-0 flex-wrap items-center gap-2.5 sm:flex">
               <ActionButton onClick={shareJob}>
                 <Share2 size={15} strokeWidth={1.75} />
                 Share
@@ -723,6 +723,29 @@ export default function JobDetailsClient({
               ) : null}
             </div>
           )}
+
+          {/* Top Actions: Mobile Only (Below metadata - 50/50 Equal Split) */}
+          <div className="mt-5 grid grid-cols-2 gap-2.5 sm:hidden">
+            <ActionButton onClick={shareJob} className="w-full h-10 font-semibold">
+              <Share2 size={15} strokeWidth={1.75} />
+              <span>Share</span>
+            </ActionButton>
+
+            {job.mail?.trim() ? (
+              <ActionButton
+                primary
+                onClick={() => setApplyOpen(true)}
+                className="w-full h-10 font-semibold"
+              >
+                <span>Apply now</span>
+                <ArrowUpRight size={16} strokeWidth={2} />
+              </ActionButton>
+            ) : (
+              <ActionButton primary disabled className="w-full h-10 font-semibold">
+                Applications closed
+              </ActionButton>
+            )}
+          </div>
         </motion.header>
 
         {/* Main Content Area */}
@@ -740,29 +763,47 @@ export default function JobDetailsClient({
             </div>
 
             {/* End of JD Actions */}
-            <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <ActionButton href={`/job-posters?jobId=${encodeURIComponent(job.id)}`}>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              {/* Secondary Actions: Download Poster & Share (Row 2 on mobile: 50/50 equal width, Row 1 on desktop) */}
+              <div className="grid grid-cols-2 gap-2.5 sm:flex sm:items-center sm:w-auto">
+                <ActionButton
+                  href={`/job-posters?jobId=${encodeURIComponent(job.id)}`}
+                  className="w-full sm:w-auto h-11 sm:h-9 text-xs font-semibold"
+                >
                   <ImageDown size={15} strokeWidth={1.75} />
-                  Download Poster
+                  <span>Download Poster</span>
                 </ActionButton>
 
-                <ActionButton onClick={shareJob}>
+                <ActionButton
+                  onClick={shareJob}
+                  className="w-full sm:w-auto h-11 sm:h-9 text-xs font-semibold"
+                >
                   <Share2 size={15} strokeWidth={1.75} />
-                  Share
+                  <span>Share</span>
                 </ActionButton>
               </div>
 
-              {job.mail?.trim() ? (
-                <ActionButton primary onClick={() => setApplyOpen(true)}>
-                  Apply now
-                  <ArrowUpRight size={16} strokeWidth={2} />
-                </ActionButton>
-              ) : (
-                <ActionButton primary disabled>
-                  Applications closed
-                </ActionButton>
-              )}
+              {/* Primary Action: Apply Now (Row 1 on mobile: full-width, right-aligned on desktop) */}
+              <div className="order-first w-full sm:order-last sm:w-auto">
+                {job.mail?.trim() ? (
+                  <ActionButton
+                    primary
+                    onClick={() => setApplyOpen(true)}
+                    className="w-full sm:w-auto h-11 sm:h-9 text-sm sm:text-xs font-semibold"
+                  >
+                    <span>Apply now</span>
+                    <ArrowUpRight size={16} strokeWidth={2} />
+                  </ActionButton>
+                ) : (
+                  <ActionButton
+                    primary
+                    disabled
+                    className="w-full sm:w-auto h-11 sm:h-9 text-sm sm:text-xs font-semibold"
+                  >
+                    Applications closed
+                  </ActionButton>
+                )}
+              </div>
             </div>
           </motion.section>
         </div>
