@@ -422,22 +422,66 @@ function JobsViewContent({
         ref={mainRef}
         className="min-w-0 bg-surface-base px-5 py-5 sm:px-8 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:px-10 lg:py-6"
       >
-        <header className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-[-0.04em] text-text-primary sm:text-[1.75rem]">
-              Explore open roles
-            </h1>
-            <p className="mt-1.5 text-sm text-text-secondary">
-              Roles that match your skills, your goals, and the way you want to work.
-            </p>
+        <header>
+          <h1 className="text-2xl font-semibold tracking-[-0.04em] text-text-primary sm:text-[1.75rem]">
+            Explore open roles
+          </h1>
+          <p className="mt-1.5 text-sm text-text-secondary">
+            Roles that match your skills, your goals, and the way you want to work.
+          </p>
+        </header>
+
+        {/* Work Mode Switcher & Filter Toolbar */}
+        <div className="mt-5 flex min-w-0 max-w-full items-center justify-between gap-2.5 sm:gap-3">
+          {/* Scrollable Work Mode Switcher Box */}
+          <div className="flex h-9.5 min-w-0 flex-1 sm:flex-initial items-center gap-1 overflow-x-auto overscroll-x-contain rounded-control border border-border-default bg-surface-card p-1 shadow-xs no-scrollbar">
+            {[
+              { id: "All work modes", label: "All", count: jobs.length },
+              { id: "Remote", label: "Remote", icon: Globe, count: modeCounts["Remote"] },
+              { id: "Hybrid", label: "Hybrid", icon: Building2, count: modeCounts["Hybrid"] },
+              { id: "On-site", label: "On-site", icon: MapPin, count: modeCounts["On-site"] },
+            ].map(({ id, label, icon: Icon, count }) => {
+              const isActive = mode === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setMode(id)}
+                  className={`inline-flex h-full shrink-0 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-control px-2.5 sm:px-3 text-xs transition-all duration-150 ${
+                    isActive
+                      ? "bg-brand text-text-inverse font-semibold shadow-subtle"
+                      : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary font-medium"
+                  }`}
+                >
+                  {Icon && (
+                    <Icon
+                      className={`h-3.5 w-3.5 shrink-0 ${
+                        isActive ? "text-text-inverse" : "text-text-muted"
+                      }`}
+                      strokeWidth={1.8}
+                    />
+                  )}
+                  <span>{label}</span>
+                  <span
+                    className={`text-xs tabular-nums ${
+                      isActive ? "text-text-inverse/80" : "text-text-muted"
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
+
+          {/* Filter button on the right with matching height */}
           <button
             type="button"
             onClick={() => setFiltersOpen((v) => !v)}
-            className={`inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-control border px-3 text-xs font-medium transition-colors duration-200 lg:hidden ${
+            className={`inline-flex h-9.5 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-control border px-3 text-xs font-medium shadow-xs transition-colors duration-200 lg:hidden ${
               filtersOpen
                 ? "border-brand bg-brand-soft text-brand-dark"
-                : "border-border-default text-text-secondary hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
+                : "border-border-default bg-surface-card text-text-secondary hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
             }`}
           >
             <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={1.75} />
@@ -448,51 +492,6 @@ function JobsViewContent({
               </span>
             )}
           </button>
-        </header>
-
-        {/* Work Mode Switcher & Sort Toolbar */}
-        <div className="mt-5 flex min-w-0 max-w-full flex-wrap items-center justify-between gap-3">
-          <div className="w-full min-w-0 max-w-full overflow-x-auto overscroll-x-contain no-scrollbar sm:w-auto">
-            <div className="inline-flex min-w-max items-center gap-1 rounded-control border border-border-default bg-surface-card p-1 shadow-xs">
-              {[
-                { id: "All work modes", label: "All", count: jobs.length },
-                { id: "Remote", label: "Remote", icon: Globe, count: modeCounts["Remote"] },
-                { id: "Hybrid", label: "Hybrid", icon: Building2, count: modeCounts["Hybrid"] },
-                { id: "On-site", label: "On-site", icon: MapPin, count: modeCounts["On-site"] },
-              ].map(({ id, label, icon: Icon, count }) => {
-                const isActive = mode === id;
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => setMode(id)}
-                    className={`inline-flex flex-1 sm:flex-initial cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-control px-3 py-1.5 text-xs transition-all duration-150 ${
-                      isActive
-                        ? "bg-brand text-text-inverse font-semibold shadow-subtle"
-                        : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary font-medium"
-                    }`}
-                  >
-                    {Icon && (
-                      <Icon
-                        className={`h-3.5 w-3.5 shrink-0 ${
-                          isActive ? "text-text-inverse" : "text-text-muted"
-                        }`}
-                        strokeWidth={1.8}
-                      />
-                    )}
-                    <span>{label}</span>
-                    <span
-                      className={`text-xs tabular-nums ${
-                        isActive ? "text-text-inverse/80" : "text-text-muted"
-                      }`}
-                    >
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
         </div>
 
         {/* Extracted Search Bar & Location Autocomplete */}
