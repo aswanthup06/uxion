@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { Heart, Sparkles, Sun } from "lucide-react";
+import logoImg from "../../../../public/logo.png";
 
 const benefits = [
   "Work that inspires you",
@@ -47,10 +48,8 @@ export default function HappyWork() {
             >
               <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-brand-soft sm:h-28 sm:w-28">
                 <Image
-                  src="/logo.png"
+                  src={logoImg}
                   alt="Zenoway logo"
-                  width={64}
-                  height={64}
                   className="h-14 w-14 object-contain sm:h-16 sm:w-16"
                 />
               </div>

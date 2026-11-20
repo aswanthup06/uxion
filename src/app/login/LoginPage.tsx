@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Script from "next/script";
+import logoImg from "../../../public/logo.png";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { ArrowUpRight, AlertCircle, LoaderCircle } from "lucide-react";
@@ -262,10 +263,8 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
               className="relative z-10 w-fit cursor-pointer"
             >
               <Image
-                src="/logo.png"
+                src={logoImg}
                 alt="Zenoway"
-                width={148}
-                height={44}
                 priority
                 className="h-9 w-auto object-contain object-left"
               />
@@ -317,10 +316,8 @@ export default function LoginPage({ mode = "signin" }: LoginPageProps) {
                 className="inline-flex w-fit cursor-pointer items-center lg:hidden"
               >
                 <Image
-                  src="/logo.png"
+                  src={logoImg}
                   alt="Zenoway"
-                  width={132}
-                  height={40}
                   priority
                   className="h-8 w-auto max-w-[145px] object-contain object-left"
                 />

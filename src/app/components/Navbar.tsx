@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import logoImg from "../../../public/logo.png";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
@@ -244,10 +245,8 @@ export default function Navbar() {
             className="relative grid shrink-0 place-items-center"
           >
             <Image
-              src="/logo.png"
+              src={logoImg}
               alt="zenoway logo"
-              width={300}
-              height={100}
               priority
               className="block h-6 w-auto object-contain"
             />

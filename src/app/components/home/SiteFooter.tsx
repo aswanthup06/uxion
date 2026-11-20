@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Linkedin, Instagram } from "lucide-react";
+import logoImg from "../../../../public/logo.png";
 
 const COLUMNS = [
   {
@@ -56,10 +57,8 @@ export default function SiteFooter() {
               className="inline-flex items-center gap-2"
             >
               <Image
-                src="/logo.png"
+                src={logoImg}
                 alt="Zenoway logo"
-                width={300}
-                height={100}
                 className="h-6 w-auto object-contain"
               />
 
