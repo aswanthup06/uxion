@@ -569,6 +569,7 @@ export default function JobDetailsClient({
                 {job.title}
               </h1>
 
+              {/* Company Info */}
               <div className="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-text-secondary">
                 <span className="font-semibold text-text-primary">{job.company}</span>
                 {companyUrl && (
@@ -592,6 +593,57 @@ export default function JobDetailsClient({
                   </>
                 )}
               </div>
+
+              {/* Editorial Key Details Row */}
+              <div className="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-text-secondary">
+                {/* Salary */}
+                {isDisclosedSalary(job.salary) && (
+                  <>
+                    <span className="font-semibold text-text-primary">
+                      {job.salary!.trim()}
+                    </span>
+                    <span className="text-border-strong">·</span>
+                  </>
+                )}
+
+                {/* Experience */}
+                {job.experience?.trim() && (
+                  <span>
+                    {job.experience.trim()}
+                  </span>
+                )}
+
+                {job.experience?.trim() && <span className="text-border-strong">·</span>}
+
+                {/* Employment Type */}
+                {job.employmentType && (
+                  <span className="capitalize">
+                    {job.employmentType.toLowerCase().replace(/_/g, " ")}
+                  </span>
+                )}
+
+                {job.employmentType && <span className="text-border-strong">·</span>}
+
+                {/* Unified Work Mode & Location */}
+                <span className="inline-flex items-center gap-1.5 font-medium text-text-primary">
+                  {isRemote ? (
+                    <Globe size={14} className="text-brand shrink-0" strokeWidth={1.8} />
+                  ) : isHybrid ? (
+                    <Building2 size={14} className="text-brand shrink-0" strokeWidth={1.8} />
+                  ) : (
+                    <MapPin size={14} className="text-brand shrink-0" strokeWidth={1.8} />
+                  )}
+                  <span>{locDetails.cleanLocationText}</span>
+                </span>
+              </div>
+
+              {/* Candidate Residency Requirement / Preference Note */}
+              {locDetails.preferenceText && (
+                <div className="mt-2.5 flex items-center gap-1.5 text-xs text-text-secondary">
+                  <Compass size={13} className="shrink-0 text-brand" strokeWidth={2} />
+                  <span>{locDetails.preferenceText}</span>
+                </div>
+              )}
             </div>
 
             {/* Top Actions: Desktop Only (Beside title) */}
@@ -613,57 +665,6 @@ export default function JobDetailsClient({
               )}
             </div>
           </div>
-
-          {/* Approach A: Clean Editorial Metadata Row */}
-          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-text-secondary">
-            {/* Salary */}
-            {isDisclosedSalary(job.salary) && (
-              <>
-                <span className="font-semibold text-text-primary">
-                  {job.salary!.trim()}
-                </span>
-                <span className="text-border-strong select-none">·</span>
-              </>
-            )}
-
-            {/* Experience */}
-            {job.experience?.trim() && (
-              <span>
-                {job.experience.trim()}
-              </span>
-            )}
-
-            {job.experience?.trim() && <span className="text-border-strong select-none">·</span>}
-
-            {/* Employment Type */}
-            {job.employmentType && (
-              <span className="capitalize">
-                {job.employmentType.toLowerCase().replace(/_/g, " ")}
-              </span>
-            )}
-
-            {job.employmentType && <span className="text-border-strong select-none">·</span>}
-
-            {/* Unified Work Mode & Location */}
-            <span className="inline-flex items-center gap-1.5 font-medium text-text-primary">
-              {isRemote ? (
-                <Globe size={14} className="text-brand shrink-0" strokeWidth={1.8} />
-              ) : isHybrid ? (
-                <Building2 size={14} className="text-brand shrink-0" strokeWidth={1.8} />
-              ) : (
-                <MapPin size={14} className="text-brand shrink-0" strokeWidth={1.8} />
-              )}
-              <span>{locDetails.cleanLocationText}</span>
-            </span>
-          </div>
-
-          {/* Candidate Residency Requirement / Preference Note */}
-          {locDetails.preferenceText && (
-            <div className="mt-3 flex items-center gap-1.5 text-xs text-text-secondary">
-              <Compass size={13} className="shrink-0 text-brand" strokeWidth={2} />
-              <span>{locDetails.preferenceText}</span>
-            </div>
-          )}
 
           {/* Top Actions: Mobile Only (Below metadata - 50/50 Equal Split) */}
           <div className="mt-5 grid grid-cols-2 gap-2.5 sm:hidden">

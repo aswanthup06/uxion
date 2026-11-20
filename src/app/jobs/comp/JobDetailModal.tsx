@@ -89,16 +89,16 @@ export function JobDetailModal({
 
           <h2
             id="job-modal-title"
-            className="mt-2.5 text-xl font-bold tracking-tight text-text-primary sm:text-2xl"
+            className="mt-2 text-xl font-bold tracking-tight text-text-primary sm:text-2xl"
           >
             {activeJob.title}
           </h2>
 
-          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-text-secondary">
+          <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-text-secondary">
             <span className="font-semibold text-text-primary">{activeJob.company}</span>
             {activeJob.companyLink && (
               <>
-                <span className="text-border-strong select-none">·</span>
+                <span className="text-border-strong">·</span>
                 <a
                   href={activeJob.companyLink}
                   target="_blank"
@@ -113,13 +113,13 @@ export function JobDetailModal({
           </div>
 
           {/* Editorial Key Details Row */}
-          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs sm:text-sm text-text-secondary">
+          <div className="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs sm:text-sm text-text-secondary">
             {isDisclosedSalary(activeJob.salary) && (
               <>
                 <span className="font-semibold text-text-primary">
                   {activeJob.salary!.trim()}
                 </span>
-                <span className="text-border-strong select-none">·</span>
+                <span className="text-border-strong">·</span>
               </>
             )}
 
@@ -129,13 +129,13 @@ export function JobDetailModal({
               </span>
             )}
 
-            {activeJob.experience?.trim() && <span className="text-border-strong select-none">·</span>}
+            {activeJob.experience?.trim() && <span className="text-border-strong">·</span>}
 
             <span className="capitalize">
               {getJobType(activeJob).toLowerCase().replace(/_/g, " ")}
             </span>
 
-            <span className="text-border-strong select-none">·</span>
+            <span className="text-border-strong">·</span>
 
             <span className="inline-flex items-center gap-1.5 font-medium text-text-primary">
               {modalLocInfo.workMode === "Remote" ? (
