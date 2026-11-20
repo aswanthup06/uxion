@@ -149,78 +149,60 @@ function MinimalAccountView() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-base px-4 py-10 antialiased sm:py-16">
-      <div className="mx-auto max-w-md">
-        
-        {/* Profile Header */}
-        <div className="flex items-center gap-4">
+    <div className="flex min-h-[70vh] items-center justify-center bg-surface-base px-4 py-12 antialiased">
+      <div className="w-full max-w-sm text-center">
+        {/* Avatar */}
+        <div className="mx-auto h-20 w-20">
           {avatarUrl && !avatarError ? (
             <Image
               src={avatarUrl}
               alt={name}
-              width={64}
-              height={64}
+              width={80}
+              height={80}
               priority
               unoptimized
               onError={() => setAvatarError(true)}
-              className="h-16 w-16 shrink-0 rounded-full object-cover ring-1 ring-border-default"
+              className="mx-auto h-20 w-20 rounded-full object-cover ring-2 ring-border-default shadow-subtle"
             />
           ) : (
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand text-xl font-bold text-white">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-brand text-2xl font-bold text-white shadow-subtle">
               {initials}
             </div>
           )}
-
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold tracking-tight text-text-primary truncate sm:text-xl">
-                {name}
-              </h1>
-              <span className="inline-flex items-center gap-1 rounded-pill bg-brand-soft px-1.5 py-0.5 text-3xs font-semibold text-brand">
-                <ShieldCheck size={11} />
-                <span>Verified</span>
-              </span>
-            </div>
-            <p className="mt-0.5 text-xs text-text-muted truncate">
-              {email}
-            </p>
-            {memberSince && (
-              <p className="mt-1 text-2xs text-text-muted">
-                Member since {memberSince}
-              </p>
-            )}
-          </div>
         </div>
 
-        {/* Clean Hairline Divider */}
-        <hr className="my-6 border-t border-border-subtle/80" />
-
-        {/* Minimal Unboxed Info List */}
-        <div className="space-y-3.5 text-xs">
-          <div className="flex items-baseline justify-between gap-4">
-            <span className="text-text-muted">Full Name</span>
-            <span className="font-medium text-text-primary text-right">{name}</span>
-          </div>
-
-          <div className="flex items-baseline justify-between gap-4">
-            <span className="text-text-muted">Email</span>
-            <span className="font-medium text-text-primary truncate text-right">{email}</span>
-          </div>
-
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-text-muted">Account Status</span>
-            <span className="inline-flex items-center gap-1 font-medium text-status-success">
-              <CheckCircle2 size={12} />
-              <span>Active</span>
-            </span>
-          </div>
+        {/* Name with Verified Badge */}
+        <div className="mt-4 flex items-center justify-center gap-1.5">
+          <h1 className="text-xl font-bold tracking-tight text-text-primary sm:text-2xl">
+            {name}
+          </h1>
+          <span className="inline-flex items-center gap-1 rounded-pill bg-brand-soft px-1.5 py-0.5 text-3xs font-semibold text-brand">
+            <ShieldCheck size={11} />
+            <span>Verified</span>
+          </span>
         </div>
 
-        {/* Clean Hairline Divider */}
-        <hr className="my-6 border-t border-border-subtle/80" />
+        {/* Email */}
+        <p className="mt-1 text-xs text-text-muted sm:text-sm">
+          {email}
+        </p>
+
+        {/* Status & Member Since */}
+        <div className="mt-2 inline-flex items-center justify-center gap-1.5 text-2xs text-text-muted">
+          <span className="inline-flex items-center gap-1 font-medium text-status-success">
+            <CheckCircle2 size={11} />
+            <span>Active</span>
+          </span>
+          {memberSince && (
+            <>
+              <span className="text-border-default">·</span>
+              <span>Joined {memberSince}</span>
+            </>
+          )}
+        </div>
 
         {/* Actions */}
-        <div className="space-y-4">
+        <div className="mt-7 space-y-3">
           <button
             type="button"
             onClick={handleSignOut}
@@ -230,7 +212,7 @@ function MinimalAccountView() {
             <span>Sign Out</span>
           </button>
 
-          <div className="pt-2 text-center">
+          <div>
             <button
               type="button"
               onClick={() => setIsDeleteModalOpen(true)}
