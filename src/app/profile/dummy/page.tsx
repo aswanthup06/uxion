@@ -253,7 +253,7 @@ export default function ProfileDesignPage() {
 
       {/* HERO: light, static concentric rings behind the avatar */}
       <div className="relative overflow-hidden">
-        <div className="relative mx-auto max-w-5xl px-5 pb-14 pt-8 sm:px-8 sm:pb-16">
+        <div className="relative mx-auto max-w-5xl px-4 pb-6 pt-6 sm:px-8 sm:pb-8 sm:pt-8">
 
           {/* Profile */}
           <header>
@@ -303,7 +303,7 @@ export default function ProfileDesignPage() {
             </div>
 
             <div
-              className="hero-in mt-6 inline-flex items-center gap-2 rounded-pill border border-border-subtle bg-surface-base px-3 py-1 text-xs font-medium text-text-secondary"
+              className="hero-in mt-4 inline-flex items-center gap-2 rounded-pill border border-border-subtle bg-surface-base px-3 py-1 text-xs font-medium text-text-secondary sm:mt-5"
               style={{ "--d": "80ms" } as React.CSSProperties}
             >
               <span className="relative flex h-2 w-2">
@@ -314,20 +314,20 @@ export default function ProfileDesignPage() {
             </div>
 
             <h1
-              className="hero-in mt-5 text-4xl font-semibold tracking-tight sm:text-6xl"
+              className="hero-in mt-3.5 text-3xl font-bold tracking-tight sm:mt-4 sm:text-5xl lg:text-6xl break-words"
               style={{ "--d": "160ms" } as React.CSSProperties}
             >
               {CANDIDATE.name}
             </h1>
             <p
-              className="hero-in mt-2 text-lg text-text-secondary sm:text-xl"
+              className="hero-in mt-2 text-base text-text-secondary sm:text-lg lg:text-xl leading-snug sm:leading-normal"
               style={{ "--d": "240ms" } as React.CSSProperties}
             >
               {CANDIDATE.headline}
             </p>
 
             <div
-              className="hero-in mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm"
+              className="hero-in mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs sm:mt-5 sm:gap-x-5 sm:text-sm"
               style={{ "--d": "320ms" } as React.CSSProperties}
             >
               <span className="inline-flex items-center gap-1.5 font-medium text-text-secondary">
@@ -349,20 +349,20 @@ export default function ProfileDesignPage() {
             </div>
 
             <div
-              className="hero-in mt-8 flex flex-wrap items-center gap-3"
+              className="hero-in mt-6 flex flex-wrap items-center gap-3 sm:mt-7"
               style={{ "--d": "400ms" } as React.CSSProperties}
             >
               <button
                 type="button"
                 onClick={() => setIsContactOpen(true)}
-                className="h-10 cursor-pointer rounded-control bg-brand px-5 text-sm font-semibold text-text-inverse transition hover:bg-brand-hover active:scale-[0.98]"
+                className="inline-flex h-11 flex-1 cursor-pointer items-center justify-center rounded-control bg-brand px-6 text-sm font-semibold text-text-inverse transition hover:bg-brand-hover active:scale-[0.98] sm:flex-initial"
               >
                 Get in touch
               </button>
               <a
                 href={CANDIDATE.resumeUrl}
                 download={CANDIDATE.resumeName}
-                className="inline-flex h-10 items-center rounded-control border border-border-default bg-surface-base px-5 text-sm font-semibold text-text-primary transition hover:border-brand hover:text-brand"
+                className="inline-flex h-11 flex-1 items-center justify-center rounded-control border border-border-default bg-surface-base px-6 text-sm font-semibold text-text-primary transition hover:border-brand hover:text-brand sm:flex-initial"
               >
                 Resume PDF
               </a>
@@ -371,24 +371,24 @@ export default function ProfileDesignPage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-5xl px-5 pb-24 sm:px-8">
+      <div className="mx-auto max-w-5xl px-4 pb-16 sm:px-8 sm:pb-20">
 
         {/* BODY: sticky facts (left) + story (right) */}
-        <div className="grid gap-12 pt-10 lg:grid-cols-[17rem_1fr] lg:gap-16">
+        <div className="grid gap-6 pt-4 sm:gap-10 sm:pt-6 lg:grid-cols-[17rem_1fr] lg:gap-14">
           {/* ---------- LEFT: recruiter facts ---------- */}
-          <aside className="space-y-8 lg:sticky lg:top-8 lg:self-start">
-            <section className="space-y-3">
+          <aside className="space-y-4 sm:space-y-6 lg:sticky lg:top-8 lg:self-start lg:space-y-8">
+            <section className="space-y-3 rounded-panel border border-border-subtle/80 bg-surface-card/40 p-4 sm:p-5 lg:border-0 lg:bg-transparent lg:p-0">
               <Heading>At a glance</Heading>
-              <dl className="space-y-3 text-sm">
+              <dl className="grid grid-cols-2 gap-x-4 gap-y-3.5 text-xs sm:text-sm lg:block lg:space-y-3.5">
                 {CANDIDATE.snapshot.map(([k, v]) => (
-                  <div key={k}>
+                  <div key={k} className="min-w-0">
                     <dt className="text-2xs text-text-muted">{k}</dt>
                     <dd
-                      className={
+                      className={`mt-0.5 truncate sm:whitespace-normal ${
                         k === "Expected CTC" || k === "Notice period"
                           ? "font-semibold text-text-primary"
                           : "text-text-secondary"
-                      }
+                      }`}
                     >
                       {v}
                     </dd>
@@ -397,9 +397,9 @@ export default function ProfileDesignPage() {
               </dl>
             </section>
 
-            <section className="space-y-3">
+            <section className="space-y-3 rounded-panel border border-border-subtle/80 bg-surface-card/40 p-4 sm:p-5 lg:border-0 lg:bg-transparent lg:p-0">
               <Heading>Contact</Heading>
-              <div className="space-y-1.5 text-sm">
+              <div className="space-y-1.5 text-xs sm:text-sm">
                 <a
                   href={`mailto:${CANDIDATE.email}`}
                   className="block break-all text-text-secondary transition hover:text-brand"
@@ -415,29 +415,31 @@ export default function ProfileDesignPage() {
                 <button
                   type="button"
                   onClick={() => copy(CANDIDATE.email, "Email copied")}
-                  className="cursor-pointer text-xs text-text-muted transition hover:text-brand"
+                  className="cursor-pointer text-xs font-medium text-brand transition hover:underline"
                 >
                   Copy email
                 </button>
               </div>
             </section>
-
           </aside>
 
           {/* ---------- RIGHT: story ---------- */}
           <main className="min-w-0 divide-y divide-border-subtle">
             {/* Stats */}
-            <section className="grid grid-cols-2 gap-6 pb-10 sm:grid-cols-4">
+            <section className="grid grid-cols-2 gap-3 pb-6 sm:gap-6 sm:grid-cols-4 sm:pb-8">
               {CANDIDATE.stats.map((s) => (
-                <div key={s.label}>
-                  <p className="text-2xl font-semibold tracking-tight">{s.value}</p>
-                  <p className="text-xs text-text-muted">{s.label}</p>
+                <div
+                  key={s.label}
+                  className="rounded-card border border-border-subtle/70 bg-surface-card/30 p-3 sm:border-0 sm:bg-transparent sm:p-0"
+                >
+                  <p className="text-xl font-bold tracking-tight sm:text-2xl">{s.value}</p>
+                  <p className="text-2xs text-text-muted sm:text-xs">{s.label}</p>
                 </div>
               ))}
             </section>
 
             {/* About */}
-            <section className="space-y-4 py-10">
+            <section className="space-y-3.5 py-6 sm:py-8">
               <Heading>About</Heading>
               <p className="font-medium leading-relaxed text-text-primary">
                 {CANDIDATE.tagline}
@@ -458,7 +460,7 @@ export default function ProfileDesignPage() {
             </section>
 
             {/* Experience */}
-            <section className="space-y-7 py-10">
+            <section className="space-y-6 py-6 sm:py-8">
               <Heading>Experience</Heading>
               {CANDIDATE.experience.map((e) => (
                 <article key={e.role + e.company} className="space-y-2">
@@ -484,11 +486,11 @@ export default function ProfileDesignPage() {
             </section>
 
             {/* Projects */}
-            <section className="space-y-7 py-10">
+            <section className="space-y-6 py-6 sm:py-8">
               <Heading>Selected work</Heading>
               {CANDIDATE.projects.map((p) => (
                 <article key={p.title} className="space-y-1.5">
-                  <div className="flex items-baseline justify-between gap-4">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <h3 className="font-semibold">{p.title}</h3>
                     <a
                       href={p.demoUrl}
@@ -510,7 +512,7 @@ export default function ProfileDesignPage() {
             </section>
 
             {/* Skills */}
-            <section className="space-y-5 py-10">
+            <section className="space-y-4 py-6 sm:py-8">
               <Heading>Skills</Heading>
               {CANDIDATE.skills.map((g) => (
                 <div key={g.category} className="space-y-1">
@@ -523,7 +525,7 @@ export default function ProfileDesignPage() {
             </section>
 
             {/* Education + Certifications */}
-            <section className="grid gap-10 py-10 sm:grid-cols-2">
+            <section className="grid gap-6 py-6 sm:grid-cols-2 sm:gap-10 sm:py-8">
               <div className="space-y-3">
                 <Heading>Education</Heading>
                 {CANDIDATE.education.map((e) => (
@@ -548,7 +550,7 @@ export default function ProfileDesignPage() {
             </section>
 
             {/* Resume */}
-            <section className="flex flex-col gap-4 pt-10 sm:flex-row sm:items-center sm:justify-between">
+            <section className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between sm:pt-8">
               <div>
                 <h3 className="text-sm font-semibold">{CANDIDATE.resumeName}</h3>
                 <p className="text-xs text-text-muted">{CANDIDATE.resumeMeta}</p>
@@ -579,10 +581,12 @@ export default function ProfileDesignPage() {
         isOpen={isContactOpen}
         onClose={() => setIsContactOpen(false)}
         maxWidth="lg"
+        variant="auto"
+        bodyClassName="p-5 sm:p-6"
         title={`Contact ${CANDIDATE.name}`}
         description={`Send a direct message or role offer to ${CANDIDATE.name}.`}
       >
-        <form onSubmit={handleSend} className="space-y-4 py-2">
+        <form onSubmit={handleSend} className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="text-xs font-medium text-text-secondary">
               Your name <span className="text-status-error">*</span>
@@ -669,10 +673,12 @@ export default function ProfileDesignPage() {
         isOpen={isResumeOpen}
         onClose={() => setIsResumeOpen(false)}
         maxWidth="2xl"
+        variant="auto"
+        bodyClassName="p-5 sm:p-6"
         title={CANDIDATE.resumeName}
         description="ATS-optimized resume preview."
       >
-        <div className="my-3 max-h-[60vh] space-y-4 overflow-y-auto rounded-card border border-border-default bg-white p-6 text-xs text-text-primary">
+        <div className="max-h-[60vh] space-y-4 overflow-y-auto rounded-card border border-border-default bg-white p-5 sm:p-6 text-xs text-text-primary">
           <div className="border-b border-border-default pb-4">
             <h2 className="text-lg font-bold">{CANDIDATE.name}</h2>
             <p className="font-semibold text-brand">{CANDIDATE.headline}</p>
@@ -711,7 +717,7 @@ export default function ProfileDesignPage() {
             </div>
           </div>
         </div>
-        <div className="flex items-center justify-end gap-2 pt-2">
+        <div className="flex items-center justify-end gap-2 pt-4">
           <button
             type="button"
             onClick={() => setIsResumeOpen(false)}

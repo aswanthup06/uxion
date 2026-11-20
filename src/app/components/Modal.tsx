@@ -236,8 +236,9 @@ export default function Modal({
 
             {/* Modal Body */}
             <div
-              className={`min-h-0 flex-1 overscroll-contain ${bodyClassName.includes("overflow-") ? "" : "overflow-y-auto"
-                } ${bodyClassName}`}
+              className={`min-h-0 flex-1 overscroll-contain ${
+                bodyClassName.includes("overflow-") ? "" : "overflow-y-auto"
+              } ${bodyClassName || "p-5 sm:p-6"}`}
             >
               {children}
             </div>

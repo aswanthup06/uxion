@@ -389,11 +389,12 @@ export default function Navbar() {
                                     {user ? "My Profile" : "Candidate Profile"}
                                   </span>
                                   <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                    {user ? "Manage resume & details" : "Sign in to build your profile"}
+                                    {user ? "View account details & settings" : "Sign in to manage your account"}
                                   </span>
                                 </span>
                               </Link>
 
+                              {/* Hidden while candidate showcase is paused
                               <Link
                                 href="/profile/dummy"
                                 onClick={closeMenus}
@@ -414,6 +415,7 @@ export default function Navbar() {
                                   </span>
                                 </span>
                               </Link>
+                              */}
 
                               {/* Hidden while Referral is in progress
                               <Link
@@ -638,6 +640,7 @@ export default function Navbar() {
                       alt={profile?.full_name || "Candidate"}
                       width={36}
                       height={36}
+                      priority
                       unoptimized
                       className="h-full w-full rounded-full object-cover"
                     />
@@ -929,11 +932,12 @@ export default function Navbar() {
                                 {user ? "My Profile" : "Candidate Profile"}
                               </span>
                               <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                {user ? "Manage resume & details" : "Sign in to build your profile"}
+                                {user ? "View account details & settings" : "Sign in to manage your account"}
                               </span>
                             </span>
                           </Link>
 
+                          {/* Hidden while candidate showcase is paused
                           <Link
                             href="/profile/dummy"
                             onClick={closeMenus}
@@ -954,6 +958,7 @@ export default function Navbar() {
                               </span>
                             </span>
                           </Link>
+                          */}
 
                           {/* Hidden while Referral is in progress
                           <Link
