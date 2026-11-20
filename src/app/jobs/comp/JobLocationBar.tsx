@@ -286,8 +286,8 @@ export function JobLocationBar({
         </div>
       </div>
 
-      {/* Quick Location Filter Pills */}
-      <div className="mt-3 hidden sm:flex max-w-full min-w-0 items-center gap-1.5 overflow-x-auto overscroll-x-contain pb-1 text-xs no-scrollbar">
+      {/* Quick Location Filter Links */}
+      <div className="mt-3 hidden sm:flex max-w-full min-w-0 items-center gap-2 overflow-x-auto overscroll-x-contain pb-1 text-xs no-scrollbar">
         <span className="mr-1 shrink-0 font-medium text-text-muted">Quick location:</span>
         {POPULAR_LOCATIONS.map((loc) => {
           const isActive = location.toLowerCase() === loc.toLowerCase();
@@ -296,10 +296,10 @@ export function JobLocationBar({
               key={loc}
               type="button"
               onClick={() => setLocation(isActive ? "" : loc)}
-              className={`inline-flex shrink-0 cursor-pointer items-center rounded-control px-3 py-1 text-xs font-medium transition-colors ${
+              className={`inline-flex shrink-0 cursor-pointer items-center px-1.5 py-0.5 text-xs transition-colors ${
                 isActive
-                  ? "bg-brand text-text-inverse font-semibold shadow-subtle"
-                  : "border border-border-default text-text-secondary hover:border-brand/40 hover:text-text-primary"
+                  ? "font-semibold text-brand"
+                  : "font-medium text-text-secondary hover:text-text-primary"
               }`}
             >
               <span>{loc}</span>
