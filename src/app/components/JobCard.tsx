@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { Job } from "../types/job";
+import { isDisclosedSalary } from "./jobs/jobs-utils";
 import { formatLocationLabel, normalizeWorkMode } from "@/lib/supabase/locations-data";
 
 interface JobCardProps {
@@ -93,11 +94,15 @@ export default function JobCard({ job }: JobCardProps) {
         </div>
       </div>
 
-      {/* Bottom Row: Salary on left, Location on right */}
+      {/* Bottom Row: Salary on left (if disclosed), Location on right */}
       <div className="mt-5 flex items-center justify-between gap-3 pt-1 text-xs">
-        <span className="font-semibold text-text-primary text-[13.5px] tracking-tight">
-          {job.salary || "Not Disclosed"}
-        </span>
+        {isDisclosedSalary(job.salary) ? (
+          <span className="font-semibold text-text-primary text-[13.5px] tracking-tight">
+            {job.salary!.trim()}
+          </span>
+        ) : (
+          <span />
+        )}
 
         <span className="flex items-center gap-1 text-text-muted truncate max-w-[55%]" title={cleanLocation}>
           <MapPin className="h-3.5 w-3.5 shrink-0 text-brand" strokeWidth={1.75} />

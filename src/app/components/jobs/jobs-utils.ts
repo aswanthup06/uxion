@@ -133,6 +133,73 @@ export function timeAgo(dateString: string): string {
 export const isRecent = (d: string, days = 3) =>
   Date.now() - new Date(d).getTime() < days * 86_400_000;
 
+export function isDisclosedSalary(salary?: string | null): boolean {
+  if (!salary || !salary.trim()) return false;
+  return !/^(not\s*disclosed|not\s*specified|undisclosed|n\/?a|none|tbd|-|--)$/i.test(salary.trim());
+}
+
+export function formatLocationPreference(rawNote?: string | null): string | null {
+  if (!rawNote) return null;
+
+  const note = rawNote
+    .trim()
+    .replace(/\s*[-–—]?\s*\(no relocation\)/gi, "")
+    .replace(/\s*\(no relocation\)/gi, "")
+    .replace(/\s*no relocation/gi, "")
+    .trim();
+
+  if (!note) return null;
+
+  const lower = note.toLowerCase();
+
+  // If already a full natural phrase, return cleaned
+  if (
+    lower.startsWith("open to candidates") ||
+    lower.startsWith("open to applicants") ||
+    lower.startsWith("open to global")
+  ) {
+    return note;
+  }
+
+  // Handle "local candidates only" or "local candidates preferred"
+  if (lower.startsWith("local candidates")) {
+    return `Open to ${note.toLowerCase()}`;
+  }
+
+  // Handle "must reside in <location>"
+  if (lower.startsWith("must reside in")) {
+    const loc = note.slice(14).trim();
+    return `Open to candidates in ${loc} only`;
+  }
+
+  const isOnly = /\bonly\b/i.test(note);
+  const isPreferred = /\bpreferred\b/i.test(note);
+
+  // Clean location part
+  let locationPart = note
+    .replace(/\s*candidates\s+preferred\.?$/i, "")
+    .replace(/\s*candidates\s+only\.?$/i, "")
+    .replace(/\s*only\.?$/i, "")
+    .replace(/\s*preferred\.?$/i, "")
+    .trim();
+
+  if (locationPart.toLowerCase().startsWith("in ")) {
+    locationPart = locationPart.slice(3).trim();
+  }
+
+  if (!locationPart) return null;
+
+  if (isPreferred) {
+    return `Open to candidates in ${locationPart} (preferred)`;
+  }
+
+  if (isOnly) {
+    return `Open to candidates in ${locationPart} only`;
+  }
+
+  return `Open to candidates in ${locationPart}`;
+}
+
 export function getJobCategory(job: { title?: string; description?: string; category?: string }): string {
   if (job.category && job.category.trim()) {
     return job.category.trim();

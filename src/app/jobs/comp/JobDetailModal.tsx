@@ -7,15 +7,23 @@ import {
   Check,
   Compass,
   ExternalLink,
-  Lock,
+  Globe,
+  ImageDown,
+  MapPin,
   Share2,
   Unlock,
   X,
 } from "lucide-react";
 import type { Job } from "@/app/types/job";
 import Modal from "@/app/components/Modal";
+import { Button } from "@/app/components/Button";
 import FormattedDescription from "@/app/components/jobs/FormattedDescription";
-import { timeAgo, getJobCategory } from "@/app/components/jobs/jobs-utils";
+import {
+  timeAgo,
+  getJobCategory,
+  isDisclosedSalary,
+  formatLocationPreference,
+} from "@/app/components/jobs/jobs-utils";
 import { parseCardLocation, getJobType } from "./jobs-client-utils";
 
 interface JobDetailModalProps {
@@ -54,17 +62,26 @@ export function JobDetailModal({
               <span className="font-semibold text-brand">
                 {getJobCategory(activeJob)}
               </span>
-              <span className="text-text-muted">·</span>
+              <span className="text-border-strong select-none">·</span>
               <span className="text-text-muted">
                 Posted {timeAgo(activeJob.postedDate)}
               </span>
+              {isUnlocked && (
+                <>
+                  <span className="text-border-strong select-none">·</span>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-brand/20 bg-brand-soft px-2 py-0.5 text-2xs font-semibold text-brand">
+                    <Unlock className="h-3 w-3" strokeWidth={2} />
+                    <span>Unlocked</span>
+                  </span>
+                </>
+              )}
             </div>
 
             <button
               type="button"
               aria-label="Close job details"
               onClick={onClose}
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand active:scale-95"
+              className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand active:scale-95"
             >
               <X className="h-4 w-4" strokeWidth={1.75} />
             </button>
@@ -78,12 +95,10 @@ export function JobDetailModal({
           </h2>
 
           <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-text-secondary">
-            <span className="font-medium text-text-primary">{activeJob.company}</span>
-            <span className="text-border-strong">·</span>
-            <span>{modalLocInfo.officeLabel}</span>
+            <span className="font-semibold text-text-primary">{activeJob.company}</span>
             {activeJob.companyLink && (
               <>
-                <span className="text-border-strong">·</span>
+                <span className="text-border-strong select-none">·</span>
                 <a
                   href={activeJob.companyLink}
                   target="_blank"
@@ -99,103 +114,58 @@ export function JobDetailModal({
         </div>
 
         {/* Scrollable Content */}
-        <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden p-6 sm:p-8 space-y-6">
-          {/* Minimal Key Details Grid */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-card border border-border-default/70 bg-surface-subtle/50 p-4">
-            <div>
-              <p className="text-2xs font-medium uppercase tracking-wider text-text-muted">Salary</p>
-              <p className="mt-1 text-sm font-semibold text-brand truncate">
-                {activeJob.salary || "Not Disclosed"}
-              </p>
-            </div>
-            <div>
-              <p className="text-2xs font-medium uppercase tracking-wider text-text-muted">Experience</p>
-              <p className="mt-1 text-sm font-semibold text-text-primary truncate">
-                {activeJob.experience || "Fresher"}
-              </p>
-            </div>
-            <div>
-              <p className="text-2xs font-medium uppercase tracking-wider text-text-muted">Location</p>
-              <p className="mt-1 text-sm font-semibold text-text-primary truncate" title={modalLocInfo.officeLabel}>
-                {modalLocInfo.officeLabel}
-              </p>
-            </div>
-            <div>
-              <p className="text-2xs font-medium uppercase tracking-wider text-text-muted">Work Setup</p>
-              <p className="mt-1 text-sm font-semibold text-text-primary truncate">
-                {modalLocInfo.workMode} · {getJobType(activeJob)}
-              </p>
-            </div>
+        <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden p-6 sm:p-8 space-y-5">
+          {/* Editorial Key Details Row */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-text-secondary">
+            {isDisclosedSalary(activeJob.salary) && (
+              <>
+                <span className="font-semibold text-text-primary">
+                  {activeJob.salary!.trim()}
+                </span>
+                <span className="text-border-strong select-none">·</span>
+              </>
+            )}
+
+            {activeJob.experience?.trim() && (
+              <span>
+                {activeJob.experience.trim()}
+              </span>
+            )}
+
+            {activeJob.experience?.trim() && <span className="text-border-strong select-none">·</span>}
+
+            <span className="capitalize">
+              {getJobType(activeJob).toLowerCase().replace(/_/g, " ")}
+            </span>
+
+            <span className="text-border-strong select-none">·</span>
+
+            <span className="inline-flex items-center gap-1.5 font-medium text-text-primary">
+              {modalLocInfo.workMode === "Remote" ? (
+                <Globe size={14} className="text-brand shrink-0" strokeWidth={1.8} />
+              ) : modalLocInfo.workMode === "Hybrid" ? (
+                <Building2 size={14} className="text-brand shrink-0" strokeWidth={1.8} />
+              ) : (
+                <MapPin size={14} className="text-brand shrink-0" strokeWidth={1.8} />
+              )}
+              <span>{modalLocInfo.officeLabel}</span>
+            </span>
           </div>
 
           {/* Location Preference Callout */}
           {modalLocInfo.preferenceNote && (() => {
-            const trimmed = modalLocInfo.preferenceNote
-              .trim()
-              .replace(/\s*[-–—]?\s*\(no relocation\)/gi, "")
-              .replace(/\s*\(no relocation\)/gi, "")
-              .replace(/\s*no relocation/gi, "")
-              .trim();
-            const cleaned = trimmed
-              .replace(/\s*candidates\s+preferred\.?$/i, "")
-              .replace(/\s*candidates\s+only\.?$/i, "")
-              .replace(/\s*preferred\.?$/i, "")
-              .trim();
-            const cleanNote = trimmed.toLowerCase().startsWith("local candidates")
-              ? trimmed
-              : (cleaned && cleaned.toLowerCase() !== trimmed.toLowerCase() ? cleaned : trimmed);
+            const cleanNote = formatLocationPreference(modalLocInfo.preferenceNote);
             if (!cleanNote) return null;
             return (
-              <div className="rounded-control border border-border-default bg-surface-subtle p-3 text-xs">
-                <div className="flex items-start gap-2.5">
-                  <Compass size={15} className="text-brand shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-semibold block text-text-primary">Location preference</span>
-                    <span className="text-text-secondary font-medium mt-0.5 block">{cleanNote}</span>
-                  </div>
-                </div>
+              <div className="flex items-center gap-1.5 text-xs text-text-secondary">
+                <Compass size={14} className="text-brand shrink-0" strokeWidth={2} />
+                <span>{cleanNote}</span>
               </div>
             );
           })()}
 
-          {/* Company Office / HQ or Multiple Branches */}
-          {modalLocInfo.workMode === "Remote" && (activeJob.primaryCity || modalLocInfo.officeCities.length > 0) ? (
-            <div className="flex flex-wrap items-center gap-1.5 text-xs">
-              <span className="font-medium text-text-muted">
-                {modalLocInfo.officeCities.length > 1 ? "Company Offices:" : "Company HQ:"}
-              </span>
-              {modalLocInfo.officeCities.length > 0 ? (
-                modalLocInfo.officeCities.map((city, idx) => (
-                  <span
-                    key={idx}
-                    className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle px-2 py-0.5 text-xs text-text-primary"
-                  >
-                    <Building2 size={11} className="text-brand shrink-0" />
-                    {city}
-                    {activeJob.primaryState && modalLocInfo.officeCities.length === 1 ? `, ${activeJob.primaryState}` : ""}
-                  </span>
-                ))
-              ) : activeJob.primaryCity ? (
-                <span className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle px-2 py-0.5 text-xs text-text-primary">
-                  <Building2 size={11} className="text-brand shrink-0" />
-                  {activeJob.primaryCity}{activeJob.primaryState ? `, ${activeJob.primaryState}` : ""}
-                </span>
-              ) : null}
-            </div>
-          ) : modalLocInfo.officeCities.length > 1 ? (
-            <div className="flex flex-wrap items-center gap-1.5 text-xs">
-              <span className="font-medium text-text-muted">Office Branches:</span>
-              {modalLocInfo.officeCities.map((city, idx) => (
-                <span key={idx} className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle px-2 py-0.5 text-xs text-text-primary">
-                  <Building2 size={11} className="text-brand shrink-0" />
-                  {city}
-                </span>
-              ))}
-            </div>
-          ) : null}
-
           {/* Description */}
-          <div className="space-y-1">
+          <div className="pt-2 space-y-1">
             <h3 className="text-base-compact font-bold text-text-primary">
               About the role
             </h3>
@@ -204,54 +174,47 @@ export function JobDetailModal({
         </div>
 
         {/* Pinned Sticky Footer Actions */}
-        <div className="shrink-0 border-t border-border-subtle bg-surface-card px-6 py-4 sm:px-8">
-          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
-              {isUnlocked ? (
-                <span className="inline-flex h-9 items-center justify-center gap-1.5 rounded-control border border-brand/20 bg-brand-soft px-3.5 text-xs font-semibold text-brand shadow-2xs">
-                  <Unlock className="h-4 w-4" strokeWidth={2} />
-                  <span>Unlocked</span>
-                </span>
-              ) : process.env.NEXT_PUBLIC_FREE_EMAIL_UNLOCK !== "false" ? (
-                <Link
-                  href={`/jobs/${activeJob.id}`}
-                  className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border border-brand/20 bg-brand-soft px-3.5 text-xs font-semibold text-brand shadow-2xs transition-colors hover:bg-brand-soft-hover"
-                >
-                  <Unlock className="h-3.5 w-3.5 text-brand" strokeWidth={2} />
-                  <span>Free Unlock</span>
-                </Link>
-              ) : (
-                <Link
-                  href={`/jobs/${activeJob.id}`}
-                  className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-primary shadow-2xs transition-colors hover:border-border-strong hover:bg-surface-subtle"
-                >
-                  <Lock className="h-3.5 w-3.5 text-amber-500" strokeWidth={2} />
-                  <span>₹5 to Unlock</span>
-                </Link>
-              )}
+        <div className="shrink-0 border-t border-border-subtle bg-surface-card px-5 py-3.5 pb-[max(0.875rem,env(safe-area-inset-bottom,0px))] sm:px-8 sm:py-4">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+            {/* Secondary Actions on Mobile (Row 2: 50/50 equal width), Left side on Desktop */}
+            <div className="order-last sm:order-first grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto">
+              <Button
+                variant="secondary"
+                size="sm"
+                href={`/job-posters?jobId=${encodeURIComponent(activeJob.id)}`}
+                className="w-full sm:w-auto h-11 sm:h-9 text-xs font-semibold"
+              >
+                <ImageDown className="h-4 w-4" strokeWidth={1.75} />
+                <span>Poster</span>
+              </Button>
 
-              <button
-                type="button"
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => onShare(activeJob)}
-                className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-primary shadow-2xs transition-colors hover:border-border-strong hover:bg-surface-subtle"
+                className="w-full sm:w-auto h-11 sm:h-9 text-xs font-semibold"
               >
                 {shareCopied ? (
                   <Check className="h-4 w-4 text-brand" strokeWidth={1.75} />
                 ) : (
                   <Share2 className="h-4 w-4" strokeWidth={1.75} />
                 )}
-                <span>{shareCopied ? "Link Copied" : "Share"}</span>
-              </button>
+                <span>{shareCopied ? "Copied" : "Share"}</span>
+              </Button>
             </div>
 
-            <Link
-              href={`/jobs/${activeJob.id}`}
-              prefetch={true}
-              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-control bg-brand px-5 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover active:scale-[0.99]"
-            >
-              <span>View More</span>
-              <ArrowUpRight className="h-4 w-4" strokeWidth={1.75} />
-            </Link>
+            {/* Primary Action: Open Full Page & Apply */}
+            <div className="order-first sm:order-last w-full sm:w-auto">
+              <Button
+                variant="primary"
+                size="sm"
+                href={`/jobs/${activeJob.id}`}
+                className="w-full sm:w-auto h-11 sm:h-9 text-sm sm:text-xs font-semibold shadow-subtle"
+              >
+                <span>Open Full Page & Apply</span>
+                <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { MailCheck, MapPin } from "lucide-react";
 import type { Job } from "@/app/types/job";
-import { timeAgo } from "@/app/components/jobs/jobs-utils";
+import { timeAgo, isDisclosedSalary } from "@/app/components/jobs/jobs-utils";
 import { parseCardLocation, getJobType } from "./jobs-client-utils";
 
 interface JobCardItemProps {
@@ -83,11 +83,15 @@ export function JobCardItem({
         </div>
       </div>
 
-      {/* Bottom Row: Salary on left, Location on right */}
+      {/* Bottom Row: Salary on left (if disclosed), Location on right */}
       <div className="mt-5 flex items-center justify-between gap-3 pt-1 text-xs">
-        <span className="font-semibold text-text-primary text-[13.5px] tracking-tight">
-          {job.salary || "Not Disclosed"}
-        </span>
+        {isDisclosedSalary(job.salary) ? (
+          <span className="font-semibold text-text-primary text-[13.5px] tracking-tight">
+            {job.salary!.trim()}
+          </span>
+        ) : (
+          <span />
+        )}
 
         <span
           className="flex items-center gap-1 text-text-muted truncate max-w-[55%]"

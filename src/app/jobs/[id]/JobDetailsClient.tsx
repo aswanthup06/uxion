@@ -22,6 +22,7 @@ import JobCard from "@/app/components/JobCard";
 import { FaWhatsapp } from "react-icons/fa";
 import type { MatchedCommunityGroup } from "@/lib/community/match-group";
 import FormattedDescription from "@/app/components/jobs/FormattedDescription";
+import { isDisclosedSalary, formatLocationPreference } from "@/app/components/jobs/jobs-utils";
 import type { Job } from "@/app/types/job";
 import {
   normalizeWorkMode,
@@ -275,40 +276,12 @@ export default function JobDetailsClient({
       cleanLocationText = officeText || "On-site";
     }
 
-    // Deduplicate candidate preference note (e.g. remove redundant "candidates preferred" or "(no relocation)")
-    let formattedPreference: { label: string; text: string } | null = null;
-    if (preferenceNote) {
-      const trimmed = preferenceNote
-        .trim()
-        .replace(/\s*[-–—]?\s*\(no relocation\)/gi, "")
-        .replace(/\s*\(no relocation\)/gi, "")
-        .replace(/\s*no relocation/gi, "")
-        .trim();
-
-      const cleaned = trimmed
-        .replace(/\s*candidates\s+preferred\.?$/i, "")
-        .replace(/\s*candidates\s+only\.?$/i, "")
-        .replace(/\s*preferred\.?$/i, "")
-        .trim();
-
-      const displayText = trimmed.toLowerCase().startsWith("local candidates")
-        ? trimmed
-        : cleaned && cleaned.toLowerCase() !== trimmed.toLowerCase()
-        ? cleaned
-        : trimmed;
-
-      if (displayText) {
-        formattedPreference = {
-          label: "Location preference",
-          text: displayText,
-        };
-      }
-    }
+    const preferenceText = formatLocationPreference(preferenceNote);
 
     return {
       officeCities,
       preferenceNote,
-      formattedPreference,
+      preferenceText,
       cleanLocationText,
       displayLocation: officeText || locationLabel,
     };
@@ -644,13 +617,14 @@ export default function JobDetailsClient({
           {/* Approach A: Clean Editorial Metadata Row */}
           <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-text-secondary">
             {/* Salary */}
-            {job.salary?.trim() && (
-              <span className="font-semibold text-text-primary">
-                {job.salary.trim()}
-              </span>
+            {isDisclosedSalary(job.salary) && (
+              <>
+                <span className="font-semibold text-text-primary">
+                  {job.salary!.trim()}
+                </span>
+                <span className="text-border-strong select-none">·</span>
+              </>
             )}
-
-            {job.salary?.trim() && <span className="text-border-strong select-none">·</span>}
 
             {/* Experience */}
             {job.experience?.trim() && (
@@ -684,43 +658,10 @@ export default function JobDetailsClient({
           </div>
 
           {/* Candidate Residency Requirement / Preference Note */}
-          {locDetails.formattedPreference && (
-            <div className="mt-4 inline-flex flex-wrap items-center gap-2 rounded-control border border-border-default bg-surface-subtle px-3 py-1.5 text-xs">
-              <span className="inline-flex items-center gap-1.5 font-semibold text-text-primary">
-                <Compass size={13} className="shrink-0 text-brand" strokeWidth={2} />
-                {locDetails.formattedPreference.label}:
-              </span>
-              <span className="font-medium text-text-secondary">
-                {locDetails.formattedPreference.text}
-              </span>
-            </div>
-          )}
-
-          {/* Company Office / HQ Locations */}
-          {((isRemote && (job.primaryCity || locDetails.officeCities.length > 0)) || locDetails.officeCities.length > 1) && (
-            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-text-muted">
-              <span className="font-medium text-text-secondary">
-                {isRemote ? (locDetails.officeCities.length > 1 ? "Company Offices:" : "Company HQ:") : "Offices:"}
-              </span>
-              {locDetails.officeCities.length > 0 ? (
-                locDetails.officeCities.map((city, idx) => (
-                  <span
-                    key={idx}
-                    className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle px-2 py-0.5 font-medium text-text-secondary"
-                  >
-                    <Building2 size={11} className="shrink-0 text-brand" />
-                    {city}
-                    {job.primaryState && locDetails.officeCities.length === 1 ? `, ${job.primaryState}` : ""}
-                    {idx < locDetails.officeCities.length - 1 && <span className="text-border-strong ml-1">·</span>}
-                  </span>
-                ))
-              ) : job.primaryCity ? (
-                <span className="inline-flex items-center gap-1 rounded-control border border-border-default bg-surface-subtle px-2 py-0.5 font-medium text-text-secondary">
-                  <Building2 size={11} className="shrink-0 text-brand" />
-                  {job.primaryCity}
-                  {job.primaryState ? `, ${job.primaryState}` : ""}
-                </span>
-              ) : null}
+          {locDetails.preferenceText && (
+            <div className="mt-3 flex items-center gap-1.5 text-xs text-text-secondary">
+              <Compass size={13} className="shrink-0 text-brand" strokeWidth={2} />
+              <span>{locDetails.preferenceText}</span>
             </div>
           )}
 
@@ -763,8 +704,8 @@ export default function JobDetailsClient({
             </div>
 
             {/* End of JD Actions */}
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              {/* Secondary Actions: Download Poster & Share (Row 2 on mobile: 50/50 equal width, Row 1 on desktop) */}
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              {/* Secondary Actions: Download Poster & Share (Row 2 on mobile: 50/50 equal width, Desktop: compact inline) */}
               <div className="grid grid-cols-2 gap-2.5 sm:flex sm:items-center sm:w-auto">
                 <ActionButton
                   href={`/job-posters?jobId=${encodeURIComponent(job.id)}`}
@@ -783,13 +724,13 @@ export default function JobDetailsClient({
                 </ActionButton>
               </div>
 
-              {/* Primary Action: Apply Now (Row 1 on mobile: full-width, right-aligned on desktop) */}
-              <div className="order-first w-full sm:order-last sm:w-auto">
+              {/* Primary Action: Apply Now (Mobile only: full-width above secondary actions) */}
+              <div className="order-first w-full sm:hidden">
                 {job.mail?.trim() ? (
                   <ActionButton
                     primary
                     onClick={() => setApplyOpen(true)}
-                    className="w-full sm:w-auto h-11 sm:h-9 text-sm sm:text-xs font-semibold"
+                    className="w-full h-11 text-sm font-semibold"
                   >
                     <span>Apply now</span>
                     <ArrowUpRight size={16} strokeWidth={2} />
@@ -798,7 +739,7 @@ export default function JobDetailsClient({
                   <ActionButton
                     primary
                     disabled
-                    className="w-full sm:w-auto h-11 sm:h-9 text-sm sm:text-xs font-semibold"
+                    className="w-full h-11 text-sm font-semibold"
                   >
                     Applications closed
                   </ActionButton>

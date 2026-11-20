@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  HiOutlineSquares2X2,
+  HiSquares2X2,
   HiOutlineBriefcase,
   HiBriefcase,
   HiPlus,
@@ -11,7 +13,6 @@ import {
   HiOutlineUser,
   HiUser,
 } from "react-icons/hi2";
-import { PiHouseSimple, PiHouseSimpleFill } from "react-icons/pi";
 import { useAuth } from "@/context/AuthContext";
 
 export default function BottomNavbar() {
@@ -29,7 +30,7 @@ export default function BottomNavbar() {
       aria-label="Mobile Navigation"
       className="fixed inset-x-3 bottom-[max(0.6rem,env(safe-area-inset-bottom,0px))] z-40 mx-auto max-w-md transition-all duration-200 md:hidden"
     >
-      <nav className="relative flex h-[62px] items-center justify-around rounded-2xl border border-border-default/80 bg-surface-card/90 px-1.5 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.12),0_4px_10px_-2px_rgba(0,0,0,0.06)] backdrop-blur-2xl transition-colors dark:border-white/10 dark:bg-surface-card/92 dark:shadow-[0_12px_36px_rgba(0,0,0,0.65)]">
+      <nav className="relative flex h-[62px] items-center justify-around rounded-xl border border-border-default/80 bg-surface-card/90 px-1.5 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.12),0_4px_10px_-2px_rgba(0,0,0,0.06)] backdrop-blur-2xl transition-colors dark:border-white/10 dark:bg-surface-card/92 dark:shadow-[0_12px_36px_rgba(0,0,0,0.65)]">
         {/* 1. Home Tab */}
         <Link
           href="/"
@@ -41,9 +42,9 @@ export default function BottomNavbar() {
           }`}
         >
           {isHome ? (
-            <PiHouseSimpleFill size={22} className="text-brand transition-transform scale-105" />
+            <HiSquares2X2 size={22} className="text-brand transition-transform scale-105" />
           ) : (
-            <PiHouseSimple size={22} className="transition-transform group-hover:scale-105" />
+            <HiOutlineSquares2X2 size={22} className="transition-transform group-hover:scale-105" />
           )}
           <span
             className={`mt-1 text-[10px] tracking-tight leading-none ${
@@ -85,9 +86,7 @@ export default function BottomNavbar() {
             href="/post-job"
             aria-label="Post a Job"
             aria-current={isPostJob ? "page" : undefined}
-            className={`group -mt-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand text-text-inverse shadow-[0_6px_18px_-3px_rgba(8,127,80,0.35)] dark:shadow-[0_6px_20px_-3px_rgba(16,185,129,0.4)] border-2 border-surface-card transition-all duration-200 active:scale-90 hover:scale-105 hover:bg-brand-hover ${
-              isPostJob ? "ring-2 ring-brand ring-offset-2 ring-offset-surface-card" : ""
-            }`}
+            className="group -mt-5 flex h-12 w-12 items-center justify-center rounded-full bg-brand text-text-inverse shadow-card transition-all duration-200 active:scale-95 hover:bg-brand-hover"
           >
             <HiPlus
               size={24}
