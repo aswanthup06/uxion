@@ -56,7 +56,7 @@ export function JobDetailModal({
     >
       <div className="flex flex-col min-h-0 flex-1 h-full">
         {/* Minimal Header */}
-        <div className="relative shrink-0 border-b border-border-subtle bg-surface-card px-6 py-5 sm:px-8 sm:py-6">
+        <div className="relative shrink-0 border-b border-border-subtle bg-surface-card px-6 pt-5 pb-4 sm:px-8 sm:pt-6 sm:pb-5">
           <div className="flex items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2 text-xs">
               <span className="font-semibold text-brand">
@@ -111,12 +111,9 @@ export function JobDetailModal({
               </>
             )}
           </div>
-        </div>
 
-        {/* Scrollable Content */}
-        <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden p-6 sm:p-8 space-y-5">
           {/* Editorial Key Details Row */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-text-secondary">
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs sm:text-sm text-text-secondary">
             {isDisclosedSalary(activeJob.salary) && (
               <>
                 <span className="font-semibold text-text-primary">
@@ -157,15 +154,18 @@ export function JobDetailModal({
             const cleanNote = formatLocationPreference(modalLocInfo.preferenceNote);
             if (!cleanNote) return null;
             return (
-              <div className="flex items-center gap-1.5 text-xs text-text-secondary">
+              <div className="mt-2.5 flex items-center gap-1.5 text-xs text-text-secondary">
                 <Compass size={14} className="text-brand shrink-0" strokeWidth={2} />
                 <span>{cleanNote}</span>
               </div>
             );
           })()}
+        </div>
 
+        {/* Scrollable Content */}
+        <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden p-6 sm:p-8 space-y-5">
           {/* Description */}
-          <div className="pt-2 space-y-1">
+          <div className="space-y-1.5">
             <h3 className="text-base-compact font-bold text-text-primary">
               About the role
             </h3>
