@@ -455,7 +455,7 @@ function JobsViewContent({
           <div className="w-full min-w-0 max-w-full overflow-x-auto overscroll-x-contain no-scrollbar sm:w-auto">
             <div className="inline-flex min-w-max items-center gap-1 rounded-control border border-border-default bg-surface-card p-1 shadow-xs">
               {[
-                { id: "All work modes", label: "All modes", count: jobs.length },
+                { id: "All work modes", label: "All", count: jobs.length },
                 { id: "Remote", label: "Remote", icon: Globe, count: modeCounts["Remote"] },
                 { id: "Hybrid", label: "Hybrid", icon: Building2, count: modeCounts["Hybrid"] },
                 { id: "On-site", label: "On-site", icon: MapPin, count: modeCounts["On-site"] },
