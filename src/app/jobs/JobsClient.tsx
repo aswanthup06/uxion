@@ -449,34 +449,33 @@ function JobsViewContent({
             <button
               type="button"
               onClick={() => setFiltersOpen((v) => !v)}
-              className={`inline-flex h-8.5 cursor-pointer items-center gap-1.5 rounded-control border px-3 text-xs font-medium transition-colors duration-200 lg:hidden ${
+              className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-control border px-3.5 text-sm font-medium transition-colors duration-200 lg:hidden ${
                 filtersOpen
                   ? "border-brand bg-brand-soft text-brand-dark"
                   : "border-border-default text-text-secondary hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
               }`}
             >
-              <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={1.75} />
-              <span>Filters</span>
+              <SlidersHorizontal className="h-4 w-4" strokeWidth={1.75} /> Filters{" "}
               {activeFilters > 0 && (
-                <span className="grid h-4 min-w-4 place-items-center rounded-pill bg-brand-dark px-1 text-3xs text-white">
+                <span className="grid h-5 min-w-5 place-items-center rounded-pill bg-brand-dark px-1 text-2xs text-white">
                   {activeFilters}
                 </span>
               )}
             </button>
-            <label className="relative inline-flex h-8.5 items-center gap-1.5 rounded-control border border-border-default bg-surface-card pl-2.5 pr-7 text-xs text-text-secondary shadow-2xs transition-colors hover:border-border-strong hover:text-text-primary">
-              <ArrowDownUp className="h-3.5 w-3.5 shrink-0 text-text-muted" strokeWidth={1.75} />
+            <label className="relative inline-flex h-10 items-center gap-2 rounded-control border border-border-default bg-surface-card pl-3.5 pr-8 text-sm text-text-muted transition-colors hover:border-border-strong">
+              <ArrowDownUp className="h-4 w-4" strokeWidth={1.75} />
               <select
                 aria-label="Sort jobs"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="cursor-pointer appearance-none bg-transparent pr-0.5 text-xs font-medium text-text-primary outline-none"
+                className="cursor-pointer appearance-none bg-transparent pr-1 text-sm font-medium text-text-primary outline-none"
               >
                 <option value="recent">Most recent</option>
                 <option value="salary-high">Salary: high to low</option>
                 <option value="salary-low">Salary: low to high</option>
                 <option value="company">Company A–Z</option>
               </select>
-              <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted" />
+              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
             </label>
           </div>
         </header>
