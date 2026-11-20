@@ -9,12 +9,8 @@ import {
   useState,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
 import {
-  ArrowDownUp,
   Building2,
-  Check,
-  ChevronDown,
   Globe,
   MapPin,
   RotateCcw,
@@ -45,101 +41,6 @@ import { JobCardItem } from "./comp/JobCardItem";
 import { JobFilterSidebar } from "./comp/JobFilterSidebar";
 import { JobLocationBar } from "./comp/JobLocationBar";
 
-const SORT_OPTIONS = [
-  { value: "recent", label: "Most recent" },
-  { value: "salary-high", label: "Salary: high to low" },
-  { value: "salary-low", label: "Salary: low to high" },
-  { value: "company", label: "Company A–Z" },
-];
-
-function SortDropdown({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (val: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("keydown", handleKeyDown);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open]);
-
-  const currentOption = SORT_OPTIONS.find((o) => o.value === value) || SORT_OPTIONS[0];
-
-  return (
-    <div ref={containerRef} className="relative inline-block text-left">
-      <button
-        type="button"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        onClick={() => setOpen((prev) => !prev)}
-        className="inline-flex h-8.5 cursor-pointer items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 text-xs font-medium text-text-secondary shadow-2xs transition-colors hover:border-border-strong hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-      >
-        <ArrowDownUp className="h-3.5 w-3.5 shrink-0 text-text-muted" strokeWidth={1.75} />
-        <span>{currentOption.label}</span>
-        <ChevronDown
-          className={`h-3 w-3 text-text-muted transition-transform duration-150 ${
-            open ? "rotate-180 text-text-primary" : ""
-          }`}
-        />
-      </button>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            role="listbox"
-            initial={{ opacity: 0, y: -4, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -4, scale: 0.98 }}
-            transition={{ duration: 0.12 }}
-            className="absolute right-0 top-full z-40 mt-1.5 min-w-[170px] overflow-hidden rounded-control border border-border-default bg-surface-card p-1 shadow-modal"
-          >
-            {SORT_OPTIONS.map((opt) => {
-              const isSelected = opt.value === value;
-              return (
-                <button
-                  key={opt.value}
-                  type="button"
-                  role="option"
-                  aria-selected={isSelected}
-                  onClick={() => {
-                    onChange(opt.value);
-                    setOpen(false);
-                  }}
-                  className={`flex w-full cursor-pointer items-center justify-between rounded-control px-2.5 py-1.5 text-xs text-left transition-colors ${
-                    isSelected
-                      ? "bg-brand-soft font-semibold text-brand"
-                      : "font-medium text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
-                  }`}
-                >
-                  <span>{opt.label}</span>
-                  {isSelected && <Check className="h-3.5 w-3.5 text-brand" strokeWidth={2} />}
-                </button>
-              );
-            })}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
 
 function JobsViewContent({
   initialJobs,
@@ -167,7 +68,6 @@ function JobsViewContent({
   );
   const [experience, setExperience] = useState<string>("Any experience");
   const [salaryFloor, setSalaryFloor] = useState<string>("0");
-  const [sortBy, setSortBy] = useState<string>("recent");
 
   const { user } = useAuth();
   const [unlockedJobIds, setUnlockedJobIds] = useState<string[]>([]);
@@ -384,18 +284,10 @@ function JobsViewContent({
       return true;
     });
 
-    if (sortBy === "salary-high") {
-      result.sort((a, b) => parseMonthlySalary(b.salary) - parseMonthlySalary(a.salary));
-    } else if (sortBy === "salary-low") {
-      result.sort((a, b) => parseMonthlySalary(a.salary) - parseMonthlySalary(b.salary));
-    } else if (sortBy === "company") {
-      result.sort((a, b) => a.company.localeCompare(b.company));
-    } else {
-      result.sort(
-        (a, b) =>
-          new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime()
-      );
-    }
+    result.sort(
+      (a, b) =>
+        new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime()
+    );
 
     return result;
   }, [
@@ -407,7 +299,6 @@ function JobsViewContent({
     category,
     experience,
     salaryFloor,
-    sortBy,
     unlockedOnly,
     unlockedJobIds,
   ]);
@@ -429,7 +320,6 @@ function JobsViewContent({
     setCategory("All categories");
     setExperience("Any experience");
     setSalaryFloor("0");
-    setSortBy("recent");
     setUnlockedOnly(false);
     setFiltersOpen(false);
   };
@@ -438,8 +328,7 @@ function JobsViewContent({
     search.trim() ||
     location.trim() ||
     activeFilters > 0 ||
-    unlockedOnly ||
-    sortBy !== "recent"
+    unlockedOnly
   );
 
   const visibleJobs = useMemo(
@@ -449,7 +338,7 @@ function JobsViewContent({
   const hasMore = visibleCount < filteredJobs.length;
 
   // Reset paging when filters change
-  const filterKey = `${search}|${location}|${type}|${mode}|${category}|${experience}|${salaryFloor}|${sortBy}|${unlockedOnly}`;
+  const filterKey = `${search}|${location}|${type}|${mode}|${category}|${experience}|${salaryFloor}|${unlockedOnly}`;
   const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
   if (filterKey !== prevFilterKey) {
     setPrevFilterKey(filterKey);
@@ -642,11 +531,6 @@ function JobsViewContent({
               </button>
             </div>
           )}
-
-          {/* Right side: Sleek Custom Sort Popover */}
-          <div className="flex items-center gap-2 sm:ml-auto">
-            <SortDropdown value={sortBy} onChange={setSortBy} />
-          </div>
         </div>
 
         {/* Extracted Search Bar & Location Autocomplete */}

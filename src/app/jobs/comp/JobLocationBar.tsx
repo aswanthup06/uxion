@@ -299,7 +299,7 @@ export function JobLocationBar({
               className={`inline-flex shrink-0 cursor-pointer items-center rounded-control px-3 py-1 text-xs font-medium transition-colors ${
                 isActive
                   ? "bg-brand text-text-inverse font-semibold shadow-subtle"
-                  : "border border-border-default bg-surface-card text-text-secondary hover:border-brand/40 hover:bg-surface-subtle hover:text-text-primary"
+                  : "border border-border-default text-text-secondary hover:border-brand/40 hover:text-text-primary"
               }`}
             >
               <span>{loc}</span>
