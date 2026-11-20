@@ -9,9 +9,11 @@ import {
   useState,
 } from "react";
 import { useSearchParams } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowDownUp,
   Building2,
+  Check,
   ChevronDown,
   Globe,
   MapPin,
@@ -42,6 +44,102 @@ import { JobDetailModal } from "./comp/JobDetailModal";
 import { JobCardItem } from "./comp/JobCardItem";
 import { JobFilterSidebar } from "./comp/JobFilterSidebar";
 import { JobLocationBar } from "./comp/JobLocationBar";
+
+const SORT_OPTIONS = [
+  { value: "recent", label: "Most recent" },
+  { value: "salary-high", label: "Salary: high to low" },
+  { value: "salary-low", label: "Salary: low to high" },
+  { value: "company", label: "Company A–Z" },
+];
+
+function SortDropdown({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
+
+  const currentOption = SORT_OPTIONS.find((o) => o.value === value) || SORT_OPTIONS[0];
+
+  return (
+    <div ref={containerRef} className="relative inline-block text-left">
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((prev) => !prev)}
+        className="inline-flex h-8.5 cursor-pointer items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3 text-xs font-medium text-text-secondary shadow-2xs transition-colors hover:border-border-strong hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+      >
+        <ArrowDownUp className="h-3.5 w-3.5 shrink-0 text-text-muted" strokeWidth={1.75} />
+        <span>{currentOption.label}</span>
+        <ChevronDown
+          className={`h-3 w-3 text-text-muted transition-transform duration-150 ${
+            open ? "rotate-180 text-text-primary" : ""
+          }`}
+        />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            role="listbox"
+            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{ duration: 0.12 }}
+            className="absolute right-0 top-full z-40 mt-1.5 min-w-[170px] overflow-hidden rounded-control border border-border-default bg-surface-card p-1 shadow-modal"
+          >
+            {SORT_OPTIONS.map((opt) => {
+              const isSelected = opt.value === value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  onClick={() => {
+                    onChange(opt.value);
+                    setOpen(false);
+                  }}
+                  className={`flex w-full cursor-pointer items-center justify-between rounded-control px-2.5 py-1.5 text-xs text-left transition-colors ${
+                    isSelected
+                      ? "bg-brand-soft font-semibold text-brand"
+                      : "font-medium text-text-secondary hover:bg-surface-subtle hover:text-text-primary"
+                  }`}
+                >
+                  <span>{opt.label}</span>
+                  {isSelected && <Check className="h-3.5 w-3.5 text-brand" strokeWidth={2} />}
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 function JobsViewContent({
   initialJobs,
@@ -436,7 +534,7 @@ function JobsViewContent({
         ref={mainRef}
         className="min-w-0 bg-surface-base px-5 py-5 sm:px-8 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:px-10 lg:py-6"
       >
-        <header className="flex flex-wrap items-start justify-between gap-4">
+        <header className="flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold tracking-[-0.04em] text-text-primary sm:text-[1.75rem]">
               Explore open roles
@@ -445,42 +543,26 @@ function JobsViewContent({
               Roles that match your skills, your goals, and the way you want to work.
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setFiltersOpen((v) => !v)}
-              className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-control border px-3.5 text-sm font-medium transition-colors duration-200 lg:hidden ${
-                filtersOpen
-                  ? "border-brand bg-brand-soft text-brand-dark"
-                  : "border-border-default text-text-secondary hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
-              }`}
-            >
-              <SlidersHorizontal className="h-4 w-4" strokeWidth={1.75} /> Filters{" "}
-              {activeFilters > 0 && (
-                <span className="grid h-5 min-w-5 place-items-center rounded-pill bg-brand-dark px-1 text-2xs text-white">
-                  {activeFilters}
-                </span>
-              )}
-            </button>
-            <label className="relative inline-flex h-10 items-center gap-2 rounded-control border border-border-default bg-surface-card pl-3.5 pr-8 text-sm text-text-muted transition-colors hover:border-border-strong">
-              <ArrowDownUp className="h-4 w-4" strokeWidth={1.75} />
-              <select
-                aria-label="Sort jobs"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="cursor-pointer appearance-none bg-transparent pr-1 text-sm font-medium text-text-primary outline-none"
-              >
-                <option value="recent">Most recent</option>
-                <option value="salary-high">Salary: high to low</option>
-                <option value="salary-low">Salary: low to high</option>
-                <option value="company">Company A–Z</option>
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-            </label>
-          </div>
+          <button
+            type="button"
+            onClick={() => setFiltersOpen((v) => !v)}
+            className={`inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-control border px-3 text-xs font-medium transition-colors duration-200 lg:hidden ${
+              filtersOpen
+                ? "border-brand bg-brand-soft text-brand-dark"
+                : "border-border-default text-text-secondary hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary"
+            }`}
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={1.75} />
+            <span>Filters</span>
+            {activeFilters > 0 && (
+              <span className="grid h-4 min-w-4 place-items-center rounded-pill bg-brand-dark px-1 text-3xs text-white">
+                {activeFilters}
+              </span>
+            )}
+          </button>
         </header>
 
-        {/* Work Mode Switcher */}
+        {/* Work Mode Switcher & Sort Toolbar */}
         <div className="mt-5 flex min-w-0 max-w-full flex-wrap items-center justify-between gap-3">
           <div className="w-full min-w-0 max-w-full overflow-x-auto overscroll-x-contain no-scrollbar sm:w-auto">
             <div className="inline-flex min-w-max items-center gap-1 rounded-control border border-border-default bg-surface-card p-1 shadow-xs">
@@ -560,6 +642,11 @@ function JobsViewContent({
               </button>
             </div>
           )}
+
+          {/* Right side: Sleek Custom Sort Popover */}
+          <div className="flex items-center gap-2 sm:ml-auto">
+            <SortDropdown value={sortBy} onChange={setSortBy} />
+          </div>
         </div>
 
         {/* Extracted Search Bar & Location Autocomplete */}
