@@ -1,74 +1,171 @@
 "use client";
 
 import React from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { BriefcaseBusiness, Check, Users } from "lucide-react";
 
-const applicants = [
-  { initials: "AR", name: "Anjali R.", role: "React Developer", time: "just now" },
-  { initials: "RM", name: "Rahul M.", role: "Product Designer", time: "2m ago" },
-  { initials: "SK", name: "Sneha K.", role: "Backend Engineer", time: "5m ago" },
+const TALENT = [
+  { role: "Product Designer", skill: "Product & UX", initial: "P" },
+  { role: "UI/UX Designer", skill: "Design systems", initial: "U" },
+  { role: "Frontend Developer", skill: "React & web", initial: "F" },
 ];
 
 export function HeroVisual() {
-  return (
-    <div aria-hidden className="relative hidden h-[380px] lg:block">
-      {/* Soft brand glow */}
-      <div className="absolute left-1/2 top-1/2 -z-10 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/15 blur-3xl" />
+  const reduceMotion = useReducedMotion();
 
-      {/* Dot grid, faded at edges */}
+  return (
+    <div className="relative mx-auto flex min-h-[360px] w-full max-w-[500px] items-center justify-center sm:min-h-[420px]">
+      {/* Dotted texture */}
       <div
-        className="absolute inset-0 -z-10 opacity-60 [mask-image:radial-gradient(closest-side,black,transparent)]"
+        aria-hidden="true"
+        className="absolute inset-3 opacity-40"
         style={{
-          backgroundImage: "radial-gradient(circle, rgba(120,120,120,0.35) 1px, transparent 1px)",
-          backgroundSize: "20px 20px",
+          backgroundImage:
+            "radial-gradient(var(--color-border-strong) 0.7px, transparent 0.7px)",
+          backgroundSize: "17px 17px",
+          maskImage:
+            "radial-gradient(ellipse at center, black 15%, transparent 75%)",
         }}
       />
 
-      {/* Floating job card */}
-      <div className="hero-anim absolute right-4 top-4 w-[300px] animate-[float_7s_ease-in-out_infinite] rounded-2xl border border-border-default/50 bg-surface-card/80 p-4 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.25)] backdrop-blur">
-        <div className="flex items-center justify-between">
-          <span className="text-3xs font-medium uppercase tracking-[0.14em] text-text-muted">New opening</span>
-          <span className="flex items-center gap-1.5 text-3xs font-medium text-brand">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-60" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand" />
-            </span>
-            Live
-          </span>
-        </div>
-        <h3 className="mt-3 text-sm font-semibold text-text-primary">Senior UI Developer</h3>
-        <p className="mt-0.5 text-xs text-text-muted">Kochi · Hybrid · ₹18–26 LPA</p>
-        <div className="mt-3 flex gap-1.5">
-          {["React", "Next.js", "Tailwind"].map((t) => (
-            <span key={t} className="rounded-pill border border-border-default/50 px-2 py-0.5 text-3xs text-text-secondary">{t}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* Applicants sliding in */}
-      <div className="absolute bottom-6 left-0 w-[290px] space-y-2.5">
-        {applicants.map((a, i) => (
-          <div
-            key={a.name}
-            className="hero-anim flex animate-[slide-in_0.6s_ease-out_both] items-center gap-3 rounded-xl border border-border-default/50 bg-surface-card/90 p-2.5 shadow-subtle backdrop-blur"
-            style={{ animationDelay: `${0.5 + i * 0.35}s` }}
-          >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand/10 text-2xs font-semibold text-brand">{a.initials}</div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-medium text-text-primary">{a.name}</p>
-              <p className="truncate text-2xs text-text-muted">{a.role}</p>
-            </div>
-            <span className="text-3xs text-text-muted">{a.time}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Commission chip */}
-      <div
-        className="hero-anim absolute bottom-0 right-6 animate-[slide-in_0.6s_ease-out_both] rounded-pill border border-border-default/50 bg-surface-card px-3 py-1.5 text-2xs font-medium text-text-primary shadow-subtle"
-        style={{ animationDelay: "1.8s" }}
+      {/* Orbital paths */}
+      <motion.svg
+        viewBox="0 0 500 420"
+        fill="none"
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        aria-hidden="true"
+        animate={reduceMotion ? undefined : { rotate: [0, 2, 0] }}
+        transition={{
+          duration: 12,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
       >
-        ₹0 <span className="text-text-muted">commission</span>
-      </div>
+        <ellipse
+          cx="250"
+          cy="210"
+          rx="180"
+          ry="140"
+          stroke="var(--color-border-default)"
+          strokeDasharray="3 7"
+        />
+        <ellipse
+          cx="250"
+          cy="210"
+          rx="135"
+          ry="175"
+          stroke="var(--color-border-subtle)"
+          transform="rotate(-28 250 210)"
+        />
+        <path
+          d="M70 280 C150 280 155 120 230 145 S350 275 430 95"
+          stroke="var(--color-border-strong)"
+          strokeDasharray="4 6"
+        />
+        <circle cx="70" cy="280" r="4" fill="var(--color-brand)" />
+        <circle cx="230" cy="145" r="4" fill="var(--color-brand)" />
+        <circle cx="430" cy="95" r="4" fill="var(--color-brand)" />
+      </motion.svg>
+
+      {/* Main Employer Visual Card */}
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0, scale: 0.98, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="relative z-10 w-[88%] max-w-[370px]"
+      >
+        <div className="rounded-panel border border-border-default bg-surface-card p-5 shadow-card sm:p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-2xs font-medium uppercase tracking-[0.12em] text-brand">
+                Your next hire
+              </p>
+              <h2 className="mt-2 text-xl font-medium tracking-tight text-text-primary">
+                Build your team.
+              </h2>
+            </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-control bg-brand-soft text-brand">
+              <BriefcaseBusiness size={19} />
+            </div>
+          </div>
+
+          <p className="mt-2 text-xs leading-5 text-text-muted">
+            Reach people who care about what they create.
+          </p>
+
+          <div className="my-5 h-px bg-border-subtle" />
+
+          {TALENT.map((person, i) => (
+            <motion.div
+              key={person.role}
+              initial={reduceMotion ? false : { opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{
+                duration: 0.35,
+                delay: reduceMotion ? 0 : 0.08 * i,
+              }}
+              className="flex items-center gap-3 rounded-control px-2 py-3"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-control border border-brand-soft bg-brand-soft text-sm font-semibold text-brand">
+                {person.initial}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs-compact font-medium text-text-primary">
+                  {person.role}
+                </p>
+                <p className="mt-1 text-2xs text-text-muted">
+                  {person.skill}
+                </p>
+              </div>
+              <Check size={15} className="text-brand" />
+            </motion.div>
+          ))}
+
+          <div className="mt-3 flex items-center gap-2 border-t border-border-subtle pt-4 text-xs text-text-secondary">
+            <Users size={14} className="text-brand" />
+            Your next great hire starts here.
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Floating detail badge: Bottom Left */}
+      <motion.div
+        animate={reduceMotion ? undefined : { y: [0, -4, 0] }}
+        transition={{
+          duration: 4.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute bottom-[7%] left-0 z-20 hidden rounded-card border border-border-default bg-surface-card px-3.5 py-3 shadow-subtle sm:block"
+      >
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-7 w-7 items-center justify-center rounded-pill bg-brand-soft text-brand">
+            <Check size={14} />
+          </span>
+          <div>
+            <p className="text-2xs font-medium text-text-primary">
+              Post your opening
+            </p>
+            <p className="mt-0.5 text-3xs text-text-muted">
+              Meet the right talent
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Floating detail badge: Top Right */}
+      <motion.div
+        animate={reduceMotion ? undefined : { y: [0, 4, 0] }}
+        transition={{
+          duration: 5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute right-0 top-[8%] z-20 hidden rounded-card border border-border-default bg-surface-card px-3.5 py-2.5 text-2xs text-text-secondary shadow-subtle sm:block"
+      >
+        <span className="mr-2 text-brand">✳</span>
+        Talent · Teams · Growth
+      </motion.div>
     </div>
   );
 }

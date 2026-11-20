@@ -26,6 +26,7 @@ import {
   LogIn,
   UserRound,
   Eraser,
+  ArrowUpRight,
 } from "lucide-react";
 import FormattedDescription from "@/app/components/jobs/FormattedDescription";
 import Modal from "@/app/components/Modal";
@@ -197,7 +198,7 @@ export default function JobFormWizard({
     if (typeof window !== "undefined") {
       try {
         localStorage.removeItem("zenoway_post_job_draft");
-      } catch {}
+      } catch { }
     }
   }, []);
 
@@ -1578,11 +1579,11 @@ export default function JobFormWizard({
           setUserLimitInfo((prev) =>
             prev
               ? {
-                  ...prev,
-                  used: prev.dailyLimit - data.remainingDailyPosts,
-                  remaining: data.remainingDailyPosts,
-                  canPost: data.remainingDailyPosts > 0,
-                }
+                ...prev,
+                used: prev.dailyLimit - data.remainingDailyPosts,
+                remaining: data.remainingDailyPosts,
+                canPost: data.remainingDailyPosts > 0,
+              }
               : null
           );
         }
@@ -1716,60 +1717,84 @@ export default function JobFormWizard({
   }
 
   return (
-    <main className="min-h-full bg-surface-base text-text-primary">
-      <div className="mx-auto max-w-7xl px-5 pb-16 pt-6 sm:px-8 sm:pt-8 lg:px-12">
+    <div className="min-h-full bg-surface-base text-text-primary">
+      <div className="mx-auto max-w-7xl px-6 pb-16 pt-4 sm:px-10 sm:pt-6 lg:px-12">
         {/* Public Hero vs Admin Header */}
         {mode === "public" ? (
           currentStep === 1 && !hasStartedWizard ? (
-            <div className="mb-10 border-b border-border-default/40 pb-10">
-              <div className="grid items-start gap-12 lg:grid-cols-[1.1fr_0.9fr]">
-                <div className="lg:pt-2">
+            <div className="mb-10 overflow-hidden border-b border-border-default/40 pb-12">
+              <div className="grid items-center gap-8 lg:min-h-[510px] lg:grid-cols-[1.08fr_0.92fr] lg:gap-6">
+                <div className="relative z-10 py-5 lg:py-8">
                   {/* Eyebrow */}
-                  <div className="flex items-center gap-2.5 text-2xs font-medium uppercase tracking-[0.14em] text-text-muted">
-                    <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                    <span>Zenoway for Employers</span>
-                    <span className="text-border-default">/</span>
-                    <span>Direct · Zero brokerage</span>
+                  <div className="mb-6 flex items-center gap-2.5">
+                    <span className="h-2 w-2 rounded-pill bg-brand" />
+                    <span className="text-xs font-medium uppercase tracking-[0.12em] text-text-muted">
+                      Zenoway for Employers
+                    </span>
                   </div>
 
                   {/* Headline */}
-                  <h1 className="mt-5 max-w-3xl text-3xl font-semibold leading-[1.1] tracking-tight text-text-primary sm:text-4xl lg:text-5xl">
-                    Hire India&apos;s best tech & design talent.{" "}
+                  <h1 className="max-w-[590px] text-[40px] font-medium leading-[1.12] tracking-[-0.045em] sm:text-[48px] lg:text-[54px] text-text-primary">
+                    Hire India&apos;s best tech &amp; design talent.{" "}
+                    <br className="hidden sm:inline" />
                     <span className="text-brand">Without the middlemen.</span>
                   </h1>
 
                   {/* Subtitle */}
-                  <p className="mt-4 max-w-2xl text-sm leading-relaxed text-text-secondary sm:text-base">
+                  <p className="mt-5 max-w-[480px] text-base-compact leading-7 text-text-secondary sm:text-base">
                     Publish openings to verified engineers, designers and tech leads. Candidates
                     apply straight to your official HR email. No agency fees, no delays.
                   </p>
 
-                  {/* How it works button */}
-                  <div className="mt-6 flex items-center gap-3">
+                  {/* How it works button & CTA */}
+                  <div className="mt-7 flex flex-wrap items-center gap-4">
                     <button
                       type="button"
                       onClick={() => setShowHowItWorksModal(true)}
-                      className="group inline-flex items-center gap-2 rounded-control bg-brand px-4 py-2.5 text-xs font-medium text-text-inverse shadow-subtle transition hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                      className="group inline-flex h-9 items-center gap-2.5 rounded-control bg-brand px-5 text-xs font-semibold text-text-inverse shadow-subtle transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring cursor-pointer"
                     >
                       <span>How it works</span>
+                      <ArrowUpRight
+                        size={15}
+                        className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                      />
                     </button>
+                    <span className="text-xs text-text-muted">
+                      Meet your next great hire · 100% free
+                    </span>
+                  </div>
+
+                  {/* Trust points */}
+                  <div className="mt-6 flex flex-wrap gap-x-5 gap-y-3">
+                    {["Reach creative talent", "Direct applications", "Zero brokerage"].map((item) => (
+                      <span
+                        key={item}
+                        className="flex items-center gap-1.5 text-xs text-text-secondary"
+                      >
+                        <Check size={13} className="text-brand" />
+                        {item}
+                      </span>
+                    ))}
                   </div>
                 </div>
 
                 <HeroVisual />
               </div>
 
-              {/* Feature row, full width */}
-              <dl className="mt-10 grid grid-cols-2 gap-x-8 gap-y-8 border-t border-border-default/40 pt-8 sm:grid-cols-4 sm:gap-x-0 sm:divide-x sm:divide-border-default/40">
+              {/* Feature row, full width with clean responsive card styling */}
+              <dl className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4 lg:gap-0 lg:divide-x lg:divide-border-default/40 border-t border-border-default/40 pt-8">
                 {[
                   { icon: Mail, title: "Direct applications", body: "Resumes land directly in your official HR email." },
                   { icon: Sparkles, title: "AI auto-fill", body: "Paste a draft JD and Gemini fills every step." },
                   { icon: MapPin, title: "Pan-India & remote", body: "Target Bengaluru, NCR, Kochi, or go remote." },
                   { icon: Zap, title: "Live in 2 minutes", body: "Four-step wizard with live markdown preview." },
                 ].map(({ icon: Icon, title, body }) => (
-                  <div key={title} className="sm:px-6 sm:first:pl-0 sm:last:pr-0">
-                    <dt className="flex items-center gap-2 text-sm font-medium text-text-primary">
-                      <Icon size={15} strokeWidth={1.75} className="shrink-0 text-brand" />
+                  <div
+                    key={title}
+                    className="rounded-card border border-border-default/60 bg-surface-card/60 p-4 sm:p-5 lg:rounded-none lg:border-none lg:bg-transparent lg:p-0 lg:px-6 lg:first:pl-0 lg:last:pr-0"
+                  >
+                    <dt className="flex items-center gap-2 text-xs font-semibold text-text-primary sm:text-sm sm:font-medium">
+                      <Icon size={16} strokeWidth={1.75} className="shrink-0 text-brand" />
                       {title}
                     </dt>
                     <dd className="mt-1.5 text-xs leading-relaxed text-text-muted">{body}</dd>
@@ -2264,8 +2289,8 @@ export default function JobFormWizard({
                               if (error) setError("");
                             }}
                             className={`flex items-center justify-center gap-1.5 rounded-control border py-2.5 text-xs font-medium transition-all focus:outline-none ${isSelected
-                                ? "border-brand bg-brand-soft text-brand shadow-subtle ring-1 ring-brand/30"
-                                : "border-transparent bg-surface-subtle/70 text-text-secondary hover:bg-surface-subtle hover:text-text-primary focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/30"
+                              ? "border-brand bg-brand-soft text-brand shadow-subtle ring-1 ring-brand/30"
+                              : "border-transparent bg-surface-subtle/70 text-text-secondary hover:bg-surface-subtle hover:text-text-primary focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/30"
                               }`}
                           >
                             <span>{typeOption.label}</span>
@@ -2763,9 +2788,8 @@ export default function JobFormWizard({
                       }}
                       onClick={handleNext}
                       disabled={isCheckingNext}
-                      className={`inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 text-xs font-semibold text-text-inverse shadow-subtle transition-all duration-200 hover:bg-brand-hover active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
-                        isCheckingNext ? "cursor-wait opacity-70" : ""
-                      }`}
+                      className={`inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 text-xs font-semibold text-text-inverse shadow-subtle transition-all duration-200 hover:bg-brand-hover active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${isCheckingNext ? "cursor-wait opacity-70" : ""
+                        }`}
                       title={isCurrentStepValid ? "Continue to Review" : "Fill experience and valid email to continue"}
                     >
                       {isCheckingNext ? (
@@ -2823,8 +2847,8 @@ export default function JobFormWizard({
                           type="button"
                           onClick={() => setShowAiDescDrawer((prev) => !prev)}
                           className={`inline-flex items-center gap-2 rounded-control px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-medium transition shadow-subtle cursor-pointer ${showAiDescDrawer
-                              ? "bg-brand text-text-inverse ring-1 ring-brand/30"
-                              : "border border-brand/30 bg-brand-soft/60 text-brand hover:bg-brand-soft"
+                            ? "bg-brand text-text-inverse ring-1 ring-brand/30"
+                            : "border border-brand/30 bg-brand-soft/60 text-brand hover:bg-brand-soft"
                             }`}
                         >
                           <Sparkles size={14} fill="currentColor" />
@@ -2944,8 +2968,8 @@ export default function JobFormWizard({
                     {/* Unified Description Editor / Preview Container */}
                     <div
                       className={`rounded-control border bg-surface-card p-4 sm:p-5 shadow-subtle min-h-[260px] transition-[border-color,box-shadow] ${fieldErrors.description
-                          ? "border-status-error ring-1 ring-status-error/30"
-                          : "border-border-default focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/20"
+                        ? "border-status-error ring-1 ring-status-error/30"
+                        : "border-border-default focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/20"
                         }`}
                     >
                       {/* Fixed Header: Title on Left, Edit & Preview on Right */}
@@ -2969,8 +2993,8 @@ export default function JobFormWizard({
                               });
                             }}
                             className={`inline-flex items-center gap-1.5 rounded-control px-2.5 py-1 text-xs font-medium transition cursor-pointer bg-transparent ${descriptionTab === "edit"
-                                ? "text-brand"
-                                : "text-text-muted hover:text-text-primary"
+                              ? "text-brand"
+                              : "text-text-muted hover:text-text-primary"
                               }`}
                           >
                             <Pencil size={12} />
@@ -2981,8 +3005,8 @@ export default function JobFormWizard({
                             type="button"
                             onClick={() => setDescriptionTab("preview")}
                             className={`inline-flex items-center gap-1.5 rounded-control px-2.5 py-1 text-xs font-medium transition cursor-pointer bg-transparent ${descriptionTab === "preview"
-                                ? "text-brand"
-                                : "text-text-muted hover:text-text-primary"
+                              ? "text-brand"
+                              : "text-text-muted hover:text-text-primary"
                               }`}
                           >
                             <Eye size={12} />
@@ -3177,13 +3201,12 @@ export default function JobFormWizard({
                       <button
                         type="submit"
                         disabled={isSubmitting || (mode === "public" && Boolean(userLimitInfo && userLimitInfo.remaining <= 0))}
-                        className={`inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 text-xs font-semibold text-text-inverse shadow-subtle transition-all duration-200 hover:bg-brand-hover active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
-                          mode === "public" && userLimitInfo && userLimitInfo.remaining <= 0
+                        className={`inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control bg-brand px-5 text-xs font-semibold text-text-inverse shadow-subtle transition-all duration-200 hover:bg-brand-hover active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${mode === "public" && userLimitInfo && userLimitInfo.remaining <= 0
                             ? "cursor-not-allowed opacity-50 bg-border-strong text-text-muted shadow-none"
                             : isSubmitting
                               ? "cursor-wait opacity-70"
                               : ""
-                        }`}
+                          }`}
                         title={
                           mode === "public" && userLimitInfo && userLimitInfo.remaining <= 0
                             ? "Daily posting limit of 20 jobs reached. Submissions reopen tomorrow."
@@ -3337,6 +3360,6 @@ export default function JobFormWizard({
           </div>
         </Modal>
       </div>
-    </main>
+    </div>
   );
 }
