@@ -148,7 +148,7 @@ function MinimalAccountView() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-base px-4 pt-12 pb-20 antialiased sm:pt-16">
+    <div className="w-full px-4 py-8 antialiased sm:py-12">
       <div className="mx-auto w-full max-w-sm text-center">
         {/* Avatar with Verified Icon */}
         <div className="relative mx-auto h-20 w-20">
