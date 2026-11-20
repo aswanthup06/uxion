@@ -149,8 +149,8 @@ function MinimalAccountView() {
   };
 
   return (
-    <div className="flex min-h-[70vh] items-center justify-center bg-surface-base px-4 py-12 antialiased">
-      <div className="w-full max-w-sm text-center">
+    <div className="min-h-screen bg-surface-base px-4 pt-12 pb-20 antialiased sm:pt-16">
+      <div className="mx-auto w-full max-w-sm text-center">
         {/* Avatar */}
         <div className="mx-auto h-20 w-20">
           {avatarUrl && !avatarError ? (
