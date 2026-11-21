@@ -170,49 +170,49 @@
   --zw-brand-hover: #059669;
   --zw-brand-accent: #10b981;
   --zw-brand-dark: #34d399;
-  --zw-brand-soft: rgba(16, 185, 129, 0.15);
-  --zw-brand-soft-hover: rgba(16, 185, 129, 0.25);
+  --zw-brand-soft: rgba(16, 185, 129, 0.16);
+  --zw-brand-soft-hover: rgba(16, 185, 129, 0.26);
 
-  /* Surfaces & Backgrounds (Dark - Deeper, refined Obsidian) */
+  /* Surfaces & Backgrounds (Dark - seamless obsidian blending: card blends directly with canvas with minimal difference) */
   --zw-surface-base: #09090b;
-  --zw-surface-subtle: #0a0a0c;
-  --zw-surface-muted: #131316;
-  --zw-surface-card: #0c0c0e;
+  --zw-surface-subtle: #121215;
+  --zw-surface-muted: #17181c;
+  --zw-surface-card: #0d0d10;
   --zw-surface-page: #09090b;
-  --zw-surface-dark: #000000;
+  --zw-surface-dark: #050507;
 
-  /* Typography / Text Colors (Dark - crisp, bright & high contrast) */
-  --zw-text-primary: #ffffff;
-  --zw-text-secondary: #e4e4e7;
-  --zw-text-muted: #a1a1aa;
+  /* Typography / Text Colors (Dark - crisp, bright & legible without halation glare) */
+  --zw-text-primary: #f4f5f6;
+  --zw-text-secondary: #a1a1aa;
+  --zw-text-muted: #71717a;
   --zw-text-inverse: #052e16;
 
-  /* Borders & Focus Rings (Dark - refined, ultra-subtle translucent hairlines) */
-  --zw-border-subtle: rgba(255, 255, 255, 0.03);
-  --zw-border-default: rgba(255, 255, 255, 0.05);
-  --zw-border-strong: rgba(255, 255, 255, 0.09);
+  /* Borders & Focus Rings (Dark - soft, delicate hairlines that blend cards naturally) */
+  --zw-border-subtle: rgba(255, 255, 255, 0.04);
+  --zw-border-default: rgba(255, 255, 255, 0.075);
+  --zw-border-strong: rgba(255, 255, 255, 0.13);
   --zw-focus-ring: rgba(16, 185, 129, 0.35);
 
   /* Status States (Dark) */
   --zw-status-success: #10b981;
-  --zw-status-success-bg: rgba(16, 185, 129, 0.12);
-  --zw-status-success-border: rgba(16, 185, 129, 0.25);
+  --zw-status-success-bg: rgba(16, 185, 129, 0.14);
+  --zw-status-success-border: rgba(16, 185, 129, 0.28);
   --zw-status-warning: #f59e0b;
-  --zw-status-warning-bg: rgba(245, 158, 11, 0.12);
-  --zw-status-warning-border: rgba(245, 158, 11, 0.25);
+  --zw-status-warning-bg: rgba(245, 158, 11, 0.14);
+  --zw-status-warning-border: rgba(245, 158, 11, 0.28);
   --zw-status-error: #ef4444;
-  --zw-status-error-bg: rgba(239, 68, 68, 0.12);
-  --zw-status-error-border: rgba(239, 68, 68, 0.25);
+  --zw-status-error-bg: rgba(239, 68, 68, 0.14);
+  --zw-status-error-border: rgba(239, 68, 68, 0.28);
   --zw-status-info: #0ea5e9;
-  --zw-status-info-bg: rgba(14, 165, 233, 0.12);
-  --zw-status-info-border: rgba(14, 165, 233, 0.25);
+  --zw-status-info-bg: rgba(14, 165, 233, 0.14);
+  --zw-status-info-border: rgba(14, 165, 233, 0.28);
 
-  /* Shadows (Dark - enhanced depth & subtle edge highlights) */
-  --zw-shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-  --zw-shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
-  --zw-shadow-card-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.65);
-  --zw-shadow-dropdown: 0 14px 36px -4px rgba(0, 0, 0, 0.75);
-  --zw-shadow-modal: 0 24px 50px -12px rgba(0, 0, 0, 0.85);
+  /* Shadows (Dark - natural, soft ambient shadows without bright edge insets) */
+  --zw-shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --zw-shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.35);
+  --zw-shadow-card-hover: 0 8px 20px -3px rgba(0, 0, 0, 0.55);
+  --zw-shadow-dropdown: 0 12px 30px -4px rgba(0, 0, 0, 0.7);
+  --zw-shadow-modal: 0 20px 45px -10px rgba(0, 0, 0, 0.8);
 }
 
 html {

@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
-  Building2,
   CalendarDays,
   Check,
   ChevronDown,
@@ -490,25 +489,25 @@ export default function AdminDashboard() {
         {error && (
           <div
             role="alert"
-            className="flex flex-col gap-3 rounded-card border border-red-200 bg-red-50 p-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 rounded-card border border-status-error-border bg-status-error-bg p-4 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="flex items-start gap-3">
               <AlertCircle
                 size={19}
-                className="mt-0.5 shrink-0 text-red-600"
+                className="mt-0.5 shrink-0 text-status-error"
               />
               <div>
-                <p className="text-sm font-semibold text-red-950">
+                <p className="text-sm font-semibold text-text-primary">
                   Could not load dashboard data
                 </p>
-                <p className="mt-0.5 text-xs text-red-700">{error}</p>
+                <p className="mt-0.5 text-xs text-status-error">{error}</p>
               </div>
             </div>
 
             <button
               type="button"
               onClick={() => setRetryKey((key) => key + 1)}
-              className="self-start text-xs font-bold text-red-800 underline underline-offset-4"
+              className="self-start text-xs font-bold text-status-error underline underline-offset-4"
             >
               Retry
             </button>
@@ -517,18 +516,18 @@ export default function AdminDashboard() {
 
         {/* Pending Submissions Alert Banner */}
         {pendingCount > 0 && (
-          <div className="flex flex-col items-start justify-between gap-3 rounded-card border border-amber-200 bg-amber-50/70 p-4 sm:flex-row sm:items-center">
+          <div className="flex flex-col items-start justify-between gap-3 rounded-card border border-status-warning-border bg-status-warning-bg p-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-3">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-amber-100 text-amber-700">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-status-warning/15 text-status-warning">
                 <AlertCircle size={17} />
               </span>
               <div>
-                <p className="text-sm font-semibold text-amber-950">
+                <p className="text-sm font-semibold text-text-primary">
                   {pendingCount === 1
                     ? "1 public job listing requires admin review"
                     : `${pendingCount} public job listings require admin review`}
                 </p>
-                <p className="text-xs text-amber-800/80">
+                <p className="text-xs text-text-secondary">
                   Public postings submitted via the portal must be approved before appearing live.
                 </p>
               </div>

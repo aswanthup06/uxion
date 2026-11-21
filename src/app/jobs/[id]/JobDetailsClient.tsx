@@ -166,13 +166,9 @@ export default function JobDetailsClient({
 
   const [toast, setToast] = useState<string | null>(null);
   const [applyOpen, setApplyOpen] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(Boolean(isEmailUnlocked));
-  const [currentEmail, setCurrentEmail] = useState(job.mail);
-
-  useEffect(() => {
-    setIsUnlocked(Boolean(isEmailUnlocked));
-    setCurrentEmail(job.mail);
-  }, [isEmailUnlocked, job.mail]);
+  const [unlockedEmailOverride, setUnlockedEmailOverride] = useState<string | null>(null);
+  const isUnlocked = Boolean(isEmailUnlocked || unlockedEmailOverride);
+  const currentEmail = unlockedEmailOverride || job.mail;
 
   useEffect(() => {
     if (!job?.id) return;
@@ -568,23 +564,7 @@ export default function JobDetailsClient({
       jobLocation: jobLocationValue,
     };
   }, [
-    job.title,
-    job.company,
-    job.postedDate,
-    job.location,
-    job.validThrough,
-    job.employmentType,
-    job.applicantCountry,
-    job.remoteEligibilityType,
-    job.remoteEligibilityRegions,
-    job.remoteEligibilityCountries,
-    job.primaryCity,
-    job.primaryState,
-    job.primaryCountryCode,
-    job.locality,
-    job.postalCode,
-    job.physicalLocations,
-    job.mail,
+    job,
     description,
     companyUrl,
     isRemote,
@@ -936,8 +916,7 @@ export default function JobDetailsClient({
         company={job.company}
         isInitialUnlocked={isUnlocked}
         onUnlocked={(newEmail) => {
-          setIsUnlocked(true);
-          setCurrentEmail(newEmail);
+          setUnlockedEmailOverride(newEmail);
         }}
       />
     </main>

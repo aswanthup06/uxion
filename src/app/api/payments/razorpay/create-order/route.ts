@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     }
 
     // Attempt to get user session if available
-    let currentUser: { id: string; email?: string; user_metadata?: Record<string, any> } | null = null;
+    let currentUser: { id: string; email?: string; user_metadata?: Record<string, unknown> } | null = null;
     try {
       const authClient = await createServerAuthClient();
       const { data } = await authClient.auth.getUser();
@@ -141,14 +141,14 @@ export async function POST(req: Request) {
       currency: order.currency,
       keyId,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Create Razorpay order error:", error);
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to initiate payment. Please verify your Razorpay credentials.";
     return NextResponse.json(
-      {
-        error:
-          error?.message ||
-          "Failed to initiate payment. Please verify your Razorpay credentials.",
-      },
+      { error: message },
       { status: 500 }
     );
   }

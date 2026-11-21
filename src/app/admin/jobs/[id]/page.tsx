@@ -223,7 +223,7 @@ export default function AdminJobDetailsPage() {
   const status = job.status || "published";
 
   return (
-    <div className="min-h-screen bg-white text-text-primary">
+    <div className="min-h-screen bg-surface-base text-text-primary">
       <div className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 space-y-8">
         {/* Page Header */}
         <header>
@@ -321,7 +321,7 @@ export default function AdminJobDetailsPage() {
                 href={`/jobs/${job.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-white px-3.5 text-xs font-semibold text-text-primary shadow-2xs transition hover:border-border-strong hover:bg-surface-subtle"
+                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-primary shadow-2xs transition hover:border-border-strong hover:bg-surface-subtle"
               >
                 <span>View Live Listing</span>
                 <ExternalLink size={13} className="text-text-muted" />
@@ -331,7 +331,7 @@ export default function AdminJobDetailsPage() {
               <button
                 type="button"
                 onClick={() => setIsPosterModalOpen(true)}
-                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-white px-3.5 text-xs font-semibold text-text-primary shadow-2xs transition hover:border-border-strong hover:bg-surface-subtle cursor-pointer"
+                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-border-default bg-surface-card px-3.5 text-xs font-semibold text-text-primary shadow-2xs transition hover:border-border-strong hover:bg-surface-subtle cursor-pointer"
               >
                 <ImageDown size={14} className="text-brand" />
                 <span>Job Poster</span>
@@ -352,7 +352,7 @@ export default function AdminJobDetailsPage() {
                 type="button"
                 disabled={deleting}
                 onClick={handleDelete}
-                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-status-error-border bg-white px-3.5 text-xs font-semibold text-status-error shadow-2xs transition hover:bg-status-error hover:text-white hover:border-status-error disabled:opacity-50 cursor-pointer"
+                className="inline-flex h-9 items-center gap-1.5 rounded-control border border-status-error-border bg-surface-card px-3.5 text-xs font-semibold text-status-error shadow-2xs transition hover:bg-status-error hover:text-white hover:border-status-error disabled:opacity-50 cursor-pointer"
               >
                 <Trash2 size={14} />
                 <span>{deleting ? "Deleting..." : "Delete Job"}</span>

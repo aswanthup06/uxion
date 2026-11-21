@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useId, useCallback } from "react";
-import { Banknote, EyeOff, Check, Sparkles } from "lucide-react";
+import { Banknote, EyeOff, Sparkles } from "lucide-react";
 import type { JobFormState, SalaryPeriod, SalaryType } from "./types";
 import {
   formatSalaryBadge,

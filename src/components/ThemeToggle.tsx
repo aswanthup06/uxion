@@ -1,9 +1,11 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
+const emptySubscribe = () => () => {};
 
 interface ThemeToggleProps {
   className?: string;
@@ -12,11 +14,11 @@ interface ThemeToggleProps {
 
 export function ThemeToggle({ className = "", size = "md" }: ThemeToggleProps) {
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
   const iconSize = size === "sm" ? 17 : 19;
   const buttonDimensions = size === "sm" ? "h-8 w-8" : "h-9 w-9";

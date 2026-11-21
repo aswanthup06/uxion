@@ -10,7 +10,6 @@ import {
   Mail,
   MapPin,
   FileText,
-  ArrowUpRight,
   CheckCircle2,
   AlertCircle,
   ExternalLink,

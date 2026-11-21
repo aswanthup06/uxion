@@ -5,7 +5,6 @@ import * as adminAuth from "@/lib/auth/admin";
 import * as supabaseJobs from "@/lib/supabase/jobs";
 import * as supabaseServer from "@/lib/supabase/server";
 import * as emailValidation from "@/lib/validation/email";
-import * as rateLimit from "@/lib/security/rate-limit";
 
 vi.mock("@/lib/supabase/jobs", () => ({
   getAllJobs: vi.fn(),
@@ -46,7 +45,7 @@ describe("API /api/jobs", () => {
     it("returns 401 when check_limit=true is requested without authentication", async () => {
       vi.spyOn(supabaseServer, "createServerAuthClient").mockResolvedValue({
         auth: { getUser: vi.fn().mockResolvedValue({ data: { user: null } }) },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof supabaseServer.createServerAuthClient>>);
 
       const req = new NextRequest("http://localhost:3000/api/jobs?check_limit=true");
       const res = await GET(req);
@@ -60,7 +59,9 @@ describe("API /api/jobs", () => {
       const mockJobs = [
         { id: "1", title: "Frontend Engineer", company: "Zenoway", status: "published" },
       ];
-      vi.spyOn(supabaseJobs, "getAllJobs").mockResolvedValue(mockJobs as any);
+      vi.spyOn(supabaseJobs, "getAllJobs").mockResolvedValue(
+        mockJobs as unknown as Awaited<ReturnType<typeof supabaseJobs.getAllJobs>>
+      );
 
       const req = new NextRequest("http://localhost:3000/api/jobs");
       const res = await GET(req);
@@ -76,7 +77,7 @@ describe("API /api/jobs", () => {
       vi.spyOn(adminAuth, "isAuthorizedAdminRequest").mockResolvedValue(false);
       vi.spyOn(supabaseServer, "createServerAuthClient").mockResolvedValue({
         auth: { getUser: vi.fn().mockResolvedValue({ data: { user: null } }) },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof supabaseServer.createServerAuthClient>>);
 
       const req = new NextRequest("http://localhost:3000/api/jobs", {
         method: "POST",

@@ -1,6 +1,6 @@
 // src/app/api/diagnostic/route.ts
 // Server-side diagnostic endpoint to verify environment variable presence.
-// In production, strictly requires authenticated admin session.
+// Strictly requires an authenticated admin session across all environments.
 
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
@@ -8,12 +8,10 @@ import path from "path";
 import { isAuthorizedAdminRequest } from "@/lib/auth/admin";
 
 export async function GET(req: NextRequest) {
-  // In production, require admin credentials to prevent reconnaissance
-  if (process.env.NODE_ENV === "production") {
-    const isAuthorized = await isAuthorizedAdminRequest(req);
-    if (!isAuthorized) {
-      return NextResponse.json({ error: "Not Found" }, { status: 404 });
-    }
+  // Unconditionally require admin credentials across all environments to prevent reconnaissance
+  const isAuthorized = await isAuthorizedAdminRequest(req);
+  if (!isAuthorized) {
+    return NextResponse.json({ error: "Not Found" }, { status: 404 });
   }
 
   const projectRoot = process.cwd();

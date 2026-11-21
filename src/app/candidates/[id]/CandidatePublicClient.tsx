@@ -5,7 +5,6 @@ import Image from "next/image";
 import {
   ArrowUpRight,
   ChevronDown,
-  Download,
   ExternalLink,
   FileText,
   Github,

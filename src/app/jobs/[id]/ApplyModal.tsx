@@ -68,7 +68,7 @@ async function copyText(value: string): Promise<boolean> {
 function loadRazorpayCheckoutScript(): Promise<boolean> {
   return new Promise((resolve) => {
     if (typeof window === "undefined") return resolve(false);
-    if ((window as any).Razorpay) return resolve(true);
+    if ((window as unknown as { Razorpay?: unknown }).Razorpay) return resolve(true);
 
     const existingScript = document.getElementById("razorpay-checkout-script");
     if (existingScript) {
@@ -102,20 +102,24 @@ export default function ApplyModal({
 
   const isFreeMode = process.env.NEXT_PUBLIC_FREE_EMAIL_UNLOCK !== "false";
 
-  const [isUnlocked, setIsUnlocked] = useState(isInitialUnlocked);
-  const [activeEmail, setActiveEmail] = useState(email);
+  const [unlockedState, setUnlockedState] = useState<boolean | null>(null);
+  const [unlockedEmailState, setUnlockedEmailState] = useState<string | null>(null);
+  const [prevJobId, setPrevJobId] = useState(jobId);
+
+  if (jobId !== prevJobId) {
+    setPrevJobId(jobId);
+    setUnlockedState(null);
+    setUnlockedEmailState(null);
+  }
+
+  const isUnlocked = unlockedState !== null ? unlockedState : isInitialUnlocked;
+  const activeEmail = unlockedEmailState !== null ? unlockedEmailState : email;
   const [emailCopied, setEmailCopied] = useState(false);
   const [subjectCopied, setSubjectCopied] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [payError, setPayError] = useState<string | null>(null);
 
   const subjectText = `Application for ${jobTitle} at ${company}`;
-
-  // Synchronize state if props change
-  useEffect(() => {
-    setIsUnlocked(isInitialUnlocked);
-    setActiveEmail(email);
-  }, [isInitialUnlocked, email]);
 
   useEffect(() => {
     if (!open) return;
@@ -182,8 +186,8 @@ export default function ApplyModal({
 
       // If already unlocked or unlocked via Free Launch Offer
       if ((orderData.alreadyUnlocked || orderData.isFree) && orderData.email) {
-        setActiveEmail(orderData.email);
-        setIsUnlocked(true);
+        setUnlockedEmailState(orderData.email);
+        setUnlockedState(true);
         onUnlocked?.(orderData.email);
         toast.success(
           orderData.isFree
@@ -215,7 +219,11 @@ export default function ApplyModal({
         theme: {
           color: "#087f50", // Zenoway brand green
         },
-        handler: async (response: any) => {
+        handler: async (response: {
+          razorpay_order_id: string;
+          razorpay_payment_id: string;
+          razorpay_signature: string;
+        }) => {
           try {
             // 4. Verify payment on server
             const verifyRes = await fetch("/api/payments/razorpay/verify", {
@@ -236,14 +244,15 @@ export default function ApplyModal({
             }
 
             // 5. Success: reveal unmasked email
-            setActiveEmail(verifyData.email);
-            setIsUnlocked(true);
+            setUnlockedEmailState(verifyData.email);
+            setUnlockedState(true);
             onUnlocked?.(verifyData.email);
             toast.success("Recruitment email unlocked successfully!");
-          } catch (verifyErr: any) {
+          } catch (verifyErr: unknown) {
             console.error("Verification error:", verifyErr);
-            setPayError(verifyErr.message || "Failed to confirm payment.");
-            toast.error(verifyErr.message || "Payment verification failed.");
+            const msg = verifyErr instanceof Error ? verifyErr.message : "Failed to confirm payment.";
+            setPayError(msg);
+            toast.error(msg);
           } finally {
             setIsPaying(false);
           }
@@ -255,16 +264,26 @@ export default function ApplyModal({
         },
       };
 
-      const razorpayInstance = new (window as any).Razorpay(options);
-      razorpayInstance.on("payment.failed", (response: any) => {
+      type RazorpayInstance = {
+        open: () => void;
+        on: (event: string, callback: (res: { error?: { description?: string } }) => void) => void;
+      };
+      const RazorpayConstructor = (
+        window as unknown as {
+          Razorpay: new (opts: unknown) => RazorpayInstance;
+        }
+      ).Razorpay;
+      const razorpayInstance = new RazorpayConstructor(options);
+      razorpayInstance.on("payment.failed", (response) => {
         setPayError(response.error?.description || "Payment was declined or cancelled.");
         setIsPaying(false);
       });
 
       razorpayInstance.open();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Payment initiation error:", err);
-      setPayError(err.message || "An error occurred starting payment.");
+      const msg = err instanceof Error ? err.message : "An error occurred starting payment.";
+      setPayError(msg);
       setIsPaying(false);
     }
   };

@@ -69,22 +69,27 @@ function JobsViewContent({
   const [salaryFloor, setSalaryFloor] = useState<string>("0");
 
   const { user } = useAuth();
-  const [unlockedJobIds, setUnlockedJobIds] = useState<string[]>([]);
+  const [loadedUnlockedJobIds, setLoadedUnlockedJobIds] = useState<string[]>([]);
+  const unlockedJobIds = useMemo(
+    () => (user ? loadedUnlockedJobIds : []),
+    [user, loadedUnlockedJobIds]
+  );
   const [unlockedOnly, setUnlockedOnly] = useState(false);
 
   useEffect(() => {
-    if (!user) {
-      setUnlockedJobIds([]);
-      return;
-    }
+    if (!user) return;
+    let ignore = false;
     fetch("/api/jobs/unlocked")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data && Array.isArray(data.unlockedJobIds)) {
-          setUnlockedJobIds(data.unlockedJobIds);
+        if (!ignore && data && Array.isArray(data.unlockedJobIds)) {
+          setLoadedUnlockedJobIds(data.unlockedJobIds);
         }
       })
       .catch(() => {});
+    return () => {
+      ignore = true;
+    };
   }, [user]);
 
   const [activeJob, setActiveJob] = useState<Job | null>(null);

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
@@ -46,12 +45,12 @@ const initialCandidates: Candidate[] = [
 
 const statuses: CandidateStatus[] = ["New", "Screening", "Interview", "Offer", "Hired", "Rejected"];
 const statusStyles: Record<CandidateStatus, string> = {
-  New: "bg-sky-50 text-sky-700",
-  Screening: "bg-amber-50 text-amber-700",
-  Interview: "bg-violet-50 text-violet-700",
-  Offer: "bg-indigo-50 text-indigo-700",
+  New: "bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300",
+  Screening: "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
+  Interview: "bg-violet-50 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300",
+  Offer: "bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300",
   Hired: "bg-brand-soft text-brand-dark",
-  Rejected: "bg-rose-50 text-rose-700",
+  Rejected: "bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300",
 };
 
 const panelClass = "rounded-panel border border-border-default bg-surface-card";

@@ -218,7 +218,7 @@ export default function FullCandidateProfile() {
   const summary = profile?.summary;
   const resumeUrl = profile?.resume_url;
   const resumeName = profile?.resume_name || "Candidate_Resume.pdf";
-  const skills = profile?.skills || [];
+  const skills = useMemo(() => profile?.skills || [], [profile?.skills]);
   const linkedin = profile?.linkedin_url;
   const github = profile?.github_url;
   const portfolio = profile?.portfolio_url;

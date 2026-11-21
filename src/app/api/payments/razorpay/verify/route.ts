@@ -80,14 +80,14 @@ export async function POST(req: Request) {
       isUnlocked: true,
       email: (job.mail || "").trim(),
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Payment verification error:", error);
+    const message =
+      error instanceof Error
+        ? error.message
+        : "An unexpected error occurred while verifying your payment.";
     return NextResponse.json(
-      {
-        error:
-          error?.message ||
-          "An unexpected error occurred while verifying your payment.",
-      },
+      { error: message },
       { status: 500 }
     );
   }

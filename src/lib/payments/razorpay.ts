@@ -1,6 +1,6 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
-import { getServerSupabase, getServiceSupabase, isSupabaseConfigured } from "@/lib/supabase/server";
+import { getServerSupabase, isSupabaseConfigured } from "@/lib/supabase/server";
 
 export const UNLOCK_PRICE_INR = 5;
 export const UNLOCK_PRICE_PAISE = UNLOCK_PRICE_INR * 100; // 500 paise = ₹5

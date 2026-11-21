@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   Building2,
@@ -41,9 +41,18 @@ export function JobDetailModal({
   onShare,
   shareCopied,
 }: JobDetailModalProps) {
-  if (!activeJob) return null;
+  const [cachedJob, setCachedJob] = useState<Job | null>(activeJob);
 
-  const modalLocInfo = parseCardLocation(activeJob);
+  useEffect(() => {
+    if (activeJob) {
+      setCachedJob(activeJob);
+    }
+  }, [activeJob]);
+
+  const currentJob = activeJob || cachedJob;
+  if (!currentJob) return null;
+
+  const modalLocInfo = parseCardLocation(currentJob);
 
   return (
     <Modal
@@ -60,11 +69,11 @@ export function JobDetailModal({
           <div className="flex items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2 text-xs">
               <span className="font-semibold text-brand">
-                {getJobCategory(activeJob)}
+                {getJobCategory(currentJob)}
               </span>
               <span className="text-border-strong select-none">·</span>
               <span className="text-text-muted">
-                Posted {timeAgo(activeJob.postedDate)}
+                Posted {timeAgo(currentJob.postedDate)}
               </span>
               {isUnlocked && (
                 <>
@@ -91,16 +100,16 @@ export function JobDetailModal({
             id="job-modal-title"
             className="mt-2 text-xl font-bold tracking-tight text-text-primary sm:text-2xl"
           >
-            {activeJob.title}
+            {currentJob.title}
           </h2>
 
           <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-text-secondary">
-            <span className="font-semibold text-text-primary">{activeJob.company}</span>
-            {activeJob.companyLink && (
+            <span className="font-semibold text-text-primary">{currentJob.company}</span>
+            {currentJob.companyLink && (
               <>
                 <span className="text-border-strong">·</span>
                 <a
-                  href={activeJob.companyLink}
+                  href={currentJob.companyLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs font-semibold text-brand transition-colors hover:underline"
@@ -114,25 +123,25 @@ export function JobDetailModal({
 
           {/* Editorial Key Details Row */}
           <div className="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs sm:text-sm text-text-secondary">
-            {isDisclosedSalary(activeJob.salary) && (
+            {isDisclosedSalary(currentJob.salary) && (
               <>
                 <span className="font-semibold text-text-primary">
-                  {activeJob.salary!.trim()}
+                  {currentJob.salary!.trim()}
                 </span>
                 <span className="text-border-strong">·</span>
               </>
             )}
 
-            {activeJob.experience?.trim() && (
+            {currentJob.experience?.trim() && (
               <span>
-                {activeJob.experience.trim()}
+                {currentJob.experience.trim()}
               </span>
             )}
 
-            {activeJob.experience?.trim() && <span className="text-border-strong">·</span>}
+            {currentJob.experience?.trim() && <span className="text-border-strong">·</span>}
 
             <span className="capitalize">
-              {getJobType(activeJob).toLowerCase().replace(/_/g, " ")}
+              {getJobType(currentJob).toLowerCase().replace(/_/g, " ")}
             </span>
 
             <span className="text-border-strong">·</span>
@@ -169,7 +178,7 @@ export function JobDetailModal({
             <h3 className="text-base-compact font-bold text-text-primary">
               About the role
             </h3>
-            <FormattedDescription content={activeJob.description} />
+            <FormattedDescription content={currentJob.description} />
           </div>
         </div>
 
@@ -181,7 +190,7 @@ export function JobDetailModal({
               <Button
                 variant="secondary"
                 size="sm"
-                href={`/job-posters?jobId=${encodeURIComponent(activeJob.id)}`}
+                href={`/job-posters?jobId=${encodeURIComponent(currentJob.id)}`}
                 className="w-full sm:w-auto h-11 sm:h-9 text-xs font-semibold"
               >
                 <ImageDown className="h-4 w-4" strokeWidth={1.75} />
@@ -191,7 +200,7 @@ export function JobDetailModal({
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => onShare(activeJob)}
+                onClick={() => onShare(currentJob)}
                 className="w-full sm:w-auto h-11 sm:h-9 text-xs font-semibold"
               >
                 {shareCopied ? (
@@ -208,7 +217,7 @@ export function JobDetailModal({
               <Button
                 variant="primary"
                 size="sm"
-                href={`/jobs/${activeJob.id}`}
+                href={`/jobs/${currentJob.id}`}
                 className="w-full sm:w-auto h-11 sm:h-9 text-sm sm:text-xs font-semibold shadow-subtle"
               >
                 <span>Open Full Page & Apply</span>

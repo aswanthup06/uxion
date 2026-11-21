@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Mail, ShieldCheck } from "lucide-react";
-import Link from "next/link";
 import SiteFooter from "@/app/components/home/SiteFooter";
 
 export const metadata: Metadata = {
