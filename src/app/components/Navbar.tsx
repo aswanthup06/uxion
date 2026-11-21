@@ -248,6 +248,7 @@ export default function Navbar() {
               src={logoImg}
               alt="zenoway logo"
               priority
+              sizes="24px"
               className="block h-6 w-auto object-contain"
             />
           </motion.span>

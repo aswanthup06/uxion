@@ -59,6 +59,7 @@ export default function SiteFooter() {
               <Image
                 src={logoImg}
                 alt="Zenoway logo"
+                sizes="24px"
                 className="h-6 w-auto object-contain"
               />
 

@@ -6,6 +6,9 @@ import HappyWork from "./components/home/HappyWork";
 import Faq from "./components/home/Faq";
 
 import SiteFooter from "./components/home/SiteFooter";
+import { getPublishedJobStats } from "@/lib/supabase/jobs";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Zenoway | Find Your Next Opportunity",
@@ -15,13 +18,6 @@ export const metadata: Metadata = {
     canonical: "https://www.zenoway.online",
   },
 };
-
-const stats: Stat[] = [
-  { value: 45, suffix: "+", label: "Active jobs" },
-  { value: 20, suffix: "+", label: "Companies hiring" },
-  { value: 500, suffix: "+", label: "Job seekers" },
-  { text: "Direct", label: "HR email on every listing" },
-];
 
 const organizationJsonLd = {
   "@context": "https://schema.org",
@@ -35,7 +31,16 @@ const organizationJsonLd = {
   sameAs: [],
 };
 
-export default function Home() {
+export default async function Home() {
+  const { activeJobsCount, companiesCount } = await getPublishedJobStats();
+
+  const stats: Stat[] = [
+    { value: activeJobsCount || 70, suffix: "+", label: "Active jobs" },
+    { value: companiesCount || 60, suffix: "+", label: "Companies hiring" },
+    { value: 500, suffix: "+", label: "Job seekers" },
+    { text: "Direct", label: "HR email on every listing" },
+  ];
+
   return (
     <div className="text-text-primary">
       <script

@@ -343,18 +343,18 @@ export default function SharePage() {
               </motion.div>
 
               <div className="order-first min-w-0 lg:py-4">
-                <motion.span initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-text-muted">
+                <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-text-muted">
                   <FiUsers className="h-3.5 w-3.5 text-brand" /> ZENOWAY COMMUNITY
-                </motion.span>
-                <motion.h1 initial={reduce ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.32, delay: 0.04, ease: EASE }} className="mt-4 max-w-[680px] text-[40px] font-medium leading-[1.12] tracking-[-0.045em] sm:text-[48px] lg:text-[54px] text-text-primary">
+                </span>
+                <h1 className="mt-4 max-w-[680px] text-[40px] font-medium leading-[1.12] tracking-[-0.045em] sm:text-[48px] lg:text-[54px] text-text-primary">
                   Your next opportunity starts{" "}
                   <span className="text-brand">with community.</span>
-                </motion.h1>
-                <motion.p initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1, ease: EASE }} className="mt-4 max-w-[510px] text-base-compact leading-7 text-text-secondary sm:text-base">
+                </h1>
+                <p className="mt-4 max-w-[510px] text-base-compact leading-7 text-text-secondary sm:text-base">
                   Find job communities by category and state, or follow the channel
                   for important alerts and updates.
-                </motion.p>
-                <motion.div initial={reduce ? false : { opacity: 0, y: 7 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, delay: 0.16, ease: EASE }} className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                </p>
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                   <button
                     type="button"
                     onClick={openGroupModal}
@@ -373,17 +373,17 @@ export default function SharePage() {
                     <span>WhatsApp Channel</span>
                     <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </button>
-                </motion.div>
-                <motion.div initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3, delay: 0.22 }} className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-text-secondary">
+                </div>
+                <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-text-secondary">
                   <span className="inline-flex items-center gap-2"><FiCheckCircle className="h-4 w-4 text-brand" /> Direct WhatsApp links</span>
                   <span className="inline-flex items-center gap-2"><FiCheckCircle className="h-4 w-4 text-brand" /> Pick your field</span>
                   <span className="inline-flex items-center gap-2"><FiCheckCircle className="h-4 w-4 text-brand" /> Easy to join</span>
-                </motion.div>
+                </div>
               </div>
             </div>
           </header>
 
-          <motion.section initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.38, delay: 0.18, ease: EASE }} className="mt-7 grid grid-cols-1 divide-y divide-border-default border-y border-border-default sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <section className="mt-7 grid grid-cols-1 divide-y divide-border-default border-y border-border-default sm:grid-cols-3 sm:divide-x sm:divide-y-0">
             <div className="flex items-center gap-4 py-5 sm:px-5 sm:first:pl-0">
               <span className="text-2xl font-semibold tracking-tight text-text-primary">
                 {categories.length}
@@ -402,7 +402,7 @@ export default function SharePage() {
                 Direct WhatsApp access
               </span>
             </div>
-          </motion.section>
+          </section>
 
           {/* Community benefits */}
           <section className="py-14 sm:py-16 lg:py-20" aria-labelledby="benefits-title">
