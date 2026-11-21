@@ -7,6 +7,7 @@ interface FormattedDescriptionProps {
   content?: string | null;
   className?: string;
   hideInitialHeading?: boolean;
+  headingLevel?: "h2" | "h3" | "h4";
 }
 
 function renderInlineFormatting(text: string): React.ReactNode {
@@ -38,6 +39,7 @@ export default function FormattedDescription({
   content,
   className = "",
   hideInitialHeading = true,
+  headingLevel = "h3",
 }: FormattedDescriptionProps) {
   if (!content || !content.trim()) {
     return (
@@ -124,13 +126,15 @@ export default function FormattedDescription({
 
       headingCount++;
 
+      const HeadingTag = headingLevel;
+
       elements.push(
-        <h4
+        <HeadingTag
           key={`heading-${index}`}
           className="mt-5 mb-2 text-base-compact font-bold text-text-primary first:mt-1"
         >
           {cleanTitle}
-        </h4>
+        </HeadingTag>
       );
       return;
     }

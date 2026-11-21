@@ -341,15 +341,6 @@ export default function JobDetailsClient({
     );
   };
 
-  const rise = (delay = 0) =>
-    reduceMotion
-      ? {}
-      : {
-        initial: { opacity: 0, y: 10 },
-        animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.4, ease: EASE, delay },
-      };
-
   const schema = useMemo(() => {
     if (
       !job.title?.trim() ||
@@ -596,10 +587,7 @@ export default function JobDetailsClient({
 
       <div className="mx-auto w-full max-w-4xl px-5 pb-20 pt-8 sm:px-8 sm:pt-12">
 
-        <motion.header
-          {...rise(0.04)}
-          className="pb-2"
-        >
+        <header className="pb-2">
           {/* Title & Primary Action Row */}
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1">
@@ -726,11 +714,11 @@ export default function JobDetailsClient({
               </ActionButton>
             )}
           </div>
-        </motion.header>
+        </header>
 
         {/* Main Content Area */}
         <div className="mt-8">
-          <motion.section {...rise(0.08)} className="w-full">
+          <section className="w-full">
             <h2
               id="about-role-heading"
               className="mb-2 text-base-compact font-bold text-text-primary"
@@ -785,13 +773,12 @@ export default function JobDetailsClient({
                 )}
               </div>
             </div>
-          </motion.section>
+          </section>
         </div>
 
         {/* WhatsApp Community Group Callout */}
         {matchedGroup && (
-          <motion.section
-            {...rise(0.1)}
+          <section
             aria-label="Job community group"
             className="mt-12 rounded-panel border border-border-default bg-surface-card p-6 sm:p-7 shadow-subtle relative overflow-hidden"
           >
@@ -816,9 +803,9 @@ export default function JobDetailsClient({
                 </div>
 
                 {/* Title */}
-                <h3 className="mt-2.5 text-lg font-bold tracking-tight text-text-primary sm:text-xl">
+                <h2 className="mt-2.5 text-lg font-bold tracking-tight text-text-primary sm:text-xl">
                   Join our {matchedGroup.categoryName} WhatsApp Group
-                </h3>
+                </h2>
 
                 {/* Description */}
                 <p className="mt-1.5 text-xs sm:text-sm text-text-secondary leading-relaxed max-w-xl">
@@ -867,13 +854,12 @@ export default function JobDetailsClient({
                 </Link>
               </div>
             </div>
-          </motion.section>
+          </section>
         )}
 
         {/* Related Jobs Section */}
         {relatedJobs && relatedJobs.length > 0 && (
-          <motion.section
-            {...rise(0.14)}
+          <section
             aria-label="Related opportunities"
             className="mt-12"
           >
@@ -901,7 +887,7 @@ export default function JobDetailsClient({
                 <JobCard key={relatedJob.id} job={relatedJob} />
               ))}
             </div>
-          </motion.section>
+          </section>
         )}
       </div>
 

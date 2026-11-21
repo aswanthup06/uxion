@@ -410,7 +410,7 @@ export async function approveJob(id: string): Promise<Job> {
  * Fetch a single job by its ID.
  * Wrapped in React cache() to deduplicate requests across generateMetadata and Page rendering.
  */
-export const getJobById = cache(async (id: string): Promise<Job | null> => {
+const fetchJobDirectly = async (id: string): Promise<Job | null> => {
   if (!isSupabaseConfigured()) {
     console.warn(`getJobById(${id}): Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL in .env.local.`);
     return null;
@@ -432,6 +432,32 @@ export const getJobById = cache(async (id: string): Promise<Job | null> => {
   } catch (error) {
     console.error(`Failed to fetch job with ID ${id}:`, error);
     return null;
+  }
+};
+
+/**
+ * Fetch a single job by its ID, cached across requests with a 60s TTL.
+ */
+export const getCachedJobById = (id: string) =>
+  unstable_cache(
+    async () => fetchJobDirectly(id),
+    [`job-${id}`],
+    {
+      revalidate: 60,
+      tags: ["jobs", `job-${id}`],
+    }
+  )();
+
+/**
+ * Fetch a single job by its ID.
+ * Wrapped in React cache() to deduplicate requests across generateMetadata and Page rendering.
+ */
+export const getJobById = cache(async (id: string): Promise<Job | null> => {
+  try {
+    return await getCachedJobById(id);
+  } catch {
+    // Graceful fallback for test environments or non-Next.js contexts where incrementalCache is not mounted
+    return await fetchJobDirectly(id);
   }
 });
 

@@ -178,7 +178,7 @@ export function JobDetailModal({
             <h3 className="text-base-compact font-bold text-text-primary">
               About the role
             </h3>
-            <FormattedDescription content={currentJob.description} />
+            <FormattedDescription content={currentJob.description} headingLevel="h4" />
           </div>
         </div>
 
