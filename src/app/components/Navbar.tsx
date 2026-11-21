@@ -414,17 +414,12 @@ export default function Navbar() {
                             </div>
 
                             {/* Spotlight Card */}
-                            <div className="mt-2.5 rounded-card border border-brand/15 bg-gradient-to-br from-brand-soft/70 via-brand-soft/30 to-surface-card p-3 transition-colors hover:border-brand/30">
-                              <div className="flex items-center gap-2">
-                                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand text-text-inverse">
-                                  <Sparkles size={11} />
-                                </span>
-                                <span className="text-xs font-semibold text-text-primary">
-                                  Direct Hiring
-                                </span>
-                              </div>
-                              <p className="mt-1 text-3xs text-text-muted leading-relaxed">
-                                Zero middleman. Connect directly with hiring managers & founders.
+                            <div className="mt-2.5 rounded-card bg-gradient-to-r from-brand-soft via-brand-soft/85 to-brand-soft/60 p-3">
+                              <p className="text-xs font-semibold text-text-primary">
+                                Direct Hiring
+                              </p>
+                              <p className="mt-1 text-xs text-text-secondary leading-relaxed">
+                                Zero middleman. Connect directly with hiring managers &amp; founders.
                               </p>
                             </div>
                           </div>

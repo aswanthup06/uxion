@@ -1,7 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { animate, useInView, useReducedMotion } from "framer-motion";
+import { useEffect, useRef } from "react";
+import {
+  animate,
+  motion,
+  useInView,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+} from "framer-motion";
 
 export type Stat = { label: string } & (
   | { value: number; suffix?: string }
@@ -18,28 +25,27 @@ function CountUp({
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, {
     once: true,
-    margin: "-60px",
+    margin: "-40px",
   });
   const reduceMotion = useReducedMotion();
-  const [n, setN] = useState(() => (reduceMotion ? to : 0));
+  const count = useMotionValue(reduceMotion ? to : 0);
+  const rounded = useTransform(count, (latest) => `${Math.round(latest)}${suffix}`);
 
   useEffect(() => {
     if (!inView || reduceMotion) return;
 
-    const controls = animate(0, to, {
-      duration: 1.4,
+    const controls = animate(count, to, {
+      duration: 1.2,
       ease: [0.22, 1, 0.36, 1],
-      onUpdate: (value) => setN(Math.round(value)),
     });
 
     return () => controls.stop();
-  }, [inView, to, reduceMotion]);
+  }, [inView, to, reduceMotion, count]);
 
   return (
-    <span ref={ref} className="tabular-nums">
-      {n}
-      {suffix}
-    </span>
+    <motion.span ref={ref} className="inline-block tabular-nums">
+      {rounded}
+    </motion.span>
   );
 }
 

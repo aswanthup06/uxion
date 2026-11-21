@@ -25,6 +25,7 @@ import {
   type PosterTemplateId,
 } from "@/lib/job-posters/poster-utils";
 import { PosterCanvas } from "@/components/job-posters/PosterCanvas";
+import { posterFontsClassName } from "@/components/job-posters/poster-fonts";
 
 interface JobPosterModalProps {
   job: Job | null;
@@ -291,7 +292,7 @@ export default function JobPosterModal({
       isOpen={isOpen}
       onClose={onClose}
       maxWidth="3xl"
-      className="rounded-modal border border-border-default shadow-modal overflow-hidden"
+      className={`rounded-modal border border-border-default shadow-modal overflow-hidden ${posterFontsClassName}`}
       headerClassName="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-border-subtle bg-surface-card"
       bodyClassName="px-5 pb-5 pt-3.5 sm:px-6 sm:pb-6 bg-surface-card"
       title={

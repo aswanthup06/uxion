@@ -21,6 +21,14 @@ const securityHeaders = [
     key: "Strict-Transport-Security",
     value: "max-age=31536000; includeSubDomains; preload",
   },
+  {
+    key: "Cross-Origin-Opener-Policy",
+    value: "same-origin-allow-popups",
+  },
+  {
+    key: "X-DNS-Prefetch-Control",
+    value: "on",
+  },
 ];
 
 const nextConfig: NextConfig = {
@@ -28,6 +36,7 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       "lucide-react",
       "react-icons",
+      "framer-motion",
     ],
   },
   compiler: {

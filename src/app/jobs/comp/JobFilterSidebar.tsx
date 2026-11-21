@@ -88,19 +88,20 @@ export function JobFilterSidebar({
     <aside
       className={`${
         filtersOpen ? "flex" : "hidden"
-      } flex-col gap-7 border-b border-border-default bg-surface-card p-5 lg:flex lg:sticky lg:top-[var(--spacing-nav-height)] lg:self-start lg:h-[calc(100vh-var(--spacing-nav-height))] lg:w-[272px] lg:shrink-0 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain [transform:translateZ(0)] will-change-transform lg:border-b-0 lg:border-r lg:p-6 lg:pb-8 [&>*]:shrink-0`}
+      } border-b border-border-default bg-surface-card lg:flex lg:sticky lg:top-[calc(var(--spacing-nav-height)+1px)] lg:self-start lg:h-[calc(100vh-var(--spacing-nav-height)-1px)] lg:w-[272px] lg:shrink-0 lg:border-b-0 lg:border-r`}
     >
-      <div className="flex items-center justify-between lg:hidden">
-        <span className="text-sm font-semibold text-text-primary">Filters</span>
-        <button
-          type="button"
-          onClick={onCloseFilters}
-          aria-label="Close filters"
-          className="rounded-control p-1.5 text-text-muted hover:bg-surface-subtle"
-        >
-          <X className="h-4 w-4" strokeWidth={1.75} />
-        </button>
-      </div>
+      <div className="flex w-full flex-col gap-7 p-5 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:p-6 lg:pb-8 [&>*]:shrink-0">
+        <div className="flex items-center justify-between lg:hidden">
+          <span className="text-sm font-semibold text-text-primary">Filters</span>
+          <button
+            type="button"
+            onClick={onCloseFilters}
+            aria-label="Close filters"
+            className="rounded-control p-1.5 text-text-muted hover:bg-surface-subtle"
+          >
+            <X className="h-4 w-4" strokeWidth={1.75} />
+          </button>
+        </div>
 
       <nav className="space-y-1" aria-label="Job views">
         <button
@@ -243,20 +244,21 @@ export function JobFilterSidebar({
         </label>
       </div>
 
-      <button
-        type="button"
-        onClick={clearFilters}
-        disabled={!hasActiveCriteria}
-        className="mt-2 inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-5 text-sm font-medium text-text-secondary transition-colors duration-200 hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary disabled:cursor-not-allowed disabled:border-border-subtle disabled:bg-surface-muted disabled:text-text-muted"
-      >
-        <RotateCcw className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
-        <span>Reset filters</span>
-        {activeFilters > 0 && (
-          <span className="grid h-5 min-w-5 place-items-center rounded-pill bg-surface-muted px-1.5 text-2xs font-semibold tabular-nums text-text-secondary">
-            {activeFilters}
-          </span>
-        )}
-      </button>
+        <button
+          type="button"
+          onClick={clearFilters}
+          disabled={!hasActiveCriteria}
+          className="mt-2 inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-border-default bg-surface-card px-5 text-sm font-medium text-text-secondary transition-colors duration-200 hover:border-border-strong hover:bg-surface-subtle hover:text-text-primary disabled:cursor-not-allowed disabled:border-border-subtle disabled:bg-surface-muted disabled:text-text-muted"
+        >
+          <RotateCcw className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
+          <span>Reset filters</span>
+          {activeFilters > 0 && (
+            <span className="grid h-5 min-w-5 place-items-center rounded-pill bg-surface-muted px-1.5 text-2xs font-semibold tabular-nums text-text-secondary">
+              {activeFilters}
+            </span>
+          )}
+        </button>
+      </div>
     </aside>
   );
 }

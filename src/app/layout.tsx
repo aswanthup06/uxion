@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import {
-  Manrope,
-  Space_Grotesk,
-  Plus_Jakarta_Sans,
-  Playfair_Display,
-  Syne,
-} from "next/font/google";
+import { Manrope } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ZenowayToaster from "./components/ZenowayToaster";
@@ -19,30 +13,6 @@ const manrope = Manrope({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-manrope",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-space-grotesk",
-});
-
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-plus-jakarta",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-playfair",
-});
-
-const syne = Syne({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-syne",
 });
 
 // Must be the host that serves the site and og-image.png directly (HTTP 200, no redirect).
@@ -127,13 +97,24 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${manrope.variable} ${spaceGrotesk.variable} ${plusJakarta.variable} ${playfair.variable} ${syne.variable}`}
+      className={manrope.variable}
     >
       <head>
         <meta
           name="google-adsense-account"
           content="ca-pub-8853112000993716"
         />
+        <link
+          rel="preconnect"
+          href="https://pagead2.googlesyndication.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://www.googletagmanager.com"
+          crossOrigin="anonymous"
+        />
+        <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net" />
       </head>
 
       <body className={`${manrope.className} ${manrope.variable} antialiased`}>
@@ -141,14 +122,14 @@ export default function RootLayout({
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8853112000993716"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-TKZQD3T9PD"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
 
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag() {

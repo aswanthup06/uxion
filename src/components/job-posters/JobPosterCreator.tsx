@@ -41,6 +41,7 @@ import {
 } from "@/lib/job-posters/qr-generator";
 import { PosterCanvas } from "./PosterCanvas";
 import { JobSelector } from "./JobSelector";
+import { posterFontsClassName } from "./poster-fonts";
 
 interface JobPosterCreatorProps {
   initialJobs: Job[];
@@ -414,7 +415,7 @@ export function JobPosterCreator({
   const previewDisplayHeight = Math.round(formatSpec.height * previewScale);
 
   return (
-    <div className="h-full w-full overflow-hidden bg-surface-base text-text-primary flex flex-col">
+    <div className={`h-full w-full overflow-hidden bg-surface-base text-text-primary flex flex-col ${posterFontsClassName}`}>
       {/* Mobile Top Navigation Bar (lg:hidden) */}
       <div className="lg:hidden shrink-0 border-b border-border-subtle bg-surface-card px-3 py-2.5 shadow-subtle z-10">
         <div className="flex items-center justify-between gap-2">
