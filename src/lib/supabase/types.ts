@@ -43,6 +43,11 @@ export interface DbJob {
   experience: string;
   posted_date: string;
   salary: string | null;
+  salary_min?: number | null;
+  salary_max?: number | null;
+  salary_currency?: string | null;
+  salary_period?: string | null;
+  salary_is_disclosed?: boolean | null;
   mail: string | null;
   company_link: string | null;
   apply: string | null;

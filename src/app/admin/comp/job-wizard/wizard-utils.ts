@@ -1,6 +1,7 @@
 import { CANONICAL_CITIES } from "@/lib/supabase/locations-data";
 import type { Job } from "@/app/types/job";
-import type { OfficeLocation } from "./types";
+import type { OfficeLocation, SalaryPeriod, SalaryType } from "./types";
+import { isDisclosedSalary } from "@/app/components/jobs/jobs-utils";
 
 let globalCscCities: Array<{ name: string; state: string; countryCode: string }> | null = null;
 let cscCitiesPromise: Promise<Array<{ name: string; state: string; countryCode: string }>> | null = null;
@@ -221,3 +222,243 @@ Requirements:
 - 3+ years of experience with React, Next.js, and TypeScript.
 - Strong knowledge of modern CSS, Tailwind, state management, and web performance.
 - Passion for great developer experience, automated testing, and semantic HTML.`;
+
+export function getCurrencySymbol(currency: string = "INR"): string {
+  switch (currency.toUpperCase()) {
+    case "USD":
+      return "$";
+    case "EUR":
+      return "€";
+    case "GBP":
+      return "£";
+    case "AED":
+      return "AED ";
+    case "SGD":
+      return "S$";
+    case "CAD":
+      return "CA$";
+    case "INR":
+    default:
+      return "₹";
+  }
+}
+
+export function formatSalaryBadge({
+  isDisclosed = false,
+  min = "",
+  max = "",
+  period = "YEAR",
+  currency = "INR",
+  type = "RANGE",
+}: {
+  isDisclosed?: boolean;
+  min?: string;
+  max?: string;
+  period?: SalaryPeriod;
+  currency?: string;
+  type?: SalaryType;
+}): string {
+  if (!isDisclosed) return "Not Disclosed";
+
+  const sym = getCurrencySymbol(currency);
+  const minClean = (min || "").trim();
+  const maxClean = (max || "").trim();
+
+  if (!minClean && !maxClean) return "Not Disclosed";
+
+  if (period === "YEAR") {
+    if (currency.toUpperCase() === "INR") {
+      if (type === "FIXED" || (!maxClean && minClean)) {
+        return `${sym}${minClean} LPA`;
+      }
+      if (type === "UP_TO" || (!minClean && maxClean)) {
+        return `Up to ${sym}${maxClean} LPA`;
+      }
+      return `${sym}${minClean}–${maxClean} LPA`;
+    } else {
+      const suffix = " / yr";
+      if (type === "FIXED" || (!maxClean && minClean)) {
+        return `${sym}${minClean}k${suffix}`;
+      }
+      if (type === "UP_TO" || (!minClean && maxClean)) {
+        return `Up to ${sym}${maxClean}k${suffix}`;
+      }
+      return `${sym}${minClean}k–${maxClean}k${suffix}`;
+    }
+  }
+
+  const periodSuffix = period === "MONTH" ? " / month" : " / hour";
+  const formatNum = (val: string) => {
+    const n = parseFloat(val.replace(/,/g, ""));
+    return isNaN(n) ? val : n.toLocaleString("en-IN");
+  };
+
+  if (type === "FIXED" || (!maxClean && minClean)) {
+    return `${sym}${formatNum(minClean)}${periodSuffix}`;
+  }
+  if (type === "UP_TO" || (!minClean && maxClean)) {
+    return `Up to ${sym}${formatNum(maxClean)}${periodSuffix}`;
+  }
+  return `${sym}${formatNum(minClean)} – ${sym}${formatNum(maxClean)}${periodSuffix}`;
+}
+
+export function calculateNumericSalary({
+  isDisclosed = false,
+  min = "",
+  max = "",
+  period = "YEAR",
+  currency = "INR",
+  type = "RANGE",
+}: {
+  isDisclosed?: boolean;
+  min?: string;
+  max?: string;
+  period?: SalaryPeriod;
+  currency?: string;
+  type?: SalaryType;
+}): { salaryMin?: number; salaryMax?: number } {
+  if (!isDisclosed) {
+    return { salaryMin: undefined, salaryMax: undefined };
+  }
+
+  const cleanNum = (val?: string): number | undefined => {
+    if (!val) return undefined;
+    const n = parseFloat(val.replace(/,/g, "").trim());
+    return isNaN(n) ? undefined : n;
+  };
+
+  const rawMin = cleanNum(min);
+  const rawMax = cleanNum(max);
+
+  if (rawMin === undefined && rawMax === undefined) {
+    return { salaryMin: undefined, salaryMax: undefined };
+  }
+
+  const isLpa = period === "YEAR" && currency.toUpperCase() === "INR";
+  const multiplier = (raw: number) => {
+    if (isLpa) {
+      return raw < 1000 ? Math.round(raw * 100000) : Math.round(raw);
+    }
+    return Math.round(raw);
+  };
+
+  if (type === "UP_TO") {
+    const finalMax = rawMax !== undefined ? multiplier(rawMax) : rawMin !== undefined ? multiplier(rawMin) : undefined;
+    return { salaryMin: undefined, salaryMax: finalMax };
+  }
+
+  if (type === "FIXED") {
+    const val = rawMin !== undefined ? multiplier(rawMin) : rawMax !== undefined ? multiplier(rawMax) : undefined;
+    return { salaryMin: val, salaryMax: val };
+  }
+
+  const finalMin = rawMin !== undefined ? multiplier(rawMin) : undefined;
+  const finalMax = rawMax !== undefined ? multiplier(rawMax) : undefined;
+
+  return { salaryMin: finalMin, salaryMax: finalMax };
+}
+
+export function parseSalaryFromJob(job: Partial<Job>): {
+  isDisclosed: boolean;
+  min: string;
+  max: string;
+  currency: string;
+  period: SalaryPeriod;
+  type: SalaryType;
+  formatted: string;
+} {
+  const hasStructured = (job.salaryMin !== undefined || job.salaryMax !== undefined) && job.salaryIsDisclosed !== false;
+  const isDisclosed = job.salaryIsDisclosed === true || hasStructured || (job.salaryIsDisclosed !== false && isDisclosedSalary(job.salary));
+  if (!isDisclosed) {
+    return {
+      isDisclosed: false,
+      min: "",
+      max: "",
+      currency: "INR",
+      period: "YEAR",
+      type: "RANGE",
+      formatted: "Not Disclosed",
+    };
+  }
+
+  const currency = job.salaryCurrency || "INR";
+  const period = (job.salaryPeriod as SalaryPeriod) || "YEAR";
+
+  // If structured numeric values are already present on the job object
+  if (job.salaryMin !== undefined || job.salaryMax !== undefined) {
+    const isLpa = period === "YEAR" && currency.toUpperCase() === "INR";
+    const minVal = job.salaryMin !== undefined
+      ? isLpa ? String(job.salaryMin / 100000) : String(job.salaryMin)
+      : "";
+    const maxVal = job.salaryMax !== undefined
+      ? isLpa ? String(job.salaryMax / 100000) : String(job.salaryMax)
+      : "";
+
+    let type: SalaryType = "RANGE";
+    if (job.salaryMin === undefined && job.salaryMax !== undefined) {
+      type = "UP_TO";
+    } else if (job.salaryMin !== undefined && job.salaryMax !== undefined && job.salaryMin === job.salaryMax) {
+      type = "FIXED";
+    }
+
+    return {
+      isDisclosed: true,
+      min: minVal,
+      max: maxVal,
+      currency,
+      period,
+      type,
+      formatted: job.salary || formatSalaryBadge({ isDisclosed: true, min: minVal, max: maxVal, currency, period, type }),
+    };
+  }
+
+  // Parse legacy string
+  const raw = (job.salary || "").trim();
+  const isUpTo = /up to/i.test(raw);
+
+  const lpaMatch = raw.match(/(\d+(?:\.\d+)?)\s*(?:[-–to]\s*(\d+(?:\.\d+)?))?\s*lpa/i);
+  if (lpaMatch) {
+    const min = isUpTo ? "" : lpaMatch[1];
+    const max = isUpTo ? lpaMatch[1] : (lpaMatch[2] || lpaMatch[1]);
+    const type: SalaryType = isUpTo ? "UP_TO" : !lpaMatch[2] ? "FIXED" : "RANGE";
+    return {
+      isDisclosed: true,
+      min,
+      max,
+      currency: "INR",
+      period: "YEAR",
+      type,
+      formatted: raw,
+    };
+  }
+
+  const monthMatch = raw.match(/(\d+(?:\.\d+)?)\s*k?\s*(?:[-–to]\s*(\d+(?:\.\d+)?)\s*k?)?\s*(?:\/month|\/m|per month)/i);
+  if (monthMatch) {
+    let min = monthMatch[1];
+    let max = monthMatch[2] || "";
+    if (raw.toLowerCase().includes("k") && !min.includes("000")) {
+      min = String(parseFloat(min) * 1000);
+      if (max) max = String(parseFloat(max) * 1000);
+    }
+    const type: SalaryType = isUpTo ? "UP_TO" : !max ? "FIXED" : "RANGE";
+    return {
+      isDisclosed: true,
+      min: isUpTo ? "" : min,
+      max: isUpTo ? min : (max || min),
+      currency: "INR",
+      period: "MONTH",
+      type,
+      formatted: raw,
+    };
+  }
+
+  return {
+    isDisclosed: true,
+    min: "",
+    max: "",
+    currency,
+    period,
+    type: "RANGE",
+    formatted: raw,
+  };
+}

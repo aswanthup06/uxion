@@ -21,6 +21,9 @@ export interface PreferredTarget {
   state?: string;
 }
 
+export type SalaryPeriod = "YEAR" | "MONTH" | "HOUR";
+export type SalaryType = "RANGE" | "FIXED" | "UP_TO";
+
 export interface JobFormState {
   title: string;
   company: string;
@@ -38,6 +41,12 @@ export interface JobFormState {
   experienceMax: string;
   postedDate: string;
   salary: string;
+  salaryMin?: string;
+  salaryMax?: string;
+  salaryCurrency?: string;
+  salaryPeriod?: SalaryPeriod;
+  salaryType?: SalaryType;
+  salaryIsDisclosed?: boolean;
   mail: string;
   companyLink: string;
   description: string;

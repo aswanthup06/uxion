@@ -102,7 +102,7 @@ export default function SubmissionsPage() {
       }
 
       setSubmissions((prev) => prev.filter((j) => j.id !== id));
-      toast.success(`"${title}" approved and published live! 🎉`);
+      toast.success(`"${title}" approved and published live!`);
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Error approving job";
       toast.error(msg);

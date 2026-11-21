@@ -14,18 +14,18 @@ export const jobs = [
     companyLink: "https://tridizi.com/",
     apply: "",
 
-    description: `🚨 We're Hiring: UI/UX Designer (Remote)
-👉🏻 Salary: Up to ₹25,000/month (based on interview performance)
+    description: `We're Hiring: UI/UX Designer (Remote)
+Salary: Up to ₹25,000/month (based on interview performance)
 Time: 10 AM – 7 PM 
 Experience: Minimum 1 year (Mandatory)
 
 Looking for a creative and detail-oriented UI/UX Designer to join our team!
-✅ Design user-friendly web & mobile interfaces
-✅ Create wireframes, prototypes, and mockups
-✅ Collaborate with developers & product team
-✅ Conduct user research & usability testing
-✅ Improve overall user experience and engagement
-✅ Stay updated with latest design trends
+- Design user-friendly web & mobile interfaces
+- Create wireframes, prototypes, and mockups
+- Collaborate with developers & product team
+- Conduct user research & usability testing
+- Improve overall user experience and engagement
+- Stay updated with latest design trends
 `,
   },
 
@@ -44,24 +44,24 @@ Looking for a creative and detail-oriented UI/UX Designer to join our team!
     companyLink: "https://www.linkedin.com/company/hyeoninfotech/",
     apply: "",
 
-    description: ` 🚀 Hyeon Infotech is Growing – Join Our Team! 🚀
+    description: `Hyeon Infotech is Growing – Join Our Team!
 
-📍 Workplace: Surat (On-site | Local talent only)
+Workplace: Surat (On-site | Local talent only)
 
-👩‍💻 We’re looking for passionate minds in tech & design!
+We’re looking for passionate minds in tech & design!
 
-🔑 Open Positions:
+Open Positions:
 
-✨ Android Developer (Kotlin – Product Based) | 1.5 – 3 Yrs
-✨ iOS Developer (Product Based) | 1 – 4.5 Yrs
-✨ ASO Executive | 1 – 2 Yrs
-✨ UI/UX & Graphic Designer | 1.5 – 2 Yrs
-✨ QA Tester | 1.5 – 2 Yrs
+- Android Developer (Kotlin – Product Based) | 1.5 – 3 Yrs
+- iOS Developer (Product Based) | 1 – 4.5 Yrs
+- ASO Executive | 1 – 2 Yrs
+- UI/UX & Graphic Designer | 1.5 – 2 Yrs
+- QA Tester | 1.5 – 2 Yrs
 
-💼 Why Hyeon Infotech?
+Why Hyeon Infotech?
 
-Creative & collaborative culture 🤝
-Growth-driven mindset 🌱
+Creative & collaborative culture
+Growth-driven mindset
 `,
   },
 
@@ -160,12 +160,11 @@ What we offer:
 
     description: `We’re Hiring! Join Our Exciting Fintech Journey! 
 We are on the lookout for talented candidates to join our team. 
-👉 Growth Associate (ex- 1 year)
-👉 UI/UX Designer (ex- 1 year)
-👉Social Media/ Content Creator Intern
-👉Tele sales
-We'd love to hear from you if you’re passionate about Creativity, innovation, problem-solving, and creating impactful products
-.
+- Growth Associate (ex- 1 year)
+- UI/UX Designer (ex- 1 year)
+- Social Media/ Content Creator Intern
+- Tele sales
+We'd love to hear from you if you’re passionate about Creativity, innovation, problem-solving, and creating impactful products.
 Ready to take the next step in your career?`,
   },
   {
@@ -182,7 +181,7 @@ Ready to take the next step in your career?`,
     companyLink: "https://www.blurbpoint.com",
     apply: "",
 
-    description: `Looking to start your career in Web Design? 🚀
+    description: `Looking to start your career in Web Design?
 
 We’re open to freshers skilled in HTML, CSS, JavaScript, Bootstrap, PSD to HTML, and Responsive Design.`,
   },
@@ -221,13 +220,13 @@ Passion for detail and pixel-perfect execution.
 What we are offering.
 
 
-✅ Continuous Learning: Access to design workshops, conferences, and learning resources.
+- Continuous Learning: Access to design workshops, conferences, and learning resources.
 
-🎉 Work Hard, Party Hard: We celebrate wins with offsites, parties, and plenty of team fun.
+- Work Hard, Party Hard: We celebrate wins with offsites, parties, and plenty of team fun.
 
-🛠️ Ownership & Autonomy: You’ll have the space and support to drive your design solutions end-to-end.
+- Ownership & Autonomy: You’ll have the space and support to drive your design solutions end-to-end.
 
-🤝 Collaborative Culture: Work alongside passionate teams that value your creativity, feedback, and growth.
+- Collaborative Culture: Work alongside passionate teams that value your creativity, feedback, and growth.
 
 If you're passionate about designing systems that are not only beautiful but also powerful and practical—we want to meet you. Apply now and help shape the future of fintech with us.`,
   },

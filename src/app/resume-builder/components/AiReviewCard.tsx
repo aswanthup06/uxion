@@ -153,7 +153,7 @@ export default function AiReviewCard({
               <ul className="space-y-1 text-2xs">
                 {suggestion.contextPrompts.map((cp, idx) => (
                   <li key={idx} className="flex items-start gap-1.5">
-                    <span className="text-brand">💡</span>
+                    <Sparkles size={11} className="text-brand shrink-0 mt-0.5" />
                     <span>{cp}</span>
                   </li>
                 ))}

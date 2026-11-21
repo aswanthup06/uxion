@@ -262,7 +262,7 @@ function JobsViewContent({
       }
 
       if (floor > 0) {
-        const monthly = parseMonthlySalary(job.salary);
+        const monthly = parseMonthlySalary(job);
         if (monthly > 0 && monthly < floor) return false;
       }
 
@@ -331,9 +331,7 @@ function JobsViewContent({
   }
 
   useEffect(() => {
-    if (mainRef.current && window.innerWidth >= 1024) {
-      mainRef.current.scrollTo({ top: 0, behavior: "smooth" });
-    } else if (window.scrollY > 0) {
+    if (window.scrollY > 0) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [filterKey]);
@@ -342,15 +340,13 @@ function JobsViewContent({
   useEffect(() => {
     const node = sentinelRef.current;
     if (!node || !hasMore) return;
-    const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
-    const root = isDesktop ? mainRef.current : null;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, filteredJobs.length));
         }
       },
-      { root, rootMargin: isDesktop ? "0px 0px 400px 0px" : "400px" }
+      { root: null, rootMargin: "400px" }
     );
     observer.observe(node);
     return () => observer.disconnect();
@@ -380,7 +376,7 @@ function JobsViewContent({
   const noUnlockedYet = unlockedOnly && unlockedJobIds.length === 0;
 
   return (
-    <div className="min-h-full bg-surface-page text-text-primary lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[272px_minmax(0,1fr)] lg:overflow-hidden">
+    <div className="min-h-full bg-surface-page text-text-primary lg:grid lg:grid-cols-[272px_minmax(0,1fr)]">
       {/* Extracted Modular Sidebar */}
       <JobFilterSidebar
         filtersOpen={filtersOpen}
@@ -406,7 +402,7 @@ function JobsViewContent({
       {/* Main content */}
       <div
         ref={mainRef}
-        className="min-w-0 bg-surface-base px-5 py-5 sm:px-8 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:px-10 lg:py-6"
+        className="min-w-0 bg-surface-base px-5 py-5 sm:px-8 lg:px-10 lg:py-6"
       >
         <header>
           <h1 className="text-2xl font-semibold tracking-[-0.04em] text-text-primary sm:text-[1.75rem]">

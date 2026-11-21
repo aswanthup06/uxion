@@ -317,7 +317,7 @@ export default function AtsCheckerPanel({
             {analysis.keywordAnalysis.matchedKeywords.length > 0 && (
               <div>
                 <p className="text-2xs font-semibold text-brand">
-                  ✓ Demonstrated in your resume ({analysis.keywordAnalysis.matchedKeywords.length})
+                  Demonstrated in your resume ({analysis.keywordAnalysis.matchedKeywords.length})
                 </p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {analysis.keywordAnalysis.matchedKeywords.map((kw) => (
@@ -336,7 +336,7 @@ export default function AtsCheckerPanel({
             {analysis.keywordAnalysis.transferableKeywords.length > 0 && (
               <div>
                 <p className="text-2xs font-semibold text-text-primary">
-                  ⇄ Transferable &amp; Related competencies (
+                  Transferable &amp; Related competencies (
                   {analysis.keywordAnalysis.transferableKeywords.length})
                 </p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
@@ -356,7 +356,7 @@ export default function AtsCheckerPanel({
             {analysis.keywordAnalysis.missingKeywords.length > 0 && (
               <div>
                 <p className="text-2xs font-semibold text-status-warning">
-                  ⚠ Not found in your resume (add only if genuinely practiced)
+                  Not found in your resume (add only if genuinely practiced)
                 </p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {analysis.keywordAnalysis.missingKeywords.map((kw) => (

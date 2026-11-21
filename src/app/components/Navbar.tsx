@@ -328,7 +328,7 @@ export default function Navbar() {
                         <div className="grid grid-cols-2 divide-x divide-border-subtle p-3.5">
                           {/* Left column: Explore by Domain */}
                           <div className="pr-3">
-                            <p className="px-2.5 pb-2 text-[10.5px] font-bold uppercase tracking-[1.2px] text-text-muted">
+                            <p className="px-2.5 pb-2 text-2xs font-bold uppercase tracking-wider text-text-muted">
                               Explore by domain
                             </p>
                             <div className="space-y-1">
@@ -337,10 +337,10 @@ export default function Navbar() {
                                   key={label}
                                   href={href}
                                   onClick={closeMenus}
-                                  className="group flex cursor-pointer items-center gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
+                                  className="group flex cursor-pointer items-center gap-3 rounded-card px-2.5 py-2 transition-all duration-150 hover:bg-surface-subtle"
                                 >
-                                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                                    <Icon size={15} strokeWidth={1.8} />
+                                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-text-secondary transition-all duration-150 group-hover:bg-brand-soft group-hover:text-brand">
+                                    <Icon size={16} strokeWidth={1.8} />
                                   </span>
                                   <span className="text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
                                     {label}
@@ -351,109 +351,81 @@ export default function Navbar() {
                           </div>
 
                           {/* Right column: Candidate Resources */}
-                          <div className="pl-3">
-                            <p className="px-2.5 pb-2 text-[10.5px] font-bold uppercase tracking-[1.2px] text-text-muted">
-                              Candidate resources
-                            </p>
-                            <div className="space-y-1">
-                              {/* Hidden while Resume Builder is in progress
-                              <Link
-                                href="/resume-builder"
-                                onClick={closeMenus}
-                                className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
-                              >
-                                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                                  <FileText size={15} strokeWidth={1.8} />
-                                </span>
-                                <span className="min-w-0 flex-1">
-                                  <span className="block text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
-                                    ATS Resume Builder
+                          <div className="pl-3 flex flex-col justify-between">
+                            <div>
+                              <p className="px-2.5 pb-2 text-2xs font-bold uppercase tracking-wider text-text-muted">
+                                Candidate resources
+                              </p>
+                              <div className="space-y-1">
+                                <Link
+                                  href="/profile"
+                                  onClick={closeMenus}
+                                  className="group flex cursor-pointer items-start gap-3 rounded-card px-2.5 py-2 transition-all duration-150 hover:bg-surface-subtle"
+                                >
+                                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-text-secondary transition-all duration-150 group-hover:bg-brand-soft group-hover:text-brand">
+                                    <UserRound size={16} strokeWidth={1.8} />
                                   </span>
-                                  <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                    Create &amp; export ATS-ready PDF
-                                  </span>
-                                </span>
-                              </Link>
-                              */}
-
-                              <Link
-                                href="/profile"
-                                onClick={closeMenus}
-                                className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
-                              >
-                                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                                  <UserRound size={15} strokeWidth={1.8} />
-                                </span>
-                                <span className="min-w-0 flex-1">
-                                  <span className="block text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
-                                    {user ? "My Profile" : "Candidate Profile"}
-                                  </span>
-                                  <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                    {user ? "View account details & settings" : "Sign in to manage your account"}
-                                  </span>
-                                </span>
-                              </Link>
-
-                              {/* Hidden while candidate showcase is paused
-                              <Link
-                                href="/profile/dummy"
-                                onClick={closeMenus}
-                                className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
-                              >
-                                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-white">
-                                  <Sparkles size={15} strokeWidth={1.8} />
-                                </span>
-                                <span className="min-w-0 flex-1">
-                                  <span className="flex items-center gap-1.5 text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
-                                    <span>Demo Profile</span>
-                                    <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-3xs font-semibold text-brand">
-                                      Redesign
+                                  <span className="min-w-0 flex-1">
+                                    <span className="block text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
+                                      {user ? "My Profile" : "Candidate Profile"}
+                                    </span>
+                                    <span className="mt-0.5 block text-xs text-text-muted leading-snug">
+                                      {user ? "View account details & settings" : "Sign in to manage your account"}
                                     </span>
                                   </span>
-                                  <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                    Preview modern Bento showcase
-                                  </span>
-                                </span>
-                              </Link>
-                              */}
+                                </Link>
 
-                              {/* Hidden while Referral is in progress
-                              <Link
-                                href="/referral"
-                                onClick={closeMenus}
-                                className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
-                              >
-                                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                                  <Share2 size={15} strokeWidth={1.8} />
-                                </span>
-                                <span className="min-w-0 flex-1">
-                                  <span className="block text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
-                                    Referral Rewards
+                                <Link
+                                  href="/email"
+                                  onClick={closeMenus}
+                                  className="group flex cursor-pointer items-start gap-3 rounded-card px-2.5 py-2 transition-all duration-150 hover:bg-surface-subtle"
+                                >
+                                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-text-secondary transition-all duration-150 group-hover:bg-brand-soft group-hover:text-brand">
+                                    <Mail size={16} strokeWidth={1.8} />
                                   </span>
-                                  <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                    Earn rewards by sharing jobs
+                                  <span className="min-w-0 flex-1">
+                                    <span className="block text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
+                                      Email Guide
+                                    </span>
+                                    <span className="mt-0.5 block text-xs text-text-muted leading-snug">
+                                      Professional outreach templates
+                                    </span>
                                   </span>
-                                </span>
-                              </Link>
-                              */}
+                                </Link>
 
-                              <Link
-                                href="/email"
-                                onClick={closeMenus}
-                                className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 transition-colors hover:bg-surface-subtle"
-                              >
-                                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                                  <Mail size={15} strokeWidth={1.8} />
-                                </span>
-                                <span className="min-w-0 flex-1">
-                                  <span className="block text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
-                                    Email Guide
+                                <Link
+                                  href="/join"
+                                  onClick={closeMenus}
+                                  className="group flex cursor-pointer items-start gap-3 rounded-card px-2.5 py-2 transition-all duration-150 hover:bg-surface-subtle"
+                                >
+                                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-text-secondary transition-all duration-150 group-hover:bg-brand-soft group-hover:text-brand">
+                                    <Users size={16} strokeWidth={1.8} />
                                   </span>
-                                  <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                    Professional outreach templates
+                                  <span className="min-w-0 flex-1">
+                                    <span className="block text-xs-compact font-medium text-text-primary transition-colors group-hover:text-brand">
+                                      Community
+                                    </span>
+                                    <span className="mt-0.5 block text-xs text-text-muted leading-snug">
+                                      Connect with design & tech peers
+                                    </span>
                                   </span>
+                                </Link>
+                              </div>
+                            </div>
+
+                            {/* Spotlight Card */}
+                            <div className="mt-2.5 rounded-card border border-brand/15 bg-gradient-to-br from-brand-soft/70 via-brand-soft/30 to-surface-card p-3 transition-colors hover:border-brand/30">
+                              <div className="flex items-center gap-2">
+                                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand text-text-inverse">
+                                  <Sparkles size={11} />
                                 </span>
-                              </Link>
+                                <span className="text-xs font-semibold text-text-primary">
+                                  Direct Hiring
+                                </span>
+                              </div>
+                              <p className="mt-1 text-3xs text-text-muted leading-relaxed">
+                                Zero middleman. Connect directly with hiring managers & founders.
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -514,17 +486,17 @@ export default function Navbar() {
                         <Link
                           href={POST_JOB}
                           onClick={closeMenus}
-                          className="group flex cursor-pointer items-center gap-3 rounded-control px-2.5 py-2.5 transition-colors hover:bg-surface-subtle"
+                          className="group flex cursor-pointer items-center gap-3 rounded-card px-2.5 py-2.5 transition-all duration-150 hover:bg-surface-subtle"
                         >
-                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                            <BriefcaseBusiness size={16} strokeWidth={1.8} />
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-text-secondary transition-all duration-150 group-hover:bg-brand-soft group-hover:text-brand">
+                            <BriefcaseBusiness size={17} strokeWidth={1.8} />
                           </span>
                           <span>
                             <span className="block text-xs-compact font-semibold text-text-primary transition-colors group-hover:text-brand">
                               Post a job
                             </span>
                             <span className="mt-0.5 block text-xs text-text-muted">
-                              Find IT talent
+                              Find IT &amp; design talent
                             </span>
                           </span>
                         </Link>
@@ -532,10 +504,10 @@ export default function Navbar() {
                         <Link
                           href={POSTER_STUDIO}
                           onClick={closeMenus}
-                          className="group flex cursor-pointer items-center gap-3 rounded-control px-2.5 py-2.5 transition-colors hover:bg-surface-subtle"
+                          className="group flex cursor-pointer items-center gap-3 rounded-card px-2.5 py-2.5 transition-all duration-150 hover:bg-surface-subtle"
                         >
-                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                            <Sparkles size={16} strokeWidth={1.8} />
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-text-secondary transition-all duration-150 group-hover:bg-brand-soft group-hover:text-brand">
+                            <Sparkles size={17} strokeWidth={1.8} />
                           </span>
                           <span>
                             <span className="block text-xs-compact font-semibold text-text-primary transition-colors group-hover:text-brand">
@@ -553,9 +525,7 @@ export default function Navbar() {
                           onClick={closeMenus}
                           className="group flex cursor-pointer items-center gap-3 rounded-control px-2.5 py-2.5 transition-colors hover:bg-surface-subtle"
                         >
-                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                            <BriefcaseBusiness size={16} strokeWidth={1.8} />
-                          </span>
+                          <BriefcaseBusiness size={18} strokeWidth={1.8} className="shrink-0 text-text-secondary transition-colors group-hover:text-brand" />
                           <span>
                             <span className="block text-xs-compact font-semibold text-text-primary transition-colors group-hover:text-brand">
                               My jobs
@@ -658,50 +628,36 @@ export default function Navbar() {
                       {...motionProps}
                       className="absolute right-0 top-full pt-1.5 w-56 origin-top-right z-50"
                     >
-                      <div className="rounded-panel border border-border-default bg-surface-card p-2 shadow-modal">
-                        <div className="border-b border-border-subtle px-3 py-2.5">
+                      <div className="rounded-panel border border-border-default bg-surface-card p-1.5 shadow-modal">
+                        <div className="px-2.5 py-2">
                           <p className="truncate text-xs font-semibold text-text-primary">
                             {profile?.full_name || user.user_metadata?.full_name || "Candidate"}
                           </p>
                           <p className="mt-0.5 truncate text-2xs text-text-muted">{user.email}</p>
                         </div>
 
-                        <div className="py-1">
+                        <div className="space-y-0.5">
                           <Link
                             href="/profile"
                             onClick={closeMenus}
-                            className="group flex cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
+                            className="group flex cursor-pointer items-center gap-2.5 rounded-card px-2.5 py-2 text-xs font-medium text-text-secondary transition-all duration-150 hover:bg-surface-subtle hover:text-brand"
                           >
-                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                              <UserRound size={13} strokeWidth={1.8} />
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-text-secondary transition-all duration-150 group-hover:bg-brand-soft group-hover:text-brand">
+                              <UserRound size={14} strokeWidth={1.8} />
                             </span>
                             <span>My Profile</span>
                           </Link>
-                          {/* Hidden while Resume Builder is in progress
-                          <Link
-                            href="/resume-builder"
-                            onClick={closeMenus}
-                            className="group flex cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
-                          >
-                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                              <FileText size={13} strokeWidth={1.8} />
-                            </span>
-                            <span>Resume Builder</span>
-                          </Link>
-                          */}
-                        </div>
 
-                        <div className="border-t border-border-subtle pt-1">
                           <button
                             type="button"
                             onClick={async () => {
                               closeMenus();
                               await signOut();
                             }}
-                            className="group flex w-full cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-left text-xs font-medium text-status-error transition-colors hover:bg-status-error-bg"
+                            className="group flex w-full cursor-pointer items-center gap-2.5 rounded-card px-2.5 py-2 text-left text-xs font-medium text-status-error transition-all duration-150 hover:bg-status-error-bg"
                           >
-                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control border border-status-error-border/60 bg-status-error-bg text-status-error transition-colors">
-                              <LogOut size={13} strokeWidth={1.8} />
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-card bg-status-error-bg text-status-error transition-colors">
+                              <LogOut size={14} strokeWidth={1.8} />
                             </span>
                             <span>Sign out</span>
                           </button>
@@ -884,10 +840,10 @@ export default function Navbar() {
                               key={label}
                               href={href}
                               onClick={closeMenus}
-                              className="group flex cursor-pointer items-center gap-3 rounded-control px-2.5 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-subtle hover:text-brand"
+                              className="group flex cursor-pointer items-center gap-3 rounded-card px-2.5 py-2 text-sm text-text-secondary transition-all duration-150 hover:bg-surface-subtle hover:text-brand"
                             >
-                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                                <Icon size={15} strokeWidth={1.8} />
+                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-text-secondary transition-all duration-150 group-hover:bg-brand-soft group-hover:text-brand">
+                                <Icon size={16} strokeWidth={1.8} />
                               </span>
                               <span className="font-medium text-text-primary group-hover:text-brand">{label}</span>
                             </Link>
@@ -899,33 +855,13 @@ export default function Navbar() {
                             Candidate resources
                           </p>
 
-                          {/* Hidden while Resume Builder is in progress
-                          <Link
-                            href="/resume-builder"
-                            onClick={closeMenus}
-                            className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
-                          >
-                            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                              <FileText size={15} strokeWidth={1.8} />
-                            </span>
-                            <span className="min-w-0 flex-1">
-                              <span className="block font-medium text-text-primary group-hover:text-brand">
-                                ATS Resume Builder
-                              </span>
-                              <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                Create &amp; export ATS-ready PDF
-                              </span>
-                            </span>
-                          </Link>
-                          */}
-
                           <Link
                             href="/profile"
                             onClick={closeMenus}
-                            className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
+                            className="group flex cursor-pointer items-start gap-3 rounded-card px-2.5 py-2 text-sm text-text-secondary transition-all duration-150 hover:bg-surface-subtle"
                           >
-                            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                              <UserRound size={15} strokeWidth={1.8} />
+                            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-text-secondary transition-all duration-150 group-hover:bg-brand-soft group-hover:text-brand">
+                              <UserRound size={16} strokeWidth={1.8} />
                             </span>
                             <span className="min-w-0 flex-1">
                               <span className="block font-medium text-text-primary group-hover:text-brand">
@@ -937,56 +873,13 @@ export default function Navbar() {
                             </span>
                           </Link>
 
-                          {/* Hidden while candidate showcase is paused
-                          <Link
-                            href="/profile/dummy"
-                            onClick={closeMenus}
-                            className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
-                          >
-                            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-white">
-                              <Sparkles size={15} strokeWidth={1.8} />
-                            </span>
-                            <span className="min-w-0 flex-1">
-                              <span className="flex items-center gap-1.5 font-medium text-text-primary group-hover:text-brand">
-                                <span>Demo Profile</span>
-                                <span className="rounded-pill bg-brand-soft px-1.5 py-0.5 text-3xs font-semibold text-brand">
-                                  Redesign
-                                </span>
-                              </span>
-                              <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                Preview modern Bento showcase
-                              </span>
-                            </span>
-                          </Link>
-                          */}
-
-                          {/* Hidden while Referral is in progress
-                          <Link
-                            href="/referral"
-                            onClick={closeMenus}
-                            className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
-                          >
-                            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                              <Share2 size={15} strokeWidth={1.8} />
-                            </span>
-                            <span className="min-w-0 flex-1">
-                              <span className="block font-medium text-text-primary group-hover:text-brand">
-                                Referral Rewards
-                              </span>
-                              <span className="mt-0.5 block text-xs text-text-muted leading-snug">
-                                Earn rewards by sharing jobs
-                              </span>
-                            </span>
-                          </Link>
-                          */}
-
                           <Link
                             href="/email"
                             onClick={closeMenus}
-                            className="group flex cursor-pointer items-start gap-3 rounded-control px-2.5 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
+                            className="group flex cursor-pointer items-start gap-3 rounded-card px-2.5 py-2 text-sm text-text-secondary transition-all duration-150 hover:bg-surface-subtle"
                           >
-                            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border-subtle bg-surface-subtle text-text-secondary transition-colors group-hover:border-brand-soft group-hover:bg-brand-soft group-hover:text-brand">
-                              <Mail size={15} strokeWidth={1.8} />
+                            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-text-secondary transition-all duration-150 group-hover:bg-brand-soft group-hover:text-brand">
+                              <Mail size={16} strokeWidth={1.8} />
                             </span>
                             <span className="min-w-0 flex-1">
                               <span className="block font-medium text-text-primary group-hover:text-brand">
@@ -994,6 +887,24 @@ export default function Navbar() {
                               </span>
                               <span className="mt-0.5 block text-xs text-text-muted leading-snug">
                                 Professional outreach templates
+                              </span>
+                            </span>
+                          </Link>
+
+                          <Link
+                            href="/join"
+                            onClick={closeMenus}
+                            className="group flex cursor-pointer items-start gap-3 rounded-card px-2.5 py-2 text-sm text-text-secondary transition-all duration-150 hover:bg-surface-subtle"
+                          >
+                            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-text-secondary transition-all duration-150 group-hover:bg-brand-soft group-hover:text-brand">
+                              <Users size={16} strokeWidth={1.8} />
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block font-medium text-text-primary group-hover:text-brand">
+                                Community
+                              </span>
+                              <span className="mt-0.5 block text-xs text-text-muted leading-snug">
+                                Connect with design & tech peers
                               </span>
                             </span>
                           </Link>
@@ -1037,29 +948,27 @@ export default function Navbar() {
                         exit="exit"
                         className="overflow-hidden"
                       >
-                        <div className="space-y-1 py-2 pl-2">
+                        <div className="space-y-1 py-2 pl-1">
                           <Link
                             href={POST_JOB}
                             onClick={closeMenus}
-                            className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
+                            className="group flex cursor-pointer items-center gap-3 rounded-card px-2.5 py-2 text-sm text-text-secondary transition-all duration-150 hover:bg-surface-subtle hover:text-brand"
                           >
-                            <BriefcaseBusiness
-                              size={17}
-                              className={`${iconClass} text-brand`}
-                            />
-                            Post a job
+                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-text-secondary transition-all duration-150 group-hover:bg-brand-soft group-hover:text-brand">
+                              <BriefcaseBusiness size={16} strokeWidth={1.8} />
+                            </span>
+                            <span className="font-medium text-text-primary group-hover:text-brand">Post a job</span>
                           </Link>
 
                           <Link
                             href={POSTER_STUDIO}
                             onClick={closeMenus}
-                            className="flex cursor-pointer items-center gap-3 rounded-control px-3 py-2.5 text-sm text-text-secondary transition-colors hover:bg-surface-subtle"
+                            className="group flex cursor-pointer items-center gap-3 rounded-card px-2.5 py-2 text-sm text-text-secondary transition-all duration-150 hover:bg-surface-subtle hover:text-brand"
                           >
-                            <Sparkles
-                              size={17}
-                              className={`${iconClass} text-brand`}
-                            />
-                            Poster Studio
+                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-card bg-surface-subtle text-text-secondary transition-all duration-150 group-hover:bg-brand-soft group-hover:text-brand">
+                              <Sparkles size={16} strokeWidth={1.8} />
+                            </span>
+                            <span className="font-medium text-text-primary group-hover:text-brand">Poster Studio</span>
                           </Link>
 
                           {/* My jobs (commented out per request)
@@ -1118,10 +1027,10 @@ export default function Navbar() {
                         closeMenus();
                         await signOut();
                       }}
-                      className="mt-3 flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-status-error/20 bg-status-error-bg/30 text-xs font-semibold text-status-error"
+                      className="mt-3 flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-control border border-status-error/20 bg-status-error-bg/30 text-sm font-semibold text-status-error transition-colors hover:bg-status-error-bg/50"
                     >
-                      <LogOut size={14} />
-                      Sign out ({user.email})
+                      <LogOut size={15} />
+                      Sign out
                     </button>
                   )}
                 </>

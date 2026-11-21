@@ -470,7 +470,7 @@ export default function ResumeBuilderWorkspace() {
       } else {
         toast(
           `Resume audit up to date: Found ${autoFixCount} quick fix(es) and ${errors + warnings} recommendation(s).`,
-          { icon: "🔍", id: "recheck-toast" }
+          { id: "recheck-toast" }
         );
       }
     }, 350);

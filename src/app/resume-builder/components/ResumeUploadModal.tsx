@@ -11,7 +11,10 @@ import {
   FileText,
   FileUp,
   GraduationCap,
+  Link2,
   Loader2,
+  Mail,
+  Phone,
   RefreshCw,
   Sparkles,
   Upload,
@@ -551,15 +554,24 @@ export default function ResumeUploadModal({
               {/* Contact Snapshot */}
               <div className="flex flex-wrap items-center gap-3 text-xs text-text-secondary">
                 {parsedPayload.data.personal.email && (
-                  <span>✉ {parsedPayload.data.personal.email}</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Mail size={12} className="text-text-muted" />
+                    <span>{parsedPayload.data.personal.email}</span>
+                  </span>
                 )}
                 {parsedPayload.data.personal.phone && (
-                  <span>📞 {parsedPayload.data.personal.phone}</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Phone size={12} className="text-text-muted" />
+                    <span>{parsedPayload.data.personal.phone}</span>
+                  </span>
                 )}
                 {parsedPayload.data.personal.links.length > 0 && (
-                  <span>
-                    🔗 {parsedPayload.data.personal.links.length} web{" "}
-                    {parsedPayload.data.personal.links.length === 1 ? "link" : "links"}
+                  <span className="inline-flex items-center gap-1.5">
+                    <Link2 size={12} className="text-text-muted" />
+                    <span>
+                      {parsedPayload.data.personal.links.length} web{" "}
+                      {parsedPayload.data.personal.links.length === 1 ? "link" : "links"}
+                    </span>
                   </span>
                 )}
               </div>

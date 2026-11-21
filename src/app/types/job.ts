@@ -26,6 +26,11 @@ export type Job = {
   experience: string;
   postedDate: string;
   salary: string;
+  salaryMin?: number;
+  salaryMax?: number;
+  salaryCurrency?: string;
+  salaryPeriod?: "YEAR" | "MONTH" | "HOUR";
+  salaryIsDisclosed?: boolean;
   mail: string;
   companyLink: string;
   apply: string;

@@ -25,8 +25,6 @@ export default function MainLayout({
 
   const isAdminRoute = pathname.startsWith("/admin");
 
-  const isJobsCatalog = pathname === "/jobs";
-
   const hideBottomNav = isAuthPage || isStudioWorkspace || isAdminRoute;
 
   return (
@@ -44,20 +42,6 @@ export default function MainLayout({
           <main className="min-h-0 min-w-0 flex-1 overflow-hidden">
             {children}
           </main>
-        </div>
-      ) : isJobsCatalog ? (
-        <div
-          className="flex min-h-screen flex-col bg-surface-base lg:h-dvh lg:overflow-hidden"
-          style={{
-            "--nav-h": "var(--spacing-nav-height)",
-            "--bottom-nav-h": "var(--spacing-bottom-nav-height)",
-          } as CSSProperties}
-        >
-          <Navbar />
-          <main className="min-w-0 flex-1 pb-[calc(var(--spacing-bottom-nav-height)+env(safe-area-inset-bottom,0px))] md:pb-0 lg:min-h-0 lg:overflow-hidden">
-            {children}
-          </main>
-          {!hideBottomNav && <BottomNavbar />}
         </div>
       ) : (
         <div

@@ -2,6 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 import { JOB_CATEGORIES, matchJobCategory } from "@/data/categories";
 import { checkRateLimit, getClientIp } from "@/lib/security/rate-limit";
+import { parseSalaryFromJob } from "@/app/admin/comp/job-wizard/wizard-utils";
 
 const MAX_PAYLOAD_BYTES = 70_000;
 const RATE_LIMIT_CONFIG = {
@@ -267,6 +268,7 @@ function buildFallbackParsed(jobText: string) {
 
   // Detect category
   const detectedCategory = matchJobCategory(jobText) || "UI/UX & Product Design";
+  const parsedSal = parseSalaryFromJob({ salary });
 
   return {
     title,
@@ -279,7 +281,12 @@ function buildFallbackParsed(jobText: string) {
     experience: expMin ? (expMax ? `${expMin}-${expMax} years` : `${expMin} years`) : "",
     experienceMin: expMin,
     experienceMax: expMax,
-    salary,
+    salary: parsedSal.formatted || salary || "Not Disclosed",
+    salaryMin: parsedSal.min,
+    salaryMax: parsedSal.max,
+    salaryPeriod: parsedSal.period,
+    salaryCurrency: parsedSal.currency,
+    salaryIsDisclosed: parsedSal.isDisclosed,
     description: jobText.trim(),
     skills: [],
     requirements: [],
@@ -504,7 +511,12 @@ Extract:
 - employmentType: "FULL_TIME" or "PART_TIME" or "CONTRACTOR" or "INTERN"
 - experienceMin: numeric string of min years required (e.g. "0" for fresher, "3")
 - experienceMax: numeric string of max years (e.g. "5")
-- salary: formatted salary range (e.g. "₹12–18 LPA" or "Not Disclosed")
+- salary: clean formatted salary range (e.g. "₹12–18 LPA", "₹25,000–40,000/month", or "Not Disclosed")
+- salaryMin: numeric string of minimum salary without symbols (e.g. "12" if in LPA, or "25000" if monthly). Empty string if not mentioned.
+- salaryMax: numeric string of maximum salary without symbols (e.g. "18" if in LPA, or "40000" if monthly). Empty string if not mentioned.
+- salaryPeriod: "YEAR" (for LPA / per annum), "MONTH" (for monthly / stipend), or "HOUR"
+- salaryCurrency: "INR", "USD", "EUR", or "GBP"
+- salaryIsDisclosed: boolean true or false (false if salary is not disclosed or competitive)
 - description: well-structured plain-text job description using clean section headings separated by blank lines ("About the Role:", "Key Responsibilities:", "Requirements:", and "Nice to Have:" or "Perks & Benefits:" whenever present in the source text) and "• " bullet points for every list item. Preserve ALL responsibilities, tools, requirements (including years of experience if stated), and "Good to Have" / "Nice to Have" points from the source without omitting sections, while removing emojis and redundant application email/header lines that belong in the structured fields above.
 - skills: array of key technical/design skills extracted from the text
 - email: application email address
@@ -523,6 +535,11 @@ Return ONLY valid JSON matching this exact structure:
   "experienceMin": "",
   "experienceMax": "",
   "salary": "",
+  "salaryMin": "",
+  "salaryMax": "",
+  "salaryPeriod": "YEAR",
+  "salaryCurrency": "INR",
+  "salaryIsDisclosed": false,
   "description": "",
   "skills": [],
   "email": ""

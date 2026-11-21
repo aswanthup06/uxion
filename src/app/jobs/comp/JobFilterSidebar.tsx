@@ -88,7 +88,7 @@ export function JobFilterSidebar({
     <aside
       className={`${
         filtersOpen ? "flex" : "hidden"
-      } flex-col gap-7 border-b border-border-default bg-surface-card p-5 lg:flex lg:h-full lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:border-b-0 lg:border-r lg:p-6 lg:pb-8 [&>*]:shrink-0`}
+      } flex-col gap-7 border-b border-border-default bg-surface-card p-5 lg:flex lg:sticky lg:top-[var(--spacing-nav-height)] lg:self-start lg:h-[calc(100vh-var(--spacing-nav-height))] lg:w-[272px] lg:shrink-0 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain [transform:translateZ(0)] will-change-transform lg:border-b-0 lg:border-r lg:p-6 lg:pb-8 [&>*]:shrink-0`}
     >
       <div className="flex items-center justify-between lg:hidden">
         <span className="text-sm font-semibold text-text-primary">Filters</span>
@@ -231,11 +231,12 @@ export function JobFilterSidebar({
               className={`${selectCls} font-normal normal-case tracking-normal`}
             >
               <option value="0">Any salary</option>
-              <option value="15000">₹15,000+</option>
-              <option value="25000">₹25,000+</option>
-              <option value="40000">₹40,000+</option>
-              <option value="60000">₹60,000+</option>
-              <option value="100000">₹1,00,000+</option>
+              <option value="15000">₹15,000+ / mo (≈ 2 LPA)</option>
+              <option value="25000">₹25,000+ / mo (≈ 3 LPA)</option>
+              <option value="50000">₹50,000+ / mo (≈ 6 LPA)</option>
+              <option value="83333">₹83,000+ / mo (≈ 10 LPA)</option>
+              <option value="125000">₹1.25L+ / mo (≈ 15 LPA)</option>
+              <option value="166666">₹1.66L+ / mo (≈ 20 LPA)</option>
             </select>
             <ChevronDown className="pointer-events-none absolute right-3 top-1/2 mt-1 h-4 w-4 -translate-y-1/2 text-text-muted" />
           </div>

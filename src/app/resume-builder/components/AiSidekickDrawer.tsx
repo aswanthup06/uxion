@@ -75,7 +75,7 @@ export default function AiSidekickDrawer({
     {
       id: "initial-greeting",
       sender: "ai",
-      text: "👋 Hi! I'm your AI Resume Co-Pilot. I can sharpen bullet points, tailor your experience to target jobs, and suggest measurable metrics—without making up fake facts.",
+      text: "Hi! I'm your AI Resume Co-Pilot. I can sharpen bullet points, tailor your experience to target jobs, and suggest measurable metrics—without making up fake facts.",
       timestamp: Date.now(),
     },
   ]);
@@ -166,7 +166,7 @@ export default function AiSidekickDrawer({
           {
             id: `ai-err-${Date.now()}`,
             sender: "ai",
-            text: `⚠️ ${errorText}`,
+            text: errorText,
             timestamp: Date.now(),
           },
         ]);
@@ -476,10 +476,10 @@ export default function AiSidekickDrawer({
             </p>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
               {[
-                "✨ Make summary punchier",
-                "💼 Polish latest job bullets",
-                "📊 Suggest metrics to highlight",
-                "🎯 Tailor to target role",
+                "Make summary punchier",
+                "Polish latest job bullets",
+                "Suggest metrics to highlight",
+                "Tailor to target role",
               ].map((chip) => (
                 <button
                   key={chip}
@@ -582,7 +582,7 @@ export default function AiSidekickDrawer({
                 {msg.metricPrompts && msg.metricPrompts.length > 0 && (
                   <div className="mt-2 w-full rounded-control border border-border-subtle bg-brand-soft/30 p-2.5 text-xs space-y-1">
                     <p className="font-semibold text-brand text-2xs">
-                      💡 Optional metrics you could include:
+                      Optional metrics you could include:
                     </p>
                     <ul className="space-y-1 text-2xs text-text-secondary">
                       {msg.metricPrompts.map((q, i) => (

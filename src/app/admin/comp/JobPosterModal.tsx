@@ -401,14 +401,6 @@ export default function JobPosterModal({
                     className="h-4 w-4 rounded-full object-cover ring-1 ring-border-subtle"
                   />
                   <span>{p.name}</span>
-                  <span
-                    className={`rounded px-1 py-0.5 text-[9px] font-medium uppercase ${portraitId === p.id
-                      ? "bg-white/20 text-text-inverse"
-                      : "bg-surface-muted text-text-muted"
-                      }`}
-                  >
-                    {p.gender === "male" ? "Man" : "Woman"}
-                  </span>
                 </button>
               ))}
             </div>

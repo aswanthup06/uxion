@@ -23,6 +23,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import type { MatchedCommunityGroup } from "@/lib/community/match-group";
 import FormattedDescription from "@/app/components/jobs/FormattedDescription";
 import { isDisclosedSalary, formatLocationPreference } from "@/app/components/jobs/jobs-utils";
+import { parseSalaryFromJob, calculateNumericSalary } from "@/app/admin/comp/job-wizard/wizard-utils";
 import type { Job } from "@/app/types/job";
 import {
   normalizeWorkMode,
@@ -389,6 +390,62 @@ export default function JobDetailsClient({
 
     const employmentType = job.employmentType?.trim().toUpperCase();
 
+    const buildBaseSalarySchema = (): Record<string, unknown> => {
+      const isDisclosed = job.salaryIsDisclosed !== false && isDisclosedSalary(job.salary);
+      if (!isDisclosed) return {};
+
+      let min = job.salaryMin;
+      let max = job.salaryMax;
+      const currency = job.salaryCurrency || "INR";
+      const unitText =
+        job.salaryPeriod === "MONTH" ? "MONTH" : job.salaryPeriod === "HOUR" ? "HOUR" : "YEAR";
+
+      if (min === undefined && max === undefined && job.salary) {
+        const parsed = parseSalaryFromJob(job);
+        if (parsed.isDisclosed) {
+          const num = calculateNumericSalary({
+            isDisclosed: true,
+            min: parsed.min,
+            max: parsed.max,
+            period: parsed.period,
+            currency: parsed.currency,
+            type: parsed.type,
+          });
+          min = num.salaryMin;
+          max = num.salaryMax;
+        }
+      }
+
+      if (min === undefined && max === undefined) return {};
+
+      if (min !== undefined && max !== undefined && min === max) {
+        return {
+          baseSalary: {
+            "@type": "MonetaryAmount",
+            currency,
+            value: {
+              "@type": "QuantitativeValue",
+              value: min,
+              unitText,
+            },
+          },
+        };
+      }
+
+      return {
+        baseSalary: {
+          "@type": "MonetaryAmount",
+          currency,
+          value: {
+            "@type": "QuantitativeValue",
+            ...(min !== undefined ? { minValue: min } : {}),
+            ...(max !== undefined ? { maxValue: max } : {}),
+            unitText,
+          },
+        },
+      };
+    };
+
     const baseSchema: Record<string, unknown> = {
       "@context": "https://schema.org",
       "@type": "JobPosting",
@@ -401,6 +458,7 @@ export default function JobDetailsClient({
       ...(employmentType && allowedEmploymentTypes.has(employmentType)
         ? { employmentType }
         : {}),
+      ...buildBaseSalarySchema(),
       hiringOrganization: {
         "@type": "Organization",
         name: job.company,

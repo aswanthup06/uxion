@@ -80,16 +80,16 @@ export default function BottomNavbar() {
           </span>
         </Link>
 
-        {/* 3. Center Elevated Action Button (Post Job) */}
+        {/* 3. Center Action Button (Post Job) */}
         <div className="flex flex-1 items-center justify-center">
           <Link
             href="/post-job"
             aria-label="Post a Job"
             aria-current={isPostJob ? "page" : undefined}
-            className="group -mt-5 flex h-12 w-12 items-center justify-center rounded-full bg-brand text-text-inverse shadow-card transition-all duration-200 active:scale-95 hover:bg-brand-hover"
+            className="group flex h-10 w-10 items-center justify-center rounded-full bg-brand text-text-inverse shadow-subtle transition-all duration-200 active:scale-95 hover:bg-brand-hover"
           >
             <HiPlus
-              size={24}
+              size={20}
               className="transition-transform duration-200 group-hover:rotate-90"
             />
           </Link>

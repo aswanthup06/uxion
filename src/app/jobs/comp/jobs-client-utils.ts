@@ -151,14 +151,35 @@ export function getJobType(job: Job): JobType {
   return "Full-time";
 }
 
-export function parseMonthlySalary(salaryStr?: string | null): number {
+export function parseMonthlySalary(input?: Job | string | null): number {
+  if (!input) return 0;
+
+  if (typeof input === "object") {
+    const job = input;
+    if (job.salaryIsDisclosed === false) return 0;
+
+    if (job.salaryMax !== undefined || job.salaryMin !== undefined) {
+      const amount = job.salaryMax ?? job.salaryMin ?? 0;
+      if (job.salaryPeriod === "MONTH") return Math.round(amount);
+      if (job.salaryPeriod === "HOUR") return Math.round(amount * 160);
+      return Math.round(amount / 12);
+    }
+
+    return parseMonthlySalary(job.salary);
+  }
+
+  const salaryStr = input;
   if (!salaryStr || /not disclosed/i.test(salaryStr)) return 0;
   const lpaMatch = salaryStr.match(/(\d+(?:\.\d+)?)\s*(?:[-–]\s*(\d+(?:\.\d+)?))?\s*lpa/i);
   if (lpaMatch) {
-    const minLpa = parseFloat(lpaMatch[1]);
-    return Math.round((minLpa * 100000) / 12);
+    const maxLpa = lpaMatch[2] ? parseFloat(lpaMatch[2]) : parseFloat(lpaMatch[1]);
+    return Math.round((maxLpa * 100000) / 12);
   }
   const clean = salaryStr.replace(/,/g, "");
+  const kMatch = clean.match(/(\d+(?:\.\d+)?)\s*k/i);
+  if (kMatch) {
+    return Math.round(parseFloat(kMatch[1]) * 1000);
+  }
   const numMatch = clean.match(/(\d{4,})/);
   if (numMatch) {
     const val = parseInt(numMatch[1], 10);

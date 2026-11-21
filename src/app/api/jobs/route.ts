@@ -44,7 +44,7 @@ const MAX_DESCRIPTION_LEN = 35000;
 // Maximum job postings allowed per user per 24-hour rolling window
 export const MAX_DAILY_JOBS_PER_USER = 20;
 
-// ✅ GET → Fetch jobs (public gets published jobs; admin can pass ?status=pending or ?status=all)
+// GET → Fetch jobs (public gets published jobs; admin can pass ?status=pending or ?status=all)
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
@@ -166,7 +166,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// ✅ POST → Add new job
+// POST → Add new job
 // - Public submissions from /post-job are accepted into "draft" status with requires_review = true
 // - Authenticated admin submissions default to "published" status
 export async function POST(req: NextRequest) {
@@ -361,6 +361,11 @@ export async function POST(req: NextRequest) {
       location: canonicalLocation,
       description: body.description.trim(),
       salary: body.salary?.trim() || "Not Disclosed",
+      salaryMin: typeof body.salaryMin === "number" ? body.salaryMin : undefined,
+      salaryMax: typeof body.salaryMax === "number" ? body.salaryMax : undefined,
+      salaryCurrency: body.salaryCurrency?.trim() || "INR",
+      salaryPeriod: body.salaryPeriod || "YEAR",
+      salaryIsDisclosed: typeof body.salaryIsDisclosed === "boolean" ? body.salaryIsDisclosed : undefined,
       mail: body.mail?.trim() || "",
       companyLink: body.companyLink?.trim() || "",
       apply: "",
@@ -424,7 +429,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// ✅ PUT → Update existing job (admin only)
+// PUT → Update existing job (admin only)
 export async function PUT(req: NextRequest) {
   try {
     if (!(await isAuthorizedAdminRequest(req))) {
@@ -460,6 +465,11 @@ export async function PUT(req: NextRequest) {
       location: body.location?.trim(),
       description: body.description?.trim(),
       salary: body.salary?.trim(),
+      salaryMin: typeof body.salaryMin === "number" ? body.salaryMin : undefined,
+      salaryMax: typeof body.salaryMax === "number" ? body.salaryMax : undefined,
+      salaryCurrency: body.salaryCurrency?.trim(),
+      salaryPeriod: body.salaryPeriod,
+      salaryIsDisclosed: typeof body.salaryIsDisclosed === "boolean" ? body.salaryIsDisclosed : undefined,
       mail: body.mail?.trim(),
       companyLink: body.companyLink?.trim(),
       apply: "",
@@ -499,7 +509,7 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-// ✅ PATCH → Quick 1-click admin actions (approve, reject, status toggle)
+// PATCH → Quick 1-click admin actions (approve, reject, status toggle)
 export async function PATCH(req: NextRequest) {
   try {
     if (!(await isAuthorizedAdminRequest(req))) {
@@ -555,7 +565,7 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
-// ✅ DELETE → Remove a job (admin only)
+// DELETE → Remove a job (admin only)
 export async function DELETE(req: NextRequest) {
   try {
     if (!(await isAuthorizedAdminRequest(req))) {

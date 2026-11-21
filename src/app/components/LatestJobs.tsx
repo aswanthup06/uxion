@@ -21,7 +21,7 @@ export default function LatestJobs() {
         const data = await res.json();
 
         if (Array.isArray(data)) {
-          const latestJobs = (data as Job[]).slice(0, 6); // ✅ take 4 latest
+          const latestJobs = (data as Job[]).slice(0, 6); // take 4 latest
           setJobs(latestJobs);
         } else {
           console.error("Invalid data format from API");
@@ -36,7 +36,7 @@ export default function LatestJobs() {
     fetchJobs();
   }, []);
 
-  // ✅ Conditionally choose grid columns based on route
+  // Conditionally choose grid columns based on route
   const gridClass =
     pathname === "/"
       ? "grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-0"

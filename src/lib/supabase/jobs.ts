@@ -6,11 +6,37 @@ import { getServerSupabase, getServiceSupabase, isSupabaseConfigured } from "./s
 import type { DbJob, DbJobInsert, DbJobUpdate } from "./types";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
+import { formatSalaryBadge } from "@/app/admin/comp/job-wizard/wizard-utils";
+import { isDisclosedSalary } from "@/app/components/jobs/jobs-utils";
 
 /**
  * Maps a database row (snake_case) to the application Job type (camelCase).
  */
 export function mapDbJobToJob(row: DbJob): Job {
+  const isDisclosed = row.salary_is_disclosed !== undefined && row.salary_is_disclosed !== null
+    ? Boolean(row.salary_is_disclosed)
+    : isDisclosedSalary(row.salary);
+
+  const minNum = typeof row.salary_min === "number" ? row.salary_min : (row.salary_min ? Number(row.salary_min) : undefined);
+  const maxNum = typeof row.salary_max === "number" ? row.salary_max : (row.salary_max ? Number(row.salary_max) : undefined);
+  const curr = row.salary_currency || "INR";
+  const period = (row.salary_period as Job["salaryPeriod"]) || "YEAR";
+
+  let displaySalary = row.salary || "Not Disclosed";
+  if (!isDisclosed) {
+    displaySalary = "Not Disclosed";
+  } else if (minNum !== undefined || maxNum !== undefined) {
+    const isLpa = period === "YEAR" && curr.toUpperCase() === "INR";
+    displaySalary = formatSalaryBadge({
+      isDisclosed: true,
+      min: minNum !== undefined ? (isLpa ? String(minNum / 100000) : String(minNum)) : "",
+      max: maxNum !== undefined ? (isLpa ? String(maxNum / 100000) : String(maxNum)) : "",
+      period,
+      currency: curr,
+      type: minNum !== undefined && maxNum !== undefined && minNum !== maxNum ? "RANGE" : minNum === undefined ? "UP_TO" : "FIXED",
+    });
+  }
+
   return {
     id: row.id,
     title: row.title,
@@ -18,7 +44,12 @@ export function mapDbJobToJob(row: DbJob): Job {
     location: row.location,
     experience: row.experience || "Fresher",
     postedDate: row.posted_date || new Date().toISOString(),
-    salary: row.salary || "Not Disclosed",
+    salary: displaySalary,
+    salaryMin: minNum,
+    salaryMax: maxNum,
+    salaryCurrency: curr,
+    salaryPeriod: period,
+    salaryIsDisclosed: isDisclosed,
     mail: row.mail || "",
     companyLink: row.company_link || "",
     apply: row.apply || "",
@@ -101,6 +132,11 @@ export function mapJobToDbInsert(job: Partial<Job>): DbJobInsert {
   if (job.experience) insert.experience = job.experience;
   if (job.postedDate) insert.posted_date = normalizeToIso(job.postedDate);
   if (job.salary) insert.salary = job.salary;
+  if (job.salaryMin !== undefined) insert.salary_min = job.salaryMin;
+  if (job.salaryMax !== undefined) insert.salary_max = job.salaryMax;
+  if (job.salaryCurrency !== undefined) insert.salary_currency = job.salaryCurrency;
+  if (job.salaryPeriod !== undefined) insert.salary_period = job.salaryPeriod;
+  if (job.salaryIsDisclosed !== undefined) insert.salary_is_disclosed = job.salaryIsDisclosed;
   if (job.mail !== undefined) insert.mail = job.mail;
   if (job.companyLink !== undefined) insert.company_link = job.companyLink;
   if (job.apply !== undefined) insert.apply = job.apply;
@@ -475,6 +511,11 @@ export async function updateJob(id: string, jobData: Partial<Job>): Promise<Job>
   if (jobData.experience !== undefined) dbPayload.experience = jobData.experience;
   if (jobData.postedDate !== undefined) dbPayload.posted_date = normalizeToIso(jobData.postedDate);
   if (jobData.salary !== undefined) dbPayload.salary = jobData.salary;
+  if (jobData.salaryMin !== undefined) dbPayload.salary_min = jobData.salaryMin;
+  if (jobData.salaryMax !== undefined) dbPayload.salary_max = jobData.salaryMax;
+  if (jobData.salaryCurrency !== undefined) dbPayload.salary_currency = jobData.salaryCurrency;
+  if (jobData.salaryPeriod !== undefined) dbPayload.salary_period = jobData.salaryPeriod;
+  if (jobData.salaryIsDisclosed !== undefined) dbPayload.salary_is_disclosed = jobData.salaryIsDisclosed;
   if (jobData.mail !== undefined) dbPayload.mail = jobData.mail;
   if (jobData.companyLink !== undefined) dbPayload.company_link = jobData.companyLink;
   dbPayload.apply = "";
@@ -529,6 +570,11 @@ export async function updateJob(id: string, jobData: Partial<Job>): Promise<Job>
     if (dbPayload.experience !== undefined) coreUpdate.experience = dbPayload.experience;
     if (dbPayload.posted_date !== undefined) coreUpdate.posted_date = dbPayload.posted_date;
     if (dbPayload.salary !== undefined) coreUpdate.salary = dbPayload.salary;
+    if (dbPayload.salary_min !== undefined) coreUpdate.salary_min = dbPayload.salary_min;
+    if (dbPayload.salary_max !== undefined) coreUpdate.salary_max = dbPayload.salary_max;
+    if (dbPayload.salary_currency !== undefined) coreUpdate.salary_currency = dbPayload.salary_currency;
+    if (dbPayload.salary_period !== undefined) coreUpdate.salary_period = dbPayload.salary_period;
+    if (dbPayload.salary_is_disclosed !== undefined) coreUpdate.salary_is_disclosed = dbPayload.salary_is_disclosed;
     if (dbPayload.mail !== undefined) coreUpdate.mail = dbPayload.mail;
     if (dbPayload.company_link !== undefined) coreUpdate.company_link = dbPayload.company_link;
     if (dbPayload.description !== undefined) coreUpdate.description = dbPayload.description;

@@ -53,6 +53,9 @@ import {
   getOfficeStates,
   formatExperienceLabel,
   parseExperienceFromJob,
+  formatSalaryBadge,
+  calculateNumericSalary,
+  parseSalaryFromJob,
   dateForInput,
   computeSubmitPostedDate,
   WIZARD_STEPS,
@@ -71,6 +74,7 @@ import {
   type CandidateScopeSelectorHandle,
 } from "./job-wizard/CandidateScopeSelector";
 import { HeroVisual } from "./job-wizard/HeroVisual";
+import SalarySection from "./job-wizard/SalarySection";
 import {
   WizardLoadingScreen,
   WizardErrorScreen,
@@ -124,6 +128,12 @@ export default function JobFormWizard({
     experienceMax: "",
     postedDate: getToday(),
     salary: "",
+    salaryMin: "",
+    salaryMax: "",
+    salaryCurrency: "INR",
+    salaryPeriod: "YEAR",
+    salaryType: "RANGE",
+    salaryIsDisclosed: false,
     mail: "",
     companyLink: "",
     description: "",
@@ -139,6 +149,7 @@ export default function JobFormWizard({
   const [isValidatingEmail, setIsValidatingEmail] = useState(false);
   const [emailVerifiedDomain, setEmailVerifiedDomain] = useState<string | null>(null);
   const [isCheckingNext, setIsCheckingNext] = useState(false);
+  const wizardContainerRef = useRef<HTMLDivElement | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
   const formRefState = useRef<JobFormState>(form);
   useEffect(() => {
@@ -208,13 +219,40 @@ export default function JobFormWizard({
 
   const scrollToForm = useCallback(() => {
     if (typeof window === "undefined") return;
-    if (formRef.current) {
-      const topOffset = formRef.current.getBoundingClientRect().top + window.scrollY - 30;
-      window.scrollTo({ top: Math.max(0, topOffset), behavior: "smooth" });
+
+    const performScroll = () => {
+      const prefersReducedMotion =
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const behavior: ScrollBehavior = prefersReducedMotion ? "auto" : "smooth";
+
+      if (wizardContainerRef.current) {
+        const topOffset =
+          wizardContainerRef.current.getBoundingClientRect().top +
+          window.scrollY -
+          78;
+        window.scrollTo({ top: Math.max(0, topOffset), behavior });
+      } else {
+        window.scrollTo({ top: 0, behavior });
+      }
+    };
+
+    if (typeof requestAnimationFrame !== "undefined") {
+      requestAnimationFrame(() => {
+        setTimeout(performScroll, 10);
+      });
     } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(performScroll, 10);
     }
   }, []);
+
+  const prevStepRef = useRef<number>(currentStep);
+  useEffect(() => {
+    if (prevStepRef.current !== currentStep) {
+      prevStepRef.current = currentStep;
+      scrollToForm();
+    }
+  }, [currentStep, scrollToForm]);
 
   // AI Tools State
   const [showAiModal, setShowAiModal] = useState(false);
@@ -382,12 +420,26 @@ export default function JobFormWizard({
           ? parsed.workMode
           : normalizeWorkMode("", parsed.location || extractedCity);
 
+      const parsedSal = parseSalaryFromJob({
+        salary: parsed.salary,
+        salaryMin: parsed.salaryMin,
+        salaryMax: parsed.salaryMax,
+        salaryCurrency: parsed.salaryCurrency,
+        salaryPeriod: parsed.salaryPeriod,
+      });
+
       setForm((prev) => ({
         ...prev,
         title: parsed.title || prev.title,
         company: parsed.company || prev.company,
         category: cat || prev.category,
-        salary: parsed.salary || prev.salary,
+        salary: parsedSal.formatted || prev.salary,
+        salaryMin: parsedSal.min || prev.salaryMin,
+        salaryMax: parsedSal.max || prev.salaryMax,
+        salaryCurrency: parsedSal.currency || prev.salaryCurrency,
+        salaryPeriod: parsedSal.period || prev.salaryPeriod,
+        salaryType: parsedSal.type || prev.salaryType,
+        salaryIsDisclosed: parsedSal.isDisclosed ?? prev.salaryIsDisclosed,
         mail: parsed.email || parsed.mail || prev.mail,
         workMode: wm,
         experienceMin: expMin || prev.experienceMin,
@@ -623,6 +675,7 @@ export default function JobFormWizard({
     }
 
     const exp = parseExperienceFromJob(job);
+    const parsedSal = parseSalaryFromJob(job);
 
     const empType = (job.employmentType || "FULL_TIME").toUpperCase();
     const validEmpType: JobFormState["employmentType"] =
@@ -652,7 +705,13 @@ export default function JobFormWizard({
       experienceMin: exp.min,
       experienceMax: exp.max,
       postedDate: dateForInput(job.postedDate) || getToday(),
-      salary: job.salary || "",
+      salary: parsedSal.formatted,
+      salaryMin: parsedSal.min,
+      salaryMax: parsedSal.max,
+      salaryCurrency: parsedSal.currency,
+      salaryPeriod: parsedSal.period,
+      salaryType: parsedSal.type,
+      salaryIsDisclosed: parsedSal.isDisclosed,
       mail: job.mail || "",
       companyLink: job.companyLink || "",
       description: job.description || "",
@@ -748,6 +807,16 @@ export default function JobFormWizard({
           errors.experienceMax = "Please enter a valid maximum experience.";
         } else if (max < min) {
           errors.experienceMax = "Maximum experience cannot be less than minimum experience.";
+        }
+      }
+
+      if (currentForm.salaryIsDisclosed && currentForm.salaryType === "RANGE") {
+        if (currentForm.salaryMin && currentForm.salaryMax) {
+          const sMin = parseFloat(currentForm.salaryMin.replace(/,/g, ""));
+          const sMax = parseFloat(currentForm.salaryMax.replace(/,/g, ""));
+          if (!isNaN(sMin) && !isNaN(sMax) && sMax < sMin) {
+            errors.salary = "Maximum salary cannot be less than minimum salary.";
+          }
         }
       }
 
@@ -870,6 +939,15 @@ export default function JobFormWizard({
 
     if (!validateStep(currentStep, formRefState.current)) {
       isNavigatingRef.current = false;
+      setTimeout(() => {
+        const firstErrorEl = formRef.current?.querySelector<HTMLElement>(
+          'input[aria-invalid="true"], input.border-status-error, select.border-status-error, [data-error="true"]'
+        );
+        if (firstErrorEl) {
+          firstErrorEl.scrollIntoView({ behavior: "smooth", block: "center" });
+          firstErrorEl.focus();
+        }
+      }, 50);
       return;
     }
 
@@ -1496,6 +1574,15 @@ export default function JobFormWizard({
         computedLocation = isRemote ? "Remote · Pan-India" : officeSummary;
       }
 
+      const numericSal = calculateNumericSalary({
+        isDisclosed: form.salaryIsDisclosed,
+        min: form.salaryMin,
+        max: form.salaryMax,
+        period: form.salaryPeriod,
+        currency: form.salaryCurrency,
+        type: form.salaryType,
+      });
+
       const payload: Partial<Job> = {
         title: form.title.trim(),
         company: form.company.trim(),
@@ -1516,6 +1603,11 @@ export default function JobFormWizard({
         experience,
         postedDate: computeSubmitPostedDate(form.postedDate, getToday(), mode, initialJob?.postedDate),
         salary: form.salary.trim() || "Not Disclosed",
+        salaryMin: form.salaryIsDisclosed ? numericSal.salaryMin : undefined,
+        salaryMax: form.salaryIsDisclosed ? numericSal.salaryMax : undefined,
+        salaryCurrency: form.salaryCurrency || "INR",
+        salaryPeriod: form.salaryPeriod || "YEAR",
+        salaryIsDisclosed: Boolean(form.salaryIsDisclosed),
         mail: form.mail.trim(),
         companyLink: form.companyLink.trim(),
         description: cleanDescriptionText(form.description),
@@ -1685,6 +1777,12 @@ export default function JobFormWizard({
       experienceMax: "",
       postedDate: getToday(),
       salary: "",
+      salaryMin: "",
+      salaryMax: "",
+      salaryCurrency: "INR",
+      salaryPeriod: "YEAR",
+      salaryType: "RANGE",
+      salaryIsDisclosed: false,
       mail: "",
       companyLink: "",
       description: "",
@@ -1718,7 +1816,7 @@ export default function JobFormWizard({
 
   return (
     <div className="min-h-full bg-surface-base text-text-primary">
-      <div className="mx-auto max-w-7xl px-6 pb-16 pt-4 sm:px-10 sm:pt-6 lg:px-12">
+      <div ref={wizardContainerRef} className="mx-auto max-w-7xl px-6 pb-16 pt-4 sm:px-10 sm:pt-6 lg:px-12">
         {/* Public Hero vs Admin Header */}
         {mode === "public" ? (
           currentStep === 1 && !hasStartedWizard ? (
@@ -1934,12 +2032,12 @@ export default function JobFormWizard({
                 {/* Extraction tags preview */}
                 <div className="flex flex-wrap items-center gap-1.5 text-3xs text-text-muted">
                   <span className="font-semibold text-text-secondary">Auto-extracts:</span>
-                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">🏷️ Role & Category</span>
-                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">🏢 Company & City</span>
-                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">💼 Work Mode & Type</span>
-                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">💰 Experience & Salary</span>
-                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">✉️ Contact Email</span>
-                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">📝 Description</span>
+                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">Role & Category</span>
+                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">Company & City</span>
+                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">Work Mode & Type</span>
+                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">Experience & Salary</span>
+                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">Contact Email</span>
+                  <span className="rounded-control bg-surface-card px-2 py-0.5 border border-border-default/60 text-text-secondary">Description</span>
                 </div>
 
                 {/* Textarea */}
@@ -2715,17 +2813,11 @@ export default function JobFormWizard({
                     </div>
                   </div>
 
-                  {/* Salary & Application Email */}
-                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                    <Field
-                      label="Compensation / Salary"
-                      name="salary"
-                      value={form.salary}
-                      onChange={handleChange}
-                      placeholder="e.g. ₹12–18 LPA or Not Disclosed"
-                      icon={Banknote}
-                    />
+                  {/* Compensation & Salary Section */}
+                  <SalarySection form={form} setForm={setForm} error={fieldErrors.salary} />
 
+                  {/* Application Email & Posting Date */}
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                     <div>
                       <Field
                         label="Application Email"
@@ -2754,20 +2846,19 @@ export default function JobFormWizard({
                         )}
                       </div>
                     </div>
-                  </div>
 
-                  {/* Posting Date */}
-                  <div className="max-w-xs">
-                    <Field
-                      label="Posting Date"
-                      name="postedDate"
-                      value={form.postedDate}
-                      onChange={handleChange}
-                      placeholder="YYYY-MM-DD"
-                      type="date"
-                      icon={CalendarDays}
-                      required
-                    />
+                    <div>
+                      <Field
+                        label="Posting Date"
+                        name="postedDate"
+                        value={form.postedDate}
+                        onChange={handleChange}
+                        placeholder="YYYY-MM-DD"
+                        type="date"
+                        icon={CalendarDays}
+                        required
+                      />
+                    </div>
                   </div>
 
                   {/* Navigation */}

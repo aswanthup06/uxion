@@ -6,7 +6,6 @@ import { toBlob, getFontEmbedCSS } from "html-to-image";
 import toast from "react-hot-toast";
 import {
   AlertCircle,
-  ArrowLeft,
   ArrowRight,
   ArrowUpRight,
   BriefcaseBusiness,
@@ -41,7 +40,6 @@ import {
   type QrDotStyle,
 } from "@/lib/job-posters/qr-generator";
 import { PosterCanvas } from "./PosterCanvas";
-import { TemplateThumbnail } from "./TemplateThumbnail";
 import { JobSelector } from "./JobSelector";
 
 interface JobPosterCreatorProps {
@@ -493,23 +491,6 @@ export function JobPosterCreator({
               <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" />
               <span>Poster Studio</span>
             </div>
-            {selectedJob ? (
-              <Link
-                href={`/jobs/${selectedJob.id}`}
-                className="inline-flex h-7 items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 text-2xs font-semibold text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary"
-              >
-                <ArrowLeft size={12} strokeWidth={2} />
-                <span>Back to job</span>
-              </Link>
-            ) : (
-              <Link
-                href="/jobs"
-                className="inline-flex h-7 items-center gap-1 rounded-control border border-border-default bg-surface-card px-2.5 text-2xs font-semibold text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary"
-              >
-                <ArrowLeft size={12} strokeWidth={2} />
-                <span>Browse jobs</span>
-              </Link>
-            )}
           </div>
 
           <h1 className="mt-2 text-xl font-bold tracking-tight text-text-primary">
@@ -651,15 +632,11 @@ export function JobPosterCreator({
                       role="radio"
                       aria-checked={isActive}
                       onClick={() => handleSelectTemplate(item.id)}
-                      className={`flex cursor-pointer items-center gap-3 rounded-control border p-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${isActive
+                      className={`flex cursor-pointer items-center justify-between rounded-control border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${isActive
                         ? "border-brand bg-brand-soft/70 shadow-subtle"
                         : "border-border-default/80 bg-surface-card hover:border-border-strong hover:bg-surface-subtle"
                         }`}
                     >
-                      <TemplateThumbnail
-                        template={item.id}
-                        active={isActive}
-                      />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-1">
                           <span
@@ -702,52 +679,36 @@ export function JobPosterCreator({
                   >
                     2b. Indian Model
                   </h2>
-                  <span className="text-2xs font-medium text-brand">
-                    {activePortrait.name} ({activePortrait.gender === "male" ? "Man" : "Woman"})
-                  </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2.5">
+                <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
                   {POSTER_PORTRAITS.map((p) => {
                     const isActive = p.id === portraitId;
                     return (
                       <button
                         key={p.id}
                         type="button"
+                        aria-label={p.name}
                         onClick={() => {
                           setPortraitId(p.id);
                           resetExportFeedback();
                         }}
-                        className={`group relative flex flex-col items-center rounded-control border p-2 text-center transition-all ${isActive
-                          ? "border-brand bg-brand-soft/70 shadow-subtle ring-1 ring-brand/30"
-                          : "border-border-default/80 bg-surface-card hover:border-border-strong hover:bg-surface-subtle"
+                        className={`group relative aspect-[3/4] w-full overflow-hidden rounded-control border p-0 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${isActive
+                          ? "border-brand shadow-subtle ring-2 ring-brand"
+                          : "border-border-default/80 bg-surface-card hover:border-border-strong hover:opacity-90"
                           }`}
                       >
-                        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-control bg-surface-subtle">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={p.src}
-                            alt={p.name}
-                            className="h-full w-full object-cover"
-                          />
-                          <div className="absolute left-1 bottom-1 rounded bg-black/65 px-1 py-0.5 text-[9px] font-semibold text-white backdrop-blur-[2px]">
-                            {p.gender === "male" ? "Man" : "Woman"}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={p.src}
+                          alt={p.name}
+                          className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                        />
+                        {isActive && (
+                          <div className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-brand text-text-inverse shadow-md">
+                            <Check size={11} strokeWidth={3} />
                           </div>
-                          {isActive && (
-                            <div className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand text-text-inverse shadow-sm">
-                              <Check size={10} strokeWidth={3} />
-                            </div>
-                          )}
-                        </div>
-                        <span
-                          className={`mt-1.5 block truncate text-2xs font-semibold ${isActive ? "text-brand" : "text-text-primary"
-                            }`}
-                        >
-                          {p.name}
-                        </span>
-                        <span className="block truncate text-3xs text-text-muted">
-                          {p.label}
-                        </span>
+                        )}
                       </button>
                     );
                   })}
@@ -1014,16 +975,6 @@ export function JobPosterCreator({
             <span className="hidden sm:inline-block text-2xs text-text-muted">
               {formatSpec.width * exportScale} × {formatSpec.height * exportScale} px
             </span>
-            {selectedJob && (
-              <Link
-                href={`/jobs/${selectedJob.id}`}
-                target="_blank"
-                className="hidden md:inline-flex items-center gap-1 text-2xs font-medium text-text-muted hover:text-brand transition-colors ml-1"
-              >
-                <span>View job</span>
-                <ArrowUpRight size={11} />
-              </Link>
-            )}
           </div>
 
           <div className="hidden lg:flex items-center gap-2">

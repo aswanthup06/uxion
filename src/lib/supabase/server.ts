@@ -50,7 +50,7 @@ export function getServiceSupabase(): SupabaseClient {
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
     if (anonKey) {
       console.warn(
-        "⚠️ SUPABASE_SERVICE_ROLE_KEY is missing. Falling back to anon key for server operations."
+        "SUPABASE_SERVICE_ROLE_KEY is missing. Falling back to anon key for server operations."
       );
       serviceClientInstance = createClient(url, anonKey, {
         auth: { persistSession: false },
