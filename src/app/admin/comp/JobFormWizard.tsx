@@ -443,7 +443,7 @@ export default function JobFormWizard({
         experienceMin: expMin || prev.experienceMin,
         experienceMax: expMax || prev.experienceMax,
         selectedOffices: resolvedOffices.length > 0 ? resolvedOffices : prev.selectedOffices,
-        description: parsed.description || rawAiText,
+        description: cleanDescriptionText(parsed.description || rawAiText),
         employmentType: empType,
       }));
 

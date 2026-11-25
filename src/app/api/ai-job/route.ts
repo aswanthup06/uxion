@@ -25,11 +25,11 @@ async function generateWithGemini(prompt: string, responseJson = false): Promise
   const ai = getAiClient();
   if (!ai) return null;
 
-  const models = ["gemini-3.5-flash-lite", "gemini-3.5-flash"];
+  const models = ["gemini-3.5-flash", "gemini-3.5-flash-lite"];
   for (const model of models) {
     try {
       const config: Record<string, unknown> = {
-        httpOptions: { timeout: 12000 },
+        httpOptions: { timeout: 18000 },
       };
       if (responseJson) {
         config.responseMimeType = "application/json";
@@ -110,11 +110,21 @@ function buildFallbackEnhanced(
   for (const line of rawLines) {
     if (!line) continue;
 
+    // Filter out hashtags
+    if (/^(#[a-zA-Z0-9_\u00c0-\u024f-]+\s*)+$/.test(line) || /^#\w+/i.test(line)) continue;
+
+    // Filter out recruitment announcement banners
+    if (/^(we('re| are) hiring|hiring alert|immediate opening|urgently hiring|job alert)\b/i.test(line)) continue;
+
+    // Filter out social share/tagging and closing calls to action
+    if (/^(tag someone|tag a |share this|follow us|repost|we('d| would) love to connect)/i.test(line)) continue;
+    if (/notice period/i.test(line) && /(resume|cv|portfolio|salary|notice)/i.test(line)) continue;
+
     // Filter out metadata and contact lines that belong in structured fields
     if (/^(position|role|job title|company|designation|department|open positions?|working hours|timing)\s*[:–—\-].*$/i.test(line)) continue;
     if (/^(location|workplace|work location|job location|work mode|place|office)\s*[:–—\-].*$/i.test(line)) continue;
     if (/^(salary|stipend|ctc|package|compensation|experience|exp)\s*[:–—\-].*$/i.test(line)) continue;
-    if (/^(to apply|apply now|how to apply|send your (resume|cv|portfolio)|mail your|email your|submit your resume|subject line|ps:|p\.s\.)/i.test(line)) {
+    if (/^(to apply|apply now|how to apply|interested candidates|send your|mail your|email your|share your|share their|submit your|subject line|ps:|p\.s\.)/i.test(line)) {
       section = "SKIP";
       continue;
     }
@@ -122,6 +132,9 @@ function buildFallbackEnhanced(
 
     const trimmedHeader = line.replace(/[:#*]/g, "").trim().toLowerCase();
 
+    if (/^(job details|job summary|job overview|role details)$/i.test(trimmedHeader)) {
+      continue;
+    }
     if (/^(what you('ll| will) do|responsibilities|key responsibilities|job responsibilities|role & responsibilities|you'll work on)$/i.test(trimmedHeader)) {
       section = "RESPONSIBILITIES";
       continue;
@@ -152,7 +165,11 @@ function buildFallbackEnhanced(
     if (section === "RESPONSIBILITIES") {
       respLines.push(cleanItem);
     } else if (section === "REQUIREMENTS") {
-      reqLines.push(cleanItem);
+      if (/is a plus|bonus|nice to have|preferred/i.test(cleanItem)) {
+        niceLines.push(cleanItem);
+      } else {
+        reqLines.push(cleanItem);
+      }
     } else if (section === "NICE_TO_HAVE") {
       niceLines.push(cleanItem);
     } else if (section === "PERKS") {
@@ -203,10 +220,17 @@ function buildFallbackParsed(jobText: string) {
   // Extract experience
   let expMin = "";
   let expMax = "";
-  const expRangeMatch = jobText.match(/(\d+)\s*(?:[-–to]|\+)?\s*(\d+)?\s*(?:years?|yrs?)/i);
-  if (expRangeMatch) {
-    expMin = expRangeMatch[1] || "";
-    expMax = expRangeMatch[2] || "";
+  const monthYearMatch = jobText.match(/(\d+)\s*(?:months?|mos?)\s*(?:(?:[-–—]|to))\s*(\d+)\s*(?:years?|yrs?)/i);
+  if (monthYearMatch) {
+    const months = parseInt(monthYearMatch[1], 10);
+    expMin = (months / 12).toString();
+    expMax = monthYearMatch[2];
+  } else {
+    const expRangeMatch = jobText.match(/(\d+)\s*(?:(?:[-–—]|to)|\+)?\s*(\d+)?\s*(?:years?|yrs?)/i);
+    if (expRangeMatch) {
+      expMin = expRangeMatch[1] || "";
+      expMax = expRangeMatch[2] || "";
+    }
   }
   if (/\bfresher\b/i.test(jobText)) {
     expMin = "0";
@@ -215,11 +239,19 @@ function buildFallbackParsed(jobText: string) {
 
   // Extract company
   let company = "";
-  const companyMatch =
-    jobText.match(/(?:at|company[:\s]+|hiring for|join|welcome to)\s+([A-Z][A-Za-z0-9&.,\s]{2,30}?)(?:[\n,.]|\s+is|\s+in)/i) ||
-    jobText.match(/Company:\s*([^\n]+)/i);
-  if (companyMatch) {
-    company = companyMatch[1].trim();
+  const explicitCompanyMatch = jobText.match(/(?:^|\n)\s*(?:[^\w\s]\s*)?company(?:\s*name)?\s*[:–—\-]\s*([^\n]+)/i);
+  const isLookingMatch = jobText.match(/([A-Z][A-Za-z0-9&.,\s]{2,40}?)\s+(?:is looking for|is hiring|invites applications)/i);
+  const standardMatch = jobText.match(/(?:at|company[:\s]+|hiring for|join|welcome to)\s+([A-Z][A-Za-z0-9&.,\s]{2,30}?)(?:[\n,.]|\s+is|\s+in)/i);
+
+  if (explicitCompanyMatch) {
+    company = stripEmojis(explicitCompanyMatch[1]).trim();
+  } else if (isLookingMatch) {
+    company = stripEmojis(isLookingMatch[1]).trim();
+  } else if (standardMatch) {
+    const rawComp = standardMatch[1].trim();
+    if (!/our (team|growing team|company)/i.test(rawComp)) {
+      company = rawComp;
+    }
   }
 
   // Extract Indian cities
@@ -240,8 +272,8 @@ function buildFallbackParsed(jobText: string) {
   // Extract salary
   let salary = "";
   const salaryMatch =
-    jobText.match(/(?:₹|INR|Rs\.?|\$)\s*[0-9]+(?:\.[0-9]+)?\s*(?:[-–to]\s*[0-9]+(?:\.[0-9]+)?)?\s*(?:LPA|L|lakhs?|k|p\.a\.|per annum)?/i) ||
-    jobText.match(/\b\d+(?:\.\d+)?\s*(?:[-–to]\s*\d+(?:\.\d+)?)?\s*LPA\b/i);
+    jobText.match(/(?:₹|INR|Rs\.?|\$)\s*[0-9,]+(?:\.[0-9]+)?\s*(?:(?:[-–—]|to)\s*(?:₹|INR|Rs\.?|\$)?\s*[0-9,]+(?:\.[0-9]+)?)?\s*(?:LPA|L|lakhs?|k|p\.a\.|per annum|\/month|pm)?/i) ||
+    jobText.match(/\b\d+(?:\.\d+)?\s*(?:(?:[-–—]|to)\s*\d+(?:\.\d+)?)?\s*LPA\b/i);
   if (salaryMatch) {
     salary = salaryMatch[0].trim();
   }
@@ -252,16 +284,22 @@ function buildFallbackParsed(jobText: string) {
   else if (/\bhybrid\b/i.test(jobText)) workMode = "Hybrid";
 
   // Clean title extraction
-  const lines = jobText.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-  let title = lines[0] || "";
-  for (const line of lines.slice(0, 5)) {
-    if (
-      !/^(about us|about the company|job description|we are hiring|hiring|role overview|careers|overview):?$/i.test(line) &&
-      line.length >= 3 &&
-      line.length <= 60
-    ) {
-      title = line.replace(/^(job title|role|position):\s*/i, "").trim();
-      break;
+  let title = "";
+  const explicitTitleMatch = jobText.match(/(?:^|\n)\s*(?:[^\w\s]\s*)?(?:position|job\s+title|role)\s*[:–—\-]\s*([^\n]+)/i);
+  if (explicitTitleMatch) {
+    title = stripEmojis(explicitTitleMatch[1]).trim();
+  } else {
+    const lines = jobText.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    for (const line of lines.slice(0, 5)) {
+      const stripped = stripEmojis(line).trim();
+      if (
+        !/^(about us|about the company|job description|we are hiring|hiring|role overview|careers|overview):?$/i.test(stripped) &&
+        stripped.length >= 3 &&
+        stripped.length <= 60
+      ) {
+        title = stripped.replace(/^(we('re| are) hiring\s*\|\s*)/i, "").replace(/^(job title|role|position):\s*/i, "").trim();
+        break;
+      }
     }
   }
   if (title.length > 70) title = title.substring(0, 70);
@@ -269,6 +307,13 @@ function buildFallbackParsed(jobText: string) {
   // Detect category
   const detectedCategory = matchJobCategory(jobText) || "UI/UX & Product Design";
   const parsedSal = parseSalaryFromJob({ salary });
+  const fallbackExperience = expMin ? (expMax ? `${expMin}-${expMax} years` : `${expMin} years`) : "";
+  const cleanedDescription = buildFallbackEnhanced(jobText, {
+    title,
+    company,
+    category: detectedCategory,
+    experience: fallbackExperience,
+  });
 
   return {
     title,
@@ -278,7 +323,7 @@ function buildFallbackParsed(jobText: string) {
     location: foundCity,
     workMode,
     employmentType: "FULL_TIME",
-    experience: expMin ? (expMax ? `${expMin}-${expMax} years` : `${expMin} years`) : "",
+    experience: fallbackExperience,
     experienceMin: expMin,
     experienceMax: expMax,
     salary: parsedSal.formatted || salary || "Not Disclosed",
@@ -287,7 +332,7 @@ function buildFallbackParsed(jobText: string) {
     salaryPeriod: parsedSal.period,
     salaryCurrency: parsedSal.currency,
     salaryIsDisclosed: parsedSal.isDisclosed,
-    description: jobText.trim(),
+    description: cleanedDescription,
     skills: [],
     requirements: [],
     responsibilities: [],

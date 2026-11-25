@@ -85,8 +85,8 @@ export default function FormattedDescription({
       return;
     }
 
-    // Check if it's a bullet point line (starts with •, -, *, ›, > or 1.)
-    const bulletMatch = line.match(/^([•\-\*›\>]|\d+[\.\)])\s+(.*)/);
+    // Check if it's a bullet point line (starts with standard bullets or checkmark/emoji markers)
+    const bulletMatch = line.match(/^([•\-\*›\>✓✔✅🔹👉]|\d+[\.\)])\s*(.*)/u);
     if (bulletMatch) {
       currentList.push(bulletMatch[2]);
       return;
@@ -99,15 +99,19 @@ export default function FormattedDescription({
       line.length <= 60 &&
       !line.toLowerCase().includes("email") &&
       !line.toLowerCase().includes("http");
+    const strippedHeader = line
+      .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1FA70}-\u{1FAFF}\u{FE0F}\p{Extended_Pictographic}[:#*]/gu, "")
+      .trim();
     const isCommonTitle =
       /^(about the role|about the company|responsibilities|key responsibilities|what you('ll| will) do|requirements|requirements & qualifications|qualifications|preferred qualifications|what we('re| are) looking for|skills required|perks & benefits|benefits|nice to have|good to have|bonus points|how to apply)$/i.test(
-        line.replace(/[:#]/g, "").trim()
+        strippedHeader
       );
 
     if (isMarkdownHeading || isColonHeading || isCommonTitle) {
       flushList(index);
       const cleanTitle = line
         .replace(/^#{1,4}\s+/, "")
+        .replace(/^[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1FA70}-\u{1FAFF}\u{FE0F}\p{Extended_Pictographic}\s]+/gu, "")
         .replace(/:$/, "")
         .trim();
 

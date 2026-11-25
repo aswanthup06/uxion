@@ -165,14 +165,17 @@ export const WIZARD_STEPS = [
 
 export function cleanDescriptionText(raw: string): string {
   if (!raw) return "";
-  let text = raw;
+  let text = raw.trim();
+
+  // Strip code blocks if any
+  text = text.replace(/^```[a-z]*\s*/i, "").replace(/```\s*$/i, "").trim();
 
   // 1. Remove leading metadata block if any (Role Title:, Company:, etc.)
   const lines = text.split("\n");
   let startIdx = 0;
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i].trim();
-    if (/^(role|job title|company|location|work mode|experience|salary|contact email):/i.test(l)) {
+    if (/^(role(\s+title)?|job\s+title|company(\s+name)?|location|work\s+mode|experience(\s+level)?|salary|contact\s+email)\s*[:–—\-]/i.test(l)) {
       startIdx = i + 1;
     } else if (l === "" && startIdx > 0) {
       // Empty line after metadata block
@@ -187,10 +190,13 @@ export function cleanDescriptionText(raw: string): string {
     text = lines.slice(startIdx).join("\n").trim();
   }
 
-  // 2. Normalize section headers to standard format with line breaks
+  // 2. Remove trailing hashtag blocks
+  text = text.replace(/(?:\r?\n)+(?:#[a-zA-Z0-9_\u00c0-\u024f-]+\s*)+$/gu, "").trim();
+
+  // 3. Normalize section headers to standard format with line breaks
   text = text.replace(/^(About the (Role|Company)|Key Responsibilities|Responsibilities|Requirements|Skills|What we offer|Perks|Benefits):/gim, "\n\n$1:\n");
 
-  // 3. Clean up excessive consecutive blank lines
+  // 4. Clean up excessive consecutive blank lines
   text = text.replace(/\n{3,}/g, "\n\n").trim();
 
   return text;
